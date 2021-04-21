@@ -1,0 +1,239 @@
+{
+  "address": "0x57cD473bC2d32FcE9e663214929306eB24b8ad0E",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "COIN",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "weth",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "coinQuote",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "ethereum",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenReserve",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethReserve",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "factory",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "fac",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenA",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenB",
+          "type": "address"
+        }
+      ],
+      "name": "getPair",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "getPathForCoinToToken",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "name": "getReserves",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "reserveA",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserveB",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "hasPool",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "tokenA",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "tokenB",
+          "type": "address"
+        }
+      ],
+      "name": "pairFor",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "pair",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x21775e72cf15ff40847f91e9aa4672558f23af5a712fbf6b90a7fefc6b5b2449",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0x57cD473bC2d32FcE9e663214929306eB24b8ad0E",
+    "transactionIndex": 167,
+    "gasUsed": "558437",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xca1d08beadb66b49a887ce8a3140c63fef6f9869cd955542d1c1a6d1e0d37db3",
+    "transactionHash": "0x21775e72cf15ff40847f91e9aa4672558f23af5a712fbf6b90a7fefc6b5b2449",
+    "logs": [],
+    "blockNumber": 12266566,
+    "cumulativeGasUsed": "12372926",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "697564a87ee727512354ae614664a7d5",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"COIN\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"weth\",\"type\":\"address\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"tokenAmount\",\"type\":\"uint256\"}],\"name\":\"coinQuote\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"ethereum\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"tokenReserve\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethReserve\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"factory\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"fac\",\"type\":\"address\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenA\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenB\",\"type\":\"address\"}],\"name\":\"getPair\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"pair\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"getPathForCoinToToken\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"pair\",\"type\":\"address\"}],\"name\":\"getReserves\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"reserveA\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserveB\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"hasPool\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenA\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"tokenB\",\"type\":\"address\"}],\"name\":\"pairFor\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"pair\",\"type\":\"address\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Uniswap helpers\",\"kind\":\"dev\",\"methods\":{\"COIN()\":{\"details\":\"does a Uniswap pool exist for this token?\"},\"coinQuote(address,uint256)\":{\"details\":\"Get a quote in Ethereum for the given ERC20 token / token amount\"},\"factory()\":{\"details\":\"does a Uniswap pool exist for this token?\"},\"getPair(address,address)\":{\"details\":\"looks for a pool vs weth\"},\"getPathForCoinToToken(address)\":{\"details\":\"Get a path for ethereum to the given token\"},\"getReserves(address)\":{\"details\":\"Get the pair reserves given two erc20 tokens\"},\"hasPool(address)\":{\"details\":\"does token have a pool\"},\"pairFor(address,address)\":{\"details\":\"calculate pair address\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/swap/uniswap/UniswapQueryHelper.sol\":\"UniswapQueryHelper\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":9999},\"remappings\":[]},\"sources\":{\"@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol\":{\"content\":\"pragma solidity >=0.5.0;\\n\\ninterface IUniswapV2Factory {\\n    event PairCreated(address indexed token0, address indexed token1, address pair, uint);\\n\\n    function feeTo() external view returns (address);\\n    function feeToSetter() external view returns (address);\\n\\n    function getPair(address tokenA, address tokenB) external view returns (address pair);\\n    function allPairs(uint) external view returns (address pair);\\n    function allPairsLength() external view returns (uint);\\n\\n    function createPair(address tokenA, address tokenB) external returns (address pair);\\n\\n    function setFeeTo(address) external;\\n    function setFeeToSetter(address) external;\\n}\\n\",\"keccak256\":\"0xe5905c0989cf5a865ed9bb7b9252536ca011c5b744017a82a7d4443b9c00a891\"},\"@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol\":{\"content\":\"pragma solidity >=0.5.0;\\n\\ninterface IUniswapV2Pair {\\n    event Approval(address indexed owner, address indexed spender, uint value);\\n    event Transfer(address indexed from, address indexed to, uint value);\\n\\n    function name() external pure returns (string memory);\\n    function symbol() external pure returns (string memory);\\n    function decimals() external pure returns (uint8);\\n    function totalSupply() external view returns (uint);\\n    function balanceOf(address owner) external view returns (uint);\\n    function allowance(address owner, address spender) external view returns (uint);\\n\\n    function approve(address spender, uint value) external returns (bool);\\n    function transfer(address to, uint value) external returns (bool);\\n    function transferFrom(address from, address to, uint value) external returns (bool);\\n\\n    function DOMAIN_SEPARATOR() external view returns (bytes32);\\n    function PERMIT_TYPEHASH() external pure returns (bytes32);\\n    function nonces(address owner) external view returns (uint);\\n\\n    function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;\\n\\n    event Mint(address indexed sender, uint amount0, uint amount1);\\n    event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);\\n    event Swap(\\n        address indexed sender,\\n        uint amount0In,\\n        uint amount1In,\\n        uint amount0Out,\\n        uint amount1Out,\\n        address indexed to\\n    );\\n    event Sync(uint112 reserve0, uint112 reserve1);\\n\\n    function MINIMUM_LIQUIDITY() external pure returns (uint);\\n    function factory() external view returns (address);\\n    function token0() external view returns (address);\\n    function token1() external view returns (address);\\n    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);\\n    function price0CumulativeLast() external view returns (uint);\\n    function price1CumulativeLast() external view returns (uint);\\n    function kLast() external view returns (uint);\\n\\n    function mint(address to) external returns (uint liquidity);\\n    function burn(address to) external returns (uint amount0, uint amount1);\\n    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external;\\n    function skim(address to) external;\\n    function sync() external;\\n\\n    function initialize(address, address) external;\\n}\\n\",\"keccak256\":\"0x7c9bc70e5996c763e02ff38905282bc24fb242b0ef2519a003b36824fc524a4b\"},\"@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol\":{\"content\":\"pragma solidity >=0.6.2;\\n\\ninterface IUniswapV2Router01 {\\n    function factory() external pure returns (address);\\n    function WETH() external pure returns (address);\\n\\n    function addLiquidity(\\n        address tokenA,\\n        address tokenB,\\n        uint amountADesired,\\n        uint amountBDesired,\\n        uint amountAMin,\\n        uint amountBMin,\\n        address to,\\n        uint deadline\\n    ) external returns (uint amountA, uint amountB, uint liquidity);\\n    function addLiquidityETH(\\n        address token,\\n        uint amountTokenDesired,\\n        uint amountTokenMin,\\n        uint amountETHMin,\\n        address to,\\n        uint deadline\\n    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);\\n    function removeLiquidity(\\n        address tokenA,\\n        address tokenB,\\n        uint liquidity,\\n        uint amountAMin,\\n        uint amountBMin,\\n        address to,\\n        uint deadline\\n    ) external returns (uint amountA, uint amountB);\\n    function removeLiquidityETH(\\n        address token,\\n        uint liquidity,\\n        uint amountTokenMin,\\n        uint amountETHMin,\\n        address to,\\n        uint deadline\\n    ) external returns (uint amountToken, uint amountETH);\\n    function removeLiquidityWithPermit(\\n        address tokenA,\\n        address tokenB,\\n        uint liquidity,\\n        uint amountAMin,\\n        uint amountBMin,\\n        address to,\\n        uint deadline,\\n        bool approveMax, uint8 v, bytes32 r, bytes32 s\\n    ) external returns (uint amountA, uint amountB);\\n    function removeLiquidityETHWithPermit(\\n        address token,\\n        uint liquidity,\\n        uint amountTokenMin,\\n        uint amountETHMin,\\n        address to,\\n        uint deadline,\\n        bool approveMax, uint8 v, bytes32 r, bytes32 s\\n    ) external returns (uint amountToken, uint amountETH);\\n    function swapExactTokensForTokens(\\n        uint amountIn,\\n        uint amountOutMin,\\n        address[] calldata path,\\n        address to,\\n        uint deadline\\n    ) external returns (uint[] memory amounts);\\n    function swapTokensForExactTokens(\\n        uint amountOut,\\n        uint amountInMax,\\n        address[] calldata path,\\n        address to,\\n        uint deadline\\n    ) external returns (uint[] memory amounts);\\n    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)\\n        external\\n        payable\\n        returns (uint[] memory amounts);\\n    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)\\n        external\\n        returns (uint[] memory amounts);\\n    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)\\n        external\\n        returns (uint[] memory amounts);\\n    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)\\n        external\\n        payable\\n        returns (uint[] memory amounts);\\n\\n    function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);\\n    function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);\\n    function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);\\n    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);\\n    function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);\\n}\\n\",\"keccak256\":\"0x8a3c5c449d4b7cd76513ed6995f4b86e4a86f222c770f8442f5fc128ce29b4d2\"},\"@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol\":{\"content\":\"pragma solidity >=0.6.2;\\n\\nimport './IUniswapV2Router01.sol';\\n\\ninterface IUniswapV2Router02 is IUniswapV2Router01 {\\n    function removeLiquidityETHSupportingFeeOnTransferTokens(\\n        address token,\\n        uint liquidity,\\n        uint amountTokenMin,\\n        uint amountETHMin,\\n        address to,\\n        uint deadline\\n    ) external returns (uint amountETH);\\n    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(\\n        address token,\\n        uint liquidity,\\n        uint amountTokenMin,\\n        uint amountETHMin,\\n        address to,\\n        uint deadline,\\n        bool approveMax, uint8 v, bytes32 r, bytes32 s\\n    ) external returns (uint amountETH);\\n\\n    function swapExactTokensForTokensSupportingFeeOnTransferTokens(\\n        uint amountIn,\\n        uint amountOutMin,\\n        address[] calldata path,\\n        address to,\\n        uint deadline\\n    ) external;\\n    function swapExactETHForTokensSupportingFeeOnTransferTokens(\\n        uint amountOutMin,\\n        address[] calldata path,\\n        address to,\\n        uint deadline\\n    ) external payable;\\n    function swapExactTokensForETHSupportingFeeOnTransferTokens(\\n        uint amountIn,\\n        uint amountOutMin,\\n        address[] calldata path,\\n        address to,\\n        uint deadline\\n    ) external;\\n}\\n\",\"keccak256\":\"0x744e30c133bd0f7ca9e7163433cf6d72f45c6bb1508c2c9c02f1a6db796ae59d\"},\"src/interfaces/ISwapQueryHelper.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.7.0;\\n\\ninterface ISwapQueryHelper {\\n\\n    function coinQuote(address token, uint256 tokenAmount)\\n        external\\n        view\\n        returns (\\n            uint256,\\n            uint256,\\n            uint256\\n        );\\n\\n    function factory() external pure returns (address);\\n\\n    function COIN() external pure returns (address);\\n\\n    function getPair(address tokenA, address tokenB) external view returns (address pair);\\n\\n    function hasPool(address token) external view returns (bool);\\n\\n    function getReserves(\\n        address pair\\n    ) external view returns (uint256, uint256);\\n\\n    function pairFor(\\n        address tokenA,\\n        address tokenB\\n    ) external pure returns (address);\\n\\n    function getPathForCoinToToken(address token) external pure returns (address[] memory);\\n\\n}\\n\",\"keccak256\":\"0x65783cec8fdaa119bb293d14881c0c6a2be3105f69490a6c86f311acaa2dad8b\",\"license\":\"MIT\"},\"src/swap/uniswap/UniswapLib.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.7.0;\\n\\nimport \\\"@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol\\\";\\nimport \\\"@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol\\\";\\nimport \\\"@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol\\\";\\n\\n/**\\n * @dev Uniswap helpers\\n */\\nlibrary UniswapLib {\\n\\n    address public constant UNISWAP_ROUTER_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;\\n\\n    /**\\n     * @dev Get a quote in Ethereum for the given ERC20 token / token amount\\n     */\\n    function ethQuote(address token, uint256 tokenAmount)\\n        external\\n        view\\n        returns (\\n            uint256 ethereum,\\n            uint256 tokenReserve,\\n            uint256 ethReserve\\n        )\\n    {\\n        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);\\n        address _factory = uniswapRouter.factory();\\n        address _WETH = uniswapRouter.WETH();\\n        address _pair = IUniswapV2Factory(_factory).getPair(token, _WETH);\\n        (tokenReserve, ethReserve, ) = IUniswapV2Pair(_pair).getReserves();\\n        ethereum = quote(tokenAmount, tokenReserve, ethReserve);\\n    }\\n\\n    /**\\n     * @dev does a Uniswap pool exist for this token?\\n     */\\n    function factory() external pure returns (address fac) {\\n        fac = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS).factory();\\n    }\\n\\n    /**\\n     * @dev does a Uniswap pool exist for this token?\\n     */\\n    function WETH() external pure returns (address weth) {\\n        weth = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS).WETH();\\n    }\\n\\n    /**\\n     * @dev does a Uniswap pool exist for this token?\\n     */\\n    function hasPool(address token) external view returns (bool) {\\n        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);\\n        address _factory = uniswapRouter.factory();\\n        address _WETH = uniswapRouter.WETH();\\n        address _pair = IUniswapV2Factory(_factory).getPair(token, _WETH);\\n        return _pair != address(0);\\n    }\\n\\n    /**\\n     * @dev looks for a pool vs weth\\n     */\\n    function getPair(address _factory, address tokenA, address tokenB) external view returns (address pair) {\\n        require(_factory != address(0), \\\"INVALID_TOKENS\\\");\\n        require(tokenA != address(0) && tokenB != address(0), \\\"INVALID_TOKENS\\\");\\n        pair =\\n            IUniswapV2Factory(_factory).getPair(\\n                tokenA,\\n                tokenB\\n            );\\n    }\\n\\n    /**\\n     * @dev Get the pair reserves given two erc20 tokens\\n     */\\n    function getReserves(\\n        address pair\\n    ) external view returns (uint256 reserveA, uint256 reserveB) {\\n        (reserveA, reserveB, ) = IUniswapV2Pair(pair).getReserves();\\n    }\\n\\n    /**\\n     * @dev calculate pair address\\n     */\\n    function pairFor(\\n        address _factory,\\n        address tokenA,\\n        address tokenB\\n    ) external pure returns (address pair) {\\n        (address token0, address token1) = sortTokens(tokenA, tokenB);\\n        pair = address(\\n            uint256(\\n                keccak256(\\n                    abi.encodePacked(\\n                        hex\\\"ff\\\",\\n                        _factory,\\n                        keccak256(abi.encodePacked(token0, token1)),\\n                        hex\\\"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f\\\" // init code hash\\n                    )\\n                )\\n            )\\n        );\\n    }\\n\\n    /**\\n     * @dev Get a path for ethereum to the given token\\n     */\\n    function getPathForETHToToken(address token) external pure returns (address[] memory) {\\n        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);\\n        address[] memory path = new address[](2);\\n        path[0] = token;\\n        path[1] = uniswapRouter.WETH();\\n        return path;\\n    }\\n\\n    /**\\n     * @dev given some amount of an asset and pair reserves, returns an equivalent amount of the other asset\\n     */\\n    function quote(\\n        uint256 amountA,\\n        uint256 reserveA,\\n        uint256 reserveB\\n    ) internal pure returns (uint256 amountB) {\\n        require(amountA > 0, \\\"Price: Price\\\");\\n        require(reserveA > 0 && reserveB > 0, \\\"Price: INSUFFICIENT_LIQUIDITY\\\");\\n        amountB = (amountA * (reserveB)) / reserveA;\\n    }\\n\\n    /**\\n     * @dev returns sorted token addresses, used to handle return values from pairs sorted in this order\\n     */\\n    function sortTokens(address tokenA, address tokenB) internal pure returns (address token0, address token1) {\\n        require(tokenA != tokenB, \\\"Price: IDENTICAL_ADDRESSES\\\");\\n        (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);\\n        require(token0 != address(0), \\\"Price: ZERO_ADDRESS\\\");\\n    }\\n}\\n\",\"keccak256\":\"0x648d869f6ec51e012457cc69dc61a085ca10bf23dfc76ce3ef25f9c85af1a1c6\",\"license\":\"MIT\"},\"src/swap/uniswap/UniswapQueryHelper.sol\":{\"content\":\"\\n// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.7.0;\\n\\nimport \\\"./UniswapLib.sol\\\";\\nimport \\\"../../interfaces/ISwapQueryHelper.sol\\\";\\n\\n/**\\n * @dev Uniswap helpers\\n */\\ncontract UniswapQueryHelper is ISwapQueryHelper {\\n\\n    /**\\n     * @dev Get a quote in Ethereum for the given ERC20 token / token amount\\n     */\\n    function coinQuote(address token, uint256 tokenAmount)\\n        external\\n        view\\n        override\\n        returns (\\n            uint256 ethereum,\\n            uint256 tokenReserve,\\n            uint256 ethReserve\\n        )\\n    {\\n       return UniswapLib.ethQuote(token, tokenAmount);\\n    }\\n\\n    /**\\n     * @dev does a Uniswap pool exist for this token?\\n     */\\n    function factory() external pure override returns (address fac) {\\n        fac = UniswapLib.factory();\\n    }\\n\\n    /**\\n     * @dev does a Uniswap pool exist for this token?\\n     */\\n    function COIN() external pure override returns (address weth) {\\n        weth = UniswapLib.WETH();\\n    }\\n\\n\\n    /**\\n     * @dev looks for a pool vs weth\\n     */\\n    function getPair(address tokenA, address tokenB) external view override returns (address pair) {\\n        address _factory = UniswapLib.factory();\\n        pair = UniswapLib.getPair(_factory, tokenA, tokenB);\\n    }\\n\\n    /**\\n     * @dev Get the pair reserves given two erc20 tokens\\n     */\\n    function getReserves(\\n        address pair\\n    ) external view override returns (uint256 reserveA, uint256 reserveB) {\\n        (reserveA, reserveB) = UniswapLib.getReserves(pair);\\n    }\\n\\n    /**\\n     * @dev calculate pair address\\n     */\\n    function pairFor(\\n        address tokenA,\\n        address tokenB\\n    ) external pure override returns (address pair) {\\n        address _factory = UniswapLib.factory();\\n        pair = UniswapLib.pairFor(_factory, tokenA, tokenB);\\n    }\\n\\n    /**\\n     * @dev does token have a pool\\n     */\\n    function hasPool(address token) external view override returns (bool) {\\n        return UniswapLib.hasPool(token);\\n    }\\n\\n    /**\\n     * @dev Get a path for ethereum to the given token\\n     */\\n    function getPathForCoinToToken(address token) external pure override returns (address[] memory) {\\n        return UniswapLib.getPathForETHToToken(token);\\n    }\\n\\n}\\n\",\"keccak256\":\"0x1629e839f3e76d912af9ae355a558c211ddd7aed1f4a15a0626198bdc929e98a\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610927806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c806396ed28f91161005b57806396ed28f9146101fa578063a54a72b71461025e578063c45a015514610266578063e6a439051461026e57610088565b8063096666961461008d5780631246dbf5146101105780633e99c1e414610157578063868d2d1e146101a3575b600080fd5b6100c0600480360360208110156100a357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166102a9565b60408051602080825283518183015283519192839290830191858101910280838360005b838110156100fc5781810151838201526020016100e4565b505050509050019250505060405180910390f35b6101436004803603602081101561012657600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166103fe565b604080519115158252519081900360200190f35b61018a6004803603602081101561016d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610497565b6040805192835260208301919091528051918290030190f35b6101dc600480360360408110156101b957600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813516906020013561053b565b60408051938452602084019290925282820152519081900360600190f35b6102356004803603604081101561021057600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813581169160200135166105f2565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61023561072d565b6102356107a4565b6102356004803603604081101561028457600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813581169160200135166107ea565b606073dFef81cc612Eb80FD79598b97AC01cB54aA8E371637dddfe9f836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060006040518083038186803b15801561031057600080fd5b505af4158015610324573d6000803e3d6000fd5b505050506040513d6000823e601f3d9081017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0168201604052602081101561036b57600080fd5b810190808051604051939291908464010000000082111561038b57600080fd5b9083019060208201858111156103a057600080fd5b82518660208202830111640100000000821117156103bd57600080fd5b82525081516020918201928201910280838360005b838110156103ea5781810151838201526020016103d2565b505050509050016040525050509050919050565b600073dFef81cc612Eb80FD79598b97AC01cB54aA8E371631246dbf5836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561046557600080fd5b505af4158015610479573d6000803e3d6000fd5b505050506040513d602081101561048f57600080fd5b505192915050565b60008073dFef81cc612Eb80FD79598b97AC01cB54aA8E371633e99c1e4846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff168152602001915050604080518083038186803b1580156104fe57600080fd5b505af4158015610512573d6000803e3d6000fd5b505050506040513d604081101561052857600080fd5b5080516020909101519094909350915050565b600080600073dFef81cc612Eb80FD79598b97AC01cB54aA8E371631874f0a986866040518363ffffffff1660e01b8152600401808373ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060606040518083038186803b1580156105ad57600080fd5b505af41580156105c1573d6000803e3d6000fd5b505050506040513d60608110156105d757600080fd5b50805160208201516040909201519097919650945092505050565b60008073dFef81cc612Eb80FD79598b97AC01cB54aA8E37163c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561063957600080fd5b505af415801561064d573d6000803e3d6000fd5b505050506040513d602081101561066357600080fd5b5051604080517f6d91c0e200000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8084166004830152808816602483015286166044820152905191925073dFef81cc612Eb80FD79598b97AC01cB54aA8E37191636d91c0e291606480820192602092909190829003018186803b1580156106f957600080fd5b505af415801561070d573d6000803e3d6000fd5b505050506040513d602081101561072357600080fd5b5051949350505050565b600073dFef81cc612Eb80FD79598b97AC01cB54aA8E37163ad5c46486040518163ffffffff1660e01b815260040160206040518083038186803b15801561077357600080fd5b505af4158015610787573d6000803e3d6000fd5b505050506040513d602081101561079d57600080fd5b5051919050565b600073dFef81cc612Eb80FD79598b97AC01cB54aA8E37163c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561077357600080fd5b60008073dFef81cc612Eb80FD79598b97AC01cB54aA8E37163c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561083157600080fd5b505af4158015610845573d6000803e3d6000fd5b505050506040513d602081101561085b57600080fd5b5051604080517f61e0b77f00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8084166004830152808816602483015286166044820152905191925073dFef81cc612Eb80FD79598b97AC01cB54aA8E371916361e0b77f91606480820192602092909190829003018186803b1580156106f957600080fdfea26469706673582212204e7a2600753e61cb904303d18e7a3f93f2b109a5213a1b7211020ced0dcc198064736f6c63430007030033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100885760003560e01c806396ed28f91161005b57806396ed28f9146101fa578063a54a72b71461025e578063c45a015514610266578063e6a439051461026e57610088565b8063096666961461008d5780631246dbf5146101105780633e99c1e414610157578063868d2d1e146101a3575b600080fd5b6100c0600480360360208110156100a357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166102a9565b60408051602080825283518183015283519192839290830191858101910280838360005b838110156100fc5781810151838201526020016100e4565b505050509050019250505060405180910390f35b6101436004803603602081101561012657600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166103fe565b604080519115158252519081900360200190f35b61018a6004803603602081101561016d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610497565b6040805192835260208301919091528051918290030190f35b6101dc600480360360408110156101b957600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813516906020013561053b565b60408051938452602084019290925282820152519081900360600190f35b6102356004803603604081101561021057600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813581169160200135166105f2565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b61023561072d565b6102356107a4565b6102356004803603604081101561028457600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813581169160200135166107ea565b606073__$edf965422c4d699000d67e21efcd5710bc$__637dddfe9f836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060006040518083038186803b15801561031057600080fd5b505af4158015610324573d6000803e3d6000fd5b505050506040513d6000823e601f3d9081017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0168201604052602081101561036b57600080fd5b810190808051604051939291908464010000000082111561038b57600080fd5b9083019060208201858111156103a057600080fd5b82518660208202830111640100000000821117156103bd57600080fd5b82525081516020918201928201910280838360005b838110156103ea5781810151838201526020016103d2565b505050509050016040525050509050919050565b600073__$edf965422c4d699000d67e21efcd5710bc$__631246dbf5836040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561046557600080fd5b505af4158015610479573d6000803e3d6000fd5b505050506040513d602081101561048f57600080fd5b505192915050565b60008073__$edf965422c4d699000d67e21efcd5710bc$__633e99c1e4846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff168152602001915050604080518083038186803b1580156104fe57600080fd5b505af4158015610512573d6000803e3d6000fd5b505050506040513d604081101561052857600080fd5b5080516020909101519094909350915050565b600080600073__$edf965422c4d699000d67e21efcd5710bc$__631874f0a986866040518363ffffffff1660e01b8152600401808373ffffffffffffffffffffffffffffffffffffffff1681526020018281526020019250505060606040518083038186803b1580156105ad57600080fd5b505af41580156105c1573d6000803e3d6000fd5b505050506040513d60608110156105d757600080fd5b50805160208201516040909201519097919650945092505050565b60008073__$edf965422c4d699000d67e21efcd5710bc$__63c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561063957600080fd5b505af415801561064d573d6000803e3d6000fd5b505050506040513d602081101561066357600080fd5b5051604080517f6d91c0e200000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8084166004830152808816602483015286166044820152905191925073__$edf965422c4d699000d67e21efcd5710bc$__91636d91c0e291606480820192602092909190829003018186803b1580156106f957600080fd5b505af415801561070d573d6000803e3d6000fd5b505050506040513d602081101561072357600080fd5b5051949350505050565b600073__$edf965422c4d699000d67e21efcd5710bc$__63ad5c46486040518163ffffffff1660e01b815260040160206040518083038186803b15801561077357600080fd5b505af4158015610787573d6000803e3d6000fd5b505050506040513d602081101561079d57600080fd5b5051919050565b600073__$edf965422c4d699000d67e21efcd5710bc$__63c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561077357600080fd5b60008073__$edf965422c4d699000d67e21efcd5710bc$__63c45a01556040518163ffffffff1660e01b815260040160206040518083038186803b15801561083157600080fd5b505af4158015610845573d6000803e3d6000fd5b505050506040513d602081101561085b57600080fd5b5051604080517f61e0b77f00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8084166004830152808816602483015286166044820152905191925073__$edf965422c4d699000d67e21efcd5710bc$__916361e0b77f91606480820192602092909190829003018186803b1580156106f957600080fdfea26469706673582212204e7a2600753e61cb904303d18e7a3f93f2b109a5213a1b7211020ced0dcc198064736f6c63430007030033",
+  "libraries": {
+    "UniswapLib": "0xdFef81cc612Eb80FD79598b97AC01cB54aA8E371"
+  },
+  "devdoc": {
+    "details": "Uniswap helpers",
+    "kind": "dev",
+    "methods": {
+      "COIN()": {
+        "details": "does a Uniswap pool exist for this token?"
+      },
+      "coinQuote(address,uint256)": {
+        "details": "Get a quote in Ethereum for the given ERC20 token / token amount"
+      },
+      "factory()": {
+        "details": "does a Uniswap pool exist for this token?"
+      },
+      "getPair(address,address)": {
+        "details": "looks for a pool vs weth"
+      },
+      "getPathForCoinToToken(address)": {
+        "details": "Get a path for ethereum to the given token"
+      },
+      "getReserves(address)": {
+        "details": "Get the pair reserves given two erc20 tokens"
+      },
+      "hasPool(address)": {
+        "details": "does token have a pool"
+      },
+      "pairFor(address,address)": {
+        "details": "calculate pair address"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

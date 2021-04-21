@@ -1,0 +1,200 @@
+<nav class="navbar navbar-light navbar-expand-md">
+  <div class="container-fluid" style="margin-left:0;margin-right:0px">
+    <a
+      class="navbar-brand"
+      routerLink="/home"
+      style="font-family: Pixelated; color: var(--bs-yellow)"
+      ><img style="width:45px" src="assets/img/animated-diamond.gif"/></a
+    >
+    <ul class="navbar-nav" style="font-family: Pixelated">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/pools"
+          style="
+            color: var(--bs-yellow);
+            text-shadow: 0px 0px 4px;
+            font-size: 18px;
+          "
+          ><strong>stake</strong></a
+        >
+      </li>
+      <li class="nav-item" style="text-shadow: 0px 0px 4px">
+        <a
+          class="nav-link"
+          routerLink="/claims"
+          style="
+            color: var(--bs-yellow);
+            text-shadow: 0px 0px 4px;
+            font-size: 17px;
+          "
+          ><strong>claims</strong></a
+        >
+      </li>
+      <li class="nav-item" style="text-shadow: 0px 0px 4px">
+        <a
+          class="nav-link"
+          routerLink="/gems"
+          style="
+            font-size: 17px;
+            color: var(--bs-yellow);
+            text-shadow: 0px 0px 4px;
+          "
+          ><strong>gems</strong></a
+        >
+      </li>
+<!--
+      <li class="nav-item" style="text-shadow: 0px 0px 4px">
+        <a
+          class="nav-link"
+          routerLink="/swap"
+          style="
+            font-size: 17px;
+            color: var(--bs-yellow);
+            text-shadow: 0px 0px 4px;
+          "
+          ><strong>swap</strong></a
+        >
+      </li>
+-->
+      <li class="nav-item" style="text-shadow: 0px 0px 4px">
+        <a
+          class="nav-link"
+          routerLink="/faq"
+          style="
+            font-size: 17px;
+            color: var(--bs-yellow);
+            text-shadow: 0px 0px 4px;
+          "
+          ><strong>faq</strong></a
+        >
+      </li>
+      <li class="nav-item" style="margin-left: 10px">
+        <a
+          class="nav-link"
+          routerLink="/governance"
+          style="color: var(--bs-yellow); font-size: 17px; text-shadow: 0px 0px 5px"
+          ><img
+            src="assets/img/key.png"
+            style="height: 30px; transform: translateY(0px)"
+          />&nbsp;x{{ blockchainService.balances.governance }}</a
+        >
+      </li>
+      <app-web3-connect-button></app-web3-connect-button>
+    </ul>
+  </div>
+</nav>
+<div class="row" style="margin-right: 0; margin-left: 0">
+  <div class="col">
+    <div
+      class="card"
+      style="background: url('assets/img/screen.png'), rgb(31, 29, 50)"
+    >
+      <div class="card-body" style="padding: 0">
+        <div class="row" style="margin: 0">
+          <div class="col" style="padding: 0">
+            <img
+              class="float-end"
+              src="assets/img/dd3fc90c-7ee0-4787-9e67-839870adccee.png"
+              width="50px"
+              style="width: 90px; transform: rotateY(180deg)"
+            />
+          </div>
+          <div
+            class="col-7 text-center align-self-center"
+            data-bss-hover-animate="bounce"
+            style="
+              font-family: Pixelated;
+              font-size: 56px;
+              padding: 0;
+              margin: 0;
+              margin-top: 0;
+              margin-right: 0;
+              margin-bottom: 0;
+              margin-left: 0;
+            "
+          >
+            <span
+              style="
+                font-size: 110.3px;
+                line-height: 80px;
+                color: rgb(236, 50, 130);
+                text-shadow: 0px 0px 17px var(--bs-indigo);
+              "
+              ><strong>bitgem</strong></span
+            >
+          </div>
+          <div class="col" style="padding: 0">
+            <img
+              src="assets/img/dd3fc90c-7ee0-4787-9e67-839870adccee.png"
+              width="50px"
+              style="width: 90px"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" style="margin: 0">
+  <div
+    class="col-12 text-center align-self-center m-auto"
+    style="
+      font-family: Pixelated;
+      font-size: 56px;
+      padding: 0;
+      margin: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+      margin-left: 0;
+      height: 40px;
+    "
+  >
+    <div style="height: 40px">
+      <span
+        class="d-grid justify-content-lg-center align-items-lg-start"
+        style="
+          font-size: 22px;
+          height: 30px;
+          transform: translateY(0px);
+          color: rgb(126, 217, 87);
+          text-shadow: 0px 0px 5px;
+        "
+        ><strong
+          >{{blockchainService.COIN}} staked: {{ blockchainService.formatEther(blockchainService.totalEthStaked) | number: '1.2'  }} {{blockchainService.COIN}} - claims {{ blockchainService.totalClaims }} -
+          minted: {{ blockchainService.totalMinted }} gems&nbsp;</strong
+        ><br /><br
+      /></span>
+    </div>
+  </div>
+</div>
+<div class="row" style="margin: 0; margin-bottom: 30px">
+  <div
+    class="col-12 text-center align-self-center m-auto"
+    style="
+      font-family: Pixelated;
+      font-size: 56px;
+      padding: 0;
+      margin: 0;
+      margin-top: 0;
+      margin-right: 0;
+      margin-bottom: 0;
+      margin-left: 0;
+      height: 40px;
+    "
+  >
+    <div style="height: 40px">
+      <span
+        class="d-flex justify-content-lg-center align-items-lg-start"
+        style="
+          font-size: 34px;
+          height: 40px;
+          color: rgb(236, 50, 130);
+          text-shadow: 0px 0px 8px var(--bs-purple);
+        "
+        >stake anything - earn NFT gems</span
+      >
+    </div>
+  </div>
+</div>

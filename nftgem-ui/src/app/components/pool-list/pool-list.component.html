@@ -1,0 +1,15 @@
+<div *ngIf="blockchainService.isLoading" class="row" style="margin-top: 10px">
+  <div class="col">
+    <div style="min-height: 40px; text-align: center">
+      <span
+        role="status"
+        class="spinner-border spinner-border-sm"
+        style="font-size: 24px; width: 32px; height: 32px"
+      ></span>
+    </div>
+  </div>
+</div>
+
+<div *ngFor="let item of this.blockchainService.gemPools">
+  <app-gem-pool [pool]="item"></app-gem-pool>
+</div>

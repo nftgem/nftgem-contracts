@@ -1,0 +1,10 @@
+artifacts/
+cache/
+coverage/
+deployments/
+dist/
+export/
+node_modules/
+nftgem-ui/
+package.json
+types/

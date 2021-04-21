@@ -1,0 +1,104 @@
+<div
+  class="row"
+  style="margin-top: 10px;background: {{ claimColor }};border-radius: 8px;padding-top: 16px;padding-bottom: 16px;"
+>
+  <div class="col-1" style="padding-right:10px;">
+    <div></div>
+    <img src="assets/img/{{ blockchainService.gemPic(symbol)}}" style="height: 100px;padding-right:20px" />
+  </div>
+  <div
+    class="col-3"
+    style="
+      margin-left:10px;
+      margin-right:-10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    "
+  >
+    <h1
+      style="
+        color: var(--bs-yellow);
+        font-family: Pixelated;
+        text-shadow: 0px 0px 4px;
+        font-size: 29px;
+      "
+    >
+      {{ name }}
+    </h1>
+    <div> <span
+      style="
+        color: var(--bs-cyan);
+        font-family: Pixelated;
+        text-shadow: 0px 0px 7px;
+      "
+    >({{symbol}})</span></div>
+    <div>
+      <span
+        style="
+          color: var(--bs-cyan);
+          font-family: Pixelated;
+          text-shadow: 0px 0px 7px;
+        "
+        >x{{ _pool.totalMinted }} total minted</span
+      >
+    </div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="col-4">
+    <div>
+      <h1
+        style="
+          color: #f4ed47;
+          font-family: Pixelated;
+          text-shadow: 0px 0px 4px;
+          font-size: 22px;
+        "
+      >
+        {{ claimAmount | number: '1.4' }} {{ blockchainService.COIN }} x {{ claimQuantity }}
+      </h1>
+      <h1
+        style="
+          color: #f4ed47;
+          font-family: Pixelated;
+          text-shadow: 0px 0px 4px;
+          font-size: 20px;
+        "
+      >
+        {{ maturityDate }} {{ maturityTime }}
+      </h1>
+    </div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="col-4">
+    <div>
+      <h1
+        style="
+          color: var(--bs-teal);
+          font-family: Pixelated;
+          text-shadow: 0px 0px 4px;
+          font-size: 20px;
+          text-align: right;
+        "
+      >
+        claim {{ isMature ? 'mature' : 'immature' }}
+      </h1>
+    </div>
+    <div class="float-end" style="margin-top: 20px">
+      <button
+        class="btn btn-primary"
+        type="button"
+        style="
+          font-family: Pixelated;
+          text-shadow: 0px 0px 4px;
+          margin-top: -14px;
+        "
+        (click)="handleCollectClaimClick()"
+      >
+        collect claim
+      </button>
+    </div>
+  </div>
+</div>
