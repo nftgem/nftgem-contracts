@@ -467,14 +467,14 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev governance-driven
+     * @dev governance-driven - transfer funds out of the pool
      */
     function transferFunds(address token, address receiver, uint256 amount) external override {
 
         require(msg.sender == _governor, "UNAUTHORIZED_NAUGHTY");
         require(token != address(0), "LOL_MINT_NO");
         require(receiver != address(0), "NOT_UR_MONEY_2_BURN");
-        require(amount != 0, "CANNOT_SEND_ZERO_THINGS_GENIUS");
+        require(amount != 0, "CANNOT_SEND_ZERO_THINGS");
 
         if(token == address(0)) {
             // transfer the ETH  to the receiver
@@ -483,6 +483,24 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
             // transfer the tokens  to the receiver
             IERC20(token).transfer(receiver, amount);
         }
+
+    }
+
+    /**
+     * @dev governance-driven - mint gems by proposal
+     */
+    function mintGems(address receiver, uint256 quantity) external override {
+
+        // only callable by governor
+        require(msg.sender == _governor, "UNAUTHORIZED_NAUGHTY");
+        // don't do bad things
+        require(receiver != address(0), "NOT_UR_MONEY_2_BURN");
+        require(quantity != 0, "CANNOT_SEND_ZERO_THINGS");
+
+        // get a hash, mint the gem increase the difficulty
+        uint256 nextHash = this.nextGemHash();
+        INFTGemMultiToken(_multitoken).mint(msg.sender, nextHash, quantity);
+        _addToken(nextHash, 2);
 
     }
 }

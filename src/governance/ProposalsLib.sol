@@ -171,6 +171,15 @@ library ProposalsLib {
         }
 
         // transfer pool funds
+        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.MINT_POOL_GEMS) {
+            address proposalData = IProposal(proposalAddress).proposalData();
+            (address pool, address recipient, uint quantity) = IMintPoolGemsProposalData(proposalData).data();
+            require(pool != address(0), "INVALID_TOKEN");
+            require(recipient != address(0), "INVALID_RECIPIENT");
+            INFTGemPool(pool).mintGems(recipient, quantity);
+        }
+
+        // transfer pool funds
         else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.CREATE_CUSTOM_POOL) {
             address proposalData = IProposal(proposalAddress).proposalData();
             (bytes memory bytecode, string memory symbol, string memory name) = ICreateCustomGemPoolProposalData(proposalData).data();

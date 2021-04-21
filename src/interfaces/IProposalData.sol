@@ -74,3 +74,14 @@ interface ICreateCustomGemPoolProposalData {
             string memory
         );
 }
+
+interface IMintPoolGemsProposalData {
+    function data()
+        external
+        view
+        returns (
+            address,
+            address,
+            uint256
+        );
+}

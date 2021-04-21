@@ -76,6 +76,8 @@ interface INFTGemPool {
 
     function transferFunds(address token, address receiver, uint256 amount) external;
 
+    function mintGems(address receiver, uint256 quantity) external;
+
     function initialize(
         string memory,
         string memory,
