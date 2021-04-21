@@ -127,4 +127,22 @@ library GovernanceLib {
         );
     }
 
+    /**
+     * @dev create a new custom pool
+     */
+    function createCustomPool(
+        address factory,
+
+        bytes memory bytecode,
+        string memory symbol,
+        string memory name
+
+    ) public returns (address pool) {
+        pool = INFTGemPoolFactory(factory).createCustomNFTGemPool(
+            bytecode,
+            symbol,
+            name
+        );
+    }
+
 }

@@ -59,7 +59,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev set the governor. pool uses the governor to issue gov token issuance requests
+     * @dev set the fee tracker that the pool uses to determine what fees to charge
      */
     function setFeeTracker(address addr) external override {
         require(_feeTracker == address(0), "IMMUTABLE");
@@ -75,7 +75,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev set the multitoken that this pool will mint new tokens on. Must be a controller of the multitoken
+     * @dev set the swap helper that this pool will mint new tokens on. Must be a controller of the multitoken
      */
     function setSwapHelper(address helper) external override {
         require(_swapHelper == address(0), "IMMUTABLE");
@@ -100,14 +100,14 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev the external version of the above
+     * @dev the external version of creating a claim
      */
     function createClaim(uint256 timeframe) external payable override {
         _createClaim(timeframe);
     }
 
     /**
-     * @dev the external version of the above
+     * @dev the external version of creating multiple claims
      */
     function createClaims(uint256 timeframe, uint256 count) external payable override {
         _createClaims(timeframe, count);
@@ -121,7 +121,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev create a claim using a erc20 token
+     * @dev create claims using a erc20 token
      */
     function createERC20Claims(address erc20token, uint256 tokenAmount, uint256 count) external override {
         _createERC20Claims(erc20token, tokenAmount, count);
@@ -129,7 +129,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
 
 
     /**
-     * @dev default receive. tries to issue a claim given the received ETH or
+     * @dev default receive. tries to issue a claim given the received ETH or revert
      */
     receive() external payable {
         uint256 incomingEth = msg.value;
@@ -187,6 +187,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
 
         emit NFTGemClaimCreated(msg.sender, address(this), claimHash, timeframe, 1, cost);
 
+        // refund any overpaid amount
         if (msg.value > cost) {
             (bool success, ) = payable(msg.sender).call{value: msg.value.sub(cost)}("");
             require(success, "REFUND_FAILED");
@@ -194,7 +195,7 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
     }
 
     /**
-     * @dev attempt to create a claim using the given timeframe
+     * @dev attempt to create a claim using the given timeframe, for the given count of tokens
      */
     function _createClaims(uint256 timeframe, uint256 count) internal {
         // minimum timeframe
@@ -206,9 +207,10 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
         // maximum timeframe
         require((_maxTime != 0 && timeframe <= _maxTime) || _maxTime == 0, "TIMEFRAME_TOO_LONG");
 
+        // adjusted balance - we just need to figure out if portion given for one will work for all
         uint256 adjustedBalance = msg.value.div(count);
-        // cost given this timeframe
 
+        // cost given this timeframe
         uint256 cost = _ethPrice.mul(_minTime).div(timeframe);
         require(adjustedBalance >= cost, "INSUFFICIENT_ETH");
 
@@ -464,4 +466,23 @@ contract NFTGemPool is Initializable, NFTGemPoolData, INFTGemPool {
         emit NFTGemCreated(msg.sender, address(this), claimHash, nextHash, claimQuant[claimHash]);
     }
 
+    /**
+     * @dev governance-driven
+     */
+    function transferFunds(address token, address receiver, uint256 amount) external override {
+
+        require(msg.sender == _governor, "UNAUTHORIZED_NAUGHTY");
+        require(token != address(0), "LOL_MINT_NO");
+        require(receiver != address(0), "NOT_UR_MONEY_2_BURN");
+        require(amount != 0, "CANNOT_SEND_ZERO_THINGS_GENIUS");
+
+        if(token == address(0)) {
+            // transfer the ETH  to the receiver
+            payable(receiver).transfer(amount);
+        } else {
+            // transfer the tokens  to the receiver
+            IERC20(token).transfer(receiver, amount);
+        }
+
+    }
 }

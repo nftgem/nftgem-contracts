@@ -160,5 +160,27 @@ library ProposalsLib {
                 INFTGemPoolData(pool).removeAllowedToken(token);
             }
         }
+
+        // transfer pool funds
+        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.TRANSFER_POOL_FUNDS) {
+            address proposalData = IProposal(proposalAddress).proposalData();
+            (address token, address pool, address recipient, uint amount) = ITransferPoolFundsProposalData(proposalData).data();
+            require(token != address(0), "INVALID_TOKEN");
+            require(pool != address(0), "INVALID_POOL");
+            INFTGemPool(pool).transferFunds(token, recipient, amount);
+        }
+
+        // transfer pool funds
+        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.CREATE_CUSTOM_POOL) {
+            address proposalData = IProposal(proposalAddress).proposalData();
+            (bytes memory bytecode, string memory symbol, string memory name) = ICreateCustomGemPoolProposalData(proposalData).data();
+            address pool = GovernanceLib.createCustomPool(factory, bytecode, symbol, name);
+            IControllable(multitoken).addController(pool);
+            IControllable(governor).addController(pool);
+            INFTGemPool(pool).setMultiToken(multitoken);
+            INFTGemPool(pool).setSwapHelper(swapHelper);
+            INFTGemPool(pool).setGovernor(address(this));
+            INFTGemPool(pool).setFeeTracker(feeTracker);
+        }
     }
 }

@@ -75,4 +75,26 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         // emit an event about the new pool being created
         emit NFTGemPoolCreated(gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
     }
+
+    /**
+     * @dev deploy a new erc20 token using create2
+     */
+    function createCustomNFTGemPool(
+        bytes memory bytecode,
+        string memory gemSymbol,
+        string memory gemName
+    ) external override onlyController returns (address payable gemPool) {
+        bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
+        require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
+
+       // use create2 to deploy the quantized erc20 contract
+        gemPool = payable(Create2.deploy(0, salt, bytecode));
+
+        // insert the erc20 contract address into lists - one that maps source to quantized,
+        _getNFTGemPool[uint256(salt)] = gemPool;
+        _allNFTGemPools.push(gemPool);
+
+        // emit an event about the new pool being created
+        emit CustomNFTGemPoolCreated(gemSymbol, gemName);
+    }
 }

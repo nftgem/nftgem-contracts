@@ -74,6 +74,8 @@ interface INFTGemPool {
 
     function collectClaim(uint256 claimHash) external;
 
+    function transferFunds(address token, address receiver, uint256 amount) external;
+
     function initialize(
         string memory,
         string memory,

@@ -6,7 +6,7 @@ pragma solidity >=0.7.0;
  * @dev Interface for a Bitgem staking pool
  */
 interface IProposal {
-    enum ProposalType {CREATE_POOL, FUND_PROJECT, CHANGE_FEE, UPDATE_ALLOWLIST}
+    enum ProposalType {CREATE_POOL, FUND_PROJECT, CHANGE_FEE, UPDATE_ALLOWLIST, TRANSFER_POOL_FUNDS, CREATE_CUSTOM_POOL}
 
     enum ProposalStatus {NOT_FUNDED, ACTIVE, PASSED, FAILED, EXECUTED, CLOSED}
 

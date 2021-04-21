@@ -51,3 +51,26 @@ interface IUpdateAllowlistProposalData {
             bool
         );
 }
+
+interface ITransferPoolFundsProposalData {
+    function data()
+        external
+        view
+        returns (
+            address,
+            address,
+            address,
+            uint256
+        );
+}
+
+interface ICreateCustomGemPoolProposalData {
+    function data()
+        external
+        view
+        returns (
+            bytes memory,
+            string memory,
+            string memory
+        );
+}
