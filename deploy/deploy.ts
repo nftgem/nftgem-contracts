@@ -198,6 +198,7 @@ const func: any = async function (
     pepe = utils.parseEther('1');
     deploymentData.SwapHelper = await deploy('MockQueryHelper', deployParams);
   }
+
   if (parseInt(networkId) === 250) {
     ip = utils.parseEther('100');
     pepe = utils.parseEther('10000');
@@ -256,6 +257,24 @@ const func: any = async function (
   await waitFor(waitForTime);
 
   const gemTokens:any = {};
+
+
+  console.log('Creating wrapped Ruby token...');
+  gemTokens.ruby = await deploy('ERC20WrappedGem', {
+    from: sender.address,
+    log: true,
+    args: [
+      'Wrapped Ruby',
+      'wRUBY',
+      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+        keccak256(['bytes'], [pack(['string'], ['RUBY'])])
+      ),
+      dc.NFTGemMultiToken.address,
+      4,
+    ],
+  });
+  await waitFor(waitForTime);
+
 
   // ruby
   console.log('Creating Ruby pool...');
@@ -509,6 +528,21 @@ const func: any = async function (
       4,
     ],
   });
+
+  // ruby
+  console.log('Creating Rock pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'ROCK',
+    'Rock',
+    utils.parseEther('1'),
+    60,
+    86400,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   const tokens = Object
     .keys(gemTokens)
