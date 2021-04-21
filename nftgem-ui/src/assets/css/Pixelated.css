@@ -1,9 +1,0 @@
-@font-face {
-	font-family: 'Pixelated';
-	src: url(../../assets/fonts/Pixelated.ttf.woff) format('woff'),
-	url(../../assets/fonts/Pixelated.ttf.svg) format('svg'),
-	url(../../assets/fonts/Pixelated.ttf.eot) format('embedded-opentype'),
-	url(../../assets/fonts/Pixelated.ttf.eot) format('embedded-opentype');
-	font-weight: normal;
-	font-style: normal;
-}

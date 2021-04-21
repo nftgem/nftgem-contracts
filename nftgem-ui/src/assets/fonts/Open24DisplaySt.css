@@ -1,9 +1,0 @@
-@font-face {
-    font-family: 'Open 24 Display St';
-    src: url('Open24DisplaySt.woff2') format('woff2'),
-        url('Open24DisplaySt.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
