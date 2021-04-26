@@ -30,22 +30,18 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder {
     }
 
     function wrap(uint256 quantity) external {
-
         require(quantity != 0, "ZERO_QUANTITY");
         require(IERC1155(token).balanceOf(msg.sender, index) >= quantity, "INSUFFICIENT_ERC1155_BALANCE");
 
         IERC1155(token).safeTransferFrom(msg.sender, address(this), index, quantity, "");
-        _mint(msg.sender, quantity.mul(rate));
-
+        _mint(msg.sender, quantity.mul(rate * 10**decimals()));
     }
 
     function unwrap(uint256 quantity) external {
-
         require(quantity != 0, "ZERO_QUANTITY");
-        require(balanceOf(msg.sender) >= quantity.mul(rate), "INSUFFICIENT_ERC20_BALANCE");
+        require(balanceOf(msg.sender) >= quantity.mul(rate * 10**decimals()), "INSUFFICIENT_ERC20_BALANCE");
 
-        _burn(msg.sender, quantity.mul(rate));
+        _burn(msg.sender, quantity.mul(rate * 10**decimals()));
         IERC1155(token).safeTransferFrom(address(this), msg.sender, index, quantity, "");
-
     }
 }

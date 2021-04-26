@@ -146,7 +146,7 @@ const func: any = async function (
   const deploymentData: any = {
     SwapHelper: null,
     NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
-    NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
+    //NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
     NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
     ProposalFactory: await deploy('ProposalFactory', deployParams),
@@ -218,49 +218,47 @@ const func: any = async function (
   const ds = 86400;
   const ms = ds * 30;
 
-  // await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
-
-  // console.log('initializing governor...');
-  // try {
-  //   await dc.NFTGemGovernor.initialize(
-  //     dc.NFTGemMultiToken.address,
-  //     dc.NFTGemPoolFactory.address,
-  //     dc.NFTGemFeeManager.address,
-  //     dc.ProposalFactory.address,
-  //     dc.SwapHelper.address
-  //   );
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // await waitFor(waitForTime);
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
+  console.log('initializing governor...');
+  try {
+    await dc.NFTGemGovernor.initialize(
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemPoolFactory.address,
+      dc.NFTGemFeeManager.address,
+      dc.ProposalFactory.address,
+      dc.SwapHelper.address
+    );
+  } catch (e) {
+    console.log('already inited');
+  }
+  await waitFor(waitForTime);
+  try {
+    console.log('propagating governor controller...');
+    await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
+    await waitFor(waitForTime);
+  } catch (e) {
+    console.log('already inited');
+  }
+  try {
+    console.log('propagating governor controller...');
+    await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
+    await waitFor(waitForTime);
+  } catch (e) {
+    console.log('already inited');
+  }
+  try {
+    console.log('propagating governor controller...');
+    await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
+    await waitFor(waitForTime);
+  } catch (e) {
+    console.log('already inited');
+  }
+  try {
+    console.log('propagating governor controller...');
+    await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
+    await waitFor(waitForTime);
+  } catch (e) {
+    console.log('already inited');
+  }
   try {
     console.log('propagating governor controller...');
     await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
@@ -269,384 +267,399 @@ const func: any = async function (
     console.log('already inited');
   }
 
-  // await waitFor(waitForTime);
-  // try {
-  //   console.log('minting initial governance tokens...');
-  //   await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
+  await waitFor(waitForTime);
+  try {
+    console.log('minting initial governance tokens...');
+    await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address);
+  } catch (e) {
+    console.log('already inited');
+  }
 
-  // await waitFor(waitForTime);
+  deployParams.args = [
+    'Bitgem Governance',
+    'BGG',
+    8,
+    dc.NFTGemMultiToken.address,
+    0,
+    1,
+  ];
+  await deploy('ERC20WrappedERC1155', deployParams);
+  dc.ERC20WrappedERC1155 = await getContractAt(
+    'ERC20WrappedERC1155',
+    (await get('ERC20WrappedERC1155')).address,
+    sender
+  );
+
+  await waitFor(waitForTime);
 
   const gemTokens: any = {};
 
-  // console.log('Creating Pepe pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'PEPE',
-  //   'Pepe',
-  //   parseEther('10'),
-  //   86400,
-  //   86400 * 30,
-  //   4,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Pepe token...');
-  // gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
-  //   'WPEPE',
-  //   'Wrapped Pepe',
-  //   await dc.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['PEPE'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Pepe pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'PEPE',
+    'Pepe',
+    parseEther('10'),
+    86400,
+    86400 * 30,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Pepe token...');
+  gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
+    'WPEPE',
+    'Wrapped Pepe',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['PEPE'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // console.log('Creating Ruby pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'RUBY',
-  //   'Ruby',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   32,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Ruby token...');
-  // gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
-  //   'WRUBY',
-  //   'Wrapped Ruby',
-  //   await dc.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['RUBY'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Ruby pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'RUBY',
+    'Ruby',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Ruby token...');
+  gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
+    'WRUBY',
+    'Wrapped Ruby',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['RUBY'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // console.log('Creating Opal pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'OPAL',
-  //   'Opal',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   64,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Opal token...');
-  // gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
-  //   'WOPAL',
-  //   'Wrapped Opal',
-  //   await dc.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['RUBY'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Opal pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'OPAL',
+    'Opal',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    64,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Opal token...');
+  gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
+    'WOPAL',
+    'Wrapped Opal',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['RUBY'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // console.log('Creating Land pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'LAND',
-  //   'Land',
-  //   parseEther('0.00001'),
-  //   60,
-  //   31104000,
-  //   1073741824,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Land token...');
-  // gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
-  //   'WLAND',
-  //   'Wrapped Land',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['LAND'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Land pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'LAND',
+    'Land',
+    parseEther('0.00001'),
+    60,
+    31104000,
+    1073741824,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Land token...');
+  gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
+    'WLAND',
+    'Wrapped Land',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['LAND'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // emerald
-  // console.log('Creating Emerald pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'MRLD',
-  //   'Emerald',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   128,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Emerald token...');
-  // gemTokens.Emerald = await dc.ERC20GemTokenFactory.createItem(
-  //   'WMRLD',
-  //   'Wrapped Emerald',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['MRLD'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Emerald pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'MRLD',
+    'Emerald',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    128,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Emerald token...');
+  gemTokens.Emerald = await dc.ERC20GemTokenFactory.createItem(
+    'WMRLD',
+    'Wrapped Emerald',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['MRLD'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // sapphire
-  // console.log('Creating Sapphire pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'SPHR',
-  //   'Sapphire',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   256,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Sapphire token...');
-  // gemTokens.Sapphire = await dc.ERC20GemTokenFactory.createItem(
-  //   'WSPHR',
-  //   'Wrapped Sapphire',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['SPHR'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Sapphire pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'SPHR',
+    'Sapphire',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    256,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Sapphire token...');
+  gemTokens.Sapphire = await dc.ERC20GemTokenFactory.createItem(
+    'WSPHR',
+    'Wrapped Sapphire',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['SPHR'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // diamond
-  // console.log('Creating Diamond pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'DNMD',
-  //   'Diamond',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   512,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Diamond token...');
-  // gemTokens.Diamond = await dc.ERC20GemTokenFactory.createItem(
-  //   'WDNMD',
-  //   'Wrapped Diamond',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['DNMD'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Diamond pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'DNMD',
+    'Diamond',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    512,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Diamond token...');
+  gemTokens.Diamond = await dc.ERC20GemTokenFactory.createItem(
+    'WDNMD',
+    'Wrapped Diamond',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['DNMD'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // jade
-  // console.log('Creating Jade pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'JADE',
-  //   'Jade',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   1024,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Jade token...');
-  // gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
-  //   'WJADE',
-  //   'Wrapped Jade',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['JADE'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Jade pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'JADE',
+    'Jade',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    1024,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Jade token...');
+  gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
+    'WJADE',
+    'Wrapped Jade',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['JADE'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // // topaz
-  // console.log('Creating Topaz pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'TPAZ',
-  //   'Topaz',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   2048,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Topaz token...');
-  // gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
-  //   'WTPAZ',
-  //   'Wrapped Topaz',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['TPAZ'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  // topaz
+  console.log('Creating Topaz pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'TPAZ',
+    'Topaz',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    2048,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Topaz token...');
+  gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
+    'WTPAZ',
+    'Wrapped Topaz',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['TPAZ'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // // pearl
-  // console.log('Creating Pearl pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'PERL',
-  //   'Pearl',
-  //   parseEther('0.1'),
-  //   86400,
-  //   86400 * 30,
-  //   4096,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Pearl token...');
-  // gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
-  //   'WPERL',
-  //   'Wrapped Pearl',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['PERL'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  // pearl
+  console.log('Creating Pearl pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'PERL',
+    'Pearl',
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
+    4096,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Pearl token...');
+  gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
+    'WPERL',
+    'Wrapped Pearl',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['PERL'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // a rock
-  // console.log('Creating Rock pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'ROCK',
-  //   'Rock',
-  //   utils.parseEther('0.0001'),
-  //   60,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // console.log('Creating wrapped Rock token...');
-  // gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
-  //   'WROCK',
-  //   'Wrapped Rock',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['ROCK'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  console.log('Creating Rock pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'ROCK',
+    'Rock',
+    utils.parseEther('0.0001'),
+    60,
+    86400,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  console.log('Creating wrapped Rock token...');
+  gemTokens.Jade = await dc.ERC20GemTokenFactory.createItem(
+    'WROCK',
+    'Wrapped Rock',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['ROCK'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // // a rock
-  // console.log('Creating Stick pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'STIK',
-  //   'Stick',
-  //   utils.parseEther('0.0001'),
-  //   30,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Stick token...');
-  // gemTokens.Stick = await dc.ERC20GemTokenFactory.createItem(
-  //   'WSTIK',
-  //   'Wrapped Stick',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['STIK'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  // a rock
+  console.log('Creating Stick pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'STIK',
+    'Stick',
+    utils.parseEther('0.0001'),
+    30,
+    86400,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Stick token...');
+  gemTokens.Stick = await dc.ERC20GemTokenFactory.createItem(
+    'WSTIK',
+    'Wrapped Stick',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['STIK'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // // meat
-  // console.log('Creating Meat pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'MEAT',
-  //   'Meat',
-  //   utils.parseEther('0.0005'),
-  //   300,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Meat token...');
-  // gemTokens.Meat = await dc.ERC20GemTokenFactory.createItem(
-  //   'WMEAT',
-  //   'Wrapped Meat',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['MEAT'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  // meat
+  console.log('Creating Meat pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'MEAT',
+    'Meat',
+    utils.parseEther('0.0005'),
+    300,
+    86400,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Meat token...');
+  gemTokens.Meat = await dc.ERC20GemTokenFactory.createItem(
+    'WMEAT',
+    'Wrapped Meat',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['MEAT'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
-  // // shroom
-  // console.log('Creating Shroom pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'SHRM',
-  //   'Shroom',
-  //   utils.parseEther('0.01'),
-  //   600,
-  //   86400,
-  //   32768,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Shroom token...');
-  // gemTokens.Shroom = await dc.ERC20GemTokenFactory.createItem(
-  //   'WSHRM',
-  //   'Wrapped Shroom',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['SHRM'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   8,
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
+  // shroom
+  console.log('Creating Shroom pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'SHRM',
+    'Shroom',
+    utils.parseEther('0.01'),
+    600,
+    86400,
+    32768,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped Shroom token...');
+  gemTokens.Shroom = await dc.ERC20GemTokenFactory.createItem(
+    'WSHRM',
+    'Wrapped Shroom',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['SHRM'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
 
   // pearl
   console.log('Creating Seed pool...');
@@ -724,32 +737,57 @@ const func: any = async function (
   );
   await waitFor(waitForTime);
 
-  // // shroom
-  // console.log('Creating Fire pool...');
-  // await dc.NFTGemGovernor.createSystemPool(
-  //   'FIRE',
-  //   'Fire',
-  //   utils.parseEther('0.1'),
-  //   10,
-  //   60,
-  //   1073741824,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000',
-  //   {gasLimit: 4200000}
-  // );
-  // await waitFor(waitForTime);
-  // console.log('Creating wrapped Fire token...');
-  // gemTokens.Land = await dc.ERC20GemTokenFactory.createItem(
-  //   'WFIRE',
-  //   'Wrapped Fire',
-  //   await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], ['FIRE'])])
-  //   ),
-  //   dc.NFTGemMultiToken.address,
-  //   4
-  // );
-  // await waitFor(waitForTime);
+  // shroom
+  console.log('Creating Command Node pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'BOSS',
+    'Command Node',
+    utils.parseEther('1'),
+    60,
+    60,
+    1,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating Command Block token...');
+  gemTokens.Land = await dc.ERC20GemTokenFactory.createItem(
+    'WBOSS',
+    'Wrapped Command Node',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['BOSS'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8
+  );
+  await waitFor(waitForTime);
 
+  // shroom
+  console.log('Creating Validator Node pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'APRV',
+    'Validator Node',
+    utils.parseEther('1'),
+    60,
+    60,
+    1,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating Validator Block token...');
+  gemTokens.Land = await dc.ERC20GemTokenFactory.createItem(
+    'WAPRV',
+    'Wrapped Validator Node',
+    await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['APRV'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    8
+  );
+  await waitFor(waitForTime);
   // // relinquish control
   // console.log('Relinquishing control of multitoken, factory, and governor');
   // await dc.NFTGemMultiToken.relinquishControl();await waitFor(waitForTime);

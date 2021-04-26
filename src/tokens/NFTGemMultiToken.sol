@@ -14,6 +14,12 @@ contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
+contract MockProxyRegistry {
+    function proxies(address) external returns (address) {
+        return address(0);
+    }
+}
+
 contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, Controllable {
     using SafeMath for uint256;
     using Strings for string;
@@ -35,7 +41,6 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     constructor() ERC1155("https://metadata.bitgem.co/") {
         _addController(msg.sender);
         registryManager = msg.sender;
-        proxyRegistries.push(OPENSEA_REGISTRY_ADDRESS);
     }
 
     function lock(uint256 token, uint256 timestamp) external override {
@@ -134,7 +139,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     function removeProxyRegistryAt(uint256 index) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
         require(index < proxyRegistries.length, "INVALID_INDEX");
-        if(proxyRegistries.length > 1) {
+        if (proxyRegistries.length > 1) {
             proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
             delete proxyRegistries[proxyRegistries.length - 1];
         } else {

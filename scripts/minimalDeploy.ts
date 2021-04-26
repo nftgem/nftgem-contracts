@@ -218,8 +218,6 @@ const func: any = async function (
   const ds = 86400;
   const ms = ds * 30;
 
-  await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
-
   console.log('initializing governor...');
   try {
     await dc.NFTGemGovernor.initialize(
@@ -275,6 +273,23 @@ const func: any = async function (
   } catch (e) {
     console.log('already inited');
   }
+
+  await waitFor(waitForTime);
+  console.log('deploying wrapped governance tokens...');
+  deployParams.args = [
+    'Bitgem Governance',
+    'BGG',
+    8,
+    dc.NFTGemMultiToken.address,
+    0,
+    1,
+  ];
+  await deploy('ERC20WrappedERC1155', deployParams);
+  dc.ERC20WrappedERC1155 = await getContractAt(
+    'ERC20WrappedERC1155',
+    (await get('ERC20WrappedERC1155')).address,
+    sender
+  );
 
   await waitFor(waitForTime);
 
