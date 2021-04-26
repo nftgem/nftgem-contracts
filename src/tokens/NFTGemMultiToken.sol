@@ -134,8 +134,12 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     function removeProxyRegistryAt(uint256 index) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
         require(index < proxyRegistries.length, "INVALID_INDEX");
-        proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
-        delete proxyRegistries[proxyRegistries.length - 1];
+        if(proxyRegistries.length > 1) {
+            proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
+            delete proxyRegistries[proxyRegistries.length - 1];
+        } else {
+            delete proxyRegistries;
+        }
     }
 
     /**
@@ -143,7 +147,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
         // Whitelist OpenSea proxy contract for easy trading.
-        for(uint256 i = 0; i < proxyRegistries.length; i++) {
+        for (uint256 i = 0; i < proxyRegistries.length; i++) {
             ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries[i]);
             if (address(proxyRegistry.proxies(_owner)) == _operator) {
                 return true;

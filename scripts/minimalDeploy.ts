@@ -1,4 +1,4 @@
-import {formatEther} from 'ethers/lib/utils';
+import {formatEther, parseEther} from 'ethers/lib/utils';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {pack, keccak256} from '@ethersproject/solidity';
 const func: any = async function (
@@ -217,10 +217,8 @@ const func: any = async function (
   const dc = deployedContracts;
   const ds = 86400;
   const ms = ds * 30;
-  const gemTokens: any = {};
-  const tokenAddress: string = dc.NFTGemMultiToken.address;
 
-  // await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
+  await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
 
   console.log('initializing governor...');
   try {
@@ -265,12 +263,11 @@ const func: any = async function (
   }
   try {
     console.log('propagating governor controller...');
-    await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
+    await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
   } catch (e) {
     console.log('already inited');
   }
-
   await waitFor(waitForTime);
   try {
     console.log('minting initial governance tokens...');
@@ -281,14 +278,15 @@ const func: any = async function (
 
   await waitFor(waitForTime);
 
-  // ruby
+  const gemTokens: any = {};
+
   console.log('Creating Ruby pool...');
   await dc.NFTGemGovernor.createSystemPool(
     'RUBY',
     'Ruby',
-    ip,
-    ds,
-    ms,
+    parseEther('0.1'),
+    86400,
+    86400 * 30,
     32,
     0,
     '0x0000000000000000000000000000000000000000',
@@ -302,8 +300,9 @@ const func: any = async function (
     await dc.NFTGemPoolFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], ['RUBY'])])
     ),
-    tokenAddress,
-    8
+    dc.NFTGemMultiToken.address,
+    8,
+    {gasLimit: 4200000}
   );
   await waitFor(waitForTime);
 

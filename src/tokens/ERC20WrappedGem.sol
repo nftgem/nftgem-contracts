@@ -18,7 +18,6 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
 
     address private token;
     address private pool;
-    uint256 private rate;
 
     uint256[] private ids;
     uint256[] private amounts;
@@ -46,8 +45,7 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
         delete ids;
         delete amounts;
 
-        uint256 i = INFTGemMultiToken(token).allHeldTokensLength(from);
-        require(i > 0, "INSUFFICIENT_GEMS");
+        uint256 i = INFTGemMultiToken(token).allHeldTokensLength(from) - 1;
 
         for (; i >= 0 && tq > 0; i = i.sub(1)) {
             uint256 tokenHash = INFTGemMultiToken(token).allHeldTokens(from, i);

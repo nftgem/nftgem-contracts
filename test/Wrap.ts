@@ -141,6 +141,7 @@ describe('Wrap', async () => {
     );
     await wrappedToken.wrap(1);
     const myBalance = await erc20.balanceOf(senderAddress);
+    console.log(myBalance.toString())
 
     console.log(myBalance.toString());
 
