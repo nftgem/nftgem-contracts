@@ -60,6 +60,11 @@ const func: any = async function (
         (await get('ERC20GemTokenFactory')).address,
         sender
       ),
+      MockProxyRegistry: await getContractAt(
+        'MockProxyRegistry',
+        (await get('MockProxyRegistry')).address,
+        sender
+      ),
     };
 
     /**
@@ -151,6 +156,7 @@ const func: any = async function (
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
     ProposalFactory: await deploy('ProposalFactory', deployParams),
     ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
+    MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
   };
 
   let ip = utils.parseEther('0.1'),
@@ -274,8 +280,6 @@ const func: any = async function (
     console.log('already inited');
   }
 
-  await waitFor(waitForTime);
-  console.log('deploying wrapped governance tokens...');
   deployParams.args = [
     'Bitgem Governance',
     'BGG',

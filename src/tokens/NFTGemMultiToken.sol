@@ -15,7 +15,7 @@ contract ProxyRegistry {
 }
 
 contract MockProxyRegistry {
-    function proxies(address) external returns (address) {
+    function proxies(address input) external returns (address) {
         return address(0);
     }
 }
@@ -139,6 +139,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     function removeProxyRegistryAt(uint256 index) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
         require(index < proxyRegistries.length, "INVALID_INDEX");
+        // TODO WTF DOES REMOVING AN ARRAY EL WORK OR NOT???
         if (proxyRegistries.length > 1) {
             proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
             delete proxyRegistries[proxyRegistries.length - 1];

@@ -14,7 +14,7 @@ const func: any = async function (
     from: sender.address,
     log: true,
   };
-  const waitForTime = 5;
+  const waitForTime = 0;
 
   /**
    * @dev Wait for the given number of seconds and display balance
@@ -58,6 +58,11 @@ const func: any = async function (
       ERC20GemTokenFactory: await getContractAt(
         'ERC20GemTokenFactory',
         (await get('ERC20GemTokenFactory')).address,
+        sender
+      ),
+      MockProxyRegistry: await getContractAt(
+        'MockProxyRegistry',
+        (await get('MockProxyRegistry')).address,
         sender
       ),
     };
@@ -146,11 +151,12 @@ const func: any = async function (
   const deploymentData: any = {
     SwapHelper: null,
     NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
-    //NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
+    NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
     NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
     ProposalFactory: await deploy('ProposalFactory', deployParams),
     ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
+    MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
   };
 
   let ip = utils.parseEther('0.1'),
@@ -274,6 +280,9 @@ const func: any = async function (
   } catch (e) {
     console.log('already inited');
   }
+
+  await dc.NFTGemMultiToken.addProxyRegistry(dc.MockProxyRegistry.address);
+  await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
 
   deployParams.args = [
     'Bitgem Governance',
