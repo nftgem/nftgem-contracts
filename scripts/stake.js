@@ -20,7 +20,8 @@ async function main() {
   );
 
   const myAddress = await sender.getAddress();
-  console.log(myAddress);
+  const myBalance = await sender.getBalance();
+  console.log(myAddress, myBalance);
 
   const GemPoolFactory = await ethers.getContractFactory('NFTGemPoolFactory');
   const FeeManager = await ethers.getContractFactory('NFTGemFeeManager');
