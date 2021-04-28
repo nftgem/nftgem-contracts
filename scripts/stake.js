@@ -62,20 +62,20 @@ async function main() {
     const adj = await data.difficultyStep();
     const tim = await data.claimUnlockTime(claimHash);
     const abal = await token.balanceOf(myAddress, BigNumber.from(0));
-    await pool.createClaims(min.add(250), 1, {
+    await pool.createClaims(min.add(~~(Math.random() * 100) + 50), 1, {
       value: value.add(value.div(adj)),
       gasLimit: 4200000,
     });
     console.log(`${abal} stick ${claimHash} purchased for ${value}`);
     setTimeout(function stakeIt() {
       try {
-        if (hre.ethers.block.timestamp > tim.toNumber()) {
-          pool
-            .collectClaim(claimHash, {gasLimit: 4200000})
-            .then(() => console.log(`claim ${claimHash} collected`));
-        } else {
-          setTimeout(stakeIt, 5000);
-        }
+        // if ((await hre.ethers.block.timestamp()) > tim.toNumber()) {
+        pool
+          .collectClaim(claimHash, {gasLimit: 4200000})
+          .then(() => console.log(`claim ${claimHash} collected`));
+        // } else {
+        //   setTimeout(stakeIt, 5000);
+        // }
       } catch (e) {
         /** */
       }
