@@ -62,7 +62,7 @@ async function main() {
     const adj = await data.difficultyStep();
     const tim = await data.claimUnlockTime(claimHash);
     const abal = await token.balanceOf(myAddress, BigNumber.from(0));
-    await pool.createClaims(min.add(~~(Math.random() * 100) + 50), 1, {
+    await pool.createClaims(min.add(10), 1, {
       value: value.add(value.div(adj)),
       gasLimit: 4200000,
     });
