@@ -35,24 +35,50 @@ async function main() {
   const data = await Data.attach(stick);
   const min = await data.minTime();
 
+  const feeManager = await FeeManager.attach(aFeeManager);
+  const earned = await feeManager.ethBalanceOf();
+  const fmt = hre.ethers.utils.formatEther(earned);
+  console.log(fmt);
+
+  async function cleanup() {
+    const allLen = await pool.allTokenHashesLength();
+    for (let i = allLen - 1; i >= 0; i--) {
+      const tokenHash = await pool.allTokenHashes(i);
+      const tokenType = await pool.tokenType(tokenHash);
+      const ebal = await token.balanceOf(myAddress, tokenHash);
+      if (!ebal.eq(0) && tokenType === 1) {
+        await pool.collectClaim(tokenHash, {gasLimit: 4200000});
+        const abal = await token.balanceOf(myAddress, BigNumber.from(0));
+        console.log(`${abal}`);
+      } else console.log(`.`);
+    }
+  }
+
   async function stakeStick() {
     const claimHash = await pool.nextClaimHash();
     const value = await data.ethPrice();
+    const min = await data.minTime();
+    const adj = await data.difficultyStep();
+    const tim = await data.claimUnlockTime(claimHash);
     const abal = await token.balanceOf(myAddress, BigNumber.from(0));
-    await pool.createClaims(min.add(10), 1, {
-      value: value.add(100),
+    await pool.createClaims(min.add(250), 1, {
+      value: value.add(value.div(adj)),
       gasLimit: 4200000,
     });
     console.log(`${abal} stick ${claimHash} purchased for ${value}`);
-    setTimeout(() => {
+    setTimeout(function stakeIt() {
       try {
-        pool
-          .collectClaim(claimHash, {gasLimit: 4200000})
-          .then(() => console.log(`claim ${claimHash} collected`));
+        if (hre.ethers.block.timestamp > tim.toNumber()) {
+          pool
+            .collectClaim(claimHash, {gasLimit: 4200000})
+            .then(() => console.log(`claim ${claimHash} collected`));
+        } else {
+          setTimeout(stakeIt, 5000);
+        }
       } catch (e) {
         /** */
       }
-    }, 35000);
+    }, 37000);
   }
 
   //collectClaims().then(() => {});
