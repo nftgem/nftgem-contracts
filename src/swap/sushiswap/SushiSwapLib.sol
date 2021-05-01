@@ -9,9 +9,8 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 /**
  * @dev Uniswap helpers
  */
-library FuniswapLib {
-
-    address public constant UNISWAP_ROUTER_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+library SushiSwapLib {
+    address public constant UNISWAP_ROUTER_ADDRESS = 0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506;
 
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
@@ -61,22 +60,20 @@ library FuniswapLib {
     /**
      * @dev looks for a pool vs weth
      */
-    function getPair(address _factory, address tokenA, address tokenB) external view returns (address pair) {
+    function getPair(
+        address _factory,
+        address tokenA,
+        address tokenB
+    ) external view returns (address pair) {
         require(_factory != address(0), "INVALID_TOKENS");
         require(tokenA != address(0) && tokenB != address(0), "INVALID_TOKENS");
-        pair =
-            IUniswapV2Factory(_factory).getPair(
-                tokenA,
-                tokenB
-            );
+        pair = IUniswapV2Factory(_factory).getPair(tokenA, tokenB);
     }
 
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(
-        address pair
-    ) external view returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair) external view returns (uint256 reserveA, uint256 reserveB) {
         (reserveA, reserveB, ) = IUniswapV2Pair(pair).getReserves();
     }
 

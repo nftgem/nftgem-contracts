@@ -13,9 +13,9 @@ import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/ISwapQueryHelper.sol";
 
 import "../libs/SafeMath.sol";
-import "./NFTGemPoolData.sol";
+import "./NFTComplexGemPoolData.sol";
 
-contract NFTGemPool is Initializable, Controllable, NFTGemPoolData, INFTGemPool {
+contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
     using SafeMath for uint256;
 
     // governor and multitoken target

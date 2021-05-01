@@ -20,11 +20,25 @@ interface INFTGemPoolFactory {
         address allowedToken
     );
 
+    /**
+     * @dev emitted when a new gem pool has been added to the system
+     */
+    event CustomNFTGemPoolCreated(
+        string gemSymbol,
+        string gemName
+    );
+
     function getNFTGemPool(uint256 _symbolHash) external view returns (address);
 
     function allNFTGemPools(uint256 idx) external view returns (address);
 
     function allNFTGemPoolsLength() external view returns (uint256);
+
+    function createCustomNFTGemPool(
+         bytes memory bytecode,
+        string memory gemSymbol,
+        string memory gemName
+    ) external returns (address payable);
 
     function createNFTGemPool(
         string memory gemSymbol,

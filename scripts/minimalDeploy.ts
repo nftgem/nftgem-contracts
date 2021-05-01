@@ -309,7 +309,7 @@ const func: any = async function (
     32,
     0,
     '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
+    {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
   console.log('Creating wrapped Ruby token...');
@@ -321,7 +321,7 @@ const func: any = async function (
     ),
     dc.NFTGemMultiToken.address,
     8,
-    {gasLimit: 4200000}
+    {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
 

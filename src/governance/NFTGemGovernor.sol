@@ -20,7 +20,6 @@ import "../governance/ProposalsLib.sol";
 
 import "hardhat/console.sol";
 
-
 contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
     using SafeMath for uint256;
 
@@ -33,7 +32,7 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
     uint256 private constant GOVERNANCE = 0;
     uint256 private constant FUEL = 1;
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
-    uint256 private constant GOV_TOKEN_MAX     = 1000000;
+    uint256 private constant GOV_TOKEN_MAX = 1000000;
 
     bool private governanceIssued;
 
@@ -59,6 +58,41 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         feeTracker = _feeTracker;
         proposalFactory = _proposalFactory;
         swapHelper = _swapHelper;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setSwapHelper(address a) external onlyController {
+        swapHelper = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setFactory(address a) external onlyController {
+        factory = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setProposalFactory(address a) external onlyController {
+        proposalFactory = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setMultitoken(address a) external onlyController {
+        multitoken = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setFeeTracker(address a) external onlyController {
+        feeTracker = a;
     }
 
     /**

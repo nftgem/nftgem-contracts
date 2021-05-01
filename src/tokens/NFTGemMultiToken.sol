@@ -2,6 +2,8 @@
 pragma solidity >=0.7.0;
 
 import "../libs/Strings.sol";
+import "../libs/AddressSet.sol";
+import "../libs/UInt256Set.sol";
 import "../libs/SafeMath.sol";
 import "./ERC1155Pausable.sol";
 import "./ERC1155Holder.sol";
@@ -15,30 +17,32 @@ contract ProxyRegistry {
 }
 
 contract MockProxyRegistry {
-    function proxies(address input) external returns (address) {
-        return address(0);
+    function proxies(address input) external pure returns (address) {
+        return input;
     }
 }
 
 contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, Controllable {
     using SafeMath for uint256;
     using Strings for string;
+    using AddressSet for AddressSet.Set;
+    using UInt256Set for UInt256Set.Set;
 
     // allows opensea to
     address private constant OPENSEA_REGISTRY_ADDRESS = 0xa5409ec958C83C3f309868babACA7c86DCB077c1;
-    address[] private proxyRegistries;
+    AddressSet.Set private proxyRegistries;
     address private registryManager;
 
     mapping(uint256 => uint256) private _totalBalances;
     mapping(address => mapping(uint256 => uint256)) private _tokenLocks;
 
-    mapping(address => uint256[]) private _heldTokens;
-    mapping(uint256 => address[]) private _tokenHolders;
+    mapping(address => UInt256Set.Set) private _heldTokens;
+    mapping(uint256 => AddressSet.Set) private _tokenHolders;
 
     /**
      * @dev Contract initializer.
      */
-    constructor() ERC1155("https://metadata.bitgem.co/") {
+    constructor() ERC1155("https://metadata.bitlootbox.com/") {
         _addController(msg.sender);
         registryManager = msg.sender;
     }
@@ -64,28 +68,28 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allHeldTokens(address holder, uint256 _idx) external view override returns (uint256) {
-        return _heldTokens[holder][_idx];
+        return _heldTokens[holder].keyAtIndex(_idx);
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allHeldTokensLength(address holder) external view override returns (uint256) {
-        return _heldTokens[holder].length;
+        return _heldTokens[holder].count();
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHolders(uint256 _token, uint256 _idx) external view override returns (address) {
-        return _tokenHolders[_token][_idx];
+        return _tokenHolders[_token].keyAtIndex(_idx);
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHoldersLength(uint256 _token) external view override returns (uint256) {
-        return _tokenHolders[_token].length;
+        return _tokenHolders[_token].count();
     }
 
     /**
@@ -99,7 +103,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistries(uint256 _idx) external view override returns (address) {
-        return proxyRegistries[_idx];
+        return proxyRegistries.keyAtIndex(_idx);
     }
 
     /**
@@ -122,7 +126,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistriesLength() external view override returns (uint256) {
-        return proxyRegistries.length;
+        return proxyRegistries.count();
     }
 
     /**
@@ -130,7 +134,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function addProxyRegistry(address registry) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
-        proxyRegistries.push(registry);
+        proxyRegistries.insert(registry);
     }
 
     /**
@@ -138,14 +142,8 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function removeProxyRegistryAt(uint256 index) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
-        require(index < proxyRegistries.length, "INVALID_INDEX");
-        // TODO WTF DOES REMOVING AN ARRAY EL WORK OR NOT???
-        if (proxyRegistries.length > 1) {
-            proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
-            delete proxyRegistries[proxyRegistries.length - 1];
-        } else {
-            delete proxyRegistries;
-        }
+        require(index < proxyRegistries.count(), "INVALID_INDEX");
+        proxyRegistries.remove(proxyRegistries.keyAtIndex(index));
     }
 
     /**
@@ -153,11 +151,13 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
         // Whitelist OpenSea proxy contract for easy trading.
-        for (uint256 i = 0; i < proxyRegistries.length; i++) {
-            ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries[i]);
-            if (address(proxyRegistry.proxies(_owner)) == _operator) {
-                return true;
-            }
+        for (uint256 i = 0; i < proxyRegistries.count(); i++) {
+            ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries.keyAtIndex(i));
+            try proxyRegistry.proxies(_owner) returns (OwnableDelegateProxy thePr) {
+                if (address(thePr) == _operator) {
+                    return true;
+                }
+            } catch {}
         }
         return ERC1155.isApprovedForAll(_owner, _operator);
     }
@@ -253,26 +253,15 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
             // this is the last token if this type the sender owns
             if (from != address(0) && balanceOf(from, ids[i]) - amounts[i] == 0) {
                 // remove from heldTokens
-                for (uint256 j = 0; j < _heldTokens[from].length; j++) {
-                    if (_heldTokens[from][j] == ids[i]) {
-                        _heldTokens[from][j] = _heldTokens[from][_heldTokens[from].length - 1];
-                        delete _heldTokens[from][_heldTokens[from].length - 1];
-                    }
-                }
-                // remove from tokenHolders
-                for (uint256 j = 0; j < _tokenHolders[ids[i]].length; j++) {
-                    if (_tokenHolders[ids[i]][j] == from) {
-                        _tokenHolders[ids[i]][j] = _tokenHolders[ids[i]][_tokenHolders[ids[i]].length - 1];
-                        delete _tokenHolders[ids[i]][_tokenHolders[ids[i]].length - 1];
-                    }
-                }
+                _heldTokens[from].remove(ids[i]);
+                _tokenHolders[ids[i]].remove(from);
             }
 
             // if this is not a burn and receiver does not yet own token then
             // add that account to the token for that id
             if (to != address(0) && balanceOf(to, ids[i]) == 0) {
-                _heldTokens[to].push(ids[i]);
-                _tokenHolders[ids[i]].push(to);
+                _heldTokens[to].insert(ids[i]);
+                _tokenHolders[ids[i]].insert(to);
             }
 
             // inc and dec balances for each token type

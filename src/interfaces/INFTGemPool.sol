@@ -6,11 +6,17 @@ pragma solidity >=0.7.0;
  * @dev Interface for a Bitgem staking pool
  */
 interface INFTGemPool {
-
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */
-    event NFTGemClaimCreated(address account, address pool, uint256 claimHash, uint256 length, uint256 quantity, uint256 amountPaid);
+    event NFTGemClaimCreated(
+        address account,
+        address pool,
+        uint256 claimHash,
+        uint256 length,
+        uint256 quantity,
+        uint256 amountPaid
+    );
 
     /**
      * @dev Event generated when an NFT claim is created using ERC20 tokens
@@ -62,6 +68,18 @@ interface INFTGemPool {
 
     function setSwapHelper(address addr) external;
 
+    function setVisible(bool visible) external;
+
+    function visible() external view returns (bool);
+
+    function setCategory(uint256 category) external;
+
+    function category() external view returns (uint256);
+
+    function setValidateErc20(bool) external;
+
+    function validateErc20() external view returns (bool);
+
     function mintGenesisGems(address creator, address funder) external;
 
     function createClaim(uint256 timeframe) external payable;
@@ -70,9 +88,15 @@ interface INFTGemPool {
 
     function createERC20Claim(address erc20token, uint256 tokenAmount) external;
 
-    function createERC20Claims(address erc20token, uint256 tokenAmount, uint256 count) external;
+    function createERC20Claims(
+        address erc20token,
+        uint256 tokenAmount,
+        uint256 count
+    ) external;
 
     function collectClaim(uint256 claimHash) external;
+
+    function rescue(address erc20token, uint256 tokenAmount) external;
 
     function initialize(
         string memory,

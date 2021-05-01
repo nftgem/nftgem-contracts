@@ -7,8 +7,8 @@ import "../interfaces/IERC20.sol";
 contract NFTGemFeeManager is INFTGemFeeManager {
     address private operator;
 
-    uint256 private constant MINIMUM_LIQUIDITY = 100;
-    uint256 private constant FEE_DIVISOR = 1000;
+    uint256 private constant MINIMUM_LIQUIDITY = 50;
+    uint256 private constant FEE_DIVISOR = 500;
 
     mapping(address => uint256) private feeDivisors;
     uint256 private _defaultFeeDivisor;

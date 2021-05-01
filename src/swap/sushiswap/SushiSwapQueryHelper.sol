@@ -2,22 +2,15 @@
 
 pragma solidity >=0.7.0;
 
-import "./PangolinLib.sol";
+import "./SushiSwapLib.sol";
 import "../../interfaces/ISwapQueryHelper.sol";
 import "../../access/Controllable.sol";
 
 /**
  * @dev Uniswap helpers
  */
-contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
-    address private _routerAddress;
-
-    address public constant PANGOLIN_ROUTER_ADDRESS = 0xefa94DE7a4656D787667C749f7E1223D71E9FD88;
-    address public constant FUJI_PANGOLIN_ROUTER_ADDRESS = 0xE4A575550C2b460d2307b82dCd7aFe84AD1484dd;
-
-    constructor() {
-        _routerAddress = PANGOLIN_ROUTER_ADDRESS;
-    }
+contract SushiSwapQueryHelper is ISwapQueryHelper, Controllable {
+    address private customFactory;
 
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
@@ -32,54 +25,59 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
             uint256 ethReserve
         )
     {
-        return PangolinLib.avaxQuote(token, tokenAmount);
+        return SushiSwapLib.ethQuote(token, tokenAmount);
+    }
+
+    function __factory() internal view returns (address fac) {
+        fac = customFactory != address(0) ? customFactory : SushiSwapLib.factory();
     }
 
     /**
      * @dev does a Uniswap pool exist for this token?
      */
-    function factory() external pure override returns (address fac) {
-        fac = PangolinLib.factory();
+    function factory() external view override returns (address fac) {
+        fac = __factory();
     }
 
     /**
      * @dev does a Uniswap pool exist for this token?
      */
     function COIN() external pure override returns (address weth) {
-        weth = PangolinLib.WAVAX();
-    }
-
-    /**
-     * @dev does token have a pool
-     */
-    function hasPool(address token) external view override returns (bool) {
-        return PangolinLib.hasPool(token);
+        weth = SushiSwapLib.WETH();
     }
 
     /**
      * @dev looks for a pool vs weth
      */
     function getPair(address tokenA, address tokenB) external view override returns (address pair) {
-        address _factory = PangolinLib.factory();
-        pair = PangolinLib.getPair(_factory, tokenA, tokenB);
+        pair = SushiSwapLib.getPair(__factory(), tokenA, tokenB);
     }
 
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
     function getReserves(address pair) external view override returns (uint256 reserveA, uint256 reserveB) {
-        (reserveA, reserveB) = PangolinLib.getReserves(pair);
+        (reserveA, reserveB) = SushiSwapLib.getReserves(pair);
+    }
+
+    /**
+     * @dev does token have a pool
+     */
+    function hasPool(address token) external view override returns (bool) {
+        return SushiSwapLib.hasPool(token);
     }
 
     /**
      * @dev Get a path for ethereum to the given token
      */
     function getPathForCoinToToken(address token) external pure override returns (address[] memory) {
-        return PangolinLib.getPathForAVAXoToken(token);
+        return SushiSwapLib.getPathForETHToToken(token);
     }
 
     /**
      * @dev set factory
      */
-    function setFactory(address) external override {}
+    function setFactory(address f) external override onlyController {
+        customFactory = f;
+    }
 }

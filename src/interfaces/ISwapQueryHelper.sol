@@ -2,7 +2,6 @@
 pragma solidity >=0.7.0;
 
 interface ISwapQueryHelper {
-
     function coinQuote(address token, uint256 tokenAmount)
         external
         view
@@ -12,7 +11,7 @@ interface ISwapQueryHelper {
             uint256
         );
 
-    function factory() external pure returns (address);
+    function factory() external view returns (address);
 
     function COIN() external pure returns (address);
 
@@ -20,15 +19,9 @@ interface ISwapQueryHelper {
 
     function hasPool(address token) external view returns (bool);
 
-    function getReserves(
-        address pair
-    ) external view returns (uint256, uint256);
-
-    function pairFor(
-        address tokenA,
-        address tokenB
-    ) external pure returns (address);
+    function getReserves(address pair) external view returns (uint256, uint256);
 
     function getPathForCoinToToken(address token) external pure returns (address[] memory);
 
+    function setFactory(address f) external;
 }
