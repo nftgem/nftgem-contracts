@@ -1,3 +1,4 @@
+require('dotenv').config();
 const hre = require('hardhat');
 require('@nomiclabs/hardhat-waffle');
 
@@ -7,16 +8,16 @@ async function main() {
   const {BigNumber} = ethers;
 
   const stick = ethers.utils.getAddress(
-    '0x6A7a28fD9B590ad24be7B3830b10d8990Fad849d'
+    process.env.STICK_ADDRESS
   );
   const atoken = ethers.utils.getAddress(
-    '0x496FEC70974870dD7c2905E25cAd4BDE802938C7'
+    process.env.TOKEN_ADDRESS
   );
   const aFeeManager = ethers.utils.getAddress(
-    '0x70EC520bC874750815a1CD5109F6dF9A971AcF2A'
+    process.env.FEE_MANAGER_ADDRESS
   );
   const aGemPoolFactory = ethers.utils.getAddress(
-    '0x70EC520bC874750815a1CD5109F6dF9A971AcF2A'
+    process.env.GEM_POOL_FACTORY_ADDRESS
   );
 
   const myAddress = await sender.getAddress();
