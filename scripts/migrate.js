@@ -55,12 +55,7 @@ async function main() {
   const gpLen = await factory.allNFTGemPoolsLength();
   for (let gp = 0; gp < gpLen.toNumber(); gp++) {
     const gpAddr = await factory.allNFTGemPools(gp);
-    if (
-      gpAddr === '0x89dA0A11CB88a217C1cDEa0eb7731EaD12219D35' ||
-      gpAddr === '0x47523D669971fa81b2374cA62a5Cd3B860435605'
-    ) {
-      continue;
-    }
+
     const pool = await Pool.attach(gpAddr);
     const data = await Data.attach(gpAddr);
 

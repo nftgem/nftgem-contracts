@@ -221,7 +221,7 @@ const func: any = async function (
   }
 
   console.log('loading contracts...');
-  await waitFor(5);
+  await waitFor(waitForTime);
 
   const deployedContracts = await getDeployedContracts(sender);
   const dc = deployedContracts;
@@ -243,39 +243,6 @@ const func: any = async function (
     inited = true;
     console.log('already inited');
   }
-
-  // console.log('propagating governor controller...');
-  // await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-  // await waitFor(waitForTime);
-
-  // console.log('minting initial governance tokens...');
-  // await dc.NFTGemMultiToken.mint(sender.address, 0, 500000, {
-  //   gasLimit: 5000000,
-  // });
-
-  // deployParams.args = [
-  //   'Bitlootbox Governance',
-  //   'BLBX',
-  //   dc.NFTGemMultiToken.address,
-  // ];
-  // await deploy('NFTGemWrappedERC20Governance', deployParams);
-  // dc.NFTGemWrappedERC20Governance = await getContractAt(
-  //   'NFTGemWrappedERC20Governance',
-  //   (await get('NFTGemWrappedERC20Governance')).address,
-  //   sender
-  // );
-
-  // dc.NFTGemMultiToken.setApprovalForAll(
-  //   dc.NFTGemWrappedERC20Governance.address,
-  //   true,
-  //   {from: sender.address}
-  // );
-  // await dc.NFTGemWrappedERC20Governance.wrap('100000', {
-  //   from: sender.address,
-  //   gasLimit: 5000000,
-  // });
-
-  // await waitFor(waitForTime);
 
   if (!inited) {
     console.log('propagating governor controller...');

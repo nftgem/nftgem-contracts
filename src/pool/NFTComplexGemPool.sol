@@ -8,24 +8,25 @@ import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC1155.sol";
-import "../interfaces/INFTGemPool.sol";
+import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/ISwapQueryHelper.sol";
+import "../tokens/ERC1155Holder.sol";
 
 import "../libs/SafeMath.sol";
 import "./NFTComplexGemPoolData.sol";
 
-contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
+contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155Holder, Controllable {
     using SafeMath for uint256;
 
     // governor and multitoken target
     address private _multitoken;
     address private _governor;
     address private _feeTracker;
-    address private _swapHelper;
     bool private _visible;
-    bool private _validateerc20;
     uint256 private _category;
+
+    address private erc20Creator;
 
     constructor() {
         _addController(msg.sender);
@@ -52,7 +53,6 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         _diffstep = __diffstep;
         _maxClaims = __maxClaims;
         _visible = true;
-        _validateerc20 = true;
         if (__allowedToken != address(0)) {
             _allowedTokens.push(__allowedToken);
             _isAllowedMap[__allowedToken] = true;
@@ -83,13 +83,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         _multitoken = token;
     }
 
-    /**
-     * @dev set the multitoken that this pool will mint new tokens on. Must be a controller of the multitoken
-     */
-    function setSwapHelper(address helper) external override {
-        require(_controllers[msg.sender] = true || msg.sender == _governor, "UNAUTHORIZED");
-        _swapHelper = helper;
-    }
+    function setSwapHelper(address) external override {}
 
     /**
      * @dev set market visibility
@@ -122,21 +116,6 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
     }
 
     /**
-     * @dev set category category
-     */
-    function setValidateErc20(bool v) external override {
-        require(_controllers[msg.sender] = true || msg.sender == _governor, "UNAUTHORIZED");
-        _validateerc20 = v;
-    }
-
-    /**
-     * @dev set market category
-     */
-    function validateErc20() external view override returns (bool c) {
-        c = _validateerc20;
-    }
-
-    /**
      * @dev mint the genesis gems earned by the pools creator and funder
      */
     function mintGenesisGems(address creator, address funder) external override {
@@ -156,9 +135,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
     /**
      * @dev the external version of the above
      */
-    function createClaim(uint256 timeframe) external payable override {
-        _createClaim(timeframe);
-    }
+    function createClaim(uint256 timeframe) external payable override {}
 
     /**
      * @dev the external version of the above
@@ -170,9 +147,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
     /**
      * @dev create a claim using a erc20 token
      */
-    function createERC20Claim(address erc20token, uint256 tokenAmount) external override {
-        _createERC20Claim(erc20token, tokenAmount);
-    }
+    function createERC20Claim(address erc20token, uint256 tokenAmount) external override {}
 
     /**
      * @dev create a claim using a erc20 token
@@ -188,76 +163,12 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
     /**
      * @dev rescue funds
      */
-    function rescue(address erc20token, uint256 tokenAmount) external override onlyController {
+    function rescue(address erc20token, uint256 tokenAmount) external override {
+        require(_controllers[msg.sender] = true || msg.sender == _governor, "UNAUTHORIZED");
         if (erc20token == address(0)) {
             payable(_feeTracker).transfer(tokenAmount);
         } else {
             IERC20(erc20token).transferFrom(address(this), address(_feeTracker), tokenAmount);
-        }
-    }
-
-    /**
-     * @dev default receive. tries to issue a claim given the received ETH or
-     */
-    receive() external payable {
-        uint256 incomingEth = msg.value;
-
-        // compute the mimimum cost of a claim and revert if not enough sent
-        uint256 minClaimCost = _ethPrice.div(_maxTime).mul(_minTime);
-        require(incomingEth >= minClaimCost, "INSUFFICIENT_ETH");
-
-        // compute the minimum actual claim time
-        uint256 actualClaimTime = _minTime;
-
-        // refund ETH above max claim cost
-        if (incomingEth <= _ethPrice) {
-            actualClaimTime = _ethPrice.div(incomingEth).mul(_minTime);
-        }
-
-        // create the claim using minimum possible claim time
-        _createClaim(actualClaimTime);
-    }
-
-    /**
-     * @dev attempt to create a claim using the given timeframe
-     */
-    function _createClaim(uint256 timeframe) internal {
-        // minimum timeframe
-        require(timeframe >= _minTime, "TIMEFRAME_TOO_SHORT");
-
-        // maximum timeframe
-        require((_maxTime != 0 && timeframe <= _maxTime) || _maxTime == 0, "TIMEFRAME_TOO_LONG");
-
-        // cost given this timeframe
-        uint256 cost = _ethPrice.mul(_minTime).div(timeframe);
-        require(msg.value > cost, "INSUFFICIENT_ETH");
-
-        // get the nest claim hash, revert if no more claims
-        uint256 claimHash = _nextClaimHash();
-        require(claimHash != 0, "NO_MORE_CLAIMABLE");
-
-        // mint the new claim to the caller's address
-        INFTGemMultiToken(_multitoken).mint(msg.sender, claimHash, 1);
-        _addToken(claimHash, 1);
-
-        // record the claim unlock time and cost paid for this claim
-        uint256 _claimUnlockTime = block.timestamp.add(timeframe);
-        claimLockTimestamps[claimHash] = _claimUnlockTime;
-        claimAmountPaid[claimHash] = cost;
-        claimQuant[claimHash] = 1;
-
-        // increase the staked eth balance
-        _totalStakedEth = _totalStakedEth.add(cost);
-
-        // maybe mint a governance token for the claimant
-        INFTGemGovernor(_governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(_governor).issueFuelToken(msg.sender, cost);
-
-        emit NFTGemClaimCreated(msg.sender, address(this), claimHash, timeframe, 1, cost);
-
-        if (msg.value > cost) {
-            (bool success, ) = payable(msg.sender).call{value: msg.value.sub(cost)}("");
-            require(success, "REFUND_FAILED");
         }
     }
 
@@ -294,6 +205,8 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         claimAmountPaid[claimHash] = cost.mul(count);
         claimQuant[claimHash] = count;
 
+        transferInputReqsFrom(claimHash, msg.sender, address(this), count);
+
         // maybe mint a governance token for the claimant
         INFTGemGovernor(_governor).maybeIssueGovernanceToken(msg.sender);
         INFTGemGovernor(_governor).issueFuelToken(msg.sender, cost);
@@ -303,82 +216,11 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         // increase the staked eth balance
         _totalStakedEth = _totalStakedEth.add(cost.mul(count));
 
+        // return the extra to sender
         if (msg.value > cost.mul(count)) {
             (bool success, ) = payable(msg.sender).call{value: msg.value.sub(cost.mul(count))}("");
             require(success, "REFUND_FAILED");
         }
-    }
-
-    /**
-     * @dev crate a gem claim using an erc20 token. this token must be tradeable in Uniswap or this call will fail
-     */
-    function _createERC20Claim(address erc20token, uint256 tokenAmount) internal {
-        // must be a valid address
-        require(erc20token != address(0), "INVALID_ERC20_TOKEN");
-
-        // token is allowed
-        require(
-            (_allowedTokens.length > 0 && _isAllowedMap[erc20token]) || _allowedTokens.length == 0,
-            "TOKEN_DISALLOWED"
-        );
-
-        // Uniswap pool must exist
-        require(ISwapQueryHelper(_swapHelper).hasPool(erc20token) == true, "NO_UNISWAP_POOL");
-
-        // must have an amount specified
-        require(tokenAmount >= 0, "NO_PAYMENT_INCLUDED");
-
-        // get a quote in ETH for the given token.
-        (uint256 ethereum, uint256 tokenReserve, uint256 ethReserve) =
-            ISwapQueryHelper(_swapHelper).coinQuote(erc20token, tokenAmount);
-
-        // get the min liquidity from fee tracker
-        uint256 liquidity = INFTGemFeeManager(_feeTracker).liquidity(erc20token);
-
-        if (_validateerc20 == true) {
-            // make sure the convertible amount is has reserves > 100x the token
-            require(ethReserve >= ethereum.mul(liquidity), "INSUFFICIENT_ETH_LIQUIDITY");
-
-            // make sure the convertible amount is has reserves > 100x the token
-            require(tokenReserve >= tokenAmount.mul(liquidity), "INSUFFICIENT_TOKEN_LIQUIDITY");
-        }
-
-        // make sure the convertible amount is less than max price
-        require(ethereum <= _ethPrice, "OVERPAYMENT");
-
-        // calculate the maturity time given the converted eth
-        uint256 maturityTime = _ethPrice.mul(_minTime).div(ethereum);
-
-        // make sure the convertible amount is less than max price
-        require(maturityTime >= _minTime, "INSUFFICIENT_TIME");
-
-        // get the next claim hash, revert if no more claims
-        uint256 claimHash = _nextClaimHash();
-        require(claimHash != 0, "NO_MORE_CLAIMABLE");
-
-        // transfer the caller's ERC20 tokens into the pool
-        IERC20(erc20token).transferFrom(msg.sender, address(this), tokenAmount);
-
-        // mint the new claim to the caller's address
-        INFTGemMultiToken(_multitoken).mint(msg.sender, claimHash, 1);
-        _addToken(claimHash, 1);
-
-        // record the claim unlock time and cost paid for this claim
-        uint256 _claimUnlockTime = block.timestamp.add(maturityTime);
-        claimLockTimestamps[claimHash] = _claimUnlockTime;
-        claimAmountPaid[claimHash] = ethereum;
-        claimLockToken[claimHash] = erc20token;
-        claimTokenAmountPaid[claimHash] = tokenAmount;
-        claimQuant[claimHash] = 1;
-
-        _totalStakedEth = _totalStakedEth.add(ethereum);
-
-        // maybe mint a governance token for the claimant
-        INFTGemGovernor(_governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(_governor).issueFuelToken(msg.sender, ethereum);
-
-        // emit a message indicating that an erc20 claim has been created
-        emit NFTGemERC20ClaimCreated(msg.sender, address(this), claimHash, maturityTime, erc20token, 1, ethereum);
     }
 
     /**
@@ -388,75 +230,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         address erc20token,
         uint256 tokenAmount,
         uint256 count
-    ) internal {
-        // must be a valid address
-        require(erc20token != address(0), "INVALID_ERC20_TOKEN");
-
-        // token is allowed
-        require(
-            (_allowedTokens.length > 0 && _isAllowedMap[erc20token]) || _allowedTokens.length == 0,
-            "TOKEN_DISALLOWED"
-        );
-
-        // zero qty
-        require(count != 0, "ZERO_QUANTITY");
-
-        // Uniswap pool must exist
-        require(ISwapQueryHelper(_swapHelper).hasPool(erc20token) == true, "NO_UNISWAP_POOL");
-
-        // must have an amount specified
-        require(tokenAmount >= 0, "NO_PAYMENT_INCLUDED");
-
-        // get a quote in ETH for the given token.
-        (uint256 ethereum, uint256 tokenReserve, uint256 ethReserve) =
-            ISwapQueryHelper(_swapHelper).coinQuote(erc20token, tokenAmount.div(count));
-
-        if (_validateerc20 == true) {
-            // make sure the convertible amount is has reserves > 100x the token
-            require(ethReserve >= ethereum.mul(100).mul(count), "INSUFFICIENT_ETH_LIQUIDITY");
-
-            // make sure the convertible amount is has reserves > 100x the token
-            require(tokenReserve >= tokenAmount.mul(100).mul(count), "INSUFFICIENT_TOKEN_LIQUIDITY");
-        }
-
-        // make sure the convertible amount is less than max price
-        require(ethereum <= _ethPrice, "OVERPAYMENT");
-
-        // calculate the maturity time given the converted eth
-        uint256 maturityTime = _ethPrice.mul(_minTime).div(ethereum);
-
-        // make sure the convertible amount is less than max price
-        require(maturityTime >= _minTime, "INSUFFICIENT_TIME");
-
-        // get the next claim hash, revert if no more claims
-        uint256 claimHash = _nextClaimHash();
-        require(claimHash != 0, "NO_MORE_CLAIMABLE");
-
-        // mint the new claim to the caller's address
-        INFTGemMultiToken(_multitoken).mint(msg.sender, claimHash, 1);
-        _addToken(claimHash, 1);
-
-        // record the claim unlock time and cost paid for this claim
-        uint256 _claimUnlockTime = block.timestamp.add(maturityTime);
-        claimLockTimestamps[claimHash] = _claimUnlockTime;
-        claimAmountPaid[claimHash] = ethereum;
-        claimLockToken[claimHash] = erc20token;
-        claimTokenAmountPaid[claimHash] = tokenAmount;
-        claimQuant[claimHash] = count;
-
-        // increase staked eth amount
-        _totalStakedEth = _totalStakedEth.add(ethereum);
-
-        // maybe mint a governance token for the claimant
-        INFTGemGovernor(_governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(_governor).issueFuelToken(msg.sender, ethereum);
-
-        // emit a message indicating that an erc20 claim has been created
-        emit NFTGemERC20ClaimCreated(msg.sender, address(this), claimHash, maturityTime, erc20token, count, ethereum);
-
-        // transfer the caller's ERC20 tokens into the pool
-        IERC20(erc20token).transferFrom(msg.sender, address(this), tokenAmount);
-    }
+    ) internal {}
 
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
@@ -479,49 +253,35 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
         //  burn claim and transfer money back to user
         INFTGemMultiToken(_multitoken).burn(msg.sender, claimHash, 1);
 
-        // if they used erc20 tokens stake their claim, return their tokens
-        if (tokenUsed != address(0)) {
-            // calculate fee portion using fee tracker
-            uint256 feePortion = 0;
-            if (isMature == true) {
-                uint256 poolDiv = INFTGemFeeManager(_feeTracker).feeDivisor(address(this));
-                uint256 divisor = INFTGemFeeManager(_feeTracker).feeDivisor(tokenUsed);
-                uint256 feeNum = poolDiv != divisor ? divisor : poolDiv;
-                feePortion = unlockTokenPaid.div(feeNum);
-            }
-            // assess a fee for minting the NFT. Fee is collectec in fee tracker
-            IERC20(tokenUsed).transferFrom(address(this), _feeTracker, feePortion);
-            // send the principal minus fees to the caller
-            IERC20(tokenUsed).transferFrom(address(this), msg.sender, unlockTokenPaid.sub(feePortion));
-
-            // emit an event that the claim was redeemed for ERC20
-            emit NFTGemERC20ClaimRedeemed(
-                msg.sender,
-                address(this),
-                claimHash,
-                tokenUsed,
-                unlockPaid,
-                unlockTokenPaid,
-                feePortion
-            );
-        } else {
-            // calculate fee portion using fee tracker
-            uint256 feePortion = 0;
-            if (isMature == true) {
-                uint256 divisor = INFTGemFeeManager(_feeTracker).feeDivisor(address(0));
-                feePortion = unlockPaid.div(divisor);
-            }
-            // transfer the ETH fee to fee tracker
-            payable(_feeTracker).transfer(feePortion);
-            // transfer the ETH back to user
-            payable(msg.sender).transfer(unlockPaid.sub(feePortion));
-
-            // emit an event that the claim was redeemed for ETH
-            emit NFTGemClaimRedeemed(msg.sender, address(this), claimHash, unlockPaid, feePortion);
+        // calculate fee portion using fee tracker
+        uint256 feePortion = 0;
+        if (isMature == true) {
+            uint256 divisor = INFTGemFeeManager(_feeTracker).feeDivisor(address(0));
+            feePortion = unlockPaid.div(divisor);
         }
+        // transfer the ETH fee to fee tracker
+        payable(_feeTracker).transfer(feePortion);
+        // transfer the ETH back to user
+        payable(msg.sender).transfer(unlockPaid.sub(feePortion));
+
+        // emit an event that the claim was redeemed for ETH
+        emit NFTGemClaimRedeemed(msg.sender, address(this), claimHash, unlockPaid, feePortion);
 
         // deduct the total staked ETH balance of the pool
         _totalStakedEth = _totalStakedEth.sub(unlockPaid);
+
+        // return any erc1155 tokens they staked
+        if (claimIds[claimHash].length > 0) {
+            IERC1155(_multitoken).safeBatchTransferFrom(
+                address(this),
+                msg.sender,
+                claimIds[claimHash],
+                claimQuantities[claimHash],
+                ""
+            );
+            delete claimIds[claimHash];
+            delete claimQuantities[claimHash];
+        }
 
         // if all this is happening before the unlocktime then we exit
         // without minting a gem because the user is withdrawing early
@@ -543,5 +303,11 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool {
 
         // emit an event about a gem getting created
         emit NFTGemCreated(msg.sender, address(this), claimHash, nextHash, claimQuant[claimHash]);
+    }
+
+    function setValidateErc20(bool) external override {}
+
+    function validateErc20() external view override returns (bool) {
+        return true;
     }
 }

@@ -7,15 +7,9 @@ async function main() {
   const {ethers} = hre;
   const {BigNumber} = ethers;
 
-  const stick = ethers.utils.getAddress(
-    process.env.STICK_ADDRESS
-  );
-  const atoken = ethers.utils.getAddress(
-    process.env.TOKEN_ADDRESS
-  );
-  const aFeeManager = ethers.utils.getAddress(
-    process.env.FEE_MANAGER_ADDRESS
-  );
+  const stick = ethers.utils.getAddress(process.env.STICK_ADDRESS);
+  const atoken = ethers.utils.getAddress(process.env.TOKEN_ADDRESS);
+  const aFeeManager = ethers.utils.getAddress(process.env.FEE_MANAGER_ADDRESS);
   const aGemPoolFactory = ethers.utils.getAddress(
     process.env.GEM_POOL_FACTORY_ADDRESS
   );
@@ -62,6 +56,7 @@ async function main() {
     const min = await data.minTime();
     const adj = await data.difficultyStep();
     const tim = await data.claimUnlockTime(claimHash);
+
     const abal = await token.balanceOf(myAddress, BigNumber.from(0));
     await pool.createClaims(min.add(10), 1, {
       value: value.add(value.div(adj)),
@@ -78,13 +73,14 @@ async function main() {
         //   setTimeout(stakeIt, 5000);
         // }
       } catch (e) {
+        console.log(e, `failed to collect claim ${claimHash}`);
         /** */
       }
-    }, 37000);
+    }, 11000);
   }
 
-  //collectClaims().then(() => {});
-  setInterval(() => stakeStick(), 8000);
+  //cleanup().then(() => {});
+  setInterval(() => stakeStick(), 4000);
 
   stall();
 }

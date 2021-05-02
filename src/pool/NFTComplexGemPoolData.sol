@@ -4,13 +4,16 @@ pragma solidity >=0.7.0;
 import "../libs/AddressSet.sol";
 import "../libs/SafeMath.sol";
 import "../interfaces/INFTGemPoolData.sol";
-import "../interfaces/INFTGemMultitoken.sol";
+import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC1155.sol";
 
-contract NFTComplexGemPoolData is NFTGemPoolData, INFTComplexGemPoolData {
+import "./NFTGemPoolData.sol";
 
+import "hardhat/console.sol";
+
+contract NFTComplexGemPoolData is NFTGemPoolData, INFTComplexGemPoolData {
     struct InputRequirement {
         address token;
         address pool;
@@ -21,41 +24,56 @@ contract NFTComplexGemPoolData is NFTGemPoolData, INFTComplexGemPoolData {
     }
     InputRequirement[] internal inputRequirements;
 
+    mapping(uint256 => uint256[]) internal claimIds;
+    mapping(uint256 => uint256[]) internal claimQuantities;
+
     /**
-     * @dev check the input requirements for the token - return true if requirements are met
+     * @dev Transfer a quantity of input reqs from to
      */
-    function checkInputRequirements(address account) internal returns (bool) {
+    function transferInputReqsFrom(
+        uint256 claimHash,
+        address from,
+        address to,
+        uint256 quantity
+    ) internal {
+        address token;
+
         for (uint256 i = 0; i < inputRequirements.length; i++) {
             if (inputRequirements[i].inputType == 1) {
                 IERC20 token = IERC20(inputRequirements[i].token);
-                uint256 bal = token.balanceOf(account);
-                if (bal < inputRequirements[i].minVal) {
-                    return false;
-                }
+                token.transferFrom(from, to, inputRequirements[i].minVal);
             } else if (inputRequirements[i].inputType == 2) {
                 IERC1155 token = IERC1155(inputRequirements[i].token);
-                uint256 bal = token.balanceOf(account, inputRequirements[i].tokenId);
-                if (bal < inputRequirements[i].minVal) {
-                    return false;
-                }
+                token.safeTransferFrom(from, to, inputRequirements[i].tokenId, inputRequirements[i].minVal, "");
             } else if (inputRequirements[i].inputType == 3) {
-                IERC1155 token = IERC1155(inputRequirements[i].token);
-                INFTGemPoolData pool = INFTGemPoolData(inputRequirements[i].pool);
-                uint256 required = inputRequirements[i].minAmount
-                uint256 hashCount = INFTGemMultitoken(token).heldTokensLength(account);
-                for (uint256 j = 0; i < hasCount; j++) {
-                    uint256 hashAt = INFTGemMultitoken(token).heldTokens(account, j);
-                    if(pool.tokenType(hashAt) == 2) {
-
+                uint256 required = inputRequirements[i].minVal * quantity;
+                uint256 hashCount = INFTGemMultiToken(inputRequirements[i].token).allHeldTokensLength(from);
+                for (uint256 j = 0; j < hashCount; j++) {
+                    uint256 hashAt = INFTGemMultiToken(inputRequirements[i].token).allHeldTokens(from, j);
+                    if (INFTGemPoolData(inputRequirements[i].pool).tokenType(hashAt) == 2) {
+                        token = inputRequirements[i].token;
+                        uint256 bal = IERC1155(inputRequirements[i].token).balanceOf(from, hashAt);
+                        if (bal > required) {
+                            bal = required;
+                        }
+                        if (bal == 0) {
+                            continue;
+                        }
+                        claimIds[claimHash].push(hashAt);
+                        claimQuantities[claimHash].push(bal);
+                        required = required - bal;
+                    }
+                    if (required == 0) {
+                        break;
                     }
                 }
-                uint256 bal = token.balanceOf(account, inputRequirements[i].tokenId);
-                if (bal < inputRequirements[i].minVal) {
-                    return false;
-                }
+                require(required == 0, "INSUFFICIENT_QUANTITIY");
             }
         }
-        return true;
+
+        if (claimIds[claimHash].length > 0) {
+            IERC1155(token).safeBatchTransferFrom(from, to, claimIds[claimHash], claimQuantities[claimHash], "");
+        }
     }
 
     /**
@@ -78,5 +96,9 @@ contract NFTComplexGemPoolData is NFTGemPoolData, INFTComplexGemPoolData {
         );
         require(minAmount != 0, "ZERO_AMOUNT");
         inputRequirements.push(InputRequirement(token, pool, inputType, tokenId, minAmount, burn));
+    }
+
+    function proxies(address) external view returns (address) {
+        return address(this);
     }
 }
