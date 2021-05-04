@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config();
 const hre = require('hardhat');
 require('@nomiclabs/hardhat-waffle');
@@ -7,92 +8,135 @@ async function main() {
   const {ethers} = hre;
   const {BigNumber} = ethers;
 
-  const stick = ethers.utils.getAddress(process.env.STICK_ADDRESS);
-  const atoken = ethers.utils.getAddress(process.env.TOKEN_ADDRESS);
-  const aFeeManager = ethers.utils.getAddress(process.env.FEE_MANAGER_ADDRESS);
-  const aGemPoolFactory = ethers.utils.getAddress(
-    process.env.GEM_POOL_FACTORY_ADDRESS
+  const addressStick = ethers.utils.getAddress(process.env.STICK_ADDRESS);
+  const addressToken = ethers.utils.getAddress(process.env.TOKEN_ADDRESS);
+  const addressFeeManager = ethers.utils.getAddress(
+    process.env.FEE_MANAGER_ADDRESS
   );
 
   const myAddress = await sender.getAddress();
   const myBalance = await sender.getBalance();
-  console.log(myAddress, myBalance);
+  console.log(
+    `myAddress=${myAddress}`,
+    `myBalance=${hre.ethers.utils.formatEther(myBalance)}`
+  );
 
-  const GemPoolFactory = await ethers.getContractFactory('NFTGemPoolFactory');
-  const FeeManager = await ethers.getContractFactory('NFTGemFeeManager');
-  const Token = await ethers.getContractFactory('NFTGemMultiToken');
-  const Pool = await ethers.getContractFactory('NFTGemPool');
-  const Data = await ethers.getContractFactory('NFTGemPoolData');
+  const [FeeManager, Token, Pool, Data] = await Promise.all([
+    ethers.getContractFactory('NFTGemFeeManager'),
+    ethers.getContractFactory('NFTGemMultiToken'),
+    ethers.getContractFactory('NFTGemPool'),
+    ethers.getContractFactory('NFTGemPoolData'),
+  ]);
 
-  const token = await Token.attach(atoken);
-  const gemPoolFactory = await GemPoolFactory.attach(aGemPoolFactory);
+  // const gemPoolFactory = await GemPoolFactory.attach(aGemPoolFactory);
 
-  const pool = await Pool.attach(stick);
-  const data = await Data.attach(stick);
-  const min = await data.minTime();
+  const token = await Token.attach(addressToken);
+  const pool = await Pool.attach(addressStick);
+  const data = Data.attach(addressStick);
+  const feeManager = await FeeManager.attach(addressFeeManager);
 
-  const feeManager = await FeeManager.attach(aFeeManager);
-  const earned = await feeManager.ethBalanceOf();
-  const fmt = hre.ethers.utils.formatEther(earned);
-  console.log(fmt);
+  const bitlootEarned = await
+    feeManager.ethBalanceOf(),
+;
+
+
+  console.log(
+    `bitloot feeManager=${addressFeeManager}`,
+    `feeBalance=${hre.ethers.utils.formatEther(bitlootEarned)}`
+  );
 
   async function cleanup() {
     const allLen = await pool.allTokenHashesLength();
-    for (let i = allLen - 1; i >= 0; i--) {
+    for (let i = allLen - 1; i >= 0; i -= 1) {
       const tokenHash = await pool.allTokenHashes(i);
-      const tokenType = await pool.tokenType(tokenHash);
-      const ebal = await token.balanceOf(myAddress, tokenHash);
+      const [tokenType, ebal, mybal] = await Promise.all([
+        pool.tokenType(tokenHash),
+        token.balanceOf(myAddress, tokenHash),
+        token.balanceOf(myAddress, BigNumber.from(0)),
+      ]);
+      console.log(`${i} of ${allLen}, balance=${ebal}, my balance=${mybal}`);
       if (!ebal.eq(0) && tokenType === 1) {
         await pool.collectClaim(tokenHash, {gasLimit: 4200000});
-        const abal = await token.balanceOf(myAddress, BigNumber.from(0));
-        console.log(`${abal}`);
-      } else console.log(`.`);
+        console.log(`... attempted collection`);
+      } else console.log(`... skipping`);
     }
   }
 
-  async function stakeStick() {
-    const claimHash = await pool.nextClaimHash();
-    const value = await data.ethPrice();
-    const min = await data.minTime();
-    const adj = await data.difficultyStep();
-    const tim = await data.claimUnlockTime(claimHash);
-
-    const abal = await token.balanceOf(myAddress, BigNumber.from(0));
-    await pool.createClaims(min.add(10), 1, {
-      value: value.add(value.div(adj)),
-      gasLimit: 4200000,
-    });
-    console.log(`${abal} stick ${claimHash} purchased for ${value}`);
-    setTimeout(function stakeIt() {
-      try {
-        // if ((await hre.ethers.block.timestamp()) > tim.toNumber()) {
-        pool
-          .collectClaim(claimHash, {gasLimit: 4200000})
-          .then(() => console.log(`claim ${claimHash} collected`));
-        // } else {
-        //   setTimeout(stakeIt, 5000);
-        // }
-      } catch (e) {
-        console.log(e, `failed to collect claim ${claimHash}`);
-        /** */
-      }
-    }, 11000);
+  async function claimStick(claimHash) {
+    try {
+      await pool.collectClaim(claimHash, {gasLimit: 4200000});
+      const sticks = await token.balanceOf(myAddress, BigNumber.from(0));
+      console.log(`${sticks} sticks, claim ${claimHash} collected`);
+    } catch (e) {
+      console.log(`error collecting claim - ${claimHash}`, e.message);
+    }
   }
 
-  cleanup().then(() => {});
-  //setInterval(() => stakeStick(), 4000);
+  let lastClaimHash = BigNumber.from(0);
+  async function stakeStick() {
+    try {
+      const claimHash = await pool.nextClaimHash();
+      // console.log(claimHash, String.valueOf(claimHash));
+      if (!claimHash.eq(lastClaimHash)) {
+        lastClaimHash = claimHash;
+        const [ethPrice, minTime, difficultyStep, sticks] = await Promise.all([
+          data.ethPrice(),
+          data.minTime(),
+          data.difficultyStep(),
+          token.balanceOf(myAddress, BigNumber.from(0)),
+        ]);
 
-  stall();
-}
-function stall() {
-  setTimeout(() => stall());
+        // const time = await data.claimUnlockTime(claimHash);
+
+        const addPercent = ethPrice
+          .add(ethPrice.div(difficultyStep))
+          .div(BigNumber.from(100 / 5));
+
+        const purchasePrice = ethPrice
+          .add(ethPrice.div(difficultyStep))
+          .add(addPercent);
+
+        console.log(
+          `${sticks} sticks, stick ${claimHash} price is ${hre.ethers.utils.formatEther(
+            purchasePrice
+          )} ethPrice=${ethPrice} adj=${difficultyStep}`
+        );
+        // process.exit(0);
+
+        const claim = await pool.createClaims(minTime.add(10), 1, {
+          value: purchasePrice,
+          gasLimit: 4200000,
+        });
+        console.log('claim', claim.nonce, claim.hash);
+
+        const [myBalance, newSticks] = await Promise.all([
+          sender.getBalance(),
+          token.balanceOf(myAddress, BigNumber.from(0)),
+        ]);
+        console.log(
+          `${newSticks} sticks, stick ${claimHash} purchased for ${hre.ethers.utils.formatEther(
+            purchasePrice
+          )}, myBalance=${hre.ethers.utils.formatEther(myBalance)}`
+        );
+        setTimeout(async () => {
+          await claimStick(claimHash);
+        }, 2000);
+      } else {
+        const sticks = await token.balanceOf(myAddress, BigNumber.from(0));
+        console.log(`${sticks} sticks, stick ${claimHash} has not changed.`);
+      }
+    } catch (err) {
+      console.log(`failed to stake claim`, err.message);
+      // process.exit(1);
+    }
+  }
+
+  //collectClaims().then(() => {});
+  // await cleanup();
+  setInterval(() => stakeStick(), 3000);
 }
 
-main()
-  .then(() => {
-    stall();
-  })
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

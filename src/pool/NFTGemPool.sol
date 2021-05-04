@@ -489,7 +489,7 @@ contract NFTGemPool is Initializable, Controllable, NFTGemPoolData, INFTGemPool 
                 uint256 feeNum = poolDiv != divisor ? divisor : poolDiv;
                 feePortion = unlockTokenPaid.div(feeNum);
             }
-            // assess a fee for minting the NFT. Fee is collectec in fee tracker
+            // assess a fee for minting the NFT. Fee is collected in fee tracker
             IERC20(tokenUsed).transferFrom(address(this), _feeTracker, feePortion);
             // send the principal minus fees to the caller
             IERC20(tokenUsed).transferFrom(address(this), msg.sender, unlockTokenPaid.sub(feePortion));
