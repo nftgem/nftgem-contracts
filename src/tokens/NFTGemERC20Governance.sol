@@ -12,5 +12,5 @@ contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
         string memory name,
         string memory symbol,
         address erc1155Token
-    ) ERC20WrappedERC1155(name, symbol, 8, erc1155Token, 0, 1) {}
+    ) ERC20WrappedERC1155(name, symbol, 18, erc1155Token, 0, 1) {}
 }

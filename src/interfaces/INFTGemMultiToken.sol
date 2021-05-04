@@ -45,4 +45,12 @@ interface INFTGemMultiToken {
     function lock(uint256 token, uint256 timeframe) external;
 
     function unlockTime(address account, uint256 token) external view returns (uint256);
+
+    function setTokenData(
+        uint256 tokenHash,
+        uint8 tokenType,
+        address tokenPool
+    ) external;
+
+    function getTokenData(uint256 tokenHash) external view returns (uint8, address);
 }

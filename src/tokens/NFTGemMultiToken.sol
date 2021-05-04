@@ -39,6 +39,9 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     mapping(address => UInt256Set.Set) private _heldTokens;
     mapping(uint256 => AddressSet.Set) private _tokenHolders;
 
+    mapping(uint256 => uint8) private _tokenTypes;
+    mapping(uint256 => address) private _tokenPools;
+
     /**
      * @dev Contract initializer.
      */
@@ -133,7 +136,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function addProxyRegistry(address registry) external override {
-        require(msg.sender == registryManager, "UNAUTHORIZED");
+        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
         proxyRegistries.insert(registry);
     }
 
@@ -141,7 +144,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function removeProxyRegistryAt(uint256 index) external override {
-        require(msg.sender == registryManager, "UNAUTHORIZED");
+        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
         require(index < proxyRegistries.count(), "INVALID_INDEX");
         proxyRegistries.remove(proxyRegistries.keyAtIndex(index));
     }
@@ -171,6 +174,26 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         uint256 amount
     ) external override onlyController {
         _mint(account, uint256(tokenHash), amount, "0x0");
+    }
+
+    /**
+     * @dev set the data for this tokenhash. points to a token type (1 = claim, 2 = gem) and token pool address
+     */
+    function setTokenData(
+        uint256 tokenHash,
+        uint8 tokenType,
+        address tokenPool
+    ) external override onlyController {
+        _tokenTypes[tokenHash] = tokenType;
+        _tokenPools[tokenHash] = tokenPool;
+    }
+
+    /**
+     * @dev get the token data for this token id
+     */
+    function getTokenData(uint256 tokenHash) external view override returns (uint8 tokenType, address tokenPool) {
+        tokenType = _tokenTypes[tokenHash];
+        tokenPool = _tokenPools[tokenHash];
     }
 
     /**

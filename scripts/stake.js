@@ -79,8 +79,8 @@ async function main() {
     }, 11000);
   }
 
-  //cleanup().then(() => {});
-  setInterval(() => stakeStick(), 4000);
+  cleanup().then(() => {});
+  //setInterval(() => stakeStick(), 4000);
 
   stall();
 }

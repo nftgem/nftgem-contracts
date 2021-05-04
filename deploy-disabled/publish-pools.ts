@@ -120,6 +120,14 @@ const func: any = async function (
 
   const itemPrice = '0.01';
 
+  const deployParams: any = {
+    from: sender.address,
+    log: true,
+    libraries: {
+      ComplexPoolLib: (await get('ComplexPoolLib')).address,
+    },
+  };
+
   /**
    * Create BitRobot APU Pool and Wrapped Token
    */
@@ -144,7 +152,7 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['APU'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
@@ -173,7 +181,7 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['SRR'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
@@ -202,7 +210,7 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['RAU'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
@@ -231,7 +239,7 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['PAU'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
@@ -260,65 +268,43 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['PRC'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
   await waitFor(waitForTime);
 
   /**
-   * build depoy params for the complex pool
+   * Create BitRobot Master Control Unit
    */
-  const govLib = (await deploy('GovernanceLib', libDeployParams)).address;
-  const deployParams: any = {
-    from: sender.address,
-    log: true,
-    libraries: {
-      GovernanceLib: govLib,
-      Strings: (await deploy('Strings', libDeployParams)).address,
-      SafeMath: (await deploy('SafeMath', libDeployParams)).address,
-      ProposalsLib: (
-        await deploy('ProposalsLib', {
-          from: sender.address,
-          log: true,
-          libraries: {
-            GovernanceLib: govLib,
-          },
-        })
-      ).address,
-      Create2: (await deploy('Create2', libDeployParams)).address,
-    },
-  };
-
-  await deploy('NFTComplexGemPool', deployParams);
-  const NFTComplexGemPool = await ethers.getContractFactory(
-    'NFTComplexGemPool'
-  );
-  const NFTComplexGemPoolABI = await get('NFTComplexGemPool');
-  await dc.NFTGemPoolFactory.createCustomNFTGemPool(
-    NFTComplexGemPoolABI.bytecode,
-    'MCU',
-    'BitRobots Master Control Unit'
-  );
-  const addr = await dc.NFTGemPoolFactory.getNFTGemPool(
-    keccak256(['bytes'], [pack(['string'], ['MCU'])])
-  );
-  const customPool = await NFTComplexGemPool.attach(addr);
-  await customPool.initialize(
+  await dc.NFTGemGovernor.createSystemPool(
     'MCU',
     'BitRobots Master Control Unit',
     parseEther(itemPrice),
-    300,
-    900,
+    3600,
+    14400,
     2,
     0,
-    '0x0000000000000000000000000000000000000000'
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
   );
-  await customPool.setMultiToken(dc.NFTGemMultiToken.address);
-  await customPool.setGovernor(dc.NFTGemGovernor.address);
-  await dc.NFTGemMultiToken.addProxyRegistry(addr);
-  await dc.NFTGemMultiToken.addController(addr);
-  await dc.NFTGemGovernor.addController(addr);
-  await customPool.setVisible(false);
+
+  // get the contract factory for the complex pool
+  // and attach the newly-created pool address
+  const NFTComplexGemPool = await ethers.getContractFactory(
+    'NFTComplexGemPool',
+    deployParams
+  );
+  let addr = await dc.NFTGemPoolFactory.getNFTGemPool(
+    keccak256(['bytes'], [pack(['string'], ['MCU'])])
+  );
+  let customPool = await NFTComplexGemPool.attach(addr);
+
+  // hide the pool
+  console.log('visible false');
+  await customPool.setVisible(true);
+
+  // add input requirements
+  await waitFor(waitForTime);
   await customPool.addInputRequirement(
     dc.NFTGemMultiToken.address,
     await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -329,6 +315,7 @@ const func: any = async function (
     1,
     false
   );
+  await waitFor(waitForTime);
   await customPool.addInputRequirement(
     dc.NFTGemMultiToken.address,
     await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -339,6 +326,7 @@ const func: any = async function (
     1,
     false
   );
+  await waitFor(waitForTime);
   await customPool.addInputRequirement(
     dc.NFTGemMultiToken.address,
     await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -349,6 +337,7 @@ const func: any = async function (
     1,
     false
   );
+  await waitFor(waitForTime);
   await customPool.addInputRequirement(
     dc.NFTGemMultiToken.address,
     await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -359,6 +348,7 @@ const func: any = async function (
     1,
     false
   );
+  await waitFor(waitForTime);
   await customPool.addInputRequirement(
     dc.NFTGemMultiToken.address,
     await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -378,36 +368,230 @@ const func: any = async function (
       keccak256(['bytes'], [pack(['string'], ['MCU'])])
     ),
     dc.NFTGemMultiToken.address,
-    8,
+    18,
     {gasLimit: 5000000}
   );
 
-  // const l = await dc.NFTGemPoolFactory.allNFTGemPoolsLength();
-  // const p = await dc.NFTGemPoolFactory.allNFTGemPools(l.sub(1));
-  // const aGemPool = ethers.utils.getAddress(p);
-  // const GemPool = await ethers.getContractFactory('NFTGemPool');
-  // const pool = await GemPool.attach(aGemPool);
-  // await pool.setValidateErc20(false);
+  /**
+   * AssemblaMen - business man
+   */
+  console.log('Creating AMBUS pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'AMBUS',
+    'AssemblaMen Business Man',
+    parseEther('100'),
+    3600,
+    3600,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped AMBUS token...');
+  gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
+    'WAMBUS',
+    'Wrapped AssemblaMen Business Man',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMBUS'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    18,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
 
-  // l = await dc.NFTGemPoolFactory.allNFTGemPoolsLength();
-  // p = await dc.NFTGemPoolFactory.allNFTGemPools(l.sub(1));
-  // aGemPool = ethers.utils.getAddress(p);
-  // GemPool = await ethers.getContractFactory('NFTGemPool');
-  // pool = await GemPool.attach(aGemPool);
-  // await pool.setValidateErc20(false);
+  /**
+   * AssemblaMen - party man
+   */
+  console.log('Creating AMPAR pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'AMPAR',
+    'AssemblaMen Party Man',
+    parseEther('100'),
+    3600,
+    3600,
+    24,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped AMPAR token...');
+  gemTokens.Ruby = await dc.ERC20GemTokenFactory.createItem(
+    'WAMPAR',
+    'Wrapped AssemblaMen Party Man',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMPAR'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    18,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
 
-  // l = await dc.NFTGemPoolFactory.allNFTGemPoolsLength();
-  // p = await dc.NFTGemPoolFactory.allNFTGemPools(l.sub(1));
-  // aGemPool = ethers.utils.getAddress(p);
-  // GemPool = await ethers.getContractFactory('NFTGemPool');
-  // pool = await GemPool.attach(aGemPool);
-  // await pool.setVisible(false);
-  // await pool.setValidateErc20(false);
+  /**
+   * AssemblaMen - chef man
+   */
+  console.log('Creating AMCHF pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'AMCHF',
+    'AssemblaMen Chef',
+    parseEther('250'),
+    3600,
+    3600,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped AMCHF token...');
+  gemTokens.chef = await dc.ERC20GemTokenFactory.createItem(
+    'WAMCHF',
+    'Wrapped AssemblaMen Chef',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMCHF'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    18,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
 
+  /**
+   * AssemblaMen - Astronaut
+   */
+  await dc.NFTGemGovernor.createSystemPool(
+    'AMAST',
+    'AssemblaMen Astronaut',
+    parseEther(itemPrice),
+    86400,
+    86400,
+    2,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
+  );
+
+  // get the contract factory for the complex pool
+  // and attach the newly-created pool address
+  addr = await dc.NFTGemPoolFactory.getNFTGemPool(
+    keccak256(['bytes'], [pack(['string'], ['MCU'])])
+  );
+  customPool = await NFTComplexGemPool.attach(addr);
+
+  // hide the pool
+  await waitFor(waitForTime);
+  console.log('visible false');
+  await customPool.setVisible(true);
+
+  // add input requirements
+  await waitFor(waitForTime);
+  await customPool.addInputRequirement(
+    dc.NFTGemMultiToken.address,
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMBUS'])])
+    ),
+    3,
+    0,
+    1,
+    false,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  await customPool.addInputRequirement(
+    dc.NFTGemMultiToken.address,
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMPAR'])])
+    ),
+    3,
+    0,
+    1,
+    false,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  await customPool.addInputRequirement(
+    dc.NFTGemMultiToken.address,
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMCHF'])])
+    ),
+    3,
+    0,
+    1,
+    false,
+    {gasLimit: 5000000}
+  );
+  await waitFor(waitForTime);
+  console.log('Creating wrapped AMAST token...');
+  gemTokens.chef = await dc.ERC20GemTokenFactory.createItem(
+    'WAMAST',
+    'Wrapped AssemblaMen Astronaut',
+    await dc.NFTGemPoolFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], ['AMAST'])])
+    ),
+    dc.NFTGemMultiToken.address,
+    18,
+    {gasLimit: 5000000}
+  );
+
+  /**
+   * Lint
+   */
+  console.log('Creating Lint pool...');
+  await dc.NFTGemGovernor.createSystemPool(
+    'LINT',
+    'Lint',
+    parseEther('0.01'),
+    1,
+    1,
+    65536 * 65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 5000000}
+  );
+
+  // get a reference to lint pool
+  addr = await dc.NFTGemPoolFactory.getNFTGemPool(
+    keccak256(['bytes'], [pack(['string'], ['LINT'])])
+  );
+  customPool = await NFTComplexGemPool.attach(addr);
+
+  await waitFor(waitForTime);
+  console.log('visible false');
+  await customPool.setVisible(true);
+
+  // mint some #2 - admin token
+  await waitFor(waitForTime);
+  await dc.NFTGemMultiToken.mint(sender.address, 2, 100);
+
+  // require admin token to mint
+  await waitFor(waitForTime);
+  await customPool.addInputRequirement(
+    dc.NFTGemMultiToken.address,
+    '0x0000000000000000000000000000000000000000',
+    2,
+    2,
+    1,
+    false,
+    {gasLimit: 5000000}
+  );
+  await customPool.setVisible(true);
+
+  // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
+
+  // dc.NFTGemMultiToken.safeTransferFrom(
+  //   sender.address,
+  //   '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F',
+  //   2,
+  //   1,
+  //   0
+  // );
 
   return deployedContracts;
 };

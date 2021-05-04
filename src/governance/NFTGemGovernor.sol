@@ -2,7 +2,6 @@
 pragma solidity >=0.7.0;
 
 import "../access/Controllable.sol";
-import "../utils/Initializable.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/IProposalFactory.sol";
@@ -20,7 +19,7 @@ import "../governance/ProposalsLib.sol";
 
 import "hardhat/console.sol";
 
-contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
+contract NFTGemGovernor is Controllable, INFTGemGovernor {
     using SafeMath for uint256;
 
     address private multitoken;
@@ -52,7 +51,7 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         address _feeTracker,
         address _proposalFactory,
         address _swapHelper
-    ) external override initializer {
+    ) external override onlyController {
         multitoken = _multitoken;
         factory = _factory;
         feeTracker = _feeTracker;
@@ -182,6 +181,7 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         address pool
     ) internal {
         IControllable(multitoken).addController(pool);
+        INFTGemMultiToken(multitoken).addProxyRegistry(pool);
         IControllable(this).addController(pool);
         INFTGemPool(pool).setMultiToken(multitoken);
         INFTGemPool(pool).setSwapHelper(swapHelper);

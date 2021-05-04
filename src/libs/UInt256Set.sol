@@ -41,9 +41,12 @@ library UInt256Set {
             uint256 keyToMove = self.keyList[last];
             self.keyPointers[keyToMove] = rowToReplace;
             self.keyList[rowToReplace] = keyToMove;
+            delete self.keyPointers[key];
+            delete self.keyList[self.keyList.length - 1];
+        } else {
+            delete self.keyPointers[key];
+            delete self.keyList;
         }
-        delete self.keyPointers[key];
-        delete self.keyList[self.keyList.length - 1];
     }
 
     /**

@@ -23,10 +23,7 @@ interface INFTGemPoolFactory {
     /**
      * @dev emitted when a new gem pool has been added to the system
      */
-    event CustomNFTGemPoolCreated(
-        string gemSymbol,
-        string gemName
-    );
+    event CustomNFTGemPoolCreated(string gemSymbol, string gemName);
 
     function getNFTGemPool(uint256 _symbolHash) external view returns (address);
 
@@ -35,7 +32,7 @@ interface INFTGemPoolFactory {
     function allNFTGemPoolsLength() external view returns (uint256);
 
     function createCustomNFTGemPool(
-         bytes memory bytecode,
+        bytes memory bytecode,
         string memory gemSymbol,
         string memory gemName
     ) external returns (address payable);
@@ -50,4 +47,14 @@ interface INFTGemPoolFactory {
         uint256 maxMint,
         address allowedToken
     ) external returns (address payable);
+
+    function addCustomNFTGemPool(
+        address poolAddress,
+        string memory gemSymbol,
+        string memory gemName
+    ) external returns (address payable);
+
+    function removeGemPool(uint256 poolHash) external;
+
+    function removeGemPoolAt(uint256 ndx) external;
 }

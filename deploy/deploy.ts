@@ -130,13 +130,19 @@ const func: any = async function (
    */
   console.log('deploying libraries...');
   const govLib = (await deploy('GovernanceLib', libDeployParams)).address;
+  const strings = (await deploy('Strings', libDeployParams)).address;
+  const safeMath = (await deploy('SafeMath', libDeployParams)).address;
+  const addressSet = (await deploy('AddressSet', libDeployParams)).address;
+  const uint256Set = (await deploy('UInt256Set', libDeployParams)).address;
   const deployParams: any = {
     from: sender.address,
     log: true,
     libraries: {
       GovernanceLib: govLib,
-      Strings: (await deploy('Strings', libDeployParams)).address,
-      SafeMath: (await deploy('SafeMath', libDeployParams)).address,
+      Strings: strings,
+      SafeMath: safeMath,
+      AddressSet: addressSet,
+      UInt256Set: uint256Set,
       ProposalsLib: (
         await deploy('ProposalsLib', {
           from: sender.address,
@@ -147,6 +153,16 @@ const func: any = async function (
         })
       ).address,
       Create2: (await deploy('Create2', libDeployParams)).address,
+      ComplexPoolLib: (
+        await deploy('ComplexPoolLib', {
+          from: sender.address,
+          log: true,
+          libraries: {
+            AddressSet: addressSet,
+            SafeMath: safeMath,
+          },
+        })
+      ).address,
     },
   };
 
@@ -243,25 +259,26 @@ const func: any = async function (
     inited = true;
     console.log('already inited');
   }
-
+  inited = false;
   if (!inited) {
-    console.log('propagating governor controller...');
+    console.log('propagating multitoken controller...');
     await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
 
-    console.log('propagating governor controller...');
+    console.log('propagating pool factory  controller...');
     await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
+    await dc.NFTGemPoolFactory.addController(sender.address);
     await waitFor(waitForTime);
 
-    console.log('propagating governor controller...');
+    console.log('propagating proposal factory controller...');
     await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
 
-    console.log('propagating governor controller...');
-    await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
+    console.log('propagating fee manager controller...');
+    await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
 
-    console.log('propagating governor controller...');
+    console.log('propagating gem token controller...');
     await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
 

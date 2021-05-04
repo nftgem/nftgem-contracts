@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "../access/Controllable.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/IERC20.sol";
 
-contract NFTGemFeeManager is INFTGemFeeManager {
+contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     address private operator;
 
     uint256 private constant MINIMUM_LIQUIDITY = 50;
@@ -20,23 +21,16 @@ contract NFTGemFeeManager is INFTGemFeeManager {
      * @dev constructor
      */
     constructor() {
+        _addController(msg.sender);
         _defaultFeeDivisor = FEE_DIVISOR;
         _defaultLiquidity = MINIMUM_LIQUIDITY;
     }
 
     /**
-     * @dev Set the address allowed to mint and burn
+     * @dev receive funds
      */
     receive() external payable {
         //
-    }
-
-    /**
-     * @dev Set the address allowed to mint and burn
-     */
-    function setOperator(address _operator) external {
-        require(operator == address(0), "IMMUTABLE");
-        operator = _operator;
     }
 
     /**
@@ -56,8 +50,12 @@ contract NFTGemFeeManager is INFTGemFeeManager {
     /**
      * @dev Set the fee divisor for the specified token
      */
-    function setDefaultLiquidity(uint256 _liquidityMult) external override returns (uint256 oldLiquidity) {
-        require(operator == msg.sender, "UNAUTHORIZED");
+    function setDefaultLiquidity(uint256 _liquidityMult)
+        external
+        override
+        onlyController
+        returns (uint256 oldLiquidity)
+    {
         require(_liquidityMult != 0, "INVALID");
         oldLiquidity = _defaultLiquidity;
         _defaultLiquidity = _liquidityMult;
@@ -82,8 +80,7 @@ contract NFTGemFeeManager is INFTGemFeeManager {
     /**
      * @dev Set the fee divisor for the specified token
      */
-    function setDefaultFeeDivisor(uint256 _feeDivisor) external override returns (uint256 oldDivisor) {
-        require(operator == msg.sender, "UNAUTHORIZED");
+    function setDefaultFeeDivisor(uint256 _feeDivisor) external override onlyController returns (uint256 oldDivisor) {
         require(_feeDivisor != 0, "DIVISIONBYZERO");
         oldDivisor = _defaultFeeDivisor;
         _defaultFeeDivisor = _feeDivisor;
@@ -93,8 +90,12 @@ contract NFTGemFeeManager is INFTGemFeeManager {
     /**
      * @dev Set the fee divisor for the specified token
      */
-    function setFeeDivisor(address token, uint256 _feeDivisor) external override returns (uint256 oldDivisor) {
-        require(operator == msg.sender, "UNAUTHORIZED");
+    function setFeeDivisor(address token, uint256 _feeDivisor)
+        external
+        override
+        onlyController
+        returns (uint256 oldDivisor)
+    {
         require(_feeDivisor != 0, "DIVISIONBYZERO");
         oldDivisor = feeDivisors[token];
         feeDivisors[token] = _feeDivisor;
@@ -118,8 +119,7 @@ contract NFTGemFeeManager is INFTGemFeeManager {
     /**
      * @dev transfer ETH from this contract to the to given recipient
      */
-    function transferEth(address payable recipient, uint256 amount) external override {
-        require(operator == msg.sender, "UNAUTHORIZED");
+    function transferEth(address payable recipient, uint256 amount) external override onlyController {
         require(address(this).balance >= amount, "INSUFFICIENT_BALANCE");
         recipient.transfer(amount);
     }
@@ -131,8 +131,7 @@ contract NFTGemFeeManager is INFTGemFeeManager {
         address token,
         address recipient,
         uint256 amount
-    ) external override {
-        require(operator == msg.sender, "UNAUTHORIZED");
+    ) external override onlyController {
         require(IERC20(token).balanceOf(address(this)) >= amount, "INSUFFICIENT_BALANCE");
         IERC20(token).transfer(recipient, amount);
     }
