@@ -20,7 +20,7 @@ library ComplexPoolLib {
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */
-    event ComplexNFTGemClaimCreated(
+    event NFTGemClaimCreated(
         address account,
         address pool,
         uint256 claimHash,
@@ -32,7 +32,7 @@ library ComplexPoolLib {
     /**
      * @dev Event generated when an NFT claim is created using ERC20 tokens
      */
-    event ComplexNFTGemERC20ClaimCreated(
+    event NFTGemERC20ClaimCreated(
         address account,
         address pool,
         uint256 claimHash,
@@ -45,7 +45,7 @@ library ComplexPoolLib {
     /**
      * @dev Event generated when an NFT claim is redeemed
      */
-    event ComplexNFTGemClaimRedeemed(
+    event NFTGemClaimRedeemed(
         address account,
         address pool,
         uint256 claimHash,
@@ -57,7 +57,7 @@ library ComplexPoolLib {
     /**
      * @dev Event generated when an NFT claim is redeemed
      */
-    event ComplexNFTGemERC20ClaimRedeemed(
+    event NFTGemERC20ClaimRedeemed(
         address account,
         address pool,
         uint256 claimHash,
@@ -80,7 +80,7 @@ library ComplexPoolLib {
     /**
      * @dev Event generated when a gem is created
      */
-    event ComplexNFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
+    event NFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
 
     struct ComplexPoolData {
         // governor and multitoken target
@@ -301,7 +301,7 @@ library ComplexPoolLib {
         INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
         INFTGemGovernor(self.governor).issueFuelToken(msg.sender, cost);
 
-        emit ComplexNFTGemClaimCreated(msg.sender, address(self.pool), claimHash, timeframe, count, cost);
+        emit NFTGemClaimCreated(msg.sender, address(self.pool), claimHash, timeframe, count, cost);
 
         // increase the staked eth balance
         self.totalStakedEth = self.totalStakedEth.add(cost.mul(count));
@@ -390,7 +390,7 @@ library ComplexPoolLib {
         INFTGemGovernor(self.governor).issueFuelToken(msg.sender, ethereum);
 
         // emit a message indicating that an erc20 claim has been created
-        emit ComplexNFTGemERC20ClaimCreated(
+        emit NFTGemERC20ClaimCreated(
             msg.sender,
             address(self.pool),
             claimHash,
@@ -441,7 +441,7 @@ library ComplexPoolLib {
             IERC20(tokenUsed).transferFrom(address(self.pool), msg.sender, unlockTokenPaid.sub(feePortion));
 
             // emit an event that the claim was redeemed for ERC20
-            emit ComplexNFTGemERC20ClaimRedeemed(
+            emit NFTGemERC20ClaimRedeemed(
                 msg.sender,
                 address(self.pool),
                 claimHash,
@@ -464,7 +464,7 @@ library ComplexPoolLib {
             payable(msg.sender).transfer(unlockPaid.sub(feePortion));
 
             // emit an event that the claim was redeemed for ETH
-            emit ComplexNFTGemClaimRedeemed(
+            emit NFTGemClaimRedeemed(
                 msg.sender,
                 address(self.pool),
                 claimHash,
@@ -496,7 +496,7 @@ library ComplexPoolLib {
         INFTGemGovernor(self.governor).issueFuelToken(msg.sender, unlockPaid);
 
         // emit an event about a gem getting created
-        emit ComplexNFTGemCreated(msg.sender, address(self.pool), claimHash, nextHash, self.claimQuant[claimHash]);
+        emit NFTGemCreated(msg.sender, address(self.pool), claimHash, nextHash, self.claimQuant[claimHash]);
     }
 
     /**

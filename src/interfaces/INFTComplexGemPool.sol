@@ -11,7 +11,7 @@ interface INFTComplexGemPool {
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */
-    event ComplexNFTGemClaimCreated(
+    event NFTGemClaimCreated(
         address account,
         address pool,
         uint256 claimHash,
@@ -23,7 +23,7 @@ interface INFTComplexGemPool {
     /**
      * @dev Event generated when an NFT claim is created using ERC20 tokens
      */
-    event ComplexNFTGemERC20ClaimCreated(
+    event NFTGemERC20ClaimCreated(
         address account,
         address pool,
         uint256 claimHash,
@@ -36,7 +36,7 @@ interface INFTComplexGemPool {
     /**
      * @dev Event generated when an NFT claim is redeemed
      */
-    event ComplexNFTGemClaimRedeemed(
+    event NFTGemClaimRedeemed(
         address account,
         address pool,
         uint256 claimHash,
@@ -48,7 +48,7 @@ interface INFTComplexGemPool {
     /**
      * @dev Event generated when an NFT claim is redeemed
      */
-    event ComplexNFTGemERC20ClaimRedeemed(
+    event NFTGemERC20ClaimRedeemed(
         address account,
         address pool,
         uint256 claimHash,
@@ -62,7 +62,7 @@ interface INFTComplexGemPool {
     /**
      * @dev Event generated when a gem is created
      */
-    event ComplexNFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
+    event NFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
 
     function setMultiToken(address token) external;
 
