@@ -1,0 +1,41 @@
+{
+  "address": "0xA7A95c6BA39DA9747ae1fE7C64e4E7ad00dCFD73",
+  "abi": [],
+  "transactionHash": "0xf574959b6c080f6e108aa69ac1e112de80f818d94618dc77da189fe14f8a7c81",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0xA7A95c6BA39DA9747ae1fE7C64e4E7ad00dCFD73",
+    "transactionIndex": 11,
+    "gasUsed": "71933",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x00001c21000000139d8ad8a76b827aae58aea68000a5dc85852e62a2e761be93",
+    "transactionHash": "0xf574959b6c080f6e108aa69ac1e112de80f818d94618dc77da189fe14f8a7c81",
+    "logs": [],
+    "blockNumber": 5257353,
+    "cumulativeGasUsed": "2616686",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "38d8a19b75755ec19cdfba23bf8188ac",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"details\":\"Sets are unordered. Delete operations reorder keys. All operations have a fixed gas cost at any scale, O(1). author: Rob Hitchens\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Key sets with enumeration and delete. Uses mappings for random and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/libs/UInt256Set.sol\":\"UInt256Set\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":9999},\"remappings\":[]},\"sources\":{\"src/libs/UInt256Set.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.7.0;\\n\\n/**\\n * @notice Key sets with enumeration and delete. Uses mappings for random\\n * and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced.\\n * @dev Sets are unordered. Delete operations reorder keys. All operations have a\\n * fixed gas cost at any scale, O(1).\\n * author: Rob Hitchens\\n */\\n\\nlibrary UInt256Set {\\n    struct Set {\\n        mapping(uint256 => uint256) keyPointers;\\n        uint256[] keyList;\\n    }\\n\\n    /**\\n     * @notice insert a key.\\n     * @dev duplicate keys are not permitted.\\n     * @param self storage pointer to a Set.\\n     * @param key value to insert.\\n     */\\n    function insert(Set storage self, uint256 key) internal {\\n        require(!exists(self, key), \\\"UInt256Set: key already exists in the set.\\\");\\n        self.keyList.push(key);\\n        self.keyPointers[key] = self.keyList.length - 1;\\n    }\\n\\n    /**\\n     * @notice remove a key.\\n     * @dev key to remove must exist.\\n     * @param self storage pointer to a Set.\\n     * @param key value to remove.\\n     */\\n    function remove(Set storage self, uint256 key) internal {\\n        require(exists(self, key), \\\"UInt256Set: key does not exist in the set.\\\");\\n        uint256 last = count(self) - 1;\\n        uint256 rowToReplace = self.keyPointers[key];\\n        if (rowToReplace != last) {\\n            uint256 keyToMove = self.keyList[last];\\n            self.keyPointers[keyToMove] = rowToReplace;\\n            self.keyList[rowToReplace] = keyToMove;\\n            delete self.keyPointers[key];\\n            delete self.keyList[self.keyList.length - 1];\\n        } else {\\n            delete self.keyPointers[key];\\n            delete self.keyList;\\n        }\\n    }\\n\\n    /**\\n     * @notice count the keys.\\n     * @param self storage pointer to a Set.\\n     */\\n    function count(Set storage self) internal view returns (uint256) {\\n        return (self.keyList.length);\\n    }\\n\\n    /**\\n     * @notice check if a key is in the Set.\\n     * @param self storage pointer to a Set.\\n     * @param key value to check.\\n     * @return bool true: Set member, false: not a Set member.\\n     */\\n    function exists(Set storage self, uint256 key) internal view returns (bool) {\\n        if (self.keyList.length == 0) return false;\\n        return self.keyList[self.keyPointers[key]] == key;\\n    }\\n\\n    /**\\n     * @notice fetch a key by row (enumerate).\\n     * @param self storage pointer to a Set.\\n     * @param index row to enumerate. Must be < count() - 1.\\n     */\\n    function keyAtIndex(Set storage self, uint256 index) internal view returns (uint256) {\\n        return self.keyList[index];\\n    }\\n}\\n\",\"keccak256\":\"0x51ac180f76c93ca9990cff17e4bf5bbd4b53ea1b7088ca1a874a29ddcf3ae773\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60566023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212205ebc75d04069106c9c42be69ceb2dbc9bf738ed4cb93e6fe141958ad158f30f764736f6c63430007030033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212205ebc75d04069106c9c42be69ceb2dbc9bf738ed4cb93e6fe141958ad158f30f764736f6c63430007030033",
+  "devdoc": {
+    "details": "Sets are unordered. Delete operations reorder keys. All operations have a fixed gas cost at any scale, O(1). author: Rob Hitchens",
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "Key sets with enumeration and delete. Uses mappings for random and existence checks and dynamic arrays for enumeration. Key uniqueness is enforced.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}
