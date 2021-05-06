@@ -7,8 +7,7 @@ import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/IProposalFactory.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IERC1155.sol";
-import "../interfaces/INFTGemPoolFactory.sol";
-import "../interfaces/INFTGemPool.sol";
+import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/IProposalData.sol";
@@ -193,11 +192,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         IControllable(multitoken).addController(pool);
         INFTGemMultiToken(multitoken).addProxyRegistry(pool);
         IControllable(this).addController(pool);
-        INFTGemPool(pool).setMultiToken(multitoken);
-        INFTGemPool(pool).setSwapHelper(swapHelper);
-        INFTGemPool(pool).setGovernor(address(this));
-        INFTGemPool(pool).setFeeTracker(feeTracker);
-        INFTGemPool(pool).mintGenesisGems(creator, funder);
+        INFTComplexGemPool(pool).setMultiToken(multitoken);
+        INFTComplexGemPool(pool).setSwapHelper(swapHelper);
+        INFTComplexGemPool(pool).setGovernor(address(this));
+        INFTComplexGemPool(pool).setFeeTracker(feeTracker);
+        INFTComplexGemPool(pool).mintGenesisGems(creator, funder);
     }
 
     /**

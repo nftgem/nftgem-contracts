@@ -6,7 +6,6 @@ import "../libs/SafeMath.sol";
 
 import "./ComplexPoolLib.sol";
 
-import "../interfaces/INFTGemPoolData.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/IERC20.sol";

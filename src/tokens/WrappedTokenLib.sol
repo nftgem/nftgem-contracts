@@ -6,9 +6,9 @@ import "../libs/SafeMath.sol";
 
 import "../interfaces/IERC1155.sol";
 import "../interfaces/IERC20.sol";
-import "../interfaces/INFTGemPoolData.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
+import "../interfaces/INFTComplexGemPoolData.sol";
 
 library WrappedTokenLib {
     using SafeMath for uint256;
@@ -37,7 +37,7 @@ library WrappedTokenLib {
         uint256 i = INFTGemMultiToken(erc1155token).allHeldTokensLength(account) - 1;
         for (; i >= 0 && tq > 0; i = i.sub(1)) {
             uint256 tokenHash = INFTGemMultiToken(erc1155token).allHeldTokens(account, i);
-            if (INFTGemPoolData(tokenPool).tokenType(tokenHash) == tokenType) {
+            if (INFTComplexGemPoolData(tokenPool).tokenType(tokenHash) == tokenType) {
                 uint256 oq = IERC1155(erc1155token).balanceOf(account, tokenHash);
                 uint256 toTransfer = oq > tq ? tq : oq;
                 tq = tq.add(toTransfer);
@@ -60,7 +60,7 @@ library WrappedTokenLib {
 
         for (; i >= 0 && tq > 0; i = i.sub(1)) {
             uint256 tokenHash = INFTGemMultiToken(self.erc1155token).allHeldTokens(from, i);
-            if (INFTGemPoolData(self.tokenPool).tokenType(tokenHash) == self.tokenType) {
+            if (INFTComplexGemPoolData(self.tokenPool).tokenType(tokenHash) == self.tokenType) {
                 uint256 oq = IERC1155(self.erc1155token).balanceOf(from, tokenHash);
                 uint256 toTransfer = oq > tq ? tq : oq;
                 self.ids[to].push(tokenHash);

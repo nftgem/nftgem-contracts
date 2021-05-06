@@ -8,7 +8,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const {getContractAt} = ethers;
   const {get} = deployments;
   const [sender] = await hre.ethers.getSigners();
-  const waitForTime = BigNumber.from(networkId).eq(1337) ? 0 : 11;
+  const waitForTime = BigNumber.from(networkId).eq(1337) ? 1 : 5;
 
   /**
    * @dev Wait for the given number of seconds and display balance
@@ -146,8 +146,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     inputRequirements?: any[]
   ) => {
     let tx,
+      created = false,
       nonce = BigNumber.from(0);
-    const poolAddr = await getGPA(symbol);
+    let poolAddr = await getGPA(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
       tx = await dc.NFTGemGovernor.createSystemPool(
@@ -174,10 +175,12 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         {gasLimit: 5000000, nonce}
       );
       nonce = nonce.add(1);
+      poolAddr = await getGPA(symbol);
+      created = true;
       await waitFor(waitForTime);
     }
     const pc = await getPoolContract(poolAddr);
-    const reqlen = await pc.allInputRequirementsLength();
+    const reqlen = created ? 0 : await pc.allInputRequirementsLength();
     if (
       inputRequirements &&
       inputRequirements.length &&

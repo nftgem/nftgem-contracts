@@ -5,13 +5,10 @@ import "../interfaces/IERC1155.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemPoolFactory.sol";
 import "../interfaces/IControllable.sol";
-import "../interfaces/INFTGemPool.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IProposalData.sol";
 
-
 library GovernanceLib {
-
     // calculates the CREATE2 address for the quantized erc20 without making any external calls
     function addressOfPropoal(
         address factory,
@@ -38,9 +35,7 @@ library GovernanceLib {
     function createProposalVoteTokens(address multitoken, uint256 proposalHash) external {
         for (uint256 i = 0; i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0); i++) {
             address holder = INFTGemMultiToken(multitoken).allTokenHolders(0, i);
-            INFTGemMultiToken(multitoken).mint(holder, proposalHash,
-                IERC1155(multitoken).balanceOf(holder, 0)
-            );
+            INFTGemMultiToken(multitoken).mint(holder, proposalHash, IERC1155(multitoken).balanceOf(holder, 0));
         }
     }
 
@@ -50,50 +45,34 @@ library GovernanceLib {
     function destroyProposalVoteTokens(address multitoken, uint256 proposalHash) external {
         for (uint256 i = 0; i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0); i++) {
             address holder = INFTGemMultiToken(multitoken).allTokenHolders(0, i);
-            INFTGemMultiToken(multitoken).burn(holder, proposalHash,
+            INFTGemMultiToken(multitoken).burn(
+                holder,
+                proposalHash,
                 IERC1155(multitoken).balanceOf(holder, proposalHash)
             );
         }
     }
 
-        /**
+    /**
      * @dev execute craete pool proposal
      */
-    function execute(
-        address factory,
-        address proposalAddress) public returns (address newPool) {
-
+    function execute(address factory, address proposalAddress) public returns (address newPool) {
         // get the data for the new pool from the proposal
         address proposalData = IProposal(proposalAddress).proposalData();
 
         (
             string memory symbol,
             string memory name,
-
             uint256 ethPrice,
             uint256 minTime,
             uint256 maxTime,
             uint256 diffStep,
             uint256 maxClaims,
-
             address allowedToken
         ) = ICreatePoolProposalData(proposalData).data();
 
         // create the new pool
-        newPool = createPool(
-            factory,
-
-            symbol,
-            name,
-
-            ethPrice,
-            minTime,
-            maxTime,
-            diffStep,
-            maxClaims,
-
-            allowedToken
-        );
+        newPool = createPool(factory, symbol, name, ethPrice, minTime, maxTime, diffStep, maxClaims, allowedToken);
     }
 
     /**
@@ -101,30 +80,24 @@ library GovernanceLib {
      */
     function createPool(
         address factory,
-
         string memory symbol,
         string memory name,
-
         uint256 ethPrice,
         uint256 minTime,
         uint256 maxTime,
         uint256 diffstep,
         uint256 maxClaims,
-
         address allowedToken
     ) public returns (address pool) {
         pool = INFTGemPoolFactory(factory).createNFTGemPool(
             symbol,
             name,
-
             ethPrice,
             minTime,
             maxTime,
             diffstep,
             maxClaims,
-
             allowedToken
         );
     }
-
 }

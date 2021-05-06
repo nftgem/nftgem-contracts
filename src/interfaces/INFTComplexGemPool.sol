@@ -2,8 +2,6 @@
 
 pragma solidity >=0.7.0;
 
-import "./INFTGemPool.sol";
-
 /**
  * @dev Interface for a Bitgem staking pool
  */
@@ -112,7 +110,11 @@ interface INFTComplexGemPool {
         uint256 tokenAmount
     ) external;
 
-    function depositNFT(address erc20token, uint256 tokenId, uint256 tokenAmount) external;
+    function depositNFT(
+        address erc20token,
+        uint256 tokenId,
+        uint256 tokenAmount
+    ) external;
 
     function withdrawNFT(
         address erc1155token,

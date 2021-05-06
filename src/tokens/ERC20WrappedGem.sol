@@ -7,7 +7,6 @@ import "./ERC20Constructorless.sol";
 import "../utils/Initializable.sol";
 import "../interfaces/IERC1155.sol";
 import "../interfaces/IERC20.sol";
-import "../interfaces/INFTGemPoolData.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 
