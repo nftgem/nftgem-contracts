@@ -2,7 +2,6 @@
 pragma solidity >=0.7.0;
 
 interface INFTGemFeeManager {
-
     event DefaultFeeDivisorChanged(address indexed operator, uint256 oldValue, uint256 value);
     event FeeDivisorChanged(address indexed operator, address indexed token, uint256 oldValue, uint256 value);
     event ETHReceived(address indexed manager, address sender, uint256 value);
@@ -24,7 +23,7 @@ interface INFTGemFeeManager {
 
     function ethBalanceOf() external view returns (uint256);
 
-    function balanceOF(address token) external view returns (uint256);
+    function balanceOf(address token) external view returns (uint256);
 
     function transferEth(address payable recipient, uint256 amount) external;
 
@@ -33,5 +32,4 @@ interface INFTGemFeeManager {
         address recipient,
         uint256 amount
     ) external;
-
 }

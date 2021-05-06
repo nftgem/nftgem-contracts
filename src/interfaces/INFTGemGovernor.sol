@@ -31,6 +31,8 @@ interface INFTGemGovernor {
         address _swapHelper
     ) external;
 
+    function initialized() external returns (bool);
+
     function createProposalVoteTokens(uint256 proposalHash) external;
 
     function destroyProposalVoteTokens(uint256 proposalHash) external;

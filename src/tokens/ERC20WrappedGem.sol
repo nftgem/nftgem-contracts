@@ -11,16 +11,15 @@ import "../interfaces/INFTGemPoolData.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 
+import "./WrappedTokenLib.sol";
+
 import "./ERC1155Holder.sol";
 
 contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGem, Initializable {
     using SafeMath for uint256;
+    using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
 
-    address private token;
-    address private pool;
-
-    uint256[] private ids;
-    uint256[] private amounts;
+    WrappedTokenLib.WrappedTokenData internal tokenData;
 
     function initialize(
         string memory name,
@@ -32,52 +31,68 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
-        token = gemToken;
-        pool = gemPool;
+        tokenData.erc1155token = gemToken;
+        tokenData.erc20token = address(this);
+        tokenData.tokenPool = gemPool;
+        tokenData.index = 0;
+        tokenData.rate = 1;
+        tokenData.tokenType = 2;
     }
 
-    function _transferERC1155(
-        address from,
-        address to,
-        uint256 quantity
-    ) internal {
-        uint256 tq = quantity;
-        delete ids;
-        delete amounts;
-
-        uint256 i = INFTGemMultiToken(token).allHeldTokensLength(from) - 1;
-
-        for (; i >= 0 && tq > 0; i = i.sub(1)) {
-            uint256 tokenHash = INFTGemMultiToken(token).allHeldTokens(from, i);
-            if (INFTGemPoolData(pool).tokenType(tokenHash) == 2) {
-                uint256 oq = IERC1155(token).balanceOf(from, tokenHash);
-                uint256 toTransfer = oq > tq ? tq : oq;
-                ids.push(tokenHash);
-                amounts.push(toTransfer);
-                tq = tq.sub(toTransfer);
-            }
-            if (i == 0) break;
-        }
-
-        require(tq == 0, "INSUFFICIENT_GEMS");
-
-        IERC1155(token).safeBatchTransferFrom(from, to, ids, amounts, "");
-    }
-
+    /**
+     * @dev wrap gems to erc20
+     */
     function wrap(uint256 quantity) external override {
         require(quantity != 0, "ZERO_QUANTITY");
+        require(
+            WrappedTokenLib.getPoolTypeBalance(
+                tokenData.erc1155token,
+                tokenData.tokenPool,
+                tokenData.tokenType,
+                msg.sender
+            ) >= quantity,
+            "INSUFFICIENT_QUANTITY"
+        );
 
-        _transferERC1155(msg.sender, address(this), quantity);
+        tokenData.transferPoolTypesFrom(msg.sender, address(this), quantity);
         _mint(msg.sender, quantity.mul(10**decimals()));
+        tokenData.wrappedBalance = tokenData.wrappedBalance.add(quantity);
+
         emit Wrap(msg.sender, quantity);
     }
 
+    /**
+     * @dev unwrap wrapped gems
+     */
     function unwrap(uint256 quantity) external override {
         require(quantity != 0, "ZERO_QUANTITY");
         require(balanceOf(msg.sender).mul(10**decimals()) >= quantity, "INSUFFICIENT_QUANTITY");
 
-        _transferERC1155(address(this), msg.sender, quantity);
+        tokenData.transferPoolTypesFrom(address(this), msg.sender, quantity);
         _burn(msg.sender, quantity.mul(10**decimals()));
+        tokenData.wrappedBalance = tokenData.wrappedBalance.sub(quantity);
+
         emit Unwrap(msg.sender, quantity);
+    }
+
+    /**
+     * @dev get reserves held in wrapper
+     */
+    function getReserves() external view override returns (uint256) {
+        return tokenData.wrappedBalance;
+    }
+
+    /**
+     * @dev get the token address this wrapper is bound to
+     */
+    function getTokenAddress() external view override returns (address) {
+        return tokenData.erc1155token;
+    }
+
+    /**
+     * @dev get the token id this wrapper is bound to
+     */
+    function getTokenId() external view override returns (uint256) {
+        return tokenData.index;
     }
 }

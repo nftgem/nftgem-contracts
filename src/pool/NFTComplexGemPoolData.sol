@@ -228,7 +228,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         address to,
         uint256 quantity
     ) internal {
-        poolData.transferInputReqsFrom(claimHash, from, to, quantity);
+        poolData.transferInputReqsFrom(claimHash, from, to, quantity, from == address(this));
     }
 
     /**
@@ -263,7 +263,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev all Input Requirements Length
      */
-    function allInputRequirementsLength() external override returns (uint256) {
+    function allInputRequirementsLength() external view override returns (uint256) {
         return poolData.allInputRequirementsLength();
     }
 
@@ -272,14 +272,15 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function allInputRequirements(uint256 ndx)
         external
+        view
         override
         returns (
-            address token,
-            address pool,
-            uint8 inputType,
-            uint256 tokenId,
-            uint256 amt,
-            bool burn
+            address,
+            address,
+            uint8,
+            uint256,
+            uint256,
+            bool
         )
     {
         return poolData.allInputRequirements(ndx);

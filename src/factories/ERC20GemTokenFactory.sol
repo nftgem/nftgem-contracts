@@ -2,7 +2,6 @@
 pragma solidity >=0.7.0;
 
 import "../access/Controllable.sol";
-import "../pool/NFTGemPool.sol";
 import "../libs/Create2.sol";
 import "../tokens/ERC20.sol";
 import "../tokens/ERC20WrappedGem.sol";

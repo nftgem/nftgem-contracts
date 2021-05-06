@@ -28,6 +28,8 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     address private proposalFactory;
     address private swapHelper;
 
+    bool private _initialized;
+
     uint256 private constant GOVERNANCE = 0;
     uint256 private constant FUEL = 1;
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
@@ -57,6 +59,7 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         feeTracker = _feeTracker;
         proposalFactory = _proposalFactory;
         swapHelper = _swapHelper;
+        _initialized = true;
     }
 
     /**
@@ -92,6 +95,13 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
      */
     function setFeeTracker(address a) external onlyController {
         feeTracker = a;
+    }
+
+    /**
+     * @dev is the conntract inited
+     */
+    function initialized() external view override returns (bool) {
+        return _initialized;
     }
 
     /**

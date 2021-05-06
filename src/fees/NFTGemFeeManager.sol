@@ -9,7 +9,7 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     address private operator;
 
     uint256 private constant MINIMUM_LIQUIDITY = 50;
-    uint256 private constant FEE_DIVISOR = 500;
+    uint256 private constant FEE_DIVISOR = 2000;
 
     mapping(address => uint256) private feeDivisors;
     uint256 private _defaultFeeDivisor;
@@ -112,7 +112,7 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     /**
      * @dev get the token balance of this fee manager
      */
-    function balanceOF(address token) external view override returns (uint256) {
+    function balanceOf(address token) external view override returns (uint256) {
         return IERC20(token).balanceOf(address(this));
     }
 

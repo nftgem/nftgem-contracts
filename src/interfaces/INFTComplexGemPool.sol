@@ -112,6 +112,15 @@ interface INFTComplexGemPool {
         uint256 tokenAmount
     ) external;
 
+    function depositNFT(address erc20token, uint256 tokenId, uint256 tokenAmount) external;
+
+    function withdrawNFT(
+        address erc1155token,
+        address destination,
+        uint256 tokenId,
+        uint256 tokenAmount
+    ) external;
+
     function initialize(
         string memory,
         string memory,

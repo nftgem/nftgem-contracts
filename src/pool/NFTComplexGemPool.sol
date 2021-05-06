@@ -240,6 +240,13 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
+     * @dev deposit into pool
+     */
+    function depositNFT(address erc1155token, uint256 tokenId, uint256 tokenAmount) external override {
+        poolData.depositNFT(erc1155token, tokenId, tokenAmount);
+    }
+
+    /**
      * @dev withdraw pool contents
      */
     function withdraw(
@@ -248,5 +255,17 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
         uint256 tokenAmount
     ) external override {
         poolData.withdraw(erc20token, destination, tokenAmount);
+    }
+
+        /**
+     * @dev withdraw pool contents
+     */
+    function withdrawNFT(
+        address erc1155token,
+        address destination,
+        uint256 tokenId,
+        uint256 tokenAmount
+    ) external override {
+        poolData.withdrawNFT(erc1155token, destination, tokenId, tokenAmount);
     }
 }
