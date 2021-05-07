@@ -189,6 +189,28 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     '0x0000000000000000000000000000000000000000'
   );
 
+  await createPool(
+    'SECGD',
+    'AssemblaMen Security Guard',
+    parseEther('250'),
+    300,
+    900,
+    16,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'FIRMN',
+    'AssemblaMen Fireman',
+    parseEther('500'),
+    300,
+    900,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
   // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
