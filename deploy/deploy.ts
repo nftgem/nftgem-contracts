@@ -156,12 +156,12 @@ const func: any = async function (
   console.log('deploying contracts...');
   const deploymentData: any = {
     SwapHelper: null,
-    // NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
-    // NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
-    // NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
-    // NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
-    // ProposalFactory: await deploy('ProposalFactory', deployParams),
-    // ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
+    NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
+    NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
+    NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
+    NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
+    ProposalFactory: await deploy('ProposalFactory', deployParams),
+    ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
     MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
   };
 

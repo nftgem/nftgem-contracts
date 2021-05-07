@@ -36,8 +36,8 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     mapping(uint256 => uint256) private _totalBalances;
     mapping(address => mapping(uint256 => uint256)) private _tokenLocks;
 
-    mapping(address => UInt256Set.Set) private _heldTokens;
-    mapping(uint256 => AddressSet.Set) private _tokenHolders;
+    mapping(address => uint256[]) private _heldTokens;
+    mapping(uint256 => address[]) private _tokenHolders;
 
     /**
      * @dev Contract initializer.
@@ -68,28 +68,28 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allHeldTokens(address holder, uint256 _idx) external view override returns (uint256) {
-        return _heldTokens[holder].keyAtIndex(_idx);
+        return _heldTokens[holder][_idx];
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allHeldTokensLength(address holder) external view override returns (uint256) {
-        return _heldTokens[holder].count();
+        return _heldTokens[holder].length;
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHolders(uint256 _token, uint256 _idx) external view override returns (address) {
-        return _tokenHolders[_token].keyAtIndex(_idx);
+        return _tokenHolders[_token][_idx];
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHoldersLength(uint256 _token) external view override returns (uint256) {
-        return _tokenHolders[_token].count();
+        return _tokenHolders[_token].length;
     }
 
     /**
@@ -103,7 +103,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistries(uint256 _idx) external view override returns (address) {
-        return proxyRegistries.keyAtIndex(_idx);
+        return proxyRegistries[_idx];
     }
 
     /**
@@ -126,7 +126,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistriesLength() external view override returns (uint256) {
-        return proxyRegistries.count();
+        return proxyRegistries.length;
     }
 
     /**
@@ -134,7 +134,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function addProxyRegistry(address registry) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
-        proxyRegistries.insert(registry);
+        proxyRegistries.push(registry);
     }
 
     /**
@@ -143,7 +143,12 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     function removeProxyRegistryAt(uint256 index) external override {
         require(msg.sender == registryManager, "UNAUTHORIZED");
         require(index < proxyRegistries.count(), "INVALID_INDEX");
-        proxyRegistries.remove(proxyRegistries.keyAtIndex(index));
+        uint256 lastIndex = proxyRegistries[index].length - 1];
+        proxyRegistries[index] = proxyRegistries[proxyRegistries[index].length - 1];
+        delete proxyRegistries[proxyRegistries[index].length - 1] = 0;
+        if(lastIndex == 0) {
+           delete proxyRegistries[proxyRegistries[index].length - 1]; 
+        }
     }
 
     /**
@@ -154,9 +159,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         for (uint256 i = 0; i < proxyRegistries.count(); i++) {
             ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries.keyAtIndex(i));
             try proxyRegistry.proxies(_owner) returns (OwnableDelegateProxy thePr) {
-                if (address(thePr) == _operator) {
-                    return true;
-                }
+                return address(thePr) == _operator;
             } catch {}
         }
         return ERC1155.isApprovedForAll(_owner, _operator);
@@ -253,14 +256,36 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
             // this is the last token if this type the sender owns
             if (from != address(0) && balanceOf(from, ids[i]) - amounts[i] == 0) {
                 // remove from heldTokens
-                _heldTokens[from].remove(ids[i]);
-                _tokenHolders[ids[i]].remove(from);
+                for(uint256 j = 0; j < _heldTokens[from].length; j++) {
+                    if(_heldTokens[from][j] == ids[i]) {
+                        uint256 lastElementIndex = _heldTokens[from].length - 1;
+                        _heldTokens[from][j] = _heldTokens[from][lastElementIndex];
+                        _heldTokens[from][lastElementIndex] = 0;
+                        delete _heldTokens[from][lastElementIndex];
+                        if(lastElementIndex == 0) {
+                            delete _heldTokens[from];
+                        }
+                        break;
+                    }
+                }
+                for(uint256 j = 0; j < _tokenHolders[ids[i]].length; j++) {
+                    if(_tokenHolders[ids[i]][j] == from) {
+                        uint256 lastElementIndex = _tokenHolders[ids[i]].length - 1;
+                        _tokenHolders[ids[i]][j] = _tokenHolders[ids[i]][lastElementIndex];
+                        _tokenHolders[ids[i]][lastElementIndex] = 0;
+                        delete _heldTokens[from][lastElementIndex];
+                        if(lastElementIndex == 0) {
+                            delete _tokenHolders[ids[i]];
+                        }
+                        break;
+                    }
+                }
             }
 
             // if this is not a burn and receiver does not yet own token then
             // add that account to the token for that id
             if (to != address(0) && balanceOf(to, ids[i]) == 0) {
-                _heldTokens[to].insert(ids[i]);
+                _heldTokens[to].push(ids[i]);
                 _tokenHolders[ids[i]].insert(to);
             }
 

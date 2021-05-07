@@ -168,42 +168,99 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    */
 
   await createPool(
-    'AMOFW',
-    'AssemblaMen Office Worker',
-    parseEther('100'),
+    'AMBUS',
+    'AssemblaMen Businessman',
+    parseEther('0.25'),
     300,
     900,
     32,
     0,
     '0x0000000000000000000000000000000000000000'
   );
-
   await createPool(
-    'AMUMP',
-    'AssemblaMen Umpire',
-    parseEther('500'),
+    'AMCHF',
+    'AssemblaMen Chef',
+    parseEther('0.5'),
+    300,
+    900,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  await createPool(
+    'ASTRO',
+    'AssemblaMen Astronaut',
+    parseEther('1'),
+    300,
+    900,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  await createPool(
+    'AMPAR',
+    'AssemblaMen Party Man',
+    parseEther('0.25'),
+    300,
+    900,
+    24,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  await createPool(
+    'FRMAN',
+    'AssemblaMen Foreman',
+    parseEther('0.5'),
     300,
     900,
     16,
     0,
     '0x0000000000000000000000000000000000000000'
   );
-
+  await createPool(
+    'AMOFW',
+    'AssemblaMen Office Worker',
+    parseEther('0.25'),
+    300,
+    900,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  await createPool(
+    'BLHOP',
+    'AssemblaMen Bellhop',
+    parseEther('0.25'),
+    300,
+    900,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
   await createPool(
     'SECGD',
     'AssemblaMen Security Guard',
-    parseEther('250'),
+    parseEther('0.5'),
     300,
     900,
     16,
     0,
     '0x0000000000000000000000000000000000000000'
   );
-
+  await createPool(
+    'AMUMP',
+    'AssemblaMen Umpire',
+    parseEther('0.5'),
+    300,
+    900,
+    16,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
   await createPool(
     'FIRMN',
     'AssemblaMen Fireman',
-    parseEther('500'),
+    parseEther('1'),
     300,
     900,
     12,
@@ -216,16 +273,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
-
-  // await dc.NFTGemWrappedERC20Governance.wrap('1000');
-
-  // dc.NFTGemMultiToken.safeTransferFrom(
-  //   sender.address,
-  //   '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F',
-  //   2,
-  //   1,
-  //   0
-  // );
 
   await waitFor(18);
 
