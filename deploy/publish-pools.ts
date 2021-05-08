@@ -267,7 +267,49 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000'
   );
+  // await createPool(
+  //   'BASBL',
+  //   'AssemblaMen Baseball',
+  //   parseEther('1'),
+  //   300,
+  //   900,
+  //   12,
+  //   0,
+  //   '0x0000000000000000000000000000000000000000'
+  // );
 
+  await createPool(
+    'NVDRZ1',
+    'Invaderz Light Drone 1',
+    parseEther('50'),
+    300,
+    900,
+    36,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'NVDRZ2',
+    'Invaderz Drone 1',
+    parseEther('100'),
+    300,
+    900,
+    24,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'NVDRZ3',
+    'Invaderz Heavy Drone 1',
+    parseEther('250'),
+    300,
+    900,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
   // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
