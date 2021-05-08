@@ -19,6 +19,24 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     return new Promise((resolve) => setTimeout(resolve, n * 1000));
   };
 
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
+  };
+
   /**
    * @dev Load all deployed contracts
    */
@@ -146,7 +164,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         {gasLimit: 5000000}
       );
       nonce = BigNumber.from(tx.nonce).add(1);
-      await waitFor(waitForTime);
+      await waitForMined(tx.hash);
       const gpAddr = await getGPA(symbol);
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
       tx = await dc.ERC20GemTokenFactory.createItem(
@@ -158,7 +176,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         {gasLimit: 5000000, nonce}
       );
       nonce = nonce.add(1);
-      await waitFor(waitForTime);
+      await waitForMined(tx.hash);
     }
     return await getGPA(symbol);
   };
