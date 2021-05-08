@@ -24,17 +24,6 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     using ComplexPoolLib for ComplexPoolLib.ComplexPoolData;
 
     /**
-     * @dev Throws if called by any account not in authorized list
-     */
-    modifier onlyController() {
-        require(
-            poolData.controllers[msg.sender] == true || address(this) == msg.sender,
-            "Controllable: caller is not a controller"
-        );
-        _;
-    }
-
-    /**
      * @dev Add an address allowed to control this contract
      */
     function addController(address controller) external {
@@ -242,7 +231,11 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev deposit into pool
      */
-    function depositNFT(address erc1155token, uint256 tokenId, uint256 tokenAmount) external override {
+    function depositNFT(
+        address erc1155token,
+        uint256 tokenId,
+        uint256 tokenAmount
+    ) external override {
         poolData.depositNFT(erc1155token, tokenId, tokenAmount);
     }
 
@@ -257,7 +250,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
         poolData.withdraw(erc20token, destination, tokenAmount);
     }
 
-        /**
+    /**
      * @dev withdraw pool contents
      */
     function withdrawNFT(

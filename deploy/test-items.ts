@@ -8,7 +8,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const {getContractAt} = ethers;
   const {get} = deployments;
   const [sender] = await hre.ethers.getSigners();
-  const waitForTime = BigNumber.from(networkId).eq(1337) ? 1 : 5;
+  const waitForTime = BigNumber.from(networkId).eq(1337) ? 1 : 15;
 
   /**
    * @dev Wait for the given number of seconds and display balance
@@ -17,6 +17,24 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     const nbal = await sender.getBalance();
     console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
     return new Promise((resolve) => setTimeout(resolve, n * 1000));
+  };
+
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
   };
 
   /**
@@ -162,8 +180,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         allowedToken,
         {gasLimit: 5000000}
       );
+      await waitForMined(tx.hash);
       nonce = BigNumber.from(tx.nonce).add(1);
-      await waitFor(waitForTime);
       const gpAddr = await getGPA(symbol);
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
       tx = await dc.ERC20GemTokenFactory.createItem(
@@ -174,10 +192,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         18,
         {gasLimit: 5000000, nonce}
       );
+      await waitForMined(tx.hash);
       nonce = nonce.add(1);
       poolAddr = await getGPA(symbol);
       created = true;
-      await waitFor(waitForTime);
     }
     const pc = await getPoolContract(poolAddr);
     const reqlen = created ? 0 : await pc.allInputRequirementsLength();
@@ -198,7 +216,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
             tx = await pc.updateInputRequirement(ii, ...inputRequirements[ii]);
             nonce = BigNumber.from(tx.nonce);
           } else {
-            await pc.updateInputRequirement(ii, ...inputRequirements[ii], {
+            tx = await pc.updateInputRequirement(ii, ...inputRequirements[ii], {
               nonce,
             });
           }
@@ -208,10 +226,12 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
             tx = await pc.addInputRequirement(...inputRequirements[ii]);
             nonce = BigNumber.from(tx.nonce);
           } else {
-            await pc.addInputRequirement(...inputRequirements[ii], {nonce});
+            tx = await pc.addInputRequirement(...inputRequirements[ii], {
+              nonce,
+            });
           }
         }
-        await waitFor(waitForTime);
+        await waitForMined(tx.hash);
       }
     }
     return await getGPA(symbol);
@@ -322,6 +342,21 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       ],
     ]
   );
+
+  const addr = await createPool(
+    'OCW',
+    'One-claim Wonder',
+    parseEther(itemPrice),
+    5,
+    5,
+    65536 * 65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    []
+  );
+  const c = await getPoolContract(addr);
+  await c.setMaxQuantityPerClaim(1);
+  await c.setMaxClaimsPerAccount(1);
 
   // we are done!
   console.log('Deploy complete\n');

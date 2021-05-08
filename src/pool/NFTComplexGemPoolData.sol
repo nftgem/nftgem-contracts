@@ -20,7 +20,21 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
 
     ComplexPoolLib.ComplexPoolData internal poolData;
 
-    constructor() {}
+    /**
+     * @dev Throws if called by any account not in authorized list
+     */
+    modifier onlyController() {
+        require(
+            poolData.controllers[msg.sender] == true || address(this) == msg.sender,
+            "Controllable: caller is not a controller"
+        );
+        _;
+    }
+
+    constructor() {
+        poolData.controllers[msg.sender] = true;
+        poolData.controllers[tx.origin] = true;
+    }
 
     /**
      * @dev The symbol for this pool / NFT
@@ -69,6 +83,34 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function maxClaims() external view override returns (uint256) {
         return poolData.maxClaims;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function maxQuantityPerClaim() external view override returns (uint256) {
+        return poolData.maxQuantityPerClaim;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function maxClaimsPerAccount() external view override returns (uint256) {
+        return poolData.maxClaimsPerAccount;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setMaxQuantityPerClaim(uint256 maxQty) external override onlyController {
+        poolData.maxQuantityPerClaim = maxQty;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setMaxClaimsPerAccount(uint256 maxCPA) external override onlyController {
+        poolData.maxClaimsPerAccount = maxCPA;
     }
 
     /**
@@ -165,22 +207,22 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev add an allowed token to the pool
      */
-    function addAllowedToken(address token) external override {
-        poolData.allowedTokens.insert(token);
+    function addAllowedToken(address tkn) external override onlyController {
+        poolData.allowedTokens.insert(tkn);
     }
 
     /**
      * @dev add ad allowed token to the pool
      */
-    function removeAllowedToken(address token) external override {
-        poolData.allowedTokens.remove(token);
+    function removeAllowedToken(address tkn) external override onlyController {
+        poolData.allowedTokens.remove(tkn);
     }
 
     /**
      * @dev the external version of the above
      */
-    function isTokenAllowed(address token) external view override returns (bool) {
-        return poolData.allowedTokens.exists(token);
+    function isTokenAllowed(address tkn) external view override returns (bool) {
+        return poolData.allowedTokens.exists(tkn);
     }
 
     /**
@@ -240,7 +282,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 tid,
         uint256 minAmount,
         bool burn
-    ) external override {
+    ) external override onlyController {
         poolData.addInputRequirement(token, pool, inputType, tid, minAmount, burn);
     }
 
@@ -255,7 +297,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 tid,
         uint256 minAmount,
         bool burn
-    ) external override {
+    ) external override onlyController {
         poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, burn);
     }
 
@@ -290,5 +332,81 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function proxies(address) external view returns (address) {
         return address(this);
+    }
+
+    function settings()
+        external
+        view
+        override
+        returns (
+            string memory sym,
+            string memory nam,
+            uint256 ethPr,
+            uint256 minTm,
+            uint256 maxTm,
+            uint256 diffStp,
+            uint256 mxClaims,
+            uint256 mxQuantityPerClaim,
+            uint256 mxClaimsPerAccount
+        )
+    {
+        sym = poolData.symbol;
+        nam = poolData.name;
+        ethPr = poolData.ethPrice;
+        minTm = poolData.minTime;
+        maxTm = poolData.maxTime;
+        diffStp = poolData.diffstep;
+        mxClaims = poolData.maxClaims;
+        mxQuantityPerClaim = poolData.maxQuantityPerClaim;
+        mxClaimsPerAccount = poolData.maxClaimsPerAccount;
+    }
+
+    function stats()
+        external
+        view
+        override
+        returns (
+            uint256 claimedCt,
+            uint256 mintedCt,
+            uint256 ttlStakedEth,
+            uint256 nxtClaimHash,
+            uint256 nxtGemHash,
+            uint256 nxtClaimId,
+            uint256 nxtGemId
+        )
+    {
+        claimedCt = poolData.nextClaimIdVal;
+        mintedCt = poolData.nextGemIdVal;
+        ttlStakedEth = poolData.totalStakedEth;
+        nxtClaimHash = poolData.nextClaimHash();
+        nxtGemHash = poolData.nextGemHash();
+        nxtClaimId = poolData.nextClaimIdVal;
+        nxtGemId = poolData.nextGemIdVal;
+    }
+
+    function claim(uint256 claimHash)
+        external
+        view
+        override
+        returns (
+            uint256 clmAmount,
+            uint256 clmQuantity,
+            uint256 clmUnlockTime,
+            uint256 clmTokenAmount,
+            address stkdToken,
+            uint256 nxtClaimId
+        )
+    {
+        clmAmount = poolData.claimAmount(claimHash);
+        clmQuantity = poolData.claimQuantity(claimHash);
+        clmUnlockTime = poolData.claimUnlockTime(claimHash);
+        clmTokenAmount = poolData.claimTokenAmount(claimHash);
+        stkdToken = poolData.stakedToken(claimHash);
+        nxtClaimId = poolData.nextClaimIdVal;
+    }
+
+    function token(uint256 tokenHash) external view override returns (uint8 tknType, uint256 tknId) {
+        tknType = poolData.tokenTypes[tokenHash];
+        tknId = poolData.tokenIds[tokenHash];
     }
 }

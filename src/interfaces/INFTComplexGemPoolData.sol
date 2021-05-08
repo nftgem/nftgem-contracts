@@ -25,6 +25,7 @@ interface INFTComplexGemPoolData {
 
     function allInputRequirements(uint256 ndx)
         external
+        view
         returns (
             address,
             address,
@@ -33,6 +34,48 @@ interface INFTComplexGemPoolData {
             uint256,
             bool
         );
+
+    function settings()
+        external
+        view
+        returns (
+            string memory symbol,
+            string memory name,
+            uint256 ethPrice,
+            uint256 minTime,
+            uint256 maxTime,
+            uint256 diffStep,
+            uint256 macClaims,
+            uint256 maxQuantityPerClaim,
+            uint256 maxClaimsPerAccount
+        );
+
+    function stats()
+        external
+        view
+        returns (
+            uint256 claimedCount,
+            uint256 mintedCount,
+            uint256 totalStakedEth,
+            uint256 nextClaimHash,
+            uint256 nextGemHash,
+            uint256 nextClaimId,
+            uint256 nextGemId
+        );
+
+    function claim(uint256 claimHash)
+        external
+        view
+        returns (
+            uint256 claimAmount,
+            uint256 claimQuantity,
+            uint256 claimUnlockTime,
+            uint256 claimTokenAmount,
+            address stakedToken,
+            uint256 nextClaimId
+        );
+
+    function token(uint256 tokenHash) external view returns (uint8 tokenType, uint256 tokenId);
 
     // pool is inited with these parameters. Once inited, all
     // but ethPrice are immutable. ethPrice only increases. ONLY UP
@@ -57,6 +100,14 @@ interface INFTComplexGemPoolData {
     function claimAmount(uint256 claimId) external view returns (uint256);
 
     function claimQuantity(uint256 claimId) external view returns (uint256);
+
+    function maxQuantityPerClaim() external view returns (uint256);
+
+    function maxClaimsPerAccount() external view returns (uint256);
+
+    function setMaxQuantityPerClaim(uint256 claimId) external;
+
+    function setMaxClaimsPerAccount(uint256 claimId) external;
 
     function mintedCount() external view returns (uint256);
 
@@ -88,9 +139,9 @@ interface INFTComplexGemPoolData {
 
     function allowedTokens(uint256 idx) external view returns (address);
 
-    function isTokenAllowed(address token) external view returns (bool);
+    function isTokenAllowed(address tkn) external view returns (bool);
 
-    function addAllowedToken(address token) external;
+    function addAllowedToken(address tkn) external;
 
-    function removeAllowedToken(address token) external;
+    function removeAllowedToken(address tkn) external;
 }

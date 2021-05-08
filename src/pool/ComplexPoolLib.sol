@@ -102,6 +102,7 @@ library ComplexPoolLib {
         uint256 diffstep;
         uint256 maxClaims;
         uint256 maxQuantityPerClaim;
+        uint256 maxClaimsPerAccount;
         bool validateerc20;
         mapping(uint256 => uint8) tokenTypes;
         mapping(uint256 => uint256) tokenIds;
@@ -120,6 +121,7 @@ library ComplexPoolLib {
         mapping(uint256 => uint256[]) claimIds;
         mapping(uint256 => uint256[]) claimQuantities;
         mapping(address => bool) controllers;
+        mapping(address => uint256) claimsMade;
         InputRequirement[] inputRequirements;
         AddressSet.Set allowedTokens;
     }
@@ -328,6 +330,15 @@ library ComplexPoolLib {
         require(count != 0, "ZERO_QUANTITY");
         // maximum timeframe
         require((self.maxTime != 0 && timeframe <= self.maxTime) || self.maxTime == 0, "TIMEFRAME_TOO_LONG");
+        // max quantity per claim
+        require(
+            (self.maxQuantityPerClaim != 0 && count <= self.maxQuantityPerClaim) || self.maxQuantityPerClaim == 0,
+            "MAX_QUANTITY_EXCEEDED"
+        );
+        require(
+            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) || self.maxClaimsPerAccount == 0,
+            "MAX_QUANTITY_EXCEEDED"
+        );
 
         uint256 adjustedBalance = msg.value.div(count);
         // cost given this timeframe
@@ -352,6 +363,7 @@ library ComplexPoolLib {
         self.claimLockTimestamps[claimHash] = claimUnlockTime;
         self.claimAmountPaid[claimHash] = cost.mul(count);
         self.claimQuant[claimHash] = count;
+        self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
 
         // tranasfer NFT input requirements from user to pool
         transferInputReqsFrom(self, claimHash, msg.sender, address(self.pool), count, false);
@@ -393,6 +405,16 @@ library ComplexPoolLib {
 
         // zero qty
         require(count != 0, "ZERO_QUANTITY");
+
+        // max quantity per claim
+        require(
+            (self.maxQuantityPerClaim != 0 && count <= self.maxQuantityPerClaim) || self.maxQuantityPerClaim == 0,
+            "MAX_QUANTITY_EXCEEDED"
+        );
+        require(
+            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) || self.maxClaimsPerAccount == 0,
+            "MAX_QUANTITY_EXCEEDED"
+        );
 
         // Uniswap pool must exist
         require(ISwapQueryHelper(self.swapHelper).hasPool(erc20token) == true, "NO_UNISWAP_POOL");
@@ -437,6 +459,7 @@ library ComplexPoolLib {
         self.claimLockToken[claimHash] = erc20token;
         self.claimTokenAmountPaid[claimHash] = tokenAmount;
         self.claimQuant[claimHash] = count;
+        self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
 
         // tranasfer NFT input requirements from user to pool
         transferInputReqsFrom(self, claimHash, msg.sender, address(self.pool), count, false);
