@@ -257,20 +257,26 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       return;
     }
     console.log(`processing pool symbol ${sym}`);
-    await createPool(
-      sym,
-      await oldData.name(),
-      await oldData.ethPrice(),
-      await oldData.minTime(),
-      await oldData.maxTime(),
-      await oldData.difficultyStep(),
-      await oldData.maxClaims(),
-      '0x0000000000000000000000000000000000000000'
-    );
-    const newGpAddr = await newFactory.getNFTGemPool(
+    let newGpAddr = await newFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
     if (BigNumber.from(newGpAddr).eq(0)) {
+      await createPool(
+        sym,
+        await oldData.name(),
+        await oldData.ethPrice(),
+        await oldData.minTime(),
+        await oldData.maxTime(),
+        await oldData.difficultyStep(),
+        await oldData.maxClaims(),
+        '0x0000000000000000000000000000000000000000'
+      );
+      newGpAddr = await newFactory.getNFTGemPool(
+        keccak256(['bytes'], [pack(['string'], [sym])])
+      );
+    }
+    if (BigNumber.from(newGpAddr).eq(0)) {
+      console.log(`cant create pool symbol ${sym}`);
       continue;
     }
     const complexData = await getContractAt(
@@ -292,7 +298,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         if (qty.eq(1)) {
           const th = await oldToken.allTokenHolders(tHash, 0);
           const thbal = await oldToken.balanceOf(th, tHash);
-          if (thbal.gt(0)) {
+          const nbal = await dc.NFTGemMultiToken.balanceOf(th, tHash);
+          if (thbal.gt(0) && !nbal.eq(thbal)) {
             console.log(
               sym,
               i,
