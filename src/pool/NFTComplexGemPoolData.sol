@@ -142,6 +142,13 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
+     * @dev get the claim hash of the gem
+     */
+    function gemClaimHash(uint256 gemHash) external view override returns (uint256) {
+        return poolData.gemClaims[gemHash];
+    }
+
+    /**
      * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
      */
     function tokenId(uint256 tokenHash) external view override returns (uint256) {
@@ -261,6 +268,66 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
+     * @dev set market visibility
+     */
+    function setVisible(bool visible) external override {
+        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        poolData.visible = visible;
+    }
+
+    /**
+     * @dev set market visibility
+     */
+    function visible() external view override returns (bool v) {
+        v = poolData.visible;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setCategory(uint256 category) external override {
+        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        poolData.category = category;
+    }
+
+    /**
+     * @dev get market category
+     */
+    function category() external view override returns (uint256 c) {
+        c = poolData.category;
+    }
+
+    /**
+     * @dev set description
+     */
+    function setDescription(string memory desc) external override {
+        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        poolData.description = desc;
+    }
+
+    /**
+     * @dev get description
+     */
+    function description() external view override returns (string memory c) {
+        c = poolData.description;
+    }
+
+    /**
+     * @dev set validate erc20 token against AMM
+     */
+    function setValidateErc20(bool) external override {
+        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        poolData.validateerc20 = true;
+    }
+
+    /**
+     * @dev get validate erc20 token against AMM
+     */
+    function validateErc20() external view override returns (bool) {
+        return poolData.validateerc20;
+    }
+
+    /**
      * @dev Transfer a quantity of input reqs from to
      */
     function transferInputReqsFrom(
@@ -334,31 +401,38 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         return address(this);
     }
 
+    /**
+     * @dev these settings defines how the pool behaves
+     */
     function settings()
         external
         view
         override
         returns (
-            string memory sym,
-            string memory nam,
-            uint256 ethPr,
-            uint256 minTm,
-            uint256 maxTm,
-            uint256 diffStp,
-            uint256 mxClaims,
-            uint256 mxQuantityPerClaim,
-            uint256 mxClaimsPerAccount
+            string memory symbol,
+            string memory name,
+            string memory description,
+            uint256 category,
+            uint256 ethPrice,
+            uint256 minTime,
+            uint256 maxTime,
+            uint256 diffstep,
+            uint256 maxClaims,
+            uint256 maxQuantityPerClaim,
+            uint256 maxClaimsPerAccount
         )
     {
-        sym = poolData.symbol;
-        nam = poolData.name;
-        ethPr = poolData.ethPrice;
-        minTm = poolData.minTime;
-        maxTm = poolData.maxTime;
-        diffStp = poolData.diffstep;
-        mxClaims = poolData.maxClaims;
-        mxQuantityPerClaim = poolData.maxQuantityPerClaim;
-        mxClaimsPerAccount = poolData.maxClaimsPerAccount;
+        symbol = poolData.symbol;
+        name = poolData.name;
+        description = poolData.description;
+        category = poolData.category;
+        ethPrice = poolData.ethPrice;
+        minTime = poolData.minTime;
+        maxTime = poolData.maxTime;
+        diffstep = poolData.diffstep;
+        maxClaims = poolData.maxClaims;
+        maxQuantityPerClaim = poolData.maxQuantityPerClaim;
+        maxClaimsPerAccount = poolData.maxClaimsPerAccount;
     }
 
     function stats()
@@ -366,22 +440,24 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            uint256 claimedCt,
-            uint256 mintedCt,
-            uint256 ttlStakedEth,
-            uint256 nxtClaimHash,
-            uint256 nxtGemHash,
-            uint256 nxtClaimId,
-            uint256 nxtGemId
+            bool visible,
+            uint256 claimedCount,
+            uint256 mintedCount,
+            uint256 totalStakedEth,
+            uint256 nextClaimHash,
+            uint256 nextGemHash,
+            uint256 nextClaimId,
+            uint256 nextGemId
         )
     {
-        claimedCt = poolData.nextClaimIdVal;
-        mintedCt = poolData.nextGemIdVal;
-        ttlStakedEth = poolData.totalStakedEth;
-        nxtClaimHash = poolData.nextClaimHash();
-        nxtGemHash = poolData.nextGemHash();
-        nxtClaimId = poolData.nextClaimIdVal;
-        nxtGemId = poolData.nextGemIdVal;
+        visible = poolData.visible;
+        claimedCount = poolData.nextClaimIdVal;
+        mintedCount = poolData.nextGemIdVal;
+        totalStakedEth = poolData.totalStakedEth;
+        nextClaimHash = poolData.nextClaimHash();
+        nextGemHash = poolData.nextGemHash();
+        nextClaimId = poolData.nextClaimIdVal;
+        nextGemId = poolData.nextGemIdVal;
     }
 
     function claim(uint256 claimHash)
@@ -389,24 +465,24 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            uint256 clmAmount,
-            uint256 clmQuantity,
-            uint256 clmUnlockTime,
-            uint256 clmTokenAmount,
-            address stkdToken,
-            uint256 nxtClaimId
+            uint256 claimAmount,
+            uint256 claimQuantity,
+            uint256 claimUnlockTime,
+            uint256 claimTokenAmount,
+            address stakedToken,
+            uint256 nextClaimId
         )
     {
-        clmAmount = poolData.claimAmount(claimHash);
-        clmQuantity = poolData.claimQuantity(claimHash);
-        clmUnlockTime = poolData.claimUnlockTime(claimHash);
-        clmTokenAmount = poolData.claimTokenAmount(claimHash);
-        stkdToken = poolData.stakedToken(claimHash);
-        nxtClaimId = poolData.nextClaimIdVal;
+        claimAmount = poolData.claimAmount(claimHash);
+        claimQuantity = poolData.claimQuantity(claimHash);
+        claimUnlockTime = poolData.claimUnlockTime(claimHash);
+        claimTokenAmount = poolData.claimTokenAmount(claimHash);
+        stakedToken = poolData.stakedToken(claimHash);
+        nextClaimId = poolData.nextClaimIdVal;
     }
 
-    function token(uint256 tokenHash) external view override returns (uint8 tknType, uint256 tknId) {
-        tknType = poolData.tokenTypes[tokenHash];
-        tknId = poolData.tokenIds[tokenHash];
+    function token(uint256 tokenHash) external view override returns (uint8 tokenType, uint256 tokenId) {
+        tokenType = poolData.tokenTypes[tokenHash];
+        tokenId = poolData.tokenIds[tokenHash];
     }
 }

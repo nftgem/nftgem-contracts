@@ -116,66 +116,6 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev set market visibility
-     */
-    function setVisible(bool visible) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.visible = visible;
-    }
-
-    /**
-     * @dev set market visibility
-     */
-    function visible() external view override returns (bool v) {
-        v = poolData.visible;
-    }
-
-    /**
-     * @dev set category category
-     */
-    function setCategory(uint256 category) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.category = category;
-    }
-
-    /**
-     * @dev get market category
-     */
-    function category() external view override returns (uint256 c) {
-        c = poolData.category;
-    }
-
-    /**
-     * @dev set description
-     */
-    function setDescription(string memory desc) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.description = desc;
-    }
-
-    /**
-     * @dev get description
-     */
-    function description() external view override returns (string memory c) {
-        c = poolData.description;
-    }
-
-    /**
-     * @dev set validate erc20 token against AMM
-     */
-    function setValidateErc20(bool) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.validateerc20 = true;
-    }
-
-    /**
-     * @dev get validate erc20 token against AMM
-     */
-    function validateErc20() external view override returns (bool) {
-        return poolData.validateerc20;
-    }
-
-    /**
      * @dev mint the genesis gems earned by the pools creator and funder
      */
     function mintGenesisGems(address creator, address funder) external override {

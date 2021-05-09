@@ -70,22 +70,6 @@ interface INFTComplexGemPool {
 
     function setSwapHelper(address addr) external;
 
-    function setVisible(bool visible) external;
-
-    function visible() external view returns (bool);
-
-    function setCategory(uint256 category) external;
-
-    function category() external view returns (uint256);
-
-    function setDescription(string memory description) external;
-
-    function description() external view returns (string memory);
-
-    function setValidateErc20(bool) external;
-
-    function validateErc20() external view returns (bool);
-
     function mintGenesisGems(address creator, address funder) external;
 
     function createClaim(uint256 timeframe) external payable;

@@ -1,6 +1,7 @@
 import {formatEther, parseEther} from 'ethers/lib/utils';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {pack, keccak256} from '@ethersproject/solidity';
+import {BigNumber} from 'ethers';
 const func: any = async function (
   hre: HardhatRuntimeEnvironment,
   noDeploy?: boolean
@@ -23,6 +24,24 @@ const func: any = async function (
     const nbal = await sender.getBalance();
     console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
     return new Promise((resolve) => setTimeout(resolve, n * 1000));
+  };
+
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
   };
 
   /**
@@ -267,44 +286,49 @@ const func: any = async function (
   const inited = await dc.NFTGemGovernor.initialized();
 
   if (!inited) {
-    await dc.NFTGemGovernor.initialize(
+    let tx = await dc.NFTGemGovernor.initialize(
       dc.NFTGemMultiToken.address,
       dc.NFTGemPoolFactory.address,
       dc.NFTGemFeeManager.address,
       dc.ProposalFactory.address,
       dc.SwapHelper.address
     );
+    await waitForMined(tx.hash);
 
     console.log('propagating multitoken controller...');
-    await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-    await waitFor(waitForTime);
+    tx = await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
+    await waitForMined(tx.hash);
 
     console.log('propagating pool factory  controller...');
-    await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
+    tx = await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
     // await dc.NFTGemPoolFactory.addController(sender.address);
-    await waitFor(waitForTime);
+    await waitForMined(tx.hash);
 
     console.log('propagating proposal factory controller...');
-    await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
-    await waitFor(waitForTime);
+    tx = await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
+    await waitForMined(tx.hash);
 
     console.log('propagating fee manager controller...');
-    await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address);
-    await waitFor(waitForTime);
+    tx = await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address);
+    await waitForMined(tx.hash);
 
     console.log('propagating wrapper fee manager controller...');
-    await dc.NFTGemWrapperFeeManager.addController(dc.NFTGemGovernor.address);
-    await waitFor(waitForTime);
+    tx = await dc.NFTGemWrapperFeeManager.addController(
+      dc.NFTGemGovernor.address
+    );
+    await waitForMined(tx.hash);
 
     console.log('propagating gem token controller...');
-    await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
-    await waitFor(waitForTime);
+    tx = await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
+    await waitForMined(tx.hash);
 
     console.log('minting initial governance tokens...');
-    await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
+    tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
       gasLimit: 5000000,
     });
+    await waitForMined(tx.hash);
 
+    console.log('deploying wrapped governance tokens...');
     deployParams.args = [
       'Bitlootbox Governance',
       'BLBX',
@@ -312,31 +336,69 @@ const func: any = async function (
       dc.NFTGemWrapperFeeManager.address,
     ];
     await deploy('NFTGemWrappedERC20Governance', deployParams);
+
+    console.log('intializing wrapped governance tokens...');
+    await waitFor(1);
     dc.NFTGemWrappedERC20Governance = await getContractAt(
       'NFTGemWrappedERC20Governance',
       (await get('NFTGemWrappedERC20Governance')).address,
       sender
     );
-    await dc.NFTGemWrappedERC20Governance.initialize(
+    tx = await dc.NFTGemWrappedERC20Governance.initialize(
       '',
       '',
       '0x0000000000000000000000000000000000000000',
       '0x0000000000000000000000000000000000000000',
       0
     );
+    await waitForMined(tx.hash);
 
-    dc.NFTGemMultiToken.setApprovalForAll(
+    console.log('approving wrapped governance token as operator...');
+    tx = await dc.NFTGemMultiToken.setApprovalForAll(
       dc.NFTGemWrappedERC20Governance.address,
       true,
       {from: sender.address}
     );
-    await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+    await waitForMined(tx.hash);
+
+    console.log('wrapping 100k goveranance tokens...');
+    tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
       from: sender.address,
       gasLimit: 5000000,
     });
-
-    await waitFor(waitForTime);
+    await waitForMined(tx.hash);
   }
+
+  console.log('intializing wrapped governance tokens...');
+  await waitFor(1);
+  dc.NFTGemWrappedERC20Governance = await getContractAt(
+    'NFTGemWrappedERC20Governance',
+    (await get('NFTGemWrappedERC20Governance')).address,
+    sender
+  );
+  let tx = await dc.NFTGemWrappedERC20Governance.initialize(
+    '',
+    '',
+    '0x0000000000000000000000000000000000000000',
+    '0x0000000000000000000000000000000000000000',
+    0
+  );
+  await waitForMined(tx.hash);
+
+  console.log('approving wrapped governance token as operator...');
+  tx = await dc.NFTGemMultiToken.setApprovalForAll(
+    dc.NFTGemWrappedERC20Governance.address,
+    true,
+    {from: sender.address}
+  );
+  await waitForMined(tx.hash);
+
+  console.log('wrapping 100k goveranance tokens...');
+  tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+    from: sender.address,
+    gasLimit: 5000000,
+  });
+  await waitForMined(tx.hash);
 
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();

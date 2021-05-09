@@ -275,6 +275,39 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
+    'TTD',
+    'Test Thing Delta',
+    parseEther(itemPrice),
+    30,
+    90,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'TTE',
+    'Test Thing Echo',
+    parseEther(itemPrice),
+    30,
+    90,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'TTF',
+    'Test Thing Foxtrot',
+    parseEther(itemPrice),
+    30,
+    90,
+    12,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
     'CTG',
     'Complex Thing Gamma',
     parseEther(itemPrice),
@@ -287,6 +320,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, false],
       [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 1, false],
       [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, false],
     ]
   );
 
@@ -303,6 +339,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 10, false],
       [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 10, false],
       [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 10, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 10, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 10, false],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 10, false],
     ]
   );
 
@@ -319,12 +358,160 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, true],
       [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 1, true],
       [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, true],
     ]
   );
 
   await createPool(
+    'CEO',
+    'Complex Eater Omega',
+    parseEther(itemPrice),
+    30,
+    90,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 10, true],
+    ]
+  );
+
+  await createPool(
+    'CEH',
+    'Complex Eater Hotel',
+    parseEther(itemPrice),
+    30,
+    90,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 3, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 4, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 5, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 6, true],
+    ]
+  );
+
+  await createPool(
+    'CEL',
+    'Complex Eater Lima',
+    parseEther(itemPrice),
+    30,
+    90,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 6, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 5, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 4, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 3, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, true],
+    ]
+  );
+
+  await createPool(
+    'CEE',
+    'Complex Eater Eater',
+    parseEther(itemPrice),
+    30,
+    90,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('CEL'), 3, 0, 6, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEH'), 3, 0, 5, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEO'), 3, 0, 4, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEA'), 3, 0, 3, true],
+    ]
+  );
+
+  await createPool(
+    'BOSS',
+    'The Final Challenge',
+    parseEther(itemPrice),
+    30,
+    90,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('CEL'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEH'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEO'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEA'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CEE'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CTO'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('CTG'), 3, 0, 1, true],
+    ]
+  );
+
+  let addr = await createPool(
+    'OCW',
+    'One-claim Wonder',
+    parseEther(itemPrice),
+    5,
+    5,
+    65536 * 65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    []
+  );
+  let c = await getPoolContract(addr);
+  let tx = await c.setMaxQuantityPerClaim(1);
+  await waitForMined(tx.hash);
+  tx = await c.setMaxClaimsPerAccount(1);
+  await waitForMined(tx.hash);
+
+  addr = await createPool(
+    'TQO',
+    'Two Quantities One Claim',
+    parseEther(itemPrice),
+    5,
+    5,
+    65536 * 65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    []
+  );
+  c = await getPoolContract(addr);
+  tx = await c.setMaxQuantityPerClaim(2);
+  await waitForMined(tx.hash);
+  tx = await c.setMaxClaimsPerAccount(1);
+  await waitForMined(tx.hash);
+
+  addr = await createPool(
+    'OQT',
+    'One Quantity Two Claims',
+    parseEther(itemPrice),
+    5,
+    5,
+    65536 * 65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    []
+  );
+  c = await getPoolContract(addr);
+  tx = await c.setMaxQuantityPerClaim(1);
+  await waitForMined(tx.hash);
+  tx = await c.setMaxClaimsPerAccount(2);
+  await waitForMined(tx.hash);
+
+  await createPool(
     'LINT',
-    'Lint',
+    'Unattainable Lint',
     parseEther(itemPrice),
     5,
     5,
@@ -342,21 +529,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       ],
     ]
   );
-
-  const addr = await createPool(
-    'OCW',
-    'One-claim Wonder',
-    parseEther(itemPrice),
-    5,
-    5,
-    65536 * 65536,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    []
-  );
-  const c = await getPoolContract(addr);
-  await c.setMaxQuantityPerClaim(1);
-  await c.setMaxClaimsPerAccount(1);
 
   // we are done!
   console.log('Deploy complete\n');

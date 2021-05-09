@@ -118,6 +118,7 @@ library ComplexPoolLib {
         mapping(uint256 => uint256) claimQuant;
         mapping(uint256 => uint256) claimTokenAmountPaid;
         // input NFTs storage
+        mapping(uint256 => uint256) gemClaims;
         mapping(uint256 => uint256[]) claimIds;
         mapping(uint256 => uint256[]) claimQuantities;
         mapping(address => bool) controllers;
@@ -336,7 +337,8 @@ library ComplexPoolLib {
             "MAX_QUANTITY_EXCEEDED"
         );
         require(
-            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) || self.maxClaimsPerAccount == 0,
+            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) ||
+                self.maxClaimsPerAccount == 0,
             "MAX_QUANTITY_EXCEEDED"
         );
 
@@ -412,7 +414,8 @@ library ComplexPoolLib {
             "MAX_QUANTITY_EXCEEDED"
         );
         require(
-            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) || self.maxClaimsPerAccount == 0,
+            (self.maxClaimsPerAccount != 0 && self.claimsMade[msg.sender] < self.maxClaimsPerAccount) ||
+                self.maxClaimsPerAccount == 0,
             "MAX_QUANTITY_EXCEEDED"
         );
 
@@ -572,6 +575,9 @@ library ComplexPoolLib {
         // for the pool, and mint a gem token back to account
         uint256 nextHash = nextGemHash(self);
 
+        // associate gem and claim
+        self.gemClaims[nextHash] = claimHash;
+
         // mint the gem
         INFTGemMultiToken(self.multitoken).mint(msg.sender, nextHash, self.claimQuant[claimHash]);
         addToken(self, nextHash, 2);
@@ -678,6 +684,13 @@ library ComplexPoolLib {
      */
     function claimTokenAmount(ComplexPoolData storage self, uint256 claimHash) public view returns (uint256) {
         return self.claimTokenAmountPaid[claimHash];
+    }
+
+    /**
+     * @dev the claim hash of the gem
+     */
+    function gemClaimHash(ComplexPoolData storage self, uint256 gemHash) public view returns (uint256) {
+        return self.gemClaims[gemHash];
     }
 
     /**

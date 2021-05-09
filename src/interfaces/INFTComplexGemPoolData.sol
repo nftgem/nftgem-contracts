@@ -41,6 +41,8 @@ interface INFTComplexGemPoolData {
         returns (
             string memory symbol,
             string memory name,
+            string memory description,
+            uint256 category,
             uint256 ethPrice,
             uint256 minTime,
             uint256 maxTime,
@@ -54,6 +56,7 @@ interface INFTComplexGemPoolData {
         external
         view
         returns (
+            bool visible,
             uint256 claimedCount,
             uint256 mintedCount,
             uint256 totalStakedEth,
@@ -93,6 +96,18 @@ interface INFTComplexGemPoolData {
 
     function maxClaims() external view returns (uint256);
 
+    function setVisible(bool visible) external;
+
+    function visible() external view returns (bool);
+
+    function setCategory(uint256 category) external;
+
+    function category() external view returns (uint256);
+
+    function setDescription(string memory description) external;
+
+    function description() external view returns (string memory);
+
     // these describe the pools created contents over time. This is where
     // you query to get information about a token that a pool created
     function claimedCount() external view returns (uint256);
@@ -129,9 +144,15 @@ interface INFTComplexGemPoolData {
 
     function nextClaimId() external view returns (uint256);
 
+    function setValidateErc20(bool) external;
+
+    function validateErc20() external view returns (bool);
+
     function claimUnlockTime(uint256 claimId) external view returns (uint256);
 
     function claimTokenAmount(uint256 claimId) external view returns (uint256);
+
+    function gemClaimHash(uint256 gemHash) external view returns (uint256);
 
     function stakedToken(uint256 claimId) external view returns (address);
 
