@@ -506,7 +506,6 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     ) external override onlyController {
         require(tokenType > 0, "INVALID_TOKENTYPE");
         require(tokenHash > 0, "INVALID_TOKENTYPE");
-        require(tokenId > 0, "INVALID_TOKENTYPE");
         require(token > address(0), "INVALID_TOKEN");
         require(recipient > address(0), "INVALID_RECIPIENT");
         require(qty > 0, "INVALID_QUANTIY");

@@ -238,8 +238,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    ******************************************************************************
    */
 
-  const Data = await ethers.getContractFactory('NFTGemPoolData');
-  const ComplexData = await ethers.getContractFactory('NFTComplexGemPoolData');
   const aoldToken = ethers.utils.getAddress(
     '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
   );
@@ -251,18 +249,38 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const newFactory = dc.NFTGemPoolFactory;
 
   const gpLen = await oldFactory.allNFTGemPoolsLength();
-  for (let gp = 0; gp < gpLen.toNumber(); gp++) {
+  for (let gp = 1; gp < gpLen.toNumber(); gp++) {
     const gpAddr = await oldFactory.allNFTGemPools(gp);
-    const oldData = await Data.attach(gpAddr);
+    const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
     const sym = await oldData.symbol();
+    if (sym === 'ASTRO' || sym === 'MCU') {
+      return;
+    }
     console.log(`processing pool symbol ${sym}`);
-    const newGpAddr = await newFactory.getNFTGemPool(await oldData.symbol());
-    if (newGpAddr.eq(0)) {
+    await createPool(
+      sym,
+      await oldData.name(),
+      await oldData.ethPrice(),
+      await oldData.minTime(),
+      await oldData.maxTime(),
+      await oldData.difficultyStep(),
+      await oldData.maxClaims(),
+      '0x0000000000000000000000000000000000000000'
+    );
+    const newGpAddr = await newFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], [sym])])
+    );
+    if (BigNumber.from(newGpAddr).eq(0)) {
       continue;
     }
-    const complexData = await ComplexData.attach(newGpAddr);
+    const complexData = await getContractAt(
+      'NFTComplexGemPoolData',
+      newGpAddr,
+      sender
+    );
 
-    const thLen = await oldData.allTokenHashesLength();
+    let thLen = await oldData.allTokenHashesLength();
+    thLen = thLen.gt(10) ? BigNumber.from(10) : thLen;
     console.log(`processing ${thLen.toNumber()} hashes`);
     for (let i = 0; i < thLen.toNumber(); i++) {
       const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
@@ -276,6 +294,16 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
           const th = await oldToken.allTokenHolders(tHash, 0);
           const thbal = await oldToken.balanceOf(th, tHash);
           if (thbal.gt(0)) {
+            console.log(
+              sym,
+              i,
+              oldToken.address,
+              hashType,
+              tHash.toHexString(),
+              hashId.toHexString(),
+              th,
+              thbal.toString()
+            );
             const tx = await complexData.addLegacyToken(
               oldToken.address,
               hashType,
