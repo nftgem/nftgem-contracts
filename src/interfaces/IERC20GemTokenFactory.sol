@@ -13,6 +13,8 @@ interface IERC20GemTokenFactory {
 
     function getItem(uint256 _symbolHash) external view returns (address);
 
+    function items() external view returns (address[] memory);
+
     function allItems(uint256 idx) external view returns (address);
 
     function allItemsLength() external view returns (uint256);

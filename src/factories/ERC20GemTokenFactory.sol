@@ -29,6 +29,13 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
     /**
      * @dev get the quantized token for this
      */
+    function items() external view override returns (address[] memory) {
+        return _allItems;
+    }
+
+    /**
+     * @dev get the quantized token for this
+     */
     function allItems(uint256 idx) external view override returns (address gemPool) {
         gemPool = _allItems[idx];
     }

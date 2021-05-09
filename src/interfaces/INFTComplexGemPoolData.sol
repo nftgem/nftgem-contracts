@@ -80,6 +80,27 @@ interface INFTComplexGemPoolData {
 
     function token(uint256 tokenHash) external view returns (uint8 tokenType, uint256 tokenId);
 
+    function addLegacyToken(
+        address token,
+        uint8 tokenType,
+        uint256 tokenHash,
+        uint256 tokenId,
+        address recipient,
+        uint256 quantity
+    ) external;
+
+    function setToken(
+        uint256 tokenHash,
+        uint8 tokenType,
+        uint256 tokenId
+    ) external;
+
+    function setNextIds(uint256 nextClaimId, uint256 nextGemId) external;
+
+    function tokenHashes() external view returns (uint256[] memory);
+
+    function setTokenHashes(uint256[] memory tokenHashes) external;
+
     // pool is inited with these parameters. Once inited, all
     // but ethPrice are immutable. ethPrice only increases. ONLY UP
     function symbol() external view returns (string memory);

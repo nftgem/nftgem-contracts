@@ -27,6 +27,13 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
     /**
      * @dev get the quantized token for this
      */
+    function nftGemPools() external view override returns (address[] memory) {
+        return _allNFTGemPools;
+    }
+
+    /**
+     * @dev get the quantized token for this
+     */
     function allNFTGemPools(uint256 idx) external view override returns (address gemPool) {
         gemPool = _allNFTGemPools[idx];
     }

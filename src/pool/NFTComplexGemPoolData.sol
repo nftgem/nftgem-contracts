@@ -25,7 +25,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     modifier onlyController() {
         require(
-            poolData.controllers[msg.sender] == true || address(this) == msg.sender,
+            poolData.controllers[msg.sender] == true || msg.sender == poolData.governor || address(this) == msg.sender,
             "Controllable: caller is not a controller"
         );
         _;
@@ -34,6 +34,20 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     constructor() {
         poolData.controllers[msg.sender] = true;
         poolData.controllers[tx.origin] = true;
+    }
+
+    /**
+     * @dev The symbol for this pool / NFT
+     */
+    function tokenHashes() external view override returns (uint256[] memory) {
+        return poolData.tokenHashes;
+    }
+
+    /**
+     * @dev The symbol for this pool / NFT
+     */
+    function setTokenHashes(uint256[] memory tokenHashes) external override onlyController {
+        poolData.tokenHashes = tokenHashes;
     }
 
     /**
@@ -270,8 +284,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set market visibility
      */
-    function setVisible(bool visible) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+    function setVisible(bool visible) external override onlyController {
         poolData.visible = visible;
     }
 
@@ -285,8 +298,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set category category
      */
-    function setCategory(uint256 category) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+    function setCategory(uint256 category) external override onlyController {
         poolData.category = category;
     }
 
@@ -300,8 +312,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set description
      */
-    function setDescription(string memory desc) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+    function setDescription(string memory desc) external override onlyController {
         poolData.description = desc;
     }
 
@@ -315,8 +326,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set validate erc20 token against AMM
      */
-    function setValidateErc20(bool) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+    function setValidateErc20(bool) external override onlyController {
         poolData.validateerc20 = true;
     }
 
@@ -484,5 +494,40 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     function token(uint256 tokenHash) external view override returns (uint8 tokenType, uint256 tokenId) {
         tokenType = poolData.tokenTypes[tokenHash];
         tokenId = poolData.tokenIds[tokenHash];
+    }
+
+    function addLegacyToken(
+        address token,
+        uint8 tokenType,
+        uint256 tokenHash,
+        uint256 tokenId,
+        address recipient,
+        uint256 qty
+    ) external override onlyController {
+        require(tokenType > 0, "INVALID_TOKENTYPE");
+        require(tokenHash > 0, "INVALID_TOKENTYPE");
+        require(tokenId > 0, "INVALID_TOKENTYPE");
+        require(token > address(0), "INVALID_TOKEN");
+        require(recipient > address(0), "INVALID_RECIPIENT");
+        require(qty > 0, "INVALID_QUANTIY");
+
+        INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, qty);
+        INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, tokenType, address(this));
+        poolData.tokenTypes[tokenHash] = tokenType;
+        poolData.tokenIds[tokenHash] = tokenId;
+    }
+
+    function setToken(
+        uint256 tokenHash,
+        uint8 tokenType,
+        uint256 tokenId
+    ) external override onlyController {
+        poolData.tokenTypes[tokenHash] = tokenType;
+        poolData.tokenIds[tokenHash] = tokenId;
+    }
+
+    function setNextIds(uint256 nextClaimId, uint256 nextGemId) external override onlyController {
+        poolData.nextClaimIdVal = nextClaimId;
+        poolData.nextGemIdVal = nextGemId;
     }
 }

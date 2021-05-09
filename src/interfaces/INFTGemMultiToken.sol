@@ -20,9 +20,13 @@ interface INFTGemMultiToken {
         uint256 amount
     ) external;
 
+    function heldTokens(address holder) external view returns (uint256[] memory);
+
     function allHeldTokens(address holder, uint256 _idx) external view returns (uint256);
 
     function allHeldTokensLength(address holder) external view returns (uint256);
+
+    function tokenHolders(uint256 _token) external view returns (address[] memory);
 
     function allTokenHolders(uint256 _token, uint256 _idx) external view returns (address);
 

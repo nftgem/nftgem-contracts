@@ -301,7 +301,6 @@ const func: any = async function (
 
     console.log('propagating pool factory  controller...');
     tx = await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
-    // await dc.NFTGemPoolFactory.addController(sender.address);
     await waitForMined(tx.hash);
 
     console.log('propagating proposal factory controller...');
@@ -328,6 +327,7 @@ const func: any = async function (
     });
     await waitForMined(tx.hash);
 
+    // deploy the governance token wrapper
     console.log('deploying wrapped governance tokens...');
     deployParams.args = [
       'Bitlootbox Governance',
@@ -337,6 +337,7 @@ const func: any = async function (
     ];
     await deploy('NFTGemWrappedERC20Governance', deployParams);
 
+    // init governance token wrapper
     console.log('intializing wrapped governance tokens...');
     await waitFor(1);
     dc.NFTGemWrappedERC20Governance = await getContractAt(
@@ -353,6 +354,7 @@ const func: any = async function (
     );
     await waitForMined(tx.hash);
 
+    // approve the wrappedgem contract
     console.log('approving wrapped governance token as operator...');
     tx = await dc.NFTGemMultiToken.setApprovalForAll(
       dc.NFTGemWrappedERC20Governance.address,
@@ -361,6 +363,7 @@ const func: any = async function (
     );
     await waitForMined(tx.hash);
 
+    // wrap 100k governance tokens
     console.log('wrapping 100k goveranance tokens...');
     tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
       from: sender.address,
@@ -369,37 +372,7 @@ const func: any = async function (
     await waitForMined(tx.hash);
   }
 
-  console.log('intializing wrapped governance tokens...');
-  await waitFor(1);
-  dc.NFTGemWrappedERC20Governance = await getContractAt(
-    'NFTGemWrappedERC20Governance',
-    (await get('NFTGemWrappedERC20Governance')).address,
-    sender
-  );
-  let tx = await dc.NFTGemWrappedERC20Governance.initialize(
-    '',
-    '',
-    '0x0000000000000000000000000000000000000000',
-    '0x0000000000000000000000000000000000000000',
-    0
-  );
-  await waitForMined(tx.hash);
-
-  console.log('approving wrapped governance token as operator...');
-  tx = await dc.NFTGemMultiToken.setApprovalForAll(
-    dc.NFTGemWrappedERC20Governance.address,
-    true,
-    {from: sender.address}
-  );
-  await waitForMined(tx.hash);
-
-  console.log('wrapping 100k goveranance tokens...');
-  tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
-    from: sender.address,
-    gasLimit: 5000000,
-  });
-  await waitForMined(tx.hash);
-
+  // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);

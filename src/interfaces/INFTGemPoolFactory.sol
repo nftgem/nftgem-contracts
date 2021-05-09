@@ -25,6 +25,8 @@ interface INFTGemPoolFactory {
      */
     event CustomNFTGemPoolCreated(string gemSymbol, string gemName);
 
+    function nftGemPools() external view returns (address[] memory);
+
     function getNFTGemPool(uint256 _symbolHash) external view returns (address);
 
     function allNFTGemPools(uint256 idx) external view returns (address);
