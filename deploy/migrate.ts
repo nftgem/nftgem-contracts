@@ -280,7 +280,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     );
 
     let thLen = await oldData.allTokenHashesLength();
-    thLen = thLen.gt(10) ? BigNumber.from(10) : thLen;
     console.log(`processing ${thLen.toNumber()} hashes`);
     for (let i = 0; i < thLen.toNumber(); i++) {
       const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
