@@ -287,7 +287,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
 
     let thLen = await oldData.allTokenHashesLength();
     console.log(`processing ${thLen.toNumber()} hashes`);
-    for (let i = 0; i < thLen.toNumber(); i++) {
+    for (let i = 0; i < 2; i++) {
       const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
         gasLimit: 5000000,
       });
