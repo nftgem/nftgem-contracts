@@ -41,14 +41,9 @@ library AddressSet {
             address keyToMove = self.keyList[last];
             self.keyPointers[keyToMove] = rowToReplace;
             self.keyList[rowToReplace] = keyToMove;
-            self.keyPointers[key] = 0;
-            delete self.keyPointers[key];
-            delete self.keyList[self.keyList.length - 1];
-        } else {
-            self.keyPointers[key] = 0;
-            delete self.keyPointers[key];
-            delete self.keyList;
         }
+        delete self.keyPointers[key];
+        delete self.keyList[self.keyList.length - 1];
     }
 
     /**

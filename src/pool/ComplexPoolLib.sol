@@ -13,6 +13,8 @@ import "../interfaces/INFTGemFeeManager.sol";
 import "../libs/AddressSet.sol";
 import "../libs/SafeMath.sol";
 
+import "hardhat/console.sol";
+
 library ComplexPoolLib {
     using SafeMath for uint256;
     using AddressSet for AddressSet.Set;
@@ -177,64 +179,93 @@ library ComplexPoolLib {
     /**
      * @dev Transfer a quantity of input reqs from to
      */
-    function transferInputReqsFrom(
+    function takeInputReqsFrom(
         ComplexPoolData storage self,
         uint256 claimHash,
         address from,
-        address to,
-        uint256 quantity,
-        bool outTx
+        uint256 quantity
     ) internal {
         address gemtoken;
         for (uint256 i = 0; i < self.inputRequirements.length; i++) {
             if (self.inputRequirements[i].inputType == 1) {
                 IERC20 token = IERC20(self.inputRequirements[i].token);
-                address toAddress = to;
-                if (outTx == false || self.inputRequirements[i].burn == false) {
-                    token.transferFrom(from, toAddress, self.inputRequirements[i].minVal.mul(quantity));
-                }
+                token.transferFrom(from, self.pool, self.inputRequirements[i].minVal.mul(quantity));
             } else if (self.inputRequirements[i].inputType == 2) {
                 IERC1155 token = IERC1155(self.inputRequirements[i].token);
-                if (outTx == false || self.inputRequirements[i].burn == false) {
-                    token.safeTransferFrom(
-                        from,
-                        to,
-                        self.inputRequirements[i].tokenId,
-                        self.inputRequirements[i].minVal.mul(quantity),
-                        ""
-                    );
-                }
+                token.safeTransferFrom(
+                    from,
+                    self.pool,
+                    self.inputRequirements[i].tokenId,
+                    self.inputRequirements[i].minVal.mul(quantity),
+                    ""
+                );
             } else if (self.inputRequirements[i].inputType == 3) {
                 uint256 required = self.inputRequirements[i].minVal.mul(quantity);
                 uint256 hashCount = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokensLength(from);
-                if (outTx == false || self.inputRequirements[i].burn == false) {
-                    for (uint256 j = 0; j < hashCount; j++) {
-                        uint256 hashAt = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokens(from, j);
-                        if (INFTComplexGemPoolData(self.inputRequirements[i].pool).tokenType(hashAt) == 2) {
-                            gemtoken = self.inputRequirements[i].token;
-                            uint256 bal = IERC1155(self.inputRequirements[i].token).balanceOf(from, hashAt);
-                            if (bal > required) {
-                                bal = required;
-                            }
-                            if (bal == 0) {
-                                continue;
-                            }
-                            self.claimIds[claimHash].push(hashAt);
-                            self.claimQuantities[claimHash].push(bal);
-                            required = required - bal;
+                for (uint256 j = 0; j < hashCount; j++) {
+                    uint256 hashAt = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokens(from, j);
+                    if (INFTComplexGemPoolData(self.inputRequirements[i].pool).tokenType(hashAt) == 2) {
+                        gemtoken = self.inputRequirements[i].token;
+                        uint256 bal = IERC1155(self.inputRequirements[i].token).balanceOf(from, hashAt);
+                        if (bal > required) {
+                            bal = required;
                         }
-                        if (required == 0) {
-                            break;
+                        if (bal == 0) {
+                            continue;
                         }
+                        self.claimIds[claimHash].push(hashAt);
+                        self.claimQuantities[claimHash].push(bal);
+                        required = required - bal;
                     }
-                    require(required == 0, "UNMET_REQUIREMENTS");
+                    if (required == 0) {
+                        break;
+                    }
                 }
+                require(required == 0, "UNMET_REQUIREMENTS");
             }
         }
 
         if (self.claimIds[claimHash].length > 0 && gemtoken != address(0)) {
             IERC1155(gemtoken).safeBatchTransferFrom(
                 from,
+                self.pool,
+                self.claimIds[claimHash],
+                self.claimQuantities[claimHash],
+                ""
+            );
+        }
+    }
+
+    /**
+     * @dev Transfer a quantity of input reqs from to
+     */
+    function returnInputReqsTo(
+        ComplexPoolData storage self,
+        uint256 claimHash,
+        address to,
+        uint256 quantity
+    ) internal {
+        address gemtoken;
+        for (uint256 i = 0; i < self.inputRequirements.length; i++) {
+            if (self.inputRequirements[i].inputType == 1 && self.inputRequirements[i].burn == false) {
+                IERC20 token = IERC20(self.inputRequirements[i].token);
+                token.transferFrom(self.pool, to, self.inputRequirements[i].minVal.mul(quantity));
+            } else if (self.inputRequirements[i].inputType == 2 && self.inputRequirements[i].burn == false) {
+                IERC1155 token = IERC1155(self.inputRequirements[i].token);
+                token.safeTransferFrom(
+                    self.pool,
+                    to,
+                    self.inputRequirements[i].tokenId,
+                    self.inputRequirements[i].minVal.mul(quantity),
+                    ""
+                );
+            } else if (self.inputRequirements[i].inputType == 3 && self.inputRequirements[i].burn == false) {
+                gemtoken = self.inputRequirements[i].token;
+            }
+        }
+        if (self.claimIds[claimHash].length > 0 && gemtoken != address(0)) {
+            IERC1155(gemtoken).safeBatchTransferFrom(
+                self.pool,
                 to,
                 self.claimIds[claimHash],
                 self.claimQuantities[claimHash],
@@ -368,7 +399,7 @@ library ComplexPoolLib {
         self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
 
         // tranasfer NFT input requirements from user to pool
-        transferInputReqsFrom(self, claimHash, msg.sender, address(self.pool), count, false);
+        takeInputReqsFrom(self, claimHash, msg.sender, count);
 
         // maybe mint a governance token for the claimant
         INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
@@ -419,6 +450,9 @@ library ComplexPoolLib {
             "MAX_QUANTITY_EXCEEDED"
         );
 
+        // require the user to have the input requirements
+        requireInputReqs(self, msg.sender, count);
+
         // Uniswap pool must exist
         require(ISwapQueryHelper(self.swapHelper).hasPool(erc20token) == true, "NO_UNISWAP_POOL");
 
@@ -465,7 +499,7 @@ library ComplexPoolLib {
         self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
 
         // tranasfer NFT input requirements from user to pool
-        transferInputReqsFrom(self, claimHash, msg.sender, address(self.pool), count, false);
+        takeInputReqsFrom(self, claimHash, msg.sender, count);
 
         // increase staked eth amount
         self.totalStakedEth = self.totalStakedEth.add(ethereum);
@@ -559,8 +593,8 @@ library ComplexPoolLib {
             );
         }
 
-        // tranasfer NFT input requirements from user to pool
-        transferInputReqsFrom(self, claimHash, address(self.pool), msg.sender, self.claimQuant[claimHash], true);
+        // tranasfer NFT input requirements from pool to user
+        returnInputReqsTo(self, claimHash, msg.sender, self.claimQuant[claimHash]);
 
         // deduct the total staked ETH balance of the pool
         self.totalStakedEth = self.totalStakedEth.sub(unlockPaid);

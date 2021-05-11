@@ -338,18 +338,6 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev Transfer a quantity of input reqs from to
-     */
-    function transferInputReqsFrom(
-        uint256 claimHash,
-        address from,
-        address to,
-        uint256 quantity
-    ) internal {
-        poolData.transferInputReqsFrom(claimHash, from, to, quantity, from == address(this));
-    }
-
-    /**
      * @dev add an input requirement for this token
      */
     function addInputRequirement(

@@ -242,8 +242,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    */
 
   await createPool(
-    'TTA',
-    'Test Thing Alpha',
+    'MINA',
+    'Minion 1',
     parseEther(itemPrice),
     30,
     90,
@@ -253,8 +253,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'TTB',
-    'Test Thing Beta',
+    'MINB',
+    'Minion 2',
     parseEther(itemPrice),
     30,
     90,
@@ -264,8 +264,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'TTC',
-    'Test Thing Charlie',
+    'MINC',
+    'Minion 3',
     parseEther(itemPrice),
     30,
     90,
@@ -275,8 +275,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'TTD',
-    'Test Thing Delta',
+    'MIND',
+    'Minion 4',
     parseEther(itemPrice),
     30,
     90,
@@ -286,8 +286,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'TTE',
-    'Test Thing Echo',
+    'MINE',
+    'Minion 5',
     parseEther(itemPrice),
     30,
     90,
@@ -297,8 +297,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'TTF',
-    'Test Thing Foxtrot',
+    'MINF',
+    'Minion 6',
     parseEther(itemPrice),
     30,
     90,
@@ -308,8 +308,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'CTG',
-    'Complex Thing Gamma',
+    'UBOSSA',
+    'Underboss 1',
     parseEther(itemPrice),
     30,
     90,
@@ -317,18 +317,18 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, false],
     ]
   );
 
   await createPool(
-    'CTO',
-    'Complex Thing Omega',
+    'UBOSSB',
+    'Underboss 2',
     parseEther(itemPrice),
     30,
     90,
@@ -336,18 +336,18 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 10, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 10, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 10, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 10, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 10, false],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 10, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, false],
     ]
   );
 
   await createPool(
-    'CEA',
-    'Complex Eater Alpha',
+    'UBOSSC',
+    'Underboss 3',
     parseEther(itemPrice),
     30,
     90,
@@ -355,18 +355,18 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, false],
     ]
   );
 
   await createPool(
-    'CEO',
-    'Complex Eater Omega',
+    'LBOSSA',
+    'LevelBoss 1',
     parseEther(itemPrice),
     30,
     90,
@@ -374,18 +374,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 10, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 10, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 10, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 10, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 10, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 10, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true],
     ]
   );
 
   await createPool(
-    'CEH',
-    'Complex Eater Hotel',
+    'LBOSSB',
+    'LevelBoss 2',
     parseEther(itemPrice),
     30,
     90,
@@ -393,18 +390,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 2, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 3, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 4, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 5, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 6, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true],
     ]
   );
 
   await createPool(
-    'CEL',
-    'Complex Eater Lima',
+    'LBOSSC',
+    'LevelBoss 3',
     parseEther(itemPrice),
     30,
     90,
@@ -412,18 +406,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('TTA'), 3, 0, 6, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTB'), 3, 0, 5, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTC'), 3, 0, 4, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTD'), 3, 0, 3, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTE'), 3, 0, 2, true],
-      [dc.NFTGemMultiToken.address, await getGPA('TTF'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true],
     ]
   );
 
   await createPool(
-    'CEE',
-    'Complex Eater Eater',
+    'MBOSS',
+    'MidBoss',
     parseEther(itemPrice),
     30,
     90,
@@ -431,10 +422,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('CEL'), 3, 0, 6, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEH'), 3, 0, 5, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEO'), 3, 0, 4, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEA'), 3, 0, 3, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSA'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSB'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSC'), 3, 0, 1, true],
     ]
   );
 
@@ -448,13 +438,13 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('CEL'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEH'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEO'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEA'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CEE'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CTO'), 3, 0, 1, true],
-      [dc.NFTGemMultiToken.address, await getGPA('CTG'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('MBOSS'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSA'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSB'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('LBOSSC'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 1, true],
+      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 1, true],
     ]
   );
 
@@ -546,7 +536,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   //   0
   // );
 
-  await waitFor(18);
+  await waitFor(3);
 
   return dc;
 };
