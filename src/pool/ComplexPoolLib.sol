@@ -119,6 +119,7 @@ library ComplexPoolLib {
         mapping(uint256 => uint256) claimAmountPaid;
         mapping(uint256 => uint256) claimQuant;
         mapping(uint256 => uint256) claimTokenAmountPaid;
+        mapping(uint256 => bool) importedLegacyToken;
         // input NFTs storage
         mapping(uint256 => uint256) gemClaims;
         mapping(uint256 => uint256[]) claimIds;

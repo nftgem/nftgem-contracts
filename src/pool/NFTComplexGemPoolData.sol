@@ -497,11 +497,13 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         require(token > address(0), "INVALID_TOKEN");
         require(recipient > address(0), "INVALID_RECIPIENT");
         require(qty > 0, "INVALID_QUANTIY");
+        require(poolData.importedLegacyToken[tokenHash] == false, "ALREADY_IMPORTED");
 
         INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, qty);
         INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, tokenType, address(this));
         poolData.tokenTypes[tokenHash] = tokenType;
         poolData.tokenIds[tokenHash] = tokenId;
+        poolData.importedLegacyToken[tokenHash] = true;
     }
 
     function setToken(

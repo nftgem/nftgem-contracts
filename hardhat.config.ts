@@ -148,6 +148,12 @@ const config: HardhatUserConfig = {
       gasPrice: 'auto',
       gas: 'auto',
     },
+    poa: {
+      url: node_url('poa'),
+      accounts: accounts('poa'),
+      gasPrice: 'auto',
+      gas: 'auto',
+    },
   },
   etherscan: {
     apiKey: '4QX1GGDD4FPPHK4DNTR3US6XJDFBUXG7WQ',
