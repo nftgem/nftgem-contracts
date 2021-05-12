@@ -27,9 +27,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         );
         return txReceipt && txReceipt.blockNumber ? txReceipt : null;
       };
-      setInterval(() => {
+      const interval = setInterval(() => {
         _checkReceipt().then((r: any) => {
           if (r) {
+            clearInterval(interval);
             resolve(true);
           }
         });
@@ -184,6 +185,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       nonce = BigNumber.from(tx.nonce).add(1);
       const gpAddr = await getGPA(symbol);
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
+      console.log(gpAddr)
       tx = await dc.ERC20GemTokenFactory.createItem(
         `W${symbol}`,
         `Wrapped ${name}`,

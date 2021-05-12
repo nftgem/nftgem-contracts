@@ -157,8 +157,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     max: number,
     diff: number,
     maxClaims: number,
-    allowedToken: string,
-    inputRequirements?: any[]
+    allowedToken: string
   ) => {
     let tx,
       created = false,
