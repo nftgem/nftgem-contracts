@@ -34,9 +34,10 @@ const func: any = async function (
         );
         return txReceipt && txReceipt.blockNumber ? txReceipt : null;
       };
-      setInterval(() => {
+      const interval = setInterval(() => {
         _checkReceipt().then((r: any) => {
           if (r) {
+            clearInterval(interval);
             resolve(true);
           }
         });
