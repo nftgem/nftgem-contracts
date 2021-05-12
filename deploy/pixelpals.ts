@@ -8,7 +8,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const {getContractAt} = ethers;
   const {get} = deployments;
   const [sender] = await hre.ethers.getSigners();
-  const waitForTime = BigNumber.from(networkId).eq(1337) ? 0 : 11;
 
   /**
    * @dev Wait for the given number of seconds and display balance
@@ -128,7 +127,19 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
   const dc = await getDeployedContracts(sender);
 
-  const itemPrice = '0.0001';
+  const itemPrice = '1000';
+
+  // const deployParams = {
+  //   from: sender.address,
+  //   log: true,
+  //   libraries: {
+  //     ComplexPoolLib: (await get('ComplexPoolLib')).address,
+  //   },
+  // };
+  // const NFTComplexGemPool = await ethers.getContractFactory(
+  //   'NFTComplexGemPool',
+  //   deployParams
+  // );
 
   const getGPA = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(
@@ -148,8 +159,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     inputRequirements?: any[]
   ) => {
     let tx,
+      created = false,
       nonce = BigNumber.from(0);
-    const poolAddr = await getGPA(symbol);
+    let poolAddr = await getGPA(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
       tx = await dc.NFTGemGovernor.createSystemPool(
@@ -163,20 +175,26 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         allowedToken,
         {gasLimit: 5000000}
       );
-      nonce = BigNumber.from(tx.nonce).add(1);
       await waitForMined(tx.hash);
+      nonce = BigNumber.from(tx.nonce).add(1);
       const gpAddr = await getGPA(symbol);
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
       tx = await dc.ERC20GemTokenFactory.createItem(
         `W${symbol}`,
         `Wrapped ${name}`,
         gpAddr,
-        dc.NFTGemMultiToken.address,
+        dc.NFTGemMultiToken.addres
         18,
         {gasLimit: 5000000, nonce}
       );
-      nonce = nonce.add(1);
       await waitForMined(tx.hash);
+      nonce = nonce.add(1);
+      poolAddr = await getGPA(symbol);
+      created = true;
+    }
+    const pc = await getPoolContract(poolAddr);
+    const reqlen = created ? 0 : await pc.allInputRequirementsLength();
+    
     }
     return await getGPA(symbol);
   };
@@ -186,155 +204,67 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    */
 
   await createPool(
-    'AMBUS',
-    'AssemblaMen Businessman',
-    parseEther('0.25'),
-    300,
-    900,
-    32,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'AMCHF',
-    'AssemblaMen Chef',
-    parseEther('0.5'),
-    300,
-    900,
-    12,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'ASTRO',
-    'AssemblaMen Astronaut',
-    parseEther('1'),
-    300,
-    900,
-    4,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'AMPAR',
-    'AssemblaMen Party Man',
-    parseEther('0.25'),
-    300,
-    900,
-    24,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'FRMAN',
-    'AssemblaMen Foreman',
-    parseEther('0.5'),
-    300,
-    900,
-    16,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'AMOFW',
-    'AssemblaMen Office Worker',
-    parseEther('0.25'),
-    300,
-    900,
-    32,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'BLHOP',
-    'AssemblaMen Bellhop',
-    parseEther('0.25'),
-    300,
-    900,
-    32,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'SECGD',
-    'AssemblaMen Security Guard',
-    parseEther('0.5'),
-    300,
-    900,
-    16,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'AMUMP',
-    'AssemblaMen Umpire',
-    parseEther('0.5'),
-    300,
-    900,
-    16,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  await createPool(
-    'FIRMN',
-    'AssemblaMen Fireman',
-    parseEther('1'),
-    300,
-    900,
-    12,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-  // await createPool(
-  //   'BASBL',
-  //   'AssemblaMen Baseball',
-  //   parseEther('1'),
-  //   300,
-  //   900,
-  //   12,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  await createPool(
-    'NVDRZ1',
-    'Invaderz Light Drone 1',
-    parseEther('50'),
-    300,
-    900,
-    36,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'NVDRZ2',
-    'Invaderz Drone 1',
+    'PIXPL1',
+    'PixelPals: Antonio',
     parseEther('100'),
     300,
-    900,
+    2400,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'PIXPL4',
+    'PixelPals: Jax',
+    parseEther('250'),
+    300,
+    1600,
     24,
     0,
     '0x0000000000000000000000000000000000000000'
   );
 
   await createPool(
-    'NVDRZ3',
-    'Invaderz Heavy Drone 1',
-    parseEther('250'),
+    'PIXPL3',
+    'PixelPals: Simone',
+    parseEther('500'),
+    300,
+    1200,
+    16,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'PIXPL2',
+    'PixelPals: Rongo',
+    parseEther('1000'),
     300,
     900,
     12,
     0,
     '0x0000000000000000000000000000000000000000'
   );
+
+
   // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
 
-  await waitFor(18);
+  // await dc.NFTGemWrappedERC20Governance.wrap('1000');
+
+  // dc.NFTGemMultiToken.safeTransferFrom(
+  //   sender.address,
+  //   '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F',
+  //   2,
+  //   1,
+  //   0
+  // );
+
+  await waitFor(3);
 
   return dc;
 };
