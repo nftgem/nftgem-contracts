@@ -35,10 +35,14 @@ async function main() {
   const data = Data.attach(addressStick);
   const feeManager = await FeeManager.attach(addressFeeManager);
 
+<<<<<<< HEAD
   const bitlootEarned = await
     feeManager.ethBalanceOf(),
 ;
 
+=======
+  const bitlootEarned = await feeManager.ethBalanceOf();
+>>>>>>> 0440abdef53611bf2b53d4c450bad07d40e33637
 
   console.log(
     `bitloot feeManager=${addressFeeManager}`,
