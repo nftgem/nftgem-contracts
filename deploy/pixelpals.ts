@@ -129,22 +129,24 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
 
   const itemPrice = '1000';
 
-  // const deployParams = {
-  //   from: sender.address,
-  //   log: true,
-  //   libraries: {
-  //     ComplexPoolLib: (await get('ComplexPoolLib')).address,
-  //   },
-  // };
-  // const NFTComplexGemPool = await ethers.getContractFactory(
-  //   'NFTComplexGemPool',
-  //   deployParams
-  // );
+  const deployParams = {
+    from: sender.address,
+    log: true,
+    libraries: {},
+  };
+  const NFTComplexGemPool = await ethers.getContractFactory(
+    'NFTGemPool',
+    deployParams
+  );
 
   const getGPA = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
+  };
+
+  const getPoolContract = async (addr: string) => {
+    return NFTComplexGemPool.attach(addr);
   };
 
   const createPool = async (
@@ -173,8 +175,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         diff,
         maxClaims,
         allowedToken,
-        {gasLimit: 5000000}
+        {gasLimit: 5000000, gasPrice: 0xa7359400}
       );
+      //console.log(tx);
       await waitForMined(tx.hash);
       nonce = BigNumber.from(tx.nonce).add(1);
       const gpAddr = await getGPA(symbol);
@@ -183,9 +186,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         `W${symbol}`,
         `Wrapped ${name}`,
         gpAddr,
-        dc.NFTGemMultiToken.addres
+        dc.NFTGemMultiToken.address,
         18,
-        {gasLimit: 5000000, nonce}
+        {gasLimit: 5000000, nonce, gasPrice: 0xa7359400}
       );
       await waitForMined(tx.hash);
       nonce = nonce.add(1);
@@ -193,9 +196,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       created = true;
     }
     const pc = await getPoolContract(poolAddr);
-    const reqlen = created ? 0 : await pc.allInputRequirementsLength();
-    
-    }
+
     return await getGPA(symbol);
   };
 
@@ -204,7 +205,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    */
 
   await createPool(
-    'PIXPL1',
+    'PIXEL1',
     'PixelPals: Antonio',
     parseEther('100'),
     300,
@@ -215,7 +216,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'PIXPL4',
+    'PIXEL4',
     'PixelPals: Jax',
     parseEther('250'),
     300,
@@ -226,7 +227,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'PIXPL3',
+    'PIXEL3',
     'PixelPals: Simone',
     parseEther('500'),
     300,
@@ -237,7 +238,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   await createPool(
-    'PIXPL2',
+    'PIXEL2',
     'PixelPals: Rongo',
     parseEther('1000'),
     300,
@@ -246,7 +247,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000'
   );
-
 
   // we are done!
   console.log('Deploy complete\n');
