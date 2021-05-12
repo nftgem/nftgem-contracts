@@ -26,9 +26,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         );
         return txReceipt && txReceipt.blockNumber ? txReceipt : null;
       };
-      setInterval(() => {
+      const interval = setInterval(() => {
         _checkReceipt().then((r: any) => {
           if (r) {
+            clearInterval(interval);
             resolve(true);
           }
         });
@@ -175,7 +176,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         diff,
         maxClaims,
         allowedToken,
-        {gasLimit: 5000000, gasPrice: 0xa7359400}
+        {
+          gasLimit: 600000,
+          //  gasPrice: 0xaa7359400,
+        }
       );
       //console.log(tx);
       await waitForMined(tx.hash);
@@ -188,7 +192,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         gpAddr,
         dc.NFTGemMultiToken.address,
         18,
-        {gasLimit: 5000000, nonce, gasPrice: 0xa7359400}
+        {
+          gasLimit: 600000,
+          nonce,
+          //      gasPrice: 0xaa7359400,
+        }
       );
       await waitForMined(tx.hash);
       nonce = nonce.add(1);
