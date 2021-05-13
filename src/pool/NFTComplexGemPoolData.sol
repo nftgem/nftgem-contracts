@@ -433,8 +433,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      * @dev remove an allowed token source
      */
     function removeAllowedTokenSource(address allowedToken) external override {
-        if(!poolData.allowedTokenSources.exists(allowedToken)) {
-            poolData.allowedTokenSources.insert(allowedToken);
+        if(poolData.allowedTokenSources.exists(allowedToken)) {
+            poolData.allowedTokenSources.remove(allowedToken);
         }
     }
 
