@@ -106,8 +106,12 @@ library ComplexPoolLib {
         uint256 maxQuantityPerClaim;
         uint256 maxClaimsPerAccount;
         bool validateerc20;
+        bool allowPurchase;
+        INFTComplexGemPoolData.PriceIncrementType priceIncrementType;
         mapping(uint256 => uint8) tokenTypes;
         mapping(uint256 => uint256) tokenIds;
+        mapping(uint256 => address) tokenSources;
+        AddressSet.Set allowedTokenSources;
         uint256[] tokenHashes;
         // next ids of things
         uint256 nextGemIdVal;
@@ -625,6 +629,33 @@ library ComplexPoolLib {
     }
 
     /**
+     * @dev purchase a gem at the listed pool price
+     */
+    function purchaseGems(ComplexPoolData storage self, address sender, uint256 value, uint256 count) public {
+
+        require(value != 0, "ZERO_BALANCE");
+        require(count != 0, "ZERO_QUANTITY");
+        uint256 adjustedBalance = value.div(count);
+        require(adjustedBalance >= self.ethPrice, "INSUFFICIENT_ETH");
+        require(self.allowPurchase == true, "PURCHASE_DISALLOWED");
+
+        // get the next gem hash, increase the staking sifficulty
+        // for the pool, and mint a gem token back to account
+        uint256 nextHash = nextGemHash(self);
+
+        // mint the gem
+        INFTGemMultiToken(self.multitoken).mint(sender, nextHash, count);
+        addToken(self, nextHash, 2);
+
+        // maybe mint a governance token
+        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(sender);
+        INFTGemGovernor(self.governor).issueFuelToken(sender, value);
+
+        // emit an event about a gem getting created
+        emit NFTGemCreated(sender, address(self.pool), 0, nextHash, count);
+    }
+
+    /**
      * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
      */
     function addToken(
@@ -664,8 +695,10 @@ library ComplexPoolLib {
      * @dev increase the pool's difficulty by calculating the step increase portion and adding it to the eth price of the market
      */
     function increaseDifficulty(ComplexPoolData storage self) public {
-        uint256 diffIncrease = self.ethPrice.div(self.diffstep);
-        self.ethPrice = self.ethPrice.add(diffIncrease);
+        if(self.priceIncrementType == INFTComplexGemPoolData.PriceIncrementType.COMPOUND) {
+            uint256 diffIncrease = self.ethPrice.div(self.diffstep);
+            self.ethPrice = self.ethPrice.add(diffIncrease);
+        }
     }
 
     /**

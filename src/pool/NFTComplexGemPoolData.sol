@@ -128,6 +128,34 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
+     * @dev max claims that can be made on this NFT
+     */
+    function allowPurchase() external view override returns (bool) {
+        return poolData.allowPurchase;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setAllowPurchase(bool allow) external override onlyController {
+        poolData.allowPurchase = allow;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function priceIncrementType() external view override returns (PriceIncrementType) {
+        return poolData.priceIncrementType;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setPriceIncrementType(PriceIncrementType incrementType) external override onlyController {
+        poolData.priceIncrementType = incrementType;
+    }
+
+    /**
      * @dev number of claims made thus far
      */
     function claimedCount() external view override returns (uint256) {
@@ -393,6 +421,31 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
+     * @dev add an allowed token source
+     */
+    function addAllowedTokenSource(address allowedToken) external override {
+        if(!poolData.allowedTokenSources.exists(allowedToken)) {
+            poolData.allowedTokenSources.insert(allowedToken);
+        }
+    }
+
+    /**
+     * @dev remove an allowed token source
+     */
+    function removeAllowedTokenSource(address allowedToken) external override {
+        if(!poolData.allowedTokenSources.exists(allowedToken)) {
+            poolData.allowedTokenSources.insert(allowedToken);
+        }
+    }
+
+    /**
+     * @dev returns an array of all allowed token sources
+     */
+    function allowedTokenSources() external override returns (address[] memory) {
+        return poolData.allowedTokenSources.keyList;
+    }
+
+    /**
      * @dev delegate proxy method for multitoken allow
      */
     function proxies(address) external view returns (address) {
@@ -479,9 +532,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         nextClaimId = poolData.nextClaimIdVal;
     }
 
-    function token(uint256 tokenHash) external view override returns (uint8 tokenType, uint256 tokenId) {
+    function token(uint256 tokenHash) external view override returns (uint8 tokenType, uint256 tokenId, address tokenSource) {
         tokenType = poolData.tokenTypes[tokenHash];
         tokenId = poolData.tokenIds[tokenHash];
+        tokenSource = poolData.tokenSources[tokenHash];
     }
 
     function addLegacyToken(
@@ -493,15 +547,17 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 qty
     ) external override onlyController {
         require(tokenType > 0, "INVALID_TOKENTYPE");
-        require(tokenHash > 0, "INVALID_TOKENTYPE");
+        require(tokenHash > 0, "INVALID_TOKENHASH");
         require(token > address(0), "INVALID_TOKEN");
         require(recipient > address(0), "INVALID_RECIPIENT");
+        require(poolData.allowedTokenSources.exists(token) == true, "INVALID_TOKENSOURCE");
         require(qty > 0, "INVALID_QUANTIY");
 
         INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, qty);
         INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, tokenType, address(this));
         poolData.tokenTypes[tokenHash] = tokenType;
         poolData.tokenIds[tokenHash] = tokenId;
+        poolData.tokenSources[tokenHash] = token;
     }
 
     function setToken(

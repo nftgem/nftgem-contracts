@@ -2,6 +2,9 @@
 pragma solidity >=0.7.0;
 
 interface INFTComplexGemPoolData {
+
+    enum PriceIncrementType {COMPOUND, NONE}
+
     function addInputRequirement(
         address token,
         address pool,
@@ -78,7 +81,13 @@ interface INFTComplexGemPoolData {
             uint256 nextClaimId
         );
 
-    function token(uint256 tokenHash) external view returns (uint8 tokenType, uint256 tokenId);
+    function token(uint256 tokenHash) external view returns (uint8 tokenType, uint256 tokenId, address tokenSource);
+
+    function addAllowedTokenSource(address allowedToken) external;
+
+    function removeAllowedTokenSource(address allowedToken) external;
+
+    function allowedTokenSources() external returns (address[] memory);
 
     function addLegacyToken(
         address token,
@@ -186,4 +195,12 @@ interface INFTComplexGemPoolData {
     function addAllowedToken(address tkn) external;
 
     function removeAllowedToken(address tkn) external;
+
+    function allowPurchase() external view  returns (bool);
+
+    function setAllowPurchase(bool allow) external;
+
+    function priceIncrementType() external view  returns (PriceIncrementType);
+
+    function setPriceIncrementType(PriceIncrementType incrementType) external;
 }

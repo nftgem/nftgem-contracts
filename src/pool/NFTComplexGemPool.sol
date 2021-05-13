@@ -137,6 +137,13 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
+     * @dev the external version of the above
+     */
+    function purchaseGems(uint256 count) external payable override {
+        poolData.purchaseGems(msg.sender, msg.value, count);
+    }
+
+    /**
      * @dev create a claim using a erc20 token
      */
     function createERC20Claim(address erc20token, uint256 tokenAmount) external override {
