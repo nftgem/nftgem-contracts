@@ -225,8 +225,7 @@ const func: any = async function (
 
   const deployedContracts = await getDeployedContracts(sender);
   const dc = deployedContracts;
-  const ds = 86400;
-  const ms = ds * 30;
+
   let inited = false;
 
   console.log('initializing governor...');
@@ -240,7 +239,7 @@ const func: any = async function (
     );
     await waitFor(waitForTime);
   } catch (e) {
-  //  inited = true;
+    inited = true;
     console.log('already inited');
   }
 
@@ -265,32 +264,32 @@ const func: any = async function (
     await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
     await waitFor(waitForTime);
 
-    // console.log('minting initial governance tokens...');
-    // await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
-    //   gasLimit: 5000000,
-    // });
+    console.log('minting initial governance tokens...');
+    await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
+      gasLimit: 5000000,
+    });
 
-    // deployParams.args = [
-    //   'Bitlootbox Governance',
-    //   'BLBX',
-    //   dc.NFTGemMultiToken.address,
-    // ];
-    // await deploy('NFTGemWrappedERC20Governance', deployParams);
-    // dc.NFTGemWrappedERC20Governance = await getContractAt(
-    //   'NFTGemWrappedERC20Governance',
-    //   (await get('NFTGemWrappedERC20Governance')).address,
-    //   sender
-    // );
+    deployParams.args = [
+      'Bitlootbox Governance',
+      'BLBX',
+      dc.NFTGemMultiToken.address,
+    ];
+    await deploy('NFTGemWrappedERC20Governance', deployParams);
+    dc.NFTGemWrappedERC20Governance = await getContractAt(
+      'NFTGemWrappedERC20Governance',
+      (await get('NFTGemWrappedERC20Governance')).address,
+      sender
+    );
 
-    // dc.NFTGemMultiToken.setApprovalForAll(
-    //   dc.NFTGemWrappedERC20Governance.address,
-    //   true,
-    //   {from: sender.address}
-    // );
-    // await dc.NFTGemWrappedERC20Governance.wrap('100000', {
-    //   from: sender.address,
-    //   gasLimit: 5000000,
-    // });
+    dc.NFTGemMultiToken.setApprovalForAll(
+      dc.NFTGemWrappedERC20Governance.address,
+      true,
+      {from: sender.address}
+    );
+    await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+      from: sender.address,
+      gasLimit: 5000000,
+    });
 
     await waitFor(waitForTime);
   }
