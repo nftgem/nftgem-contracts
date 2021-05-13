@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0;
 
 import "../libs/SafeMath.sol";
-import "../interfaces/INFTGemFeeManager.sol";
+import "../interfaces/INFTGemWrapperFeeManager.sol";
 import "./ERC20WrappedERC1155.sol";
 
 contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
@@ -26,7 +26,7 @@ contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
             "INSUFFICIENT_ERC1155_BALANCE"
         );
         uint256 tq = quantity.mul(tokenData.rate * 10**decimals());
-        uint256 fd = INFTGemFeeManager(_feeManager).feeDivisor(address(this));
+        uint256 fd = INFTGemWrapperFeeManager(_feeManager).feeDivisor(address(this));
         uint256 fee = fd != 0 ? tq.div(fd) : 0;
         uint256 userQty = tq.sub(fee);
         IERC1155(tokenData.erc1155token).safeTransferFrom(msg.sender, address(this), tokenData.index, quantity, "");
@@ -34,5 +34,7 @@ contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
         _mint(_feeManager, fee);
     }
 
-    function unwrap(uint256 quantity) external override {}
+    function unwrap(uint256 quantity) external override {
+        _unwrap(quantity);
+    }
 }

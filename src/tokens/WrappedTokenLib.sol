@@ -10,6 +10,8 @@ import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 
+import "hardhat/console.sol";
+
 library WrappedTokenLib {
     using SafeMath for uint256;
 
@@ -34,14 +36,13 @@ library WrappedTokenLib {
         uint8 tokenType,
         address account
     ) public view returns (uint256 tq) {
-        uint256 i = INFTGemMultiToken(erc1155token).allHeldTokensLength(account) - 1;
-        for (; i >= 0 && tq > 0; i = i.sub(1)) {
-            uint256 tokenHash = INFTGemMultiToken(erc1155token).allHeldTokens(account, i);
+        uint256[] memory ht = INFTGemMultiToken(erc1155token).heldTokens(account);
+        for (uint256 i = ht.length - 1; i >= 0; i = i.sub(1)) {
+            uint256 tokenHash = ht[i];
             (uint8 _tokenType, address _tokenPool) = INFTGemMultiToken(erc1155token).getTokenData(tokenHash);
             if (_tokenType == tokenType && _tokenPool == tokenPool) {
                 uint256 oq = IERC1155(erc1155token).balanceOf(account, tokenHash);
-                uint256 toTransfer = oq > tq ? tq : oq;
-                tq = tq.add(toTransfer);
+                tq = tq.add(oq);
             }
             if (i == 0) break;
         }
@@ -57,10 +58,9 @@ library WrappedTokenLib {
         delete self.ids[to];
         delete self.amounts[to];
 
-        uint256 i = INFTGemMultiToken(self.erc1155token).allHeldTokensLength(from) - 1;
-
-        for (; i >= 0 && tq > 0; i = i.sub(1)) {
-            uint256 tokenHash = INFTGemMultiToken(self.erc1155token).allHeldTokens(from, i);
+        uint256[] memory ht = INFTGemMultiToken(self.erc1155token).heldTokens(from);
+        for (uint256 i = ht.length - 1; i >= 0 && tq > 0; i = i.sub(1)) {
+            uint256 tokenHash = ht[i];
             (uint8 _tokenType, address _tokenPool) = INFTGemMultiToken(self.erc1155token).getTokenData(tokenHash);
             if (_tokenType == self.tokenType && _tokenPool == self.tokenPool) {
                 uint256 oq = IERC1155(self.erc1155token).balanceOf(from, tokenHash);

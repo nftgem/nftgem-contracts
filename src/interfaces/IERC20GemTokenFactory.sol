@@ -24,6 +24,7 @@ interface IERC20GemTokenFactory {
         string memory tokenName,
         address poolAddress,
         address tokenAddress,
-        uint8 decimals
+        uint8 decimals,
+        address feeManager
     ) external returns (address payable);
 }
