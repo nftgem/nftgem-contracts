@@ -128,8 +128,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
   const dc = await getDeployedContracts(sender);
 
-  const itemPrice = '1000';
-
   const deployParams = {
     from: sender.address,
     log: true,
@@ -163,16 +161,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     allowedToken: string
   ) => {
     let poolAddr = await getGPA(symbol);
+    if(BigNumber.from(chainId).eq(1337)) {
+      price = parseEther('0.0001');
+      min = 1;
+      max = 1;
+      diff = 4294967296;
+    }
+
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
-
-      const gasPrice = (await ethers.provider.getGasPrice())
-        .div(100)
-        .mul(1000)
-      const settings = {
-        gasLimit: 600000,
-        gasPrice
-      }
 
       const tx = await dc.NFTGemGovernor.createSystemPool(
         symbol,
@@ -183,7 +180,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         diff,
         maxClaims,
         allowedToken,
-       // settings
       );
       //console.log(tx);
       await waitForMined(tx.hash);

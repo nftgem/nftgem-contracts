@@ -371,7 +371,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   await createPool(
     'FRMAN',
     'AssemblaMen Foreman',
-    parseEther('250'),
+    parseEther('5000'),
     3600,
     3600,
     16,
