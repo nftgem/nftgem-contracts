@@ -116,8 +116,6 @@ const config: HardhatUserConfig = {
     opera: {
       url: node_url('opera'),
       accounts: accounts('opera'),
-      gasPrice: 'auto',
-      gas: 'auto'
     },
     sokol: {
       url: node_url('sokol'),
