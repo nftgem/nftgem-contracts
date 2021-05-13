@@ -67,6 +67,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('ProposalFactory')).address,
         sender
       ),
+      ERC20GemTokenFactory: await getContractAt(
+        'ERC20GemTokenFactory',
+        (await get('ERC20GemTokenFactory')).address,
+        sender
+      ),
       MockProxyRegistry: await getContractAt(
         'MockProxyRegistry',
         (await get('MockProxyRegistry')).address,
@@ -123,15 +128,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
   const dc = await getDeployedContracts(sender);
 
-  const itemPrice = '1000';
-
   const deployParams = {
     from: sender.address,
     log: true,
-    libraries: {},
+    libraries: {
+      ComplexPoolLib: (await get('ComplexPoolLib')).address,
+    },
   };
   const NFTComplexGemPool = await ethers.getContractFactory(
-    'NFTGemPool',
+    'NFTComplexGemPool',
     deployParams
   );
 
@@ -153,19 +158,16 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     max: number,
     diff: number,
     maxClaims: number,
-    allowedToken: string
+    allowedToken: string,
+    inputRequirements?: any[]
   ) => {
+    let tx,
+      created = false,
+      nonce = BigNumber.from(0);
     let poolAddr = await getGPA(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
-
-      const gasPrice = (await ethers.provider.getGasPrice()).div(100).mul(1000);
-      const settings = {
-        gasLimit: 600000,
-        gasPrice,
-      };
-
-      const tx = await dc.NFTGemGovernor.createSystemPool(
+      tx = await dc.NFTGemGovernor.createSystemPool(
         symbol,
         name,
         price,
@@ -173,130 +175,226 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         max,
         diff,
         maxClaims,
-        allowedToken
-        // settings
+        allowedToken,
+        {gasLimit: 5000000}
       );
-      //console.log(tx);
       await waitForMined(tx.hash);
-      console.log(tx);
-
+      nonce = BigNumber.from(tx.nonce).add(1);
+      const gpAddr = await getGPA(symbol);
+      console.log(`Creating wrapped ${name} (${symbol}) token...`);
+      tx = await dc.ERC20GemTokenFactory.createItem(
+        `W${symbol}`,
+        `Wrapped ${name}`,
+        gpAddr,
+        dc.NFTGemMultiToken.address,
+        18,
+        {gasLimit: 5000000, nonce}
+      );
+      await waitForMined(tx.hash);
+      nonce = nonce.add(1);
       poolAddr = await getGPA(symbol);
+      created = true;
     }
-    return await getPoolContract(poolAddr);
+    const pc = await getPoolContract(poolAddr);
+    const reqlen = created ? 0 : await pc.allInputRequirementsLength();
+    if (
+      inputRequirements &&
+      inputRequirements.length &&
+      inputRequirements.length > 0 &&
+      inputRequirements.length > reqlen
+    ) {
+      for (
+        let ii = 0;
+        ii < inputRequirements.length;
+        ii++, nonce = nonce.add(1)
+      ) {
+        if (ii < reqlen) {
+          console.log(`updating complex requirements to ${name} (${symbol})`);
+          if (nonce.eq(0)) {
+            tx = await pc.updateInputRequirement(ii, ...inputRequirements[ii]);
+            nonce = BigNumber.from(tx.nonce);
+          } else {
+            tx = await pc.updateInputRequirement(ii, ...inputRequirements[ii], {
+              nonce,
+            });
+          }
+        } else {
+          console.log(`adding complex requirements to ${name} (${symbol})`);
+          if (nonce.eq(0)) {
+            tx = await pc.addInputRequirement(...inputRequirements[ii]);
+            nonce = BigNumber.from(tx.nonce);
+          } else {
+            tx = await pc.addInputRequirement(...inputRequirements[ii], {
+              nonce,
+            });
+          }
+        }
+        await waitForMined(tx.hash);
+      }
+    }
+    return await getGPA(symbol);
   };
+
+  const itemPrice = '100';
 
   /**
    ******************************************************************************
    */
 
   await createPool(
-    'PIXEL1',
-    'PixelPals: Antonio',
-    parseEther('100'),
-    300,
-    2400,
-    32,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'PIXEL4',
-    'PixelPals: Jax',
-    parseEther('250'),
-    300,
-    1600,
-    24,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'PIXEL3',
-    'PixelPals: Simone',
-    parseEther('500'),
-    300,
-    1200,
-    16,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'PIXEL2',
-    'PixelPals: Rongo',
-    parseEther('1000'),
+    'APU',
+    'BitRobots All-Purpose Unit',
+    parseEther(itemPrice),
     300,
     900,
-    12,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'PIXEL5',
-    'PixelPals: Steve',
-    parseEther('1000'),
-    86400,
-    86400 * 10,
     32,
     0,
     '0x0000000000000000000000000000000000000000'
   );
 
   await createPool(
-    'PIXEL6',
-    'PixelPals: Shelly',
-    parseEther('2500'),
-    86400,
-    86400 * 10,
-    24,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
-
-  await createPool(
-    'PIXEL7',
-    'PixelPals: Splat',
-    parseEther('5000'),
-    86400,
-    86400 * 10,
+    'SRR',
+    'BitRobots Sentry Responder Unit',
+    parseEther(itemPrice),
+    300,
+    900,
     16,
     0,
     '0x0000000000000000000000000000000000000000'
   );
 
   await createPool(
-    'PIXEL8',
-    'PixelPals: Drago',
-    parseEther('10000'),
-    86400,
-    86400 * 10,
+    'RAU',
+    'BitRobots Repair and Assist Unit',
+    parseEther(itemPrice),
+    300,
+    900,
+    8,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'PAU',
+    'BitRobots Personal Assistant Unit',
+    parseEther(itemPrice),
+    300,
+    900,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'PRC',
+    'BitRobots Personal Robot Companion',
+    parseEther(itemPrice),
+    300,
+    900,
+    3,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'MCU',
+    'BitRobots Master Control Unit',
+    parseEther(itemPrice),
+    3600,
+    14400,
+    2,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('APU'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('SRR'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('RAU'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('PAU'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('PRC'), 3, 0, 1, false],
+    ]
+  );
+
+  await createPool(
+    'AMBUS',
+    'AssemblaMen Business Man',
+    parseEther('100'),
+    3600,
+    3600,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'AMPAR',
+    'AssemblaMen Party Man',
+    parseEther('100'),
+    3600,
+    3600,
+    24,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'AMCHF',
+    'AssemblaMen Chef',
+    parseEther('250'),
+    3600,
+    3600,
     12,
     0,
     '0x0000000000000000000000000000000000000000'
   );
 
+  await createPool(
+    'ASTRO',
+    'AssemblaMen Astronaut',
+    parseEther('500'),
+    3600,
+    3600,
+    4,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [dc.NFTGemMultiToken.address, await getGPA('AMBUS'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('AMPAR'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('AMCHF'), 3, 0, 1, false],
+    ]
+  );
+
+  await createPool(
+    'BLHOP',
+    'AssemblaMen Bellhop',
+    parseEther('100'),
+    3600,
+    3600,
+    32,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  await createPool(
+    'FRMAN',
+    'AssemblaMen Foreman',
+    parseEther('250'),
+    3600,
+    3600,
+    16,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
   // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
 
-  // await dc.NFTGemWrappedERC20Governance.wrap('1000');
-
-  // dc.NFTGemMultiToken.safeTransferFrom(
-  //   sender.address,
-  //   '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F',
-  //   2,
-  //   1,
-  //   0
-  // );
-
-  await waitFor(3);
+  await waitFor(15);
 
   return dc;
 };
 
+func.tags = ['Publish'];
 func.dependencies = ['Deploy'];
 export default func;
