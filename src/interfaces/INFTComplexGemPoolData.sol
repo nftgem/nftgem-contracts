@@ -11,6 +11,7 @@ interface INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tokenId,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external;
 
@@ -21,6 +22,7 @@ interface INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external;
 
@@ -35,6 +37,7 @@ interface INFTComplexGemPoolData {
             uint8,
             uint256,
             uint256,
+            bool,
             bool
         );
 
@@ -114,17 +117,7 @@ interface INFTComplexGemPoolData {
     // but ethPrice are immutable. ethPrice only increases. ONLY UP
     function symbol() external view returns (string memory);
 
-    function name() external view returns (string memory);
-
     function ethPrice() external view returns (uint256);
-
-    function minTime() external view returns (uint256);
-
-    function maxTime() external view returns (uint256);
-
-    function difficultyStep() external view returns (uint256);
-
-    function maxClaims() external view returns (uint256);
 
     function setVisible(bool visible) external;
 
@@ -199,6 +192,10 @@ interface INFTComplexGemPoolData {
     function allowPurchase() external view  returns (bool);
 
     function setAllowPurchase(bool allow) external;
+
+    function enabled() external view  returns (bool);
+
+    function setEnabled(bool enable) external;
 
     function priceIncrementType() external view  returns (PriceIncrementType);
 

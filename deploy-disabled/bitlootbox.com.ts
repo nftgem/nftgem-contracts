@@ -305,11 +305,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('APU'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('SRR'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('RAU'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('PAU'), 3, 0, 1, false],
-      [dc.NFTGemMultiToken.address, await getGPA('PRC'), 3, 0, 1, false],
+      [dc.NFTGemMultiToken.address, await getGPA('APU'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGPA('SRR'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGPA('RAU'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGPA('PAU'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGPA('PRC'), 3, 0, 1, true, false],
     ]
   );
 

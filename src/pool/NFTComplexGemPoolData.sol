@@ -58,45 +58,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev The name for this pool / NFT
-     */
-    function name() external view override returns (string memory) {
-        return poolData.name;
-    }
-
-    /**
      * @dev The ether price for this pool / NFT
      */
     function ethPrice() external view override returns (uint256) {
         return poolData.ethPrice;
-    }
-
-    /**
-     * @dev min time to stake in this pool to earn an NFT
-     */
-    function minTime() external view override returns (uint256) {
-        return poolData.minTime;
-    }
-
-    /**
-     * @dev max time to stake in this pool to earn an NFT
-     */
-    function maxTime() external view override returns (uint256) {
-        return poolData.maxTime;
-    }
-
-    /**
-     * @dev difficulty step increase for this pool.
-     */
-    function difficultyStep() external view override returns (uint256) {
-        return poolData.diffstep;
-    }
-
-    /**
-     * @dev max claims that can be made on this NFT
-     */
-    function maxClaims() external view override returns (uint256) {
-        return poolData.maxClaims;
     }
 
     /**
@@ -139,6 +104,20 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function setAllowPurchase(bool allow) external override onlyController {
         poolData.allowPurchase = allow;
+    }
+
+    /**
+     * @dev is the pool enabled and taking orders
+     */
+    function enabled() external view override returns (bool) {
+        return poolData.enabled;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setEnabled(bool enable) external override onlyController {
+        poolData.enabled = enable;
     }
 
     /**
@@ -374,9 +353,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.addInputRequirement(token, pool, inputType, tid, minAmount, burn);
+        poolData.addInputRequirement(token, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -389,9 +369,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, burn);
+        poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -414,6 +395,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             uint8,
             uint256,
             uint256,
+            bool,
             bool
         )
     {

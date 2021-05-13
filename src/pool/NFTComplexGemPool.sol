@@ -78,6 +78,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
         poolData.diffstep = __diffstep;
         poolData.maxClaims = __maxClaims;
         poolData.visible = true;
+        poolData.enabled = true;
         if (__allowedToken != address(0)) {
             poolData.allowedTokens.insert(__allowedToken);
         }
