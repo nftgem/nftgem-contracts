@@ -43,7 +43,8 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
         string memory,
         address,
         address,
-        uint8
+        uint8,
+        address
     ) external override {
         tokenData.erc20token = address(this);
     }

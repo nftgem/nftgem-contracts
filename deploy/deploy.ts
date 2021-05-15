@@ -334,7 +334,7 @@ const func: any = async function (
       'Bitlootbox Governance',
       'BLBX',
       dc.NFTGemMultiToken.address,
-      dc.NFTGemWrapperFeeManager.address,
+      dc.NFTGemWrapperFeeManager.address
     ];
     await deploy('NFTGemWrappedERC20Governance', deployParams);
 
@@ -351,7 +351,8 @@ const func: any = async function (
       '',
       '0x0000000000000000000000000000000000000000',
       '0x0000000000000000000000000000000000000000',
-      0
+      0,
+      dc.NFTGemWrapperFeeManager.address
     );
     await waitForMined(tx.hash);
 

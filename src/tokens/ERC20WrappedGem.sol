@@ -9,6 +9,7 @@ import "../interfaces/IERC1155.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
+import "../interfaces/INFTGemWrapperFeeManager.sol";
 
 import "./WrappedTokenLib.sol";
 
@@ -17,6 +18,7 @@ import "./ERC1155Holder.sol";
 contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGem, Initializable {
     using SafeMath for uint256;
     using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
+    address internal _feeManager;
 
     WrappedTokenLib.WrappedTokenData internal tokenData;
 
@@ -25,11 +27,13 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
         string memory symbol,
         address gemPool,
         address gemToken,
-        uint8 decimals
+        uint8 decimals,
+        address feeManager
     ) external override initializer {
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
+        _feeManager = feeManager;
         tokenData.erc1155token = gemToken;
         tokenData.erc20token = address(this);
         tokenData.tokenPool = gemPool;
@@ -52,9 +56,14 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
             ) >= quantity,
             "INSUFFICIENT_QUANTITY"
         );
+        uint256 tq = quantity.mul(tokenData.rate * 10**decimals());
+        uint256 fd = INFTGemWrapperFeeManager(_feeManager).feeDivisor(address(this));
+        uint256 fee = fd != 0 ? tq.div(fd) : 0;
+        uint256 userQty = tq.sub(fee);
 
         tokenData.transferPoolTypesFrom(msg.sender, address(this), quantity);
-        _mint(msg.sender, quantity.mul(10**decimals()));
+        _mint(msg.sender, userQty);
+        _mint(_feeManager, fee);
         tokenData.wrappedBalance = tokenData.wrappedBalance.add(quantity);
 
         emit Wrap(msg.sender, quantity);

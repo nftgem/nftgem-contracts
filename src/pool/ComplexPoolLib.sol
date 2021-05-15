@@ -76,6 +76,7 @@ library ComplexPoolLib {
         uint8 inputType; // 1 = erc20, 2 = erc1155, 3 = pool
         uint256 tokenId; // if erc20 slot 0 contains required amount
         uint256 minVal;
+        bool takeCustody;
         bool burn;
     }
 
@@ -106,8 +107,13 @@ library ComplexPoolLib {
         uint256 maxQuantityPerClaim;
         uint256 maxClaimsPerAccount;
         bool validateerc20;
+        bool allowPurchase;
+        bool enabled;
+        INFTComplexGemPoolData.PriceIncrementType priceIncrementType;
         mapping(uint256 => uint8) tokenTypes;
         mapping(uint256 => uint256) tokenIds;
+        mapping(uint256 => address) tokenSources;
+        AddressSet.Set allowedTokenSources;
         uint256[] tokenHashes;
         // next ids of things
         uint256 nextGemIdVal;
@@ -188,6 +194,9 @@ library ComplexPoolLib {
     ) internal {
         address gemtoken;
         for (uint256 i = 0; i < self.inputRequirements.length; i++) {
+            if(!self.inputRequirements[i].takeCustody) {
+                continue;
+            }
             if (self.inputRequirements[i].inputType == 1) {
                 IERC20 token = IERC20(self.inputRequirements[i].token);
                 token.transferFrom(from, self.pool, self.inputRequirements[i].minVal.mul(quantity));
@@ -248,10 +257,14 @@ library ComplexPoolLib {
     ) internal {
         address gemtoken;
         for (uint256 i = 0; i < self.inputRequirements.length; i++) {
-            if (self.inputRequirements[i].inputType == 1 && self.inputRequirements[i].burn == false) {
+            if (self.inputRequirements[i].inputType == 1
+                && self.inputRequirements[i].burn == false
+                && self.inputRequirements[i].takeCustody == true) {
                 IERC20 token = IERC20(self.inputRequirements[i].token);
                 token.transferFrom(self.pool, to, self.inputRequirements[i].minVal.mul(quantity));
-            } else if (self.inputRequirements[i].inputType == 2 && self.inputRequirements[i].burn == false) {
+            } else if (self.inputRequirements[i].inputType == 2
+                && self.inputRequirements[i].burn == false
+                && self.inputRequirements[i].takeCustody == true) {
                 IERC1155 token = IERC1155(self.inputRequirements[i].token);
                 token.safeTransferFrom(
                     self.pool,
@@ -260,7 +273,9 @@ library ComplexPoolLib {
                     self.inputRequirements[i].minVal.mul(quantity),
                     ""
                 );
-            } else if (self.inputRequirements[i].inputType == 3 && self.inputRequirements[i].burn == false) {
+            } else if (self.inputRequirements[i].inputType == 3
+                && self.inputRequirements[i].burn == false
+                && self.inputRequirements[i].takeCustody == true) {
                 gemtoken = self.inputRequirements[i].token;
             }
         }
@@ -285,6 +300,7 @@ library ComplexPoolLib {
         uint8 inputType,
         uint256 tokenId,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) public {
         require(token != address(0), "INVALID_TOKEN");
@@ -295,7 +311,8 @@ library ComplexPoolLib {
             "INVALID_TOKENID"
         );
         require(minAmount != 0, "ZERO_AMOUNT");
-        self.inputRequirements.push(InputRequirement(token, pool, inputType, tokenId, minAmount, burn));
+        require(!(!takeCustody && burn), "INVALID_TOKENSTATE");
+        self.inputRequirements.push(InputRequirement(token, pool, inputType, tokenId, minAmount, takeCustody, burn));
     }
 
     /**
@@ -309,6 +326,7 @@ library ComplexPoolLib {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) public {
         require(ndx < self.inputRequirements.length, "OUT_OF_RANGE");
@@ -317,7 +335,8 @@ library ComplexPoolLib {
         require((inputType == 3 && pool != address(0)) || inputType != 3, "INVALID_POOL");
         require((inputType == 1 && tid == 0) || inputType == 2 || (inputType == 3 && tid == 0), "INVALID_TOKENID");
         require(minAmount != 0, "ZERO_AMOUNT");
-        self.inputRequirements[ndx] = InputRequirement(token, pool, inputType, tid, minAmount, burn);
+        require(!(!takeCustody && burn), "INVALID_TOKENSTATE");
+        self.inputRequirements[ndx] = InputRequirement(token, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -339,12 +358,13 @@ library ComplexPoolLib {
             uint8,
             uint256,
             uint256,
+            bool,
             bool
         )
     {
         require(ndx < self.inputRequirements.length, "OUT_OF_RANGE");
         InputRequirement memory req = self.inputRequirements[ndx];
-        return (req.token, req.pool, req.inputType, req.tokenId, req.minVal, req.burn);
+        return (req.token, req.pool, req.inputType, req.tokenId, req.minVal, req.takeCustody, req.burn);
     }
 
     /**
@@ -355,6 +375,8 @@ library ComplexPoolLib {
         uint256 timeframe,
         uint256 count
     ) public {
+        // enabled
+        require(self.enabled == true, "DISABLED");
         // minimum timeframe
         require(timeframe >= self.minTime, "TIMEFRAME_TOO_SHORT");
         // no ETH
@@ -427,6 +449,8 @@ library ComplexPoolLib {
         uint256 tokenAmount,
         uint256 count
     ) public {
+                // enabled
+        require(self.enabled == true, "DISABLED");
         // must be a valid address
         require(erc20token != address(0), "INVALID_ERC20_TOKEN");
 
@@ -528,6 +552,8 @@ library ComplexPoolLib {
      * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
      */
     function collectClaim(ComplexPoolData storage self, uint256 claimHash) public {
+        // enabled
+        require(self.enabled == true, "DISABLED");
         // validation checks - disallow if not owner (holds coin with claimHash)
         // or if the unlockTime amd unlockPaid data is in an invalid state
         require(IERC1155(self.multitoken).balanceOf(msg.sender, claimHash) == 1, "NOT_CLAIM_OWNER");
@@ -626,6 +652,37 @@ library ComplexPoolLib {
     }
 
     /**
+     * @dev purchase a gem at the listed pool price
+     */
+    function purchaseGems(ComplexPoolData storage self, address sender, uint256 value, uint256 count) public {
+        // enabled
+        require(self.enabled == true, "DISABLED");
+        // non-zero balance
+        require(value != 0, "ZERO_BALANCE");
+        // non-zero quantity
+        require(count != 0, "ZERO_QUANTITY");
+        // sufficient input eth
+        uint256 adjustedBalance = value.div(count);
+        require(adjustedBalance >= self.ethPrice, "INSUFFICIENT_ETH");
+        require(self.allowPurchase == true, "PURCHASE_DISALLOWED");
+
+        // get the next gem hash, increase the staking sifficulty
+        // for the pool, and mint a gem token back to account
+        uint256 nextHash = nextGemHash(self);
+
+        // mint the gem
+        INFTGemMultiToken(self.multitoken).mint(sender, nextHash, count);
+        addToken(self, nextHash, 2);
+
+        // maybe mint a governance token
+        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(sender);
+        INFTGemGovernor(self.governor).issueFuelToken(sender, value);
+
+        // emit an event about a gem getting created
+        emit NFTGemCreated(sender, address(self.pool), 0, nextHash, count);
+    }
+
+    /**
      * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
      */
     function addToken(
@@ -665,8 +722,10 @@ library ComplexPoolLib {
      * @dev increase the pool's difficulty by calculating the step increase portion and adding it to the eth price of the market
      */
     function increaseDifficulty(ComplexPoolData storage self) public {
-        uint256 diffIncrease = self.ethPrice.div(self.diffstep);
-        self.ethPrice = self.ethPrice.add(diffIncrease);
+        if(self.priceIncrementType == INFTComplexGemPoolData.PriceIncrementType.COMPOUND) {
+            uint256 diffIncrease = self.ethPrice.div(self.diffstep);
+            self.ethPrice = self.ethPrice.add(diffIncrease);
+        }
     }
 
     /**

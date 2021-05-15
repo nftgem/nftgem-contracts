@@ -23,6 +23,7 @@ interface IERC20WrappedERC1155 {
         string memory,
         address,
         address,
-        uint8
+        uint8,
+        address
     ) external;
 }

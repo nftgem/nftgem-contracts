@@ -58,45 +58,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev The name for this pool / NFT
-     */
-    function name() external view override returns (string memory) {
-        return poolData.name;
-    }
-
-    /**
      * @dev The ether price for this pool / NFT
      */
     function ethPrice() external view override returns (uint256) {
         return poolData.ethPrice;
-    }
-
-    /**
-     * @dev min time to stake in this pool to earn an NFT
-     */
-    function minTime() external view override returns (uint256) {
-        return poolData.minTime;
-    }
-
-    /**
-     * @dev max time to stake in this pool to earn an NFT
-     */
-    function maxTime() external view override returns (uint256) {
-        return poolData.maxTime;
-    }
-
-    /**
-     * @dev difficulty step increase for this pool.
-     */
-    function difficultyStep() external view override returns (uint256) {
-        return poolData.diffstep;
-    }
-
-    /**
-     * @dev max claims that can be made on this NFT
-     */
-    function maxClaims() external view override returns (uint256) {
-        return poolData.maxClaims;
     }
 
     /**
@@ -125,6 +90,48 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function setMaxClaimsPerAccount(uint256 maxCPA) external override onlyController {
         poolData.maxClaimsPerAccount = maxCPA;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function allowPurchase() external view override returns (bool) {
+        return poolData.allowPurchase;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setAllowPurchase(bool allow) external override onlyController {
+        poolData.allowPurchase = allow;
+    }
+
+    /**
+     * @dev is the pool enabled and taking orders
+     */
+    function enabled() external view override returns (bool) {
+        return poolData.enabled;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setEnabled(bool enable) external override onlyController {
+        poolData.enabled = enable;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function priceIncrementType() external view override returns (PriceIncrementType) {
+        return poolData.priceIncrementType;
+    }
+
+    /**
+     * @dev max claims that can be made on this NFT
+     */
+    function setPriceIncrementType(PriceIncrementType incrementType) external override onlyController {
+        poolData.priceIncrementType = incrementType;
     }
 
     /**
@@ -346,9 +353,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.addInputRequirement(token, pool, inputType, tid, minAmount, burn);
+        poolData.addInputRequirement(token, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -361,9 +369,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint8 inputType,
         uint256 tid,
         uint256 minAmount,
+        bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, burn);
+        poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -386,10 +395,36 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             uint8,
             uint256,
             uint256,
+            bool,
             bool
         )
     {
         return poolData.allInputRequirements(ndx);
+    }
+
+    /**
+     * @dev add an allowed token source
+     */
+    function addAllowedTokenSource(address allowedToken) external override {
+        if (!poolData.allowedTokenSources.exists(allowedToken)) {
+            poolData.allowedTokenSources.insert(allowedToken);
+        }
+    }
+
+    /**
+     * @dev remove an allowed token source
+     */
+    function removeAllowedTokenSource(address allowedToken) external override {
+        if (poolData.allowedTokenSources.exists(allowedToken)) {
+            poolData.allowedTokenSources.remove(allowedToken);
+        }
+    }
+
+    /**
+     * @dev returns an array of all allowed token sources
+     */
+    function allowedTokenSources() external view override returns (address[] memory) {
+        return poolData.allowedTokenSources.keyList;
     }
 
     /**
@@ -479,9 +514,19 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         nextClaimId = poolData.nextClaimIdVal;
     }
 
-    function token(uint256 tokenHash) external view override returns (uint8 tokenType, uint256 tokenId) {
+    function token(uint256 tokenHash)
+        external
+        view
+        override
+        returns (
+            uint8 tokenType,
+            uint256 tokenId,
+            address tokenSource
+        )
+    {
         tokenType = poolData.tokenTypes[tokenHash];
         tokenId = poolData.tokenIds[tokenHash];
+        tokenSource = poolData.tokenSources[tokenHash];
     }
 
     function addLegacyToken(
@@ -493,9 +538,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 qty
     ) external override onlyController {
         require(tokenType > 0, "INVALID_TOKENTYPE");
-        require(tokenHash > 0, "INVALID_TOKENTYPE");
+        require(tokenHash > 0, "INVALID_TOKENHASH");
         require(token > address(0), "INVALID_TOKEN");
         require(recipient > address(0), "INVALID_RECIPIENT");
+        require(poolData.allowedTokenSources.exists(token) == true, "INVALID_TOKENSOURCE");
         require(qty > 0, "INVALID_QUANTIY");
         require(poolData.importedLegacyToken[tokenHash] == false, "ALREADY_IMPORTED");
 
@@ -504,6 +550,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         poolData.tokenTypes[tokenHash] = tokenType;
         poolData.tokenIds[tokenHash] = tokenId;
         poolData.importedLegacyToken[tokenHash] = true;
+        poolData.tokenSources[tokenHash] = token;
     }
 
     function setToken(

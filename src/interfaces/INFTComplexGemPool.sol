@@ -86,6 +86,8 @@ interface INFTComplexGemPool {
 
     function collectClaim(uint256 claimHash) external;
 
+    function purchaseGems(uint256 count) external payable;
+
     function deposit(address erc20token, uint256 tokenAmount) external;
 
     function withdraw(

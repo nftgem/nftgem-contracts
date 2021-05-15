@@ -55,7 +55,8 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
         string memory tokenName,
         address poolAddress,
         address tokenAddress,
-        uint8 decimals
+        uint8 decimals,
+        address feeManager
     ) external override onlyController returns (address payable gemToken) {
         bytes32 salt = keccak256(abi.encodePacked(tokenSymbol));
         require(_getItem[uint256(salt)] == address(0), "GEMTOKEN_EXISTS"); // single check is sufficient
@@ -69,7 +70,7 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
         gemToken = payable(Create2.deploy(0, salt, bytecode));
 
         // initialize the erc20 contract with the relevant addresses which it proxies
-        IERC20WrappedGem(gemToken).initialize(tokenSymbol, tokenName, poolAddress, tokenAddress, decimals);
+        IERC20WrappedGem(gemToken).initialize(tokenSymbol, tokenName, poolAddress, tokenAddress, decimals, feeManager);
 
         // insert the erc20 contract address into lists - one that maps source to quantized,
         _getItem[uint256(salt)] = gemToken;

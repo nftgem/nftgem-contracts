@@ -78,6 +78,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
         poolData.diffstep = __diffstep;
         poolData.maxClaims = __maxClaims;
         poolData.visible = true;
+        poolData.enabled = true;
         if (__allowedToken != address(0)) {
             poolData.allowedTokens.insert(__allowedToken);
         }
@@ -134,6 +135,13 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      */
     function createClaims(uint256 timeframe, uint256 count) external payable override {
         poolData.createClaims(timeframe, count);
+    }
+
+    /**
+     * @dev the external version of the above
+     */
+    function purchaseGems(uint256 count) external payable override {
+        poolData.purchaseGems(msg.sender, msg.value, count);
     }
 
     /**
