@@ -212,59 +212,59 @@ const func: any = async function (
   const dc = deployedContracts;
   const ds = 86400;
   const ms = ds * 30;
+  let inited = false;
 
-  // await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
-
-  // console.log('initializing governor...');
-  // try {
-  //   await dc.NFTGemGovernor.initialize(
-  //     dc.NFTGemMultiToken.address,
-  //     dc.NFTGemPoolFactory.address,
-  //     dc.NFTGemFeeManager.address,
-  //     dc.ProposalFactory.address,
-  //     dc.SwapHelper.address
-  //   );
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // await waitFor(waitForTime);
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-  // try {
-  //   console.log('propagating governor controller...');
-  //   await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
-  //   await waitFor(waitForTime);
-  // } catch (e) {
-  //   console.log('already inited');
-  // }
-
-  const gemTokens: any = {};
+  console.log('initializing governor...');
+  try {
+    await dc.NFTGemGovernor.initialize(
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemPoolFactory.address,
+      dc.NFTGemFeeManager.address,
+      dc.ProposalFactory.address,
+      dc.SwapHelper.address
+    );
+  } catch (e) {
+    console.log('already inited');
+    inited = true;
+  }
+  if (!inited) {
+    await waitFor(waitForTime);
+    try {
+      console.log('propagating governor controller...');
+      await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
+      await waitFor(waitForTime);
+    } catch (e) {
+      console.log('already inited');
+    }
+    try {
+      console.log('propagating governor controller...');
+      await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
+      await waitFor(waitForTime);
+    } catch (e) {
+      console.log('already inited');
+    }
+    try {
+      console.log('propagating governor controller...');
+      await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
+      await waitFor(waitForTime);
+    } catch (e) {
+      console.log('already inited');
+    }
+    try {
+      console.log('propagating governor controller...');
+      await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
+      await waitFor(waitForTime);
+    } catch (e) {
+      console.log('already inited');
+    }
+    try {
+      console.log('propagating governor controller...');
+      await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
+      await waitFor(waitForTime);
+    } catch (e) {
+      console.log('already inited');
+    }
+  }
 
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();

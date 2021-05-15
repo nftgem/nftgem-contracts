@@ -381,21 +381,47 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     '0x0000000000000000000000000000000000000000'
   );
 
+  await dc.NFTGemGovernor.createSystemPool(
+    'PLSM',
+    'Plasma',
+    parseEther('10'),
+    60,
+    60,
+    1073741824,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+
+  await dc.NFTGemGovernor.createSystemPool(
+    'COAL',
+    'Coal',
+    parseEther('1'),
+    86400 * 180,
+    86400 * 360,
+    1073741824,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+
+  await dc.NFTGemGovernor.createSystemPool(
+    'MAGIC',
+    'Philosophers Stone',
+    parseEther('500'),
+    86400,
+    86400,
+    2,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    {gasLimit: 4200000}
+  );
+
   // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
-
-  // await dc.NFTGemWrappedERC20Governance.wrap('1000');
-
-  // dc.NFTGemMultiToken.safeTransferFrom(
-  //   sender.address,
-  //   '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F',
-  //   2,
-  //   1,
-  //   0
-  // );
 
   await waitFor(18);
 

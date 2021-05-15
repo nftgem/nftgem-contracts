@@ -1,0 +1,3 @@
+[submodule "nftgem-ui"]
+	path = nftgem-ui
+	url = https://github.com/nftgem/nftgem-ui
