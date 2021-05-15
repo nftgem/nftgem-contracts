@@ -16,7 +16,7 @@ import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-ganache';
 import '@nomiclabs/hardhat-ethers';
-import "@nomiclabs/hardhat-etherscan";
+import '@nomiclabs/hardhat-etherscan';
 
 import '@openzeppelin/hardhat-upgrades';
 
@@ -69,7 +69,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       chainId: 1337,
-      accounts: accounts()
+      accounts: accounts(),
     },
     localhost: {
       url: 'http://localhost:8545',
@@ -99,59 +99,57 @@ const config: HardhatUserConfig = {
       url: node_url('kovan'),
       accounts: accounts('kovan'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     staging: {
       url: node_url('kovan'),
       accounts: accounts('kovan'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     ftmtest: {
       url: node_url('ftmtest'),
       accounts: accounts('ftmtest'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     opera: {
       url: node_url('opera'),
       accounts: accounts('opera'),
-      gasPrice: 'auto',
-      gas: 'auto'
     },
     sokol: {
       url: node_url('sokol'),
       accounts: accounts('sokol'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     fuji: {
       url: node_url('fuji'),
       accounts: accounts('fuji'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     avax: {
       url: node_url('avax'),
       accounts: accounts('avax'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     binance: {
       url: node_url('binance'),
       accounts: accounts('binance'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
     bsctest: {
       url: node_url('bsctest'),
       accounts: accounts('bsctest'),
       gasPrice: 'auto',
-      gas: 'auto'
+      gas: 'auto',
     },
   },
   etherscan: {
-    apiKey: "4QX1GGDD4FPPHK4DNTR3US6XJDFBUXG7WQ",
+    apiKey: '4QX1GGDD4FPPHK4DNTR3US6XJDFBUXG7WQ',
   },
   paths: {
     sources: 'src',
