@@ -98,7 +98,7 @@ interface INFTComplexGemPoolData {
 
     function allowedTokenSources() external view returns (address[] memory);
 
-    function addLegacyToken(
+    function importLegacyToken(
         address token,
         uint8 tokenType,
         uint256 tokenHash,
@@ -106,6 +106,8 @@ interface INFTComplexGemPoolData {
         address recipient,
         uint256 quantity
     ) external;
+
+    function isLegacyTokenImported(uint256 tokenhash) external view returns (bool);
 
     function setToken(
         uint256 tokenHash,

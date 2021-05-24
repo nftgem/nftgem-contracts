@@ -529,7 +529,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         tokenSource = poolData.tokenSources[tokenHash];
     }
 
-    function addLegacyToken(
+    function importLegacyToken(
         address token,
         uint8 tokenType,
         uint256 tokenHash,
@@ -551,6 +551,10 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         poolData.tokenIds[tokenHash] = tokenId;
         poolData.importedLegacyToken[tokenHash] = true;
         poolData.tokenSources[tokenHash] = token;
+    }
+
+    function isLegacyTokenImported(uint256 tokenhash) external view override returns (bool isImported) {
+        isImported = poolData.importedLegacyToken[tokenhash];
     }
 
     function setToken(

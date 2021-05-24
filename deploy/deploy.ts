@@ -322,24 +322,24 @@ const func: any = async function (
     tx = await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
     await waitForMined(tx.hash);
 
-    console.log('minting initial governance tokens...');
-    tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
-      gasLimit: 5000000,
-    });
-    await waitForMined(tx.hash);
+    // console.log('minting initial governance tokens...');
+    // tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
+    //   gasLimit: 5000000,
+    // });
+    // await waitForMined(tx.hash);
 
     // deploy the governance token wrapper
-    console.log('deploying wrapped governance tokens...');
+    console.log('deploying wrapped governance token...');
     deployParams.args = [
       'Bitlootbox Governance',
-      'BLBX',
+      'BLBXG',
       dc.NFTGemMultiToken.address,
       dc.NFTGemWrapperFeeManager.address
     ];
     await deploy('NFTGemWrappedERC20Governance', deployParams);
 
     // init governance token wrapper
-    console.log('intializing wrapped governance tokens...');
+    console.log('intializing wrapped governance token...');
     await waitFor(1);
     dc.NFTGemWrappedERC20Governance = await getContractAt(
       'NFTGemWrappedERC20Governance',
@@ -366,11 +366,48 @@ const func: any = async function (
     await waitForMined(tx.hash);
 
     // wrap 100k governance tokens
-    console.log('wrapping 100k goveranance tokens...');
-    tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
-      from: sender.address,
-      gasLimit: 5000000,
-    });
+    // console.log('wrapping 100k goveranance tokens...');
+    // tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+    //   from: sender.address,
+    //   gasLimit: 5000000,
+    // });
+    // await waitForMined(tx.hash);
+
+    // deploy the fuel token wrapper
+    console.log('deploying wrapped fuel token...');
+    deployParams.args = [
+      'Bitlootbox Fuel',
+      'BLBXF',
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemWrapperFeeManager.address
+    ];
+    await deploy('NFTGemWrappedERC20Fuel', deployParams);
+
+    // init fuel token wrapper
+    console.log('intializing wrapped fuel token...');
+    await waitFor(1);
+    dc.NFTGemWrappedERC20Fuel = await getContractAt(
+      'NFTGemWrappedERC20Fuel',
+      (await get('NFTGemWrappedERC20Fuel')).address,
+      sender
+    );
+    tx = await dc.NFTGemWrappedERC20Fuel.initialize(
+      '',
+      '',
+      '0x0000000000000000000000000000000000000000',
+      '0x0000000000000000000000000000000000000000',
+      0,
+      dc.NFTGemWrapperFeeManager.address
+    );
+    await waitForMined(tx.hash);
+
+    // approve the wrapped fuel contract
+    console.log('approving wrapped fuel token as operator...');
+    tx = await dc.NFTGemMultiToken.setApprovalForAll(
+      dc.NFTGemWrappedERC20Fuel.address,
+      true,
+      {from: sender.address}
+    );
     await waitForMined(tx.hash);
   }
 

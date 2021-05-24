@@ -62,6 +62,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('NFTGemFeeManager')).address,
         sender
       ),
+      NFTGemWrapperFeeManager: await getContractAt(
+        'NFTGemWrapperFeeManager',
+        (await get('NFTGemWrapperFeeManager')).address,
+        sender
+      ),
       ProposalFactory: await getContractAt(
         'ProposalFactory',
         (await get('ProposalFactory')).address,
@@ -146,6 +151,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     );
   };
 
+  const getGemTokenAddress = async (sym: string) => {
+    return await dc.ERC20GemTokenFactory.getItem(
+      keccak256(['bytes'], [pack(['string'], [sym])])
+    );
+  };
   const getPoolContract = async (addr: string) => {
     return NFTComplexGemPool.attach(addr);
   };
@@ -164,6 +174,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     let tx,
       created = false,
       nonce = BigNumber.from(0);
+    // check that the gem pool exists
     let poolAddr = await getGPA(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
@@ -180,17 +191,28 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       );
       await waitForMined(tx.hash);
       nonce = BigNumber.from(tx.nonce).add(1);
+    }
+    const gemTokenAddress = await getGemTokenAddress(`W${symbol}`);
+    if(BigNumber.from(gemTokenAddress).eq(0)) {
       const gpAddr = await getGPA(symbol);
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
+      const params:any = {gasLimit: 5000000};
+      if(!nonce.eq(0)) {
+        params.nonce = nonce;
+      }
       tx = await dc.ERC20GemTokenFactory.createItem(
         `W${symbol}`,
         `Wrapped ${name}`,
         gpAddr,
         dc.NFTGemMultiToken.address,
         18,
-        {gasLimit: 5000000, nonce}
+        dc.NFTGemWrapperFeeManager.address,
+        params
       );
       await waitForMined(tx.hash);
+      if(nonce.eq(0)) {
+        nonce = BigNumber.from(tx.nonce);
+      }
       nonce = nonce.add(1);
       poolAddr = await getGPA(symbol);
       created = true;
@@ -239,30 +261,27 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    ******************************************************************************
    */
 
-  const aoldToken = ethers.utils.getAddress(
-    '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
-  );
   const afactory = ethers.utils.getAddress(
     '0xaEA74b36Bc9B0FdC7429127f9A49BAE9edea898D'
   );
-  const oldToken = await getContractAt('NFTGemMultiToken', aoldToken, sender);
+
   const oldFactory = await getContractAt('NFTGemPoolFactory', afactory, sender);
   const newFactory = dc.NFTGemPoolFactory;
 
   const gpLen = await oldFactory.allNFTGemPoolsLength();
-  for (let gp = 1; gp < gpLen.toNumber(); gp++) {
+  for (let gp = 0; gp < gpLen.toNumber(); gp++) {
     const gpAddr = await oldFactory.allNFTGemPools(gp);
     const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
     const sym = await oldData.symbol();
     if (sym === 'ASTRO' || sym === 'MCU') {
-      return;
+      continue;
     }
     console.log(`processing pool symbol ${sym}`);
     let newGpAddr = await newFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
     if (BigNumber.from(newGpAddr).eq(0)) {
-      await createPool(
+      newGpAddr = await createPool(
         sym,
         await oldData.name(),
         await oldData.ethPrice(),
@@ -272,59 +291,67 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         await oldData.maxClaims(),
         '0x0000000000000000000000000000000000000000'
       );
-      newGpAddr = await newFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], [sym])])
-      );
     }
     if (BigNumber.from(newGpAddr).eq(0)) {
       console.log(`cant create pool symbol ${sym}`);
       continue;
     }
-    const complexData = await getContractAt(
-      'NFTComplexGemPoolData',
-      newGpAddr,
-      sender
-    );
 
-    let thLen = await oldData.allTokenHashesLength();
-    thLen = thLen.gt(5) ? BigNumber.from(5) : thLen;
-    console.log(`processing ${thLen.toNumber()} hashes`);
-    for (let i = 0; i < thLen.toNumber(); i++) {
-      const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
-        gasLimit: 5000000,
-      });
-      const hashType = await oldData.tokenType(tHash);
-      if (hashType === 2) {
-        const hashId = await oldData.tokenId(tHash);
-        const qty = await oldToken.allTokenHoldersLength(tHash);
-        if (qty.eq(1)) {
-          const th = await oldToken.allTokenHolders(tHash, 0);
-          const thbal = await oldToken.balanceOf(th, tHash);
-          const nbal = await dc.NFTGemMultiToken.balanceOf(th, tHash);
-          if (thbal.gt(0) && !nbal.eq(thbal)) {
-            console.log(
-              sym,
-              i,
-              oldToken.address,
-              hashType,
-              tHash.toHexString(),
-              hashId.toHexString(),
-              th,
-              thbal.toString()
-            );
-            const tx = await complexData.addLegacyToken(
-              oldToken.address,
-              hashType,
-              tHash,
-              hashId,
-              th,
-              thbal
-            );
-            await waitForMined(tx.hash);
-          }
-        }
-      }
-    }
+    const pc = await getPoolContract(newGpAddr);
+    const nextGemId = await oldData.mintedCount();
+    const nextClaimId = await oldData.claimedCount();
+    const tx = await pc.setNextIds(nextClaimId, nextGemId);
+    await waitForMined(tx.hash);
+    console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
+
+    // const complexData = await getContractAt(
+    //   'NFTComplexGemPoolData',
+    //   newGpAddr,
+    //   sender
+    // );
+    // const aoldToken = ethers.utils.getAddress(
+    //   '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
+    // );
+    // const oldToken = await getContractAt('NFTGemMultiToken', aoldToken, sender);
+    // let thLen = await oldData.allTokenHashesLength();
+    // thLen = thLen.gt(5) ? BigNumber.from(5) : thLen;
+    // console.log(`processing ${thLen.toNumber()} hashes`);
+    // for (let i = 0; i < thLen.toNumber(); i++) {
+    //   const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
+    //     gasLimit: 5000000,
+    //   });
+    //   const hashType = await oldData.tokenType(tHash);
+    //   if (hashType === 2) {
+    //     const hashId = await oldData.tokenId(tHash);
+    //     const qty = await oldToken.allTokenHoldersLength(tHash);
+    //     if (qty.eq(1)) {
+    //       const th = await oldToken.allTokenHolders(tHash, 0);
+    //       const thbal = await oldToken.balanceOf(th, tHash);
+    //       const nbal = await dc.NFTGemMultiToken.balanceOf(th, tHash);
+    //       if (thbal.gt(0) && !nbal.eq(thbal)) {
+    //         console.log(
+    //           sym,
+    //           i,
+    //           oldToken.address,
+    //           hashType,
+    //           tHash.toHexString(),
+    //           hashId.toHexString(),
+    //           th,
+    //           thbal.toString()
+    //         );
+    //         const tx = await complexData.addLegacyToken(
+    //           oldToken.address,
+    //           hashType,
+    //           tHash,
+    //           hashId,
+    //           th,
+    //           thbal
+    //         );
+    //         await waitForMined(tx.hash);
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   /**
