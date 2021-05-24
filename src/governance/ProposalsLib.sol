@@ -17,6 +17,7 @@ import "./GovernanceLib.sol";
 
 library ProposalsLib {
     event GovernanceTokenIssued(address indexed receiver, uint256 amount);
+    event FuelTokenIssued(address indexed receiver, uint256 amount);
     event FeeUpdated(address indexed proposal, address indexed token, uint256 newFee);
     event AllowList(address indexed proposal, address indexed pool, address indexed token, bool isBanned);
     event ProjectFunded(address indexed proposal, address indexed receiver, uint256 received);

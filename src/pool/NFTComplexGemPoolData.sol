@@ -8,6 +8,7 @@ import "./ComplexPoolLib.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
+import "../interfaces/INFTGemPoolData.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC1155.sol";
 
@@ -46,8 +47,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev The symbol for this pool / NFT
      */
-    function setTokenHashes(uint256[] memory tokenHashes) external override onlyController {
-        poolData.tokenHashes = tokenHashes;
+    function setTokenHashes(uint256[] memory inTokenHashes) external override onlyController {
+        poolData.tokenHashes = inTokenHashes;
     }
 
     /**
@@ -291,8 +292,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set market visibility
      */
-    function setVisible(bool visible) external override onlyController {
-        poolData.visible = visible;
+    function setVisible(bool isVisible) external override onlyController {
+        poolData.visible = isVisible;
     }
 
     /**
@@ -305,8 +306,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set category category
      */
-    function setCategory(uint256 category) external override onlyController {
-        poolData.category = category;
+    function setCategory(uint256 theCategory) external override onlyController {
+        poolData.category = theCategory;
     }
 
     /**
@@ -348,15 +349,15 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      * @dev add an input requirement for this token
      */
     function addInputRequirement(
-        address token,
+        address theToken,
         address pool,
         uint8 inputType,
-        uint256 tid,
+        uint256 theTokenId,
         uint256 minAmount,
         bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.addInputRequirement(token, pool, inputType, tid, minAmount, takeCustody, burn);
+        poolData.addInputRequirement(theToken, pool, inputType, theTokenId, minAmount, takeCustody, burn);
     }
 
     /**
@@ -364,7 +365,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      */
     function updateInputRequirement(
         uint256 ndx,
-        address token,
+        address theToken,
         address pool,
         uint8 inputType,
         uint256 tid,
@@ -372,7 +373,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         bool takeCustody,
         bool burn
     ) external override onlyController {
-        poolData.updateInputRequirement(ndx, token, pool, inputType, tid, minAmount, takeCustody, burn);
+        poolData.updateInputRequirement(ndx, theToken, pool, inputType, tid, minAmount, takeCustody, burn);
     }
 
     /**
@@ -529,45 +530,41 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         tokenSource = poolData.tokenSources[tokenHash];
     }
 
-    function importLegacyToken(
-        address token,
-        uint8 tokenType,
+    function importLegacyGem(
+        address pool,
+        address legacyToken,
         uint256 tokenHash,
-        uint256 tokenId,
-        address recipient,
-        uint256 qty
-    ) external override onlyController {
-        require(tokenType > 0, "INVALID_TOKENTYPE");
+        address recipient
+    ) external override {
+
         require(tokenHash > 0, "INVALID_TOKENHASH");
-        require(token > address(0), "INVALID_TOKEN");
+        require(pool > address(0), "INVALID_POOL");
+        require(legacyToken > address(0), "INVALID_TOKEN");
         require(recipient > address(0), "INVALID_RECIPIENT");
-        require(poolData.allowedTokenSources.exists(token) == true, "INVALID_TOKENSOURCE");
-        require(qty > 0, "INVALID_QUANTIY");
+        require(poolData.allowedTokenSources.exists(legacyToken) == true, "INVALID_TOKENSOURCE");
         require(poolData.importedLegacyToken[tokenHash] == false, "ALREADY_IMPORTED");
 
-        INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, qty);
-        INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, tokenType, address(this));
-        poolData.tokenTypes[tokenHash] = tokenType;
-        poolData.tokenIds[tokenHash] = tokenId;
-        poolData.importedLegacyToken[tokenHash] = true;
-        poolData.tokenSources[tokenHash] = token;
+        uint256 quantity = IERC1155(legacyToken).balanceOf(recipient, tokenHash);
+        uint8 importTokenType = INFTGemPoolData(pool).tokenType(tokenHash);
+        uint256 importTokenId = INFTGemPoolData(pool).tokenId(tokenHash);
+
+        if(quantity > 0 && importTokenType == 2) {
+            INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, quantity);
+            INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, 2, address(this));
+
+            poolData.tokenTypes[tokenHash] = 2;
+            poolData.tokenIds[tokenHash] = importTokenId;
+            poolData.tokenSources[tokenHash] = legacyToken;
+            poolData.importedLegacyToken[tokenHash] = true;
+        }
     }
 
-    function isLegacyTokenImported(uint256 tokenhash) external view override returns (bool isImported) {
+    function isLegacyGemImported(uint256 tokenhash) external view override returns (bool isImported) {
         isImported = poolData.importedLegacyToken[tokenhash];
     }
 
-    function setToken(
-        uint256 tokenHash,
-        uint8 tokenType,
-        uint256 tokenId
-    ) external override onlyController {
-        poolData.tokenTypes[tokenHash] = tokenType;
-        poolData.tokenIds[tokenHash] = tokenId;
-    }
-
-    function setNextIds(uint256 nextClaimId, uint256 nextGemId) external override onlyController {
-        poolData.nextClaimIdVal = nextClaimId;
-        poolData.nextGemIdVal = nextGemId;
+    function setNextIds(uint256 _nextClaimId, uint256 _nextGemId) external override onlyController {
+        poolData.nextClaimIdVal = _nextClaimId;
+        poolData.nextGemIdVal = _nextGemId;
     }
 }

@@ -5,10 +5,10 @@ interface INFTComplexGemPoolData {
     enum PriceIncrementType {COMPOUND, NONE}
 
     function addInputRequirement(
-        address token,
+        address theToken,
         address pool,
         uint8 inputType,
-        uint256 tokenId,
+        uint256 theTokenId,
         uint256 minAmount,
         bool takeCustody,
         bool burn
@@ -16,7 +16,7 @@ interface INFTComplexGemPoolData {
 
     function updateInputRequirement(
         uint256 ndx,
-        address token,
+        address theToken,
         address pool,
         uint8 inputType,
         uint256 tid,
@@ -98,28 +98,20 @@ interface INFTComplexGemPoolData {
 
     function allowedTokenSources() external view returns (address[] memory);
 
-    function importLegacyToken(
-        address token,
-        uint8 tokenType,
+    function importLegacyGem(
+        address pool,
+        address legacyToken,
         uint256 tokenHash,
-        uint256 tokenId,
-        address recipient,
-        uint256 quantity
+        address recipient
     ) external;
 
-    function isLegacyTokenImported(uint256 tokenhash) external view returns (bool);
+    function isLegacyGemImported(uint256 tokenhash) external view returns (bool);
 
-    function setToken(
-        uint256 tokenHash,
-        uint8 tokenType,
-        uint256 tokenId
-    ) external;
-
-    function setNextIds(uint256 nextClaimId, uint256 nextGemId) external;
+    function setNextIds(uint256 _nextClaimId, uint256 _nextGemId) external;
 
     function tokenHashes() external view returns (uint256[] memory);
 
-    function setTokenHashes(uint256[] memory tokenHashes) external;
+    function setTokenHashes(uint256[] memory inTokenHashes) external;
 
     // pool is inited with these parameters. Once inited, all
     // but ethPrice are immutable. ethPrice only increases. ONLY UP
@@ -127,15 +119,15 @@ interface INFTComplexGemPoolData {
 
     function ethPrice() external view returns (uint256);
 
-    function setVisible(bool visible) external;
+    function setVisible(bool isVisible) external;
 
     function visible() external view returns (bool);
 
-    function setCategory(uint256 category) external;
+    function setCategory(uint256 theCategory) external;
 
     function category() external view returns (uint256);
 
-    function setDescription(string memory description) external;
+    function setDescription(string memory desc) external;
 
     function description() external view returns (string memory);
 

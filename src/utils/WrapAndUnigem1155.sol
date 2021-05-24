@@ -35,7 +35,7 @@ contract WrapAndUnigem1155 {
     address _exchange,
     address _erc20,
     address _erc1155
-  ) public {
+  ) {
     require(
       _tokenWrapper != address(0x0) &&
       _exchange != address(0x0) &&
@@ -143,7 +143,7 @@ contract WrapAndUnigem1155 {
 
     require(
       obj.recipient == address(0x0) || obj.recipient == address(this),
-      "WrapAndUnigem#onERC1155BatchReceived: ORDER RECIPIENT MUST BE THIS CONTRACT"
+      "WrapAndUnigem#onERC1155BatchReceived: RCPT MUST BE THIS CONTRACT"
     );
 
     // Swap on Unigem
@@ -152,11 +152,11 @@ contract WrapAndUnigem1155 {
     isInUnigem = false;
 
     // Send to recipient the unwrapped ERC-20, if any
-    uint256 wrapped_token_amount = tokenWrapper.balanceOf(address(this), wrappedTokenID);
-    if (wrapped_token_amount > 0) {
+    uint256 wrappedTokenAmount = tokenWrapper.balanceOf(address(this), wrappedTokenID);
+    if (wrappedTokenAmount > 0) {
       // Doing it in 2 calls so tx history is more consistent
-      tokenWrapper.withdraw(erc20, payable(address(this)), wrapped_token_amount);
-      IERC20(erc20).transfer(_from, wrapped_token_amount);
+      tokenWrapper.withdraw(erc20, payable(address(this)), wrappedTokenAmount);
+      IERC20(erc20).transfer(_from, wrappedTokenAmount);
     }
 
     return IERC1155TokenReceiver.onERC1155BatchReceived.selector;

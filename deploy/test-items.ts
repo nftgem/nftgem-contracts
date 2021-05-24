@@ -78,6 +78,26 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('ERC20GemTokenFactory')).address,
         sender
       ),
+      Unigem20Factory: await getContractAt(
+        'Unigem20Factory',
+        (await get('Unigem20Factory')).address,
+        sender
+      ),
+      Unigem1155Factory: await getContractAt(
+        'Unigem1155Factory',
+        (await get('Unigem1155Factory')).address,
+        sender
+      ),
+      NFTGemWrappedERC20Governance: await getContractAt(
+        'NFTGemWrappedERC20Governance',
+        (await get('NFTGemWrappedERC20Governance')).address,
+        sender
+      ),
+      NFTGemWrappedERC20Fuel: await getContractAt(
+        'NFTGemWrappedERC20Fuel',
+        (await get('NFTGemWrappedERC20Fuel')).address,
+        sender
+      ),
       MockProxyRegistry: await getContractAt(
         'MockProxyRegistry',
         (await get('MockProxyRegistry')).address,
@@ -148,10 +168,20 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     deployParams
   );
 
-  const getGPA = async (sym: string) => {
+  const getGemPoolAddress = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
+  };
+
+  const getWrappedGemTokenAddress = async (sym: string) => {
+    return await dc.ERC20GemTokenFactory.getItem(
+      keccak256(['bytes'], [pack(['string'], [sym])])
+    );
+  };
+
+  const getUnigem20Address = async (address1: string, address2: string) => {
+    return await dc.Unigem20Factory.getPair(address1, address2);
   };
 
   const getPoolContract = async (addr: string) => {
@@ -172,8 +202,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     let tx,
       created = false,
       nonce = BigNumber.from(0);
-    let poolAddr = await getGPA(symbol);
+    let poolAddr = await getGemPoolAddress(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
+
+      // create the gem pool
       console.log(`Creating ${name} (${symbol}) pool...`);
       tx = await dc.NFTGemGovernor.createSystemPool(
         symbol,
@@ -188,13 +220,15 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       );
       await waitForMined(tx.hash);
       nonce = BigNumber.from(tx.nonce).add(1);
-      const gpAddr = await getGPA(symbol);
+      poolAddr = await getGemPoolAddress(symbol);
+      console.log(`address: ${poolAddr}`);
+
+      // create the wrapped erc20 gem contract
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
-      console.log(gpAddr)
       tx = await dc.ERC20GemTokenFactory.createItem(
         `W${symbol}`,
         `Wrapped ${name}`,
-        gpAddr,
+        poolAddr,
         dc.NFTGemMultiToken.address,
         18,
         dc.NFTGemWrapperFeeManager.address,
@@ -202,7 +236,23 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       );
       await waitForMined(tx.hash);
       nonce = nonce.add(1);
-      poolAddr = await getGPA(symbol);
+      const gtAddr  = await getWrappedGemTokenAddress(`W${symbol}`);
+      console.log(`address: ${gtAddr}`);
+
+      // create the unigem20 pool
+      const baseSym = await dc.NFTGemWrappedERC20Fuel.symbol();
+      console.log(`Creating unigem20 pool for W${symbol} / ${baseSym}`);
+      tx = await dc.Unigem20Factory.createPair(
+        gtAddr,
+        dc.NFTGemWrappedERC20Fuel.address,
+        {gasLimit: 5000000, nonce}
+      );
+      await waitForMined(tx.hash);
+      nonce = nonce.add(1);
+
+      const ugAddress = await getUnigem20Address(gtAddr, dc.NFTGemWrappedERC20Fuel.address);
+      console.log(`address: ${ugAddress}`);
+
       created = true;
     }
     const pc = await getPoolContract(poolAddr);
@@ -242,7 +292,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         await waitForMined(tx.hash);
       }
     }
-    return await getGPA(symbol);
+    return await getGemPoolAddress(symbol);
   };
 
   /**
@@ -325,12 +375,12 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINA'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINB'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINC'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MIND'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINE'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINF'), 3, 0, 1, true, false],
     ]
   );
 
@@ -344,12 +394,12 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINA'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINB'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINC'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MIND'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINE'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINF'), 3, 0, 1, true, false],
     ]
   );
 
@@ -363,12 +413,12 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('MINA'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINB'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINC'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MIND'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINE'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGPA('MINF'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINA'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINB'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINC'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MIND'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINE'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINF'), 3, 0, 1, true, false],
     ]
   );
 
@@ -382,9 +432,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSA'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSB'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSC'), 3, 0, 2, true, true],
     ]
   );
 
@@ -398,9 +448,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSA'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSB'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSC'), 3, 0, 2, true, true],
     ]
   );
 
@@ -414,9 +464,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 2, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSA'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSB'), 3, 0, 2, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSC'), 3, 0, 2, true, true],
     ]
   );
 
@@ -430,9 +480,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSA'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSB'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSC'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSA'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSB'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSC'), 3, 0, 1, true, true],
     ]
   );
 
@@ -446,13 +496,13 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGPA('MBOSS'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSA'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSB'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('LBOSSC'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSA'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSB'), 3, 0, 1, true, true],
-      [dc.NFTGemMultiToken.address, await getGPA('UBOSSC'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MBOSS'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSA'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSB'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('LBOSSC'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSA'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSB'), 3, 0, 1, true, true],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('UBOSSC'), 3, 0, 1, true, true],
     ]
   );
 

@@ -9,8 +9,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const {get} = deployments;
   const [sender] = await hre.ethers.getSigners();
 
-  if(BigNumber.from(networkId).eq(1337)) {
-    console.log(`local deploy. No migration.`);
+  if(BigNumber.from(networkId).eq(1337) || BigNumber.from(networkId).eq(4002)) {
+    console.log(`test deploy. No migration.`);
     return;
   }
 

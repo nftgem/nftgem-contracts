@@ -31,10 +31,12 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
 
     uint256 private constant GOVERNANCE = 0;
     uint256 private constant FUEL = 1;
+    uint256 private constant FUEL_TOKEN_INITIAL= 1000000;
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
     uint256 private constant GOV_TOKEN_MAX = 1000000;
 
     bool private governanceIssued;
+    bool private fuelIssued;
 
     /**
      * @dev contract controller
@@ -132,6 +134,16 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         INFTGemMultiToken(multitoken).mint(receiver, GOVERNANCE, GOV_TOKEN_INITIAL);
         governanceIssued = true;
         emit GovernanceTokenIssued(receiver, GOV_TOKEN_INITIAL);
+    }
+
+    /**
+     * @dev issue initial fuel tokens
+     */
+    function issueInitialFuelTokens(address receiver) external override returns (uint256) {
+        require(!fuelIssued, "ALREADY_ISSUED");
+        INFTGemMultiToken(multitoken).mint(receiver, FUEL, FUEL_TOKEN_INITIAL);
+        fuelIssued = true;
+        emit FuelTokenIssued(receiver, FUEL_TOKEN_INITIAL);
     }
 
     /**

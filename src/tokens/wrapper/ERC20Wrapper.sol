@@ -30,14 +30,14 @@ contract ERC20Wrapper is ERC1155, ERC1155MintBurn {
   |               Events              |
   |__________________________________*/
 
-  event TokenRegistration(address token_address, uint256 token_id);
+  event TokenRegistration(address tokenAddress, uint256 tokenId);
 
   /***********************************|
   |            Constructor            |
   |__________________________________*/
 
   // Register ETH as ID #1 and address 0x1
-  constructor() public {
+  constructor() {
     addressToID[ETH_ADDRESS] = ETH_ID;
     IDtoAddress[ETH_ID] = ETH_ADDRESS;
   }

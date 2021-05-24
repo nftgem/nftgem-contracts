@@ -334,11 +334,11 @@ const func: any = async function (
     tx = await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address);
     await waitForMined(tx.hash);
 
-    // console.log('minting initial governance tokens...');
-    // tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
-    //   gasLimit: 5000000,
-    // });
-    // await waitForMined(tx.hash);
+    console.log('minting initial governance tokens...');
+    tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
 
     // deploy the governance token wrapper
     console.log('deploying wrapped governance token...');
@@ -377,13 +377,11 @@ const func: any = async function (
     );
     await waitForMined(tx.hash);
 
-    // wrap 100k governance tokens
-    // console.log('wrapping 100k goveranance tokens...');
-    // tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
-    //   from: sender.address,
-    //   gasLimit: 5000000,
-    // });
-    // await waitForMined(tx.hash);
+    console.log('minting initial fuel tokens...');
+    tx = await dc.NFTGemGovernor.issueInitialFuelTokens(sender.address, {
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
 
     // deploy the fuel token wrapper
     console.log('deploying wrapped fuel token...');
@@ -421,6 +419,15 @@ const func: any = async function (
       {from: sender.address}
     );
     await waitForMined(tx.hash);
+
+    // wrap 100k governance tokens
+    console.log('wrapping 500k fuel tokens...');
+    tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+      from: sender.address,
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
+
   }
 
   // we are done!
