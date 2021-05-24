@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.7.0;
 
-import "../exchange/UnigemExchange.sol";
-import "../interfaces/IUnigemFactory.sol";
+import "../exchange/Unigem1155Exchange.sol";
+import "../interfaces/IUnigem1155Factory.sol";
 
-
-contract UnigemFactory is IUnigemFactory {
+contract Unigem1155Factory is IUnigem1155Factory {
 
   /***********************************|
   |       Events And Variables        |
@@ -28,7 +27,7 @@ contract UnigemFactory is IUnigemFactory {
     require(tokensToExchange[_token][_currency][_currencyID] == address(0x0), "UnigemFactory#createExchange: EXCHANGE_ALREADY_CREATED");
 
     // Create new exchange contract
-    UnigemExchange exchange = new UnigemExchange(_token, _currency, _currencyID);
+    Unigem1155Exchange exchange = new Unigem1155Exchange(_token, _currency, _currencyID);
 
     // Store exchange and token addresses
     tokensToExchange[_token][_currency][_currencyID] = address(exchange);

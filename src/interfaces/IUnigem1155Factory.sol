@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0;
 
-interface IUnigemFactory {
+interface IUnigem1155Factory {
 
   /***********************************|
   |               Events              |

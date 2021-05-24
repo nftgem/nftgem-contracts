@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IUnigemExchange.sol";
+import "../interfaces/IUnigem1155Exchange.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC1155.sol";
 import "../interfaces/IERC1155TokenReceiver.sol";
@@ -17,7 +17,7 @@ import "../interfaces/IERC20Wrapper.sol";
  * @dev Hardcoding addresses for simplicity, easy to generalize if arguments
  *      are passed in functions, but adds a bit of complexity.
  */
-contract WrapAndUnigem {
+contract WrapAndUnigem1155 {
 
   IERC20Wrapper immutable public tokenWrapper; // ERC-20 to ERC-1155 token wrapper contract
   address immutable public exchange;           // Unigem exchange to use
@@ -72,8 +72,8 @@ contract WrapAndUnigem {
   ) external
   {
     // Decode unigem order
-    IUnigemExchange.BuyTokensObj memory obj;
-    (, obj) = abi.decode(_unigemOrder, (bytes4, IUnigemExchange.BuyTokensObj));
+    IUnigem1155Exchange.BuyTokensObj memory obj;
+    (, obj) = abi.decode(_unigemOrder, (bytes4, IUnigem1155Exchange.BuyTokensObj));
 
     // Force the recipient to not be set, otherwise wrapped token refunded will be
     // sent to the user and we won't be able to unwrap it.
@@ -138,8 +138,8 @@ contract WrapAndUnigem {
     }
 
     // Decode transfer data
-    IUnigemExchange.SellTokensObj memory obj;
-    (,obj) = abi.decode(_unigemOrder, (bytes4, IUnigemExchange.SellTokensObj));
+    IUnigem1155Exchange.SellTokensObj memory obj;
+    (,obj) = abi.decode(_unigemOrder, (bytes4, IUnigem1155Exchange.SellTokensObj));
 
     require(
       obj.recipient == address(0x0) || obj.recipient == address(this),

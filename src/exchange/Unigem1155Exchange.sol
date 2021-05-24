@@ -2,7 +2,7 @@
 pragma solidity >=0.7.0;
 
 pragma experimental ABIEncoderV2;
-import "../interfaces/IUnigemExchange.sol";
+import "../interfaces/IUnigem1155Exchange.sol";
 import "../utils/ReentrancyGuard.sol";
 import "../interfaces/IERC165.sol";
 import "../interfaces/IERC1155.sol";
@@ -25,7 +25,7 @@ import "../tokens/ERC1155/ERC1155MintBurn.sol";
  *      errors when it comes to removing liquidity, possibly preventing them to be withdrawn without
  *      some collaboration between liquidity providers.
  */
-contract UnigemExchange is ReentrancyGuard, ERC1155MintBurn, IUnigemExchange {
+contract Unigem1155Exchange is ReentrancyGuard, ERC1155MintBurn, IUnigem1155Exchange {
   using SafeMath for uint256;
 
   /***********************************|

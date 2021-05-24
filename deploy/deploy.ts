@@ -85,9 +85,14 @@ const func: any = async function (
         (await get('ERC20GemTokenFactory')).address,
         sender
       ),
-      UnigemFactory: await getContractAt(
-        'UnigemFactory',
-        (await get('UnigemFactory')).address,
+      Unigem1155Factory: await getContractAt(
+        'Unigem1155Factory',
+        (await get('Unigem1155Factory')).address,
+        sender
+      ),
+      Unigem20Factory: await getContractAt(
+        'Unigem20Factory',
+        (await get('Unigem20Factory')).address,
         sender
       ),
       MockProxyRegistry: await getContractAt(
@@ -222,7 +227,8 @@ const func: any = async function (
     ProposalFactory: await deploy('ProposalFactory', deployParams),
     MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
     ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
-    UnigemFactory: await deploy('UnigemFactory', deployParams),
+    Unigem1155Factory: await deploy('Unigem1155Factory', deployParams),
+    Unigem20Factory: await deploy('Unigem20Factory', deployParams),
   };
 
   /**
