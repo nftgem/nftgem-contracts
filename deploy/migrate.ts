@@ -9,6 +9,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const {get} = deployments;
   const [sender] = await hre.ethers.getSigners();
 
+  if(BigNumber.from(networkId).eq(1337)) {
+    console.log(`local deploy. No migration.`);
+    return;
+  }
+
   /**
    * @dev Wait for the given number of seconds and display balance
    */
