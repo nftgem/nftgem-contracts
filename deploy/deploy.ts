@@ -229,6 +229,7 @@ const func: any = async function (
     ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
     Unigem1155Factory: await deploy('Unigem1155Factory', deployParams),
     Unigem20Factory: await deploy('Unigem20Factory', deployParams),
+    WETH9: await deploy('WETH9', deployParams),
   };
 
   /**
