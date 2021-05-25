@@ -82,6 +82,31 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('ERC20GemTokenFactory')).address,
         sender
       ),
+      Unigem20Factory: await getContractAt(
+        'Unigem20Factory',
+        (await get('Unigem20Factory')).address,
+        sender
+      ),
+      Unigem1155Factory: await getContractAt(
+        'Unigem1155Factory',
+        (await get('Unigem1155Factory')).address,
+        sender
+      ),
+      NFTGemWrappedERC20Governance: await getContractAt(
+        'NFTGemWrappedERC20Governance',
+        (await get('NFTGemWrappedERC20Governance')).address,
+        sender
+      ),
+      NFTGemWrappedERC20Fuel: await getContractAt(
+        'NFTGemWrappedERC20Fuel',
+        (await get('NFTGemWrappedERC20Fuel')).address,
+        sender
+      ),
+      WETH9: await getContractAt(
+        'WETH9',
+        (await get('WETH9')).address,
+        sender
+      ),
       MockProxyRegistry: await getContractAt(
         'MockProxyRegistry',
         (await get('MockProxyRegistry')).address,
@@ -137,6 +162,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
   const dc = await getDeployedContracts(sender);
+  const baseSym = await dc.WETH9.symbol();
 
   const deployParams = {
     from: sender.address,
@@ -150,7 +176,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     deployParams
   );
 
-  const getGPA = async (sym: string) => {
+  const getGemPoolAddress = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
@@ -161,6 +187,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       keccak256(['bytes'], [pack(['string'], [sym])])
     );
   };
+
+  const getUnigem20Address = async (address1: string, address2: string) => {
+    return await dc.Unigem20Factory.getPair(address1, address2);
+  };
+
   const getPoolContract = async (addr: string) => {
     return NFTComplexGemPool.attach(addr);
   };
@@ -179,9 +210,10 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     let tx,
       created = false,
       nonce = BigNumber.from(0);
-    // check that the gem pool exists
-    let poolAddr = await getGPA(symbol);
+    let poolAddr = await getGemPoolAddress(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
+
+      // create the gem pool
       console.log(`Creating ${name} (${symbol}) pool...`);
       tx = await dc.NFTGemGovernor.createSystemPool(
         symbol,
@@ -196,30 +228,38 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       );
       await waitForMined(tx.hash);
       nonce = BigNumber.from(tx.nonce).add(1);
-    }
-    const gemTokenAddress = await getGemTokenAddress(`W${symbol}`);
-    if(BigNumber.from(gemTokenAddress).eq(0)) {
-      const gpAddr = await getGPA(symbol);
+      poolAddr = await getGemPoolAddress(symbol);
+      console.log(`address: ${poolAddr}`);
+
+      // create the wrapped erc20 gem contract
       console.log(`Creating wrapped ${name} (${symbol}) token...`);
-      const params:any = {gasLimit: 5000000};
-      if(!nonce.eq(0)) {
-        params.nonce = nonce;
-      }
       tx = await dc.ERC20GemTokenFactory.createItem(
         `W${symbol}`,
         `Wrapped ${name}`,
-        gpAddr,
+        poolAddr,
         dc.NFTGemMultiToken.address,
         18,
         dc.NFTGemWrapperFeeManager.address,
-        params
+        {gasLimit: 5000000, nonce}
       );
       await waitForMined(tx.hash);
-      if(nonce.eq(0)) {
-        nonce = BigNumber.from(tx.nonce);
-      }
       nonce = nonce.add(1);
-      poolAddr = await getGPA(symbol);
+      const gtAddr  = await getGemTokenAddress(`W${symbol}`);
+      console.log(`address: ${gtAddr}`);
+
+      // create the unigem20 pool
+      console.log(`Creating unigem20 pool for W${symbol} / ${baseSym}`);
+      tx = await dc.Unigem20Factory.createPair(
+        gtAddr,
+        dc.WETH9.address,
+        {gasLimit: 5000000, nonce}
+      );
+      await waitForMined(tx.hash);
+      nonce = nonce.add(1);
+
+      const ugAddress = await getUnigem20Address(gtAddr, dc.WETH9.address);
+      console.log(`address: ${ugAddress}`);
+
       created = true;
     }
     const pc = await getPoolContract(poolAddr);
@@ -259,8 +299,8 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         await waitForMined(tx.hash);
       }
     }
-    return await getGPA(symbol);
-  };
+    return await getGemPoolAddress(symbol);
+  }
 
   /**
    ******************************************************************************
