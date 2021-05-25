@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0;
 
 import "../interfaces/IUnigem20Factory.sol";
-import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
+import "../libs/TransferHelper.sol";
 
 import "../interfaces/IUnigem20Router.sol";
 import "../libs/Unigem20Library.sol";
@@ -22,7 +22,7 @@ contract Unigem20Router is IUnigem20Router {
         _;
     }
 
-    constructor(address _factory, address _WETH) public {
+    constructor(address _factory, address _WETH) {
         factory = _factory;
         WETH = _WETH;
     }

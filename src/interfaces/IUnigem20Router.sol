@@ -4,9 +4,9 @@ pragma solidity >=0.7.0;
 
 interface IUnigem20Router {
 
-    function factory() external pure returns (address);
+    function factory() external view returns (address);
 
-    function WETH() external pure returns (address);
+    function WETH() external view returns (address);
 
     function addLiquidity(
         address tokenA,

@@ -95,6 +95,11 @@ const func: any = async function (
         (await get('Unigem20Factory')).address,
         sender
       ),
+      WETH9: await getContractAt(
+        'WETH9',
+        (await get('WETH9')).address,
+        sender
+      ),
       MockProxyRegistry: await getContractAt(
         'MockProxyRegistry',
         (await get('MockProxyRegistry')).address,
@@ -200,6 +205,15 @@ const func: any = async function (
       ).address,
       WrappedTokenLib: (
         await deploy('WrappedTokenLib', {
+          from: sender.address,
+          log: true,
+          libraries: {
+            SafeMath: safeMath,
+          },
+        })
+      ).address,
+      Unigem20Library: (
+        await deploy('Unigem20Library', {
           from: sender.address,
           log: true,
           libraries: {
@@ -430,6 +444,14 @@ const func: any = async function (
     await waitForMined(tx.hash);
 
   }
+
+  // deploy the governance token wrapper
+  console.log('deploying unigem20 router...');
+  deployParams.args = [
+    dc.Unigem20Factory.address,
+    dc.WETH9.address
+  ];
+  await deploy('Unigem20Router', deployParams);
 
   // we are done!
   console.log('Deploy complete\n');

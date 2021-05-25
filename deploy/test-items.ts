@@ -98,6 +98,11 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('NFTGemWrappedERC20Fuel')).address,
         sender
       ),
+      WETH9: await getContractAt(
+        'WETH9',
+        (await get('WETH9')).address,
+        sender
+      ),
       MockProxyRegistry: await getContractAt(
         'MockProxyRegistry',
         (await get('MockProxyRegistry')).address,
@@ -240,17 +245,17 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
       console.log(`address: ${gtAddr}`);
 
       // create the unigem20 pool
-      const baseSym = await dc.NFTGemWrappedERC20Fuel.symbol();
+      const baseSym = await dc.WETH9.symbol();
       console.log(`Creating unigem20 pool for W${symbol} / ${baseSym}`);
       tx = await dc.Unigem20Factory.createPair(
         gtAddr,
-        dc.NFTGemWrappedERC20Fuel.address,
+        dc.WETH9.address,
         {gasLimit: 5000000, nonce}
       );
       await waitForMined(tx.hash);
       nonce = nonce.add(1);
 
-      const ugAddress = await getUnigem20Address(gtAddr, dc.NFTGemWrappedERC20Fuel.address);
+      const ugAddress = await getUnigem20Address(gtAddr, dc.WETH9.address);
       console.log(`address: ${ugAddress}`);
 
       created = true;
