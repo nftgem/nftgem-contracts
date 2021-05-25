@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.0;
+
+pragma solidity >=0.7.0;
 
 /**
  * @notice Key sets with enumeration and delete. Uses mappings for random
