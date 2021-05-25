@@ -232,7 +232,7 @@ const func: any = async function (
     SwapHelper: null,
     NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
     NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
-    NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
+    //NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
     NFTGemWrapperFeeManager: await deploy(
       'NFTGemWrapperFeeManager',

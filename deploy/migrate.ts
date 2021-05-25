@@ -309,6 +309,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const afactory = ethers.utils.getAddress(
     '0xaEA74b36Bc9B0FdC7429127f9A49BAE9edea898D'
   );
+  const alegacyToken = ethers.utils.getAddress(
+    '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
+  );
 
   const oldFactory = await getContractAt('NFTGemPoolFactory', afactory, sender);
   const newFactory = dc.NFTGemPoolFactory;
@@ -345,9 +348,14 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     const pc = await getPoolContract(newGpAddr);
     const nextGemId = await oldData.mintedCount();
     const nextClaimId = await oldData.claimedCount();
-    const tx = await pc.setNextIds(nextClaimId, nextGemId);
+
+    let tx = await pc.setNextIds(nextClaimId, nextGemId);
     await waitForMined(tx.hash);
     console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
+
+    tx = await pc.addAllowedTokenSource(alegacyToken);
+    await waitForMined(tx.hash);
+    console.log(`${sym} added token source ${alegacyToken.toString()}`);
 
     // const complexData = await getContractAt(
     //   'NFTComplexGemPoolData',
