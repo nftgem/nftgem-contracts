@@ -1,30 +1,29 @@
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+// SPDX-License-Identifier: GPL-2.0-or-later
 
+pragma solidity >=0.7.0;
 pragma experimental ABIEncoderV2;
 
+import "../interfaces/IMulticall.sol";
 
-contract MultiCall {
-  constructor(
-    address[] memory targets,
-    bytes[] memory datas
-  ) {
-    uint256 len = targets.length;
-    require(datas.length == len, "Error: Array lengths do not match.");
+/// @title Multicall
+/// @notice Enables calling multiple methods in a single call to the contract
+abstract contract Multicall is IMulticall {
+    /// @inheritdoc IMulticall
+    function multicall(bytes[] calldata data) external payable override returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i = 0; i < data.length; i++) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
 
-    bytes[] memory returnDatas = new bytes[](len);
+            if (!success) {
+                // Next 5 lines from https://ethereum.stackexchange.com/a/83577
+                if (result.length < 68) revert();
+                assembly {
+                    result := add(result, 0x04)
+                }
+                revert(abi.decode(result, (string)));
+            }
 
-    for (uint256 i = 0; i < len; i++) {
-      address target = targets[i];
-      bytes memory data = datas[i];
-      (bool success, bytes memory returnData) = target.call(data);
-      if (!success) {
-        returnDatas[i] = bytes("");
-      } else {
-        returnDatas[i] = returnData;
-      }
+            results[i] = result;
+        }
     }
-    bytes memory data = abi.encode(block.number, returnDatas);
-    assembly { return(add(data, 32), data) }
-  }
 }

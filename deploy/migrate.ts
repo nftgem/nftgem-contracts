@@ -307,14 +307,43 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    */
 
   const afactory = ethers.utils.getAddress(
-    '0xaEA74b36Bc9B0FdC7429127f9A49BAE9edea898D'
+    '0xEACd93F1A5daa4a4aD3cACB812bEF88a3A7fa9ca'
   );
   const alegacyToken = ethers.utils.getAddress(
-    '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
+    '0x496FEC70974870dD7c2905E25cAd4BDE802938C7'
+  );
+  const anewToken = ethers.utils.getAddress(
+    '0xf3371C6c7d27784c1b55F16647DebD0C39e7f3e3'
   );
 
   const oldFactory = await getContractAt('NFTGemPoolFactory', afactory, sender);
+  const oldToken = await getContractAt('NFTGemMultiToken', alegacyToken, sender);
+  const newToken = await getContractAt('NFTGemMultiToken', anewToken, sender);
   const newFactory = dc.NFTGemPoolFactory;
+
+  const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
+  console.log(`num holders: ${allGovTokenHolders.toNumber()}`)
+  for (let i = 388; i < allGovTokenHolders.toNumber(); i++) {
+    const thAddr = await oldToken.allTokenHolders(0, i);
+
+    const th0Bal = await oldToken.balanceOf(thAddr, 0);
+    const th0nBal = await newToken.balanceOf(thAddr, 0);
+
+    if(!th0nBal.eq(th0Bal)) {
+      const tx = await newToken.mint(thAddr, 0, th0Bal);
+      await waitForMined(tx.hash);
+      console.log(`${i} 0 ${thAddr} ${th0Bal.toString()}`);
+    }
+
+    const th1nBal = await newToken.balanceOf(thAddr, 1);
+    const th1Bal = await oldToken.balanceOf(thAddr, 1);
+
+    if(!th1nBal.eq(th1Bal)) {
+      const tx = await newToken.mint(thAddr, 1, th1Bal);
+      await waitForMined(tx.hash);
+      console.log(`${i} 1 ${thAddr} ${formatEther(th1Bal.toString())}`);
+    }
+  }
 
   const gpLen = await oldFactory.allNFTGemPoolsLength();
   for (let gp = 0; gp < gpLen.toNumber(); gp++) {
@@ -357,54 +386,9 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     await waitForMined(tx.hash);
     console.log(`${sym} added token source ${alegacyToken.toString()}`);
 
-    // const complexData = await getContractAt(
-    //   'NFTComplexGemPoolData',
-    //   newGpAddr,
-    //   sender
-    // );
-    // const aoldToken = ethers.utils.getAddress(
-    //   '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
-    // );
-    // const oldToken = await getContractAt('NFTGemMultiToken', aoldToken, sender);
-    // let thLen = await oldData.allTokenHashesLength();
-    // thLen = thLen.gt(5) ? BigNumber.from(5) : thLen;
-    // console.log(`processing ${thLen.toNumber()} hashes`);
-    // for (let i = 0; i < thLen.toNumber(); i++) {
-    //   const tHash = await oldData.allTokenHashes(BigNumber.from(i), {
-    //     gasLimit: 5000000,
-    //   });
-    //   const hashType = await oldData.tokenType(tHash);
-    //   if (hashType === 2) {
-    //     const hashId = await oldData.tokenId(tHash);
-    //     const qty = await oldToken.allTokenHoldersLength(tHash);
-    //     if (qty.eq(1)) {
-    //       const th = await oldToken.allTokenHolders(tHash, 0);
-    //       const thbal = await oldToken.balanceOf(th, tHash);
-    //       const nbal = await dc.NFTGemMultiToken.balanceOf(th, tHash);
-    //       if (thbal.gt(0) && !nbal.eq(thbal)) {
-    //         console.log(
-    //           sym,
-    //           i,
-    //           oldToken.address,
-    //           hashType,
-    //           tHash.toHexString(),
-    //           hashId.toHexString(),
-    //           th,
-    //           thbal.toString()
-    //         );
-    //         const tx = await complexData.addLegacyToken(
-    //           oldToken.address,
-    //           hashType,
-    //           tHash,
-    //           hashId,
-    //           th,
-    //           thbal
-    //         );
-    //         await waitForMined(tx.hash);
-    //       }
-    //     }
-    //   }
-    // }
+    tx = await pc.setCategory(1);
+    await waitForMined(tx.hash);
+    console.log(`${sym} set category - 1`);
   }
 
   /**
