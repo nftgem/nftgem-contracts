@@ -51,7 +51,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev Contract initializer.
      */
-    constructor() ERC1155("https://metadata.bitlootbox.com/") {
+    constructor() ERC1155("https://metadata.nftgem.host/") {
         _addController(msg.sender);
         registryManager = msg.sender;
     }

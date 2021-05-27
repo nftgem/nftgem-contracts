@@ -2,7 +2,19 @@
 pragma solidity >=0.7.0;
 
 interface INFTComplexGemPoolData {
-    enum PriceIncrementType {COMPOUND, NONE}
+    enum PriceIncrementType {COMPOUND, INVERSELOG, NONE}
+
+    /**
+     * @dev Event generated when an NFT claim is imported from a legacy contract
+     */
+    event NFTGemImported(
+        address indexed converter,
+        address indexed pool,
+        address oldPool,
+        address oldToken,
+        uint256 indexed gemHash,
+        uint256 quantity
+    );
 
     function addInputRequirement(
         address theToken,

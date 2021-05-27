@@ -306,89 +306,98 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
    ******************************************************************************
    */
 
+  // bitgem v0
   const afactory = ethers.utils.getAddress(
-    '0xEACd93F1A5daa4a4aD3cACB812bEF88a3A7fa9ca'
+    '0xe502EC3A0025417F61a9BD44F0fAfD4DE6d13C65'
   );
   const alegacyToken = ethers.utils.getAddress(
-    '0x496FEC70974870dD7c2905E25cAd4BDE802938C7'
+    '0x752cE5Afa66b9E215b6dEE9F7Dc1Ec2bf868E373'
   );
-  const anewToken = ethers.utils.getAddress(
-    '0xf3371C6c7d27784c1b55F16647DebD0C39e7f3e3'
+
+  // bitgem.co
+  // const afactory = ethers.utils.getAddress(
+  //   '0xEACd93F1A5daa4a4aD3cACB812bEF88a3A7fa9ca'
+  // );
+  // const alegacyToken = ethers.utils.getAddress(
+  //   '0x496FEC70974870dD7c2905E25cAd4BDE802938C7'
+  // );
+
+  // bitlootbox.com
+  // const afactory = ethers.utils.getAddress(
+  //   '0xaEA74b36Bc9B0FdC7429127f9A49BAE9edea898D'
+  // );
+  // const alegacyToken = ethers.utils.getAddress(
+  //   '0x8948bCfd1c1A6916c64538981e44E329BF381a59'
+  // );
+  const aNewToken = ethers.utils.getAddress(
+    '0x830836BB33a369A9E5516A9cf1155733e8Ebc768'
   );
 
   const oldFactory = await getContractAt('NFTGemPoolFactory', afactory, sender);
   const oldToken = await getContractAt('NFTGemMultiToken', alegacyToken, sender);
-  const newToken = await getContractAt('NFTGemMultiToken', anewToken, sender);
+  const newToken = await getContractAt('NFTGemMultiToken', aNewToken, sender);
   const newFactory = dc.NFTGemPoolFactory;
+
+  // const gpLen = await oldFactory.allNFTGemPoolsLength();
+  // for (let gp = 0; gp < gpLen.toNumber(); gp++) {
+  //   const gpAddr = await oldFactory.allNFTGemPools(gp);
+  //   const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
+  //   const sym = await oldData.symbol();
+  //   if (sym === 'ASTRO' || sym === 'MCU') {
+  //     continue;
+  //   }
+  //   console.log(`processing pool symbol ${sym}`);
+  //   let newGpAddr = await newFactory.getNFTGemPool(
+  //     keccak256(['bytes'], [pack(['string'], [sym])])
+  //   );
+  //   if (BigNumber.from(newGpAddr).eq(0)) {
+  //     newGpAddr = await createPool(
+  //       sym,
+  //       await oldData.name(),
+  //       await oldData.ethPrice(),
+  //       await oldData.minTime(),
+  //       await oldData.maxTime(),
+  //       await oldData.difficultyStep(),
+  //       await oldData.maxClaims(),
+  //       '0x0000000000000000000000000000000000000000'
+  //     );
+  //   }
+  //   if (BigNumber.from(newGpAddr).eq(0)) {
+  //     console.log(`cant create pool symbol ${sym}`);
+  //     continue;
+  //   }
+
+  //   const pc = await getPoolContract(newGpAddr);
+  //   const nextGemId = await oldData.mintedCount();
+  //   const nextClaimId = await oldData.claimedCount();
+
+  //   let tx = await pc.setNextIds(nextClaimId, nextGemId);
+  //   await waitForMined(tx.hash);
+  //   console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
+
+  //   tx = await pc.addAllowedTokenSource(alegacyToken);
+  //   await waitForMined(tx.hash);
+  //   console.log(`${sym} added token source ${alegacyToken.toString()}`);
+
+  //   tx = await pc.setCategory(1);
+  //   await waitForMined(tx.hash);
+  //   console.log(`${sym} set category - 1`);
+  // }
 
   const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
   console.log(`num holders: ${allGovTokenHolders.toNumber()}`)
-  for (let i = 388; i < allGovTokenHolders.toNumber(); i++) {
+  for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
     const thAddr = await oldToken.allTokenHolders(0, i);
 
     const th0Bal = await oldToken.balanceOf(thAddr, 0);
-    const th0nBal = await newToken.balanceOf(thAddr, 0);
+    let tx = await newToken.mint(thAddr, 0, th0Bal);
+    await waitForMined(tx.hash);
+    console.log(`${i} 0 ${thAddr} ${th0Bal.toString()}`);
 
-    if(!th0nBal.eq(th0Bal)) {
-      const tx = await newToken.mint(thAddr, 0, th0Bal);
-      await waitForMined(tx.hash);
-      console.log(`${i} 0 ${thAddr} ${th0Bal.toString()}`);
-    }
-
-    const th1nBal = await newToken.balanceOf(thAddr, 1);
     const th1Bal = await oldToken.balanceOf(thAddr, 1);
-
-    if(!th1nBal.eq(th1Bal)) {
-      const tx = await newToken.mint(thAddr, 1, th1Bal);
-      await waitForMined(tx.hash);
-      console.log(`${i} 1 ${thAddr} ${formatEther(th1Bal.toString())}`);
-    }
-  }
-
-  const gpLen = await oldFactory.allNFTGemPoolsLength();
-  for (let gp = 0; gp < gpLen.toNumber(); gp++) {
-    const gpAddr = await oldFactory.allNFTGemPools(gp);
-    const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
-    const sym = await oldData.symbol();
-    if (sym === 'ASTRO' || sym === 'MCU') {
-      continue;
-    }
-    console.log(`processing pool symbol ${sym}`);
-    let newGpAddr = await newFactory.getNFTGemPool(
-      keccak256(['bytes'], [pack(['string'], [sym])])
-    );
-    if (BigNumber.from(newGpAddr).eq(0)) {
-      newGpAddr = await createPool(
-        sym,
-        await oldData.name(),
-        await oldData.ethPrice(),
-        await oldData.minTime(),
-        await oldData.maxTime(),
-        await oldData.difficultyStep(),
-        await oldData.maxClaims(),
-        '0x0000000000000000000000000000000000000000'
-      );
-    }
-    if (BigNumber.from(newGpAddr).eq(0)) {
-      console.log(`cant create pool symbol ${sym}`);
-      continue;
-    }
-
-    const pc = await getPoolContract(newGpAddr);
-    const nextGemId = await oldData.mintedCount();
-    const nextClaimId = await oldData.claimedCount();
-
-    let tx = await pc.setNextIds(nextClaimId, nextGemId);
+    tx = await newToken.mint(thAddr, 1, th1Bal);
     await waitForMined(tx.hash);
-    console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
-
-    tx = await pc.addAllowedTokenSource(alegacyToken);
-    await waitForMined(tx.hash);
-    console.log(`${sym} added token source ${alegacyToken.toString()}`);
-
-    tx = await pc.setCategory(1);
-    await waitForMined(tx.hash);
-    console.log(`${sym} set category - 1`);
+    console.log(`${i} 1 ${thAddr} ${formatEther(th1Bal.toString())}`);
   }
 
   /**

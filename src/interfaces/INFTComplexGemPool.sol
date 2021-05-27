@@ -10,9 +10,9 @@ interface INFTComplexGemPool {
      * @dev Event generated when an NFT claim is created using ETH
      */
     event NFTGemClaimCreated(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 length,
         uint256 quantity,
         uint256 amountPaid
@@ -22,9 +22,9 @@ interface INFTComplexGemPool {
      * @dev Event generated when an NFT claim is created using ERC20 tokens
      */
     event NFTGemERC20ClaimCreated(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 length,
         address token,
         uint256 quantity,
@@ -35,9 +35,9 @@ interface INFTComplexGemPool {
      * @dev Event generated when an NFT claim is redeemed
      */
     event NFTGemClaimRedeemed(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 amountPaid,
         uint256 quantity,
         uint256 feeAssessed
@@ -47,9 +47,9 @@ interface INFTComplexGemPool {
      * @dev Event generated when an NFT claim is redeemed
      */
     event NFTGemERC20ClaimRedeemed(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         address token,
         uint256 ethPrice,
         uint256 tokenAmount,

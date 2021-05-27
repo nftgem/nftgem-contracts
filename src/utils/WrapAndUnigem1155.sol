@@ -108,7 +108,7 @@ contract WrapAndUnigem1155 {
    * @return `bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"))`
    */
   function onERC1155Received(address, address, uint256, uint256, bytes calldata)
-    external returns(bytes4)
+    external view returns(bytes4)
   {
     if (msg.sender != address(tokenWrapper)) {
       revert("WrapAndUnigem#onERC1155Received: INVALID_ERC1155_RECEIVED");

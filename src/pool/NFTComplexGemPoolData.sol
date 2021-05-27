@@ -544,11 +544,17 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         require(poolData.allowedTokenSources.exists(legacyToken) == true, "INVALID_TOKENSOURCE");
         require(poolData.importedLegacyToken[tokenHash] == false, "ALREADY_IMPORTED");
 
-        uint256 quantity = IERC1155(legacyToken).balanceOf(recipient, tokenHash);
+        bytes32 importedSymHash = keccak256(abi.encodePacked(INFTGemPoolData(pool).symbol()));
+        bytes32 poolSymHash = keccak256(abi.encodePacked(poolData.symbol));
+        require(importedSymHash == poolSymHash, "INVALID_POOLHASH");
+
         uint8 importTokenType = INFTGemPoolData(pool).tokenType(tokenHash);
+        require(importTokenType == 2, "INVALID_TOKENTYPE");
+
+        uint256 quantity = IERC1155(legacyToken).balanceOf(recipient, tokenHash);
         uint256 importTokenId = INFTGemPoolData(pool).tokenId(tokenHash);
 
-        if(quantity > 0 && importTokenType == 2) {
+        if(quantity > 0) {
             INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, quantity);
             INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, 2, address(this));
 
@@ -556,6 +562,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             poolData.tokenIds[tokenHash] = importTokenId;
             poolData.tokenSources[tokenHash] = legacyToken;
             poolData.importedLegacyToken[tokenHash] = true;
+
+            emit NFTGemImported(msg.sender, address(this), pool, legacyToken, tokenHash, quantity);
         }
     }
 

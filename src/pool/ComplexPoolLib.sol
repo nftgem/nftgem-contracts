@@ -23,9 +23,9 @@ library ComplexPoolLib {
      * @dev Event generated when an NFT claim is created using ETH
      */
     event NFTGemClaimCreated(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 length,
         uint256 quantity,
         uint256 amountPaid
@@ -35,9 +35,9 @@ library ComplexPoolLib {
      * @dev Event generated when an NFT claim is created using ERC20 tokens
      */
     event NFTGemERC20ClaimCreated(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 length,
         address token,
         uint256 quantity,
@@ -48,9 +48,9 @@ library ComplexPoolLib {
      * @dev Event generated when an NFT claim is redeemed
      */
     event NFTGemClaimRedeemed(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         uint256 amountPaid,
         uint256 quantity,
         uint256 feeAssessed
@@ -60,9 +60,9 @@ library ComplexPoolLib {
      * @dev Event generated when an NFT claim is redeemed
      */
     event NFTGemERC20ClaimRedeemed(
-        address account,
-        address pool,
-        uint256 claimHash,
+        address indexed account,
+        address indexed pool,
+        uint256 indexed claimHash,
         address token,
         uint256 ethPrice,
         uint256 tokenAmount,
@@ -724,6 +724,9 @@ library ComplexPoolLib {
     function increaseDifficulty(ComplexPoolData storage self) public {
         if(self.priceIncrementType == INFTComplexGemPoolData.PriceIncrementType.COMPOUND) {
             uint256 diffIncrease = self.ethPrice.div(self.diffstep);
+            self.ethPrice = self.ethPrice.add(diffIncrease);
+        } else if(self.priceIncrementType == INFTComplexGemPoolData.PriceIncrementType.INVERSELOG) {
+            uint256 diffIncrease = self.diffstep.div(self.ethPrice);
             self.ethPrice = self.ethPrice.add(diffIncrease);
         }
     }

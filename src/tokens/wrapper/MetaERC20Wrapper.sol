@@ -38,7 +38,7 @@ contract MetaERC20Wrapper is ERC1155Meta, ERC1155MintBurn {
   |__________________________________*/
 
   // Register ETH as ID #1 and address 0x1
-  constructor() public {
+  constructor() {
     addressToID[ETH_ADDRESS] = ETH_ID;
     IDtoAddress[ETH_ID] = ETH_ADDRESS;
   }
@@ -46,16 +46,6 @@ contract MetaERC20Wrapper is ERC1155Meta, ERC1155MintBurn {
   /***********************************|
   |         Deposit Functions         |
   |__________________________________*/
-
-  /**
-   * Fallback function
-   * @dev Deposit ETH in this contract to receive wrapped ETH
-   * No parameters provided
-   */
-  receive () external payable {
-    // Deposit ETH sent with transaction
-    deposit(ETH_ADDRESS, msg.sender, msg.value);
-  }
 
   /**
    * @dev Deposit ERC20 tokens or ETH in this contract to receive wrapped ERC20s

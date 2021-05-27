@@ -55,7 +55,7 @@ contract Unigem1155Exchange is ReentrancyGuard, ERC1155MintBurn, IUnigem1155Exch
    * @param _currencyAddr  The address of the ERC-1155 currency Token
    * @param _currencyID    The ID of the ERC-1155 currency Token
    */
-  constructor(address _tokenAddr, address _currencyAddr, uint256 _currencyID) public {
+  constructor(address _tokenAddr, address _currencyAddr, uint256 _currencyID) {
     require(
       address(_tokenAddr) != address(0) && _currencyAddr != address(0),
       "UnigemExchange#constructor:INVALID_INPUT"
