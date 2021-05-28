@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config();
-const {BigNumber} = require('ethers');
-const {parseEther} = require('ethers/lib/utils');
 const hre = require('hardhat');
 require('@nomiclabs/hardhat-waffle');
 
@@ -9,20 +7,26 @@ require('@nomiclabs/hardhat-waffle');
   const {ethers, deployments} = hre;
   const {get} = deployments;
   const {getContractAt} = ethers;
+  const [sender] = await hre.ethers.getSigners();
 
-  const target = ethers.utils.getAddress(
+  const atarget = ethers.utils.getAddress(
     '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F'
   );
-  const [sender] = await hre.ethers.getSigners();
+  const atoken = ethers.utils.getAddress(
+    '0x496FEC70974870dD7c2905E25cAd4BDE802938C7'
+  );
+  const agempoolfac = ethers.utils.getAddress(
+    '0xEACd93F1A5daa4a4aD3cACB812bEF88a3A7fa9ca'
+  );
 
   const multitoken = await getContractAt(
     'NFTGemMultiToken',
-    (await get('NFTGemMultiToken')).address,
+    atoken,
     sender
   )
   const gemPoolFactory = await getContractAt(
     'NFTGemPoolFactory',
-    (await get('NFTGemPoolFactory')).address,
+    agempoolfac,
     sender
   )
   const tokenPoolQuerier = await getContractAt(
@@ -31,49 +35,27 @@ require('@nomiclabs/hardhat-waffle');
     sender
   )
 
+  const poolContract = await ethers.getContractAt('NFTComplexGemPoolData', '0x3eD40cbeA5C347aEB6280211d4D623d6C8193f29', sender, {
+    libraries: {
+      ComplexPoolLib: '0x988d5537f746daE83838d13F3fe875030e3F3fE7',
+    },
+  })
 
-  const waitForMined = async (transactionHash) => {
-    return new Promise((resolve) => {
-      const _checkReceipt = async () => {
-        const txReceipt = await hre.ethers.provider.getTransactionReceipt(
-          transactionHash
-        );
-        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
-      };
-      const interval = setInterval(() => {
-        _checkReceipt().then((r) => {
-          if (r) {
-            clearInterval(interval);
-            resolve(true);
-          }
-        });
-      }, 500);
-    });
-  };
+  const allTokensLen = await poolContract.allTokenHashesLength();
+  console.log('allTokensLen', allTokensLen.toNumber());
 
-  const waitFor = async (n) => {
-    return new Promise((resolve) => setTimeout(resolve, n * 1000));
-  };
+  const gems = [], claims = [];
+
+  for(var i = 0; i < ~~(allTokensLen.toNumber() / 20); i++) {
+    const results = await tokenPoolQuerier.getOwnedTokens(poolContract.address, atoken, atarget, i, 20, { gasLimit: 500000});
+    results.claims.forEach(c => { if(!c.eq(0)) claims.push(c); });
+    results.gems.forEach(c => { if(!c.eq(0)) gems.push(c); });
+    console.log('claims', claims);
+    console.log('gems', gems);
+  }
 
 
-  const results = await tokenPoolQuerier.getOwnedTokens('0x3eD40cbeA5C347aEB6280211d4D623d6C8193f29', multitoken.address, target);
-  console.log(results);
 
-
-  // const poolContracts = await Promise.all(
-  //   gemPools.map((gp) =>
-  //     ethers.getContractAt('NFTComplexGemPoolData', gp, sender, {
-  //       libraries: {
-  //         ComplexPoolLib: '0xE9Ef69f136d9885164a9d1002D74Bf3785Ca889c',
-  //       },
-  //     })
-  //   )
-  // );
-
-  // const poolSettings = await Promise.all(
-  //   poolContracts.map((pc) => pc.settings())
-  // );
-  // console.log(poolSettings);
 
   // const allTokenHashes = {};
   // const gemPools = await gemPoolFactory.nftGemPools();
