@@ -6,39 +6,31 @@ const hre = require('hardhat');
 require('@nomiclabs/hardhat-waffle');
 
 (async function main() {
-  const {ethers} = hre;
-
-  const agemPoolFactory = ethers.utils.getAddress(
-    process.env.GEM_POOL_FACTORY || '0xE81bDEE42029CEE1B1199Bc211b4d33208A1558F'
-  );
-
-  const amultiToken = ethers.utils.getAddress(
-    process.env.MULTITOKEN || '0x6AEdE07674f6f6abF1122fE4c31912D40Beb0407'
-  );
+  const {ethers, deployments} = hre;
+  const {get} = deployments;
+  const {getContractAt} = ethers;
 
   const target = ethers.utils.getAddress(
-    '0x2a0524733D006b909f144A788Cdf7F1C6851331F'
+    '0x217b7DAB288F91551A0e8483aC75e55EB3abC89F'
   );
-
-  const deployParams = {
-    log: true,
-    libraries: {
-      ComplexPoolLib: '0xE9Ef69f136d9885164a9d1002D74Bf3785Ca889c',
-    },
-  };
-  // const NFTComplexGemPool = await ethers.getContractFactory(
-  //   'NFTComplexGemPool',
-  //   deployParams
-  // );
-
-  const NFTGemPoolFactory = await ethers.getContractFactory(
-    'NFTGemPoolFactory',
-    deployParams
-  );
-  const NFTGemMultiToken = await ethers.getContractFactory('NFTGemMultiToken');
-  const gemPoolFactory = await NFTGemPoolFactory.attach(agemPoolFactory);
-  const multitoken = await NFTGemMultiToken.attach(amultiToken);
   const [sender] = await hre.ethers.getSigners();
+
+  const multitoken = await getContractAt(
+    'NFTGemMultiToken',
+    (await get('NFTGemMultiToken')).address,
+    sender
+  )
+  const gemPoolFactory = await getContractAt(
+    'NFTGemPoolFactory',
+    (await get('NFTGemPoolFactory')).address,
+    sender
+  )
+  const tokenPoolQuerier = await getContractAt(
+    'TokenPoolQuerier',
+    (await get('TokenPoolQuerier')).address,
+    sender
+  )
+
 
   const waitForMined = async (transactionHash) => {
     return new Promise((resolve) => {
@@ -48,9 +40,10 @@ require('@nomiclabs/hardhat-waffle');
         );
         return txReceipt && txReceipt.blockNumber ? txReceipt : null;
       };
-      setInterval(() => {
+      const interval = setInterval(() => {
         _checkReceipt().then((r) => {
           if (r) {
+            clearInterval(interval);
             resolve(true);
           }
         });
@@ -62,11 +55,10 @@ require('@nomiclabs/hardhat-waffle');
     return new Promise((resolve) => setTimeout(resolve, n * 1000));
   };
 
-  //const heldTokens = await multitoken.heldTokens(target);
-  //const htInfo = await Promise.all(heldTokens.map(ht => multitoken.getTokenData(ht)));
 
-  // console.log(gemPools);
-  // console.log(heldTokens);
+  const results = await tokenPoolQuerier.getOwnedTokens('0x3eD40cbeA5C347aEB6280211d4D623d6C8193f29', multitoken.address, target);
+  console.log(results);
+
 
   // const poolContracts = await Promise.all(
   //   gemPools.map((gp) =>
