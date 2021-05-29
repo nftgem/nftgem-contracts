@@ -5,7 +5,6 @@ pragma solidity >=0.7.0;
 import "../utils/Initializable.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemGovernor.sol";
-import "../interfaces/INFTGemPool.sol";
 import "../interfaces/IERC1155.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IProposalFactory.sol";
@@ -89,7 +88,6 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
                 curCtatus = totalVotesInFavor >= votesToPass ? ProposalStatus.PASSED : ProposalStatus.FAILED;
             }
         }
-
     }
 
     function status() external view override returns (ProposalStatus curCtatus) {

@@ -5,7 +5,7 @@ pragma solidity >=0.7.0;
 import "../interfaces/IControllable.sol";
 
 abstract contract Controllable is IControllable {
-    mapping(address => bool) _controllers;
+    mapping(address => bool) internal _controllers;
 
     /**
      * @dev Throws if called by any account not in authorized list

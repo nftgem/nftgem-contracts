@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "../libs/AddressSet.sol";
+import "../libs/UInt256Set.sol";
 import "../libs/Strings.sol";
 import "../libs/SafeMath.sol";
 import "./ERC1155Pausable.sol";
@@ -14,35 +16,57 @@ contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
+contract MockProxyRegistry {
+    function proxies(address input) external pure returns (address) {
+        return input;
+    }
+}
+
 contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, Controllable {
+    using AddressSet for AddressSet.Set;
+    using UInt256Set for UInt256Set.Set;
+
     using SafeMath for uint256;
     using Strings for string;
 
-    // allows opensea to
+    // Opensea's proxy registry address.
     address private constant OPENSEA_REGISTRY_ADDRESS = 0xa5409ec958C83C3f309868babACA7c86DCB077c1;
-    address[] private proxyRegistries;
+
+    AddressSet.Set private proxyRegistries;
     address private registryManager;
 
+    // total balance per token id
     mapping(uint256 => uint256) private _totalBalances;
+    // time-locked tokens
     mapping(address => mapping(uint256 => uint256)) private _tokenLocks;
 
-    mapping(address => uint256[]) private _heldTokens;
-    mapping(uint256 => address[]) private _tokenHolders;
+    // lists of held tokens by user
+    mapping(address => UInt256Set.Set) private _heldTokens;
+    mapping(uint256 => AddressSet.Set) private _tokenHolders;
+
+    // token types and token pool addresses, to link the multitoken to the tokens created on it
+    mapping(uint256 => uint8) private _tokenTypes;
+    mapping(uint256 => address) private _tokenPools;
 
     /**
      * @dev Contract initializer.
      */
-    constructor() ERC1155("https://metadata.bitgem.co/") {
+    constructor() ERC1155("https://metadata.nftgem.host/") {
         _addController(msg.sender);
         registryManager = msg.sender;
-        proxyRegistries.push(OPENSEA_REGISTRY_ADDRESS);
     }
 
+    /**
+     * @dev timelock the tokens from moving until the given time
+     */
     function lock(uint256 token, uint256 timestamp) external override {
         require(_tokenLocks[_msgSender()][token] < timestamp, "ALREADY_LOCKED");
         _tokenLocks[_msgSender()][timestamp] = timestamp;
     }
 
+    /**
+     * @dev unlock time for token / id
+     */
     function unlockTime(address account, uint256 token) external view override returns (uint256 theTime) {
         theTime = _tokenLocks[account][token];
     }
@@ -58,29 +82,43 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev Returns the total balance minted of this type
      */
+    function heldTokens(address holder) external view override returns (uint256[] memory) {
+        return _heldTokens[holder].keyList;
+    }
+
+    /**
+     * @dev Returns the total balance minted of this type
+     */
     function allHeldTokens(address holder, uint256 _idx) external view override returns (uint256) {
-        return _heldTokens[holder][_idx];
+        return _heldTokens[holder].keyList[_idx];
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allHeldTokensLength(address holder) external view override returns (uint256) {
-        return _heldTokens[holder].length;
+        return _heldTokens[holder].keyList.length;
+    }
+
+    /**
+     * @dev Returns the total balance minted of this type
+     */
+    function tokenHolders(uint256 _token) external view override returns (address[] memory) {
+        return _tokenHolders[_token].keyList;
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHolders(uint256 _token, uint256 _idx) external view override returns (address) {
-        return _tokenHolders[_token][_idx];
+        return _tokenHolders[_token].keyList[_idx];
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function allTokenHoldersLength(uint256 _token) external view override returns (uint256) {
-        return _tokenHolders[_token].length;
+        return _tokenHolders[_token].keyList.length;
     }
 
     /**
@@ -94,7 +132,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistries(uint256 _idx) external view override returns (address) {
-        return proxyRegistries[_idx];
+        return proxyRegistries.keyList[_idx];
     }
 
     /**
@@ -117,25 +155,24 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the total balance minted of this type
      */
     function allProxyRegistriesLength() external view override returns (uint256) {
-        return proxyRegistries.length;
+        return proxyRegistries.keyList.length;
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function addProxyRegistry(address registry) external override {
-        require(msg.sender == registryManager, "UNAUTHORIZED");
-        proxyRegistries.push(registry);
+        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
+        proxyRegistries.insert(registry);
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
     function removeProxyRegistryAt(uint256 index) external override {
-        require(msg.sender == registryManager, "UNAUTHORIZED");
-        require(index < proxyRegistries.length, "INVALID_INDEX");
-        proxyRegistries[index] = proxyRegistries[proxyRegistries.length - 1];
-        delete proxyRegistries[proxyRegistries.length - 1];
+        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
+        require(index < proxyRegistries.keyList.length, "INVALID_INDEX");
+        proxyRegistries.remove(proxyRegistries.keyList[index]);
     }
 
     /**
@@ -143,11 +180,13 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
         // Whitelist OpenSea proxy contract for easy trading.
-        for(uint256 i = 0; i < proxyRegistries.length; i++) {
-            ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries[i]);
-            if (address(proxyRegistry.proxies(_owner)) == _operator) {
-                return true;
-            }
+        for (uint256 i = 0; i < proxyRegistries.keyList.length; i++) {
+            ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries.keyList[i]);
+            try proxyRegistry.proxies(_owner) returns (OwnableDelegateProxy thePr) {
+                if (address(thePr) == _operator) {
+                    return true;
+                }
+            } catch {}
         }
         return ERC1155.isApprovedForAll(_owner, _operator);
     }
@@ -161,6 +200,26 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         uint256 amount
     ) external override onlyController {
         _mint(account, uint256(tokenHash), amount, "0x0");
+    }
+
+    /**
+     * @dev set the data for this tokenhash. points to a token type (1 = claim, 2 = gem) and token pool address
+     */
+    function setTokenData(
+        uint256 tokenHash,
+        uint8 tokenType,
+        address tokenPool
+    ) external override onlyController {
+        _tokenTypes[tokenHash] = tokenType;
+        _tokenPools[tokenHash] = tokenPool;
+    }
+
+    /**
+     * @dev get the token data for this token id
+     */
+    function getTokenData(uint256 tokenHash) external view override returns (uint8 tokenType, address tokenPool) {
+        tokenType = _tokenTypes[tokenHash];
+        tokenPool = _tokenPools[tokenHash];
     }
 
     /**
@@ -241,28 +300,26 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
 
             // if this is not a mint then remove the held token id from lists if
             // this is the last token if this type the sender owns
-            if (from != address(0) && balanceOf(from, ids[i]) - amounts[i] == 0) {
-                // remove from heldTokens
-                for (uint256 j = 0; j < _heldTokens[from].length; j++) {
-                    if (_heldTokens[from][j] == ids[i]) {
-                        _heldTokens[from][j] = _heldTokens[from][_heldTokens[from].length - 1];
-                        delete _heldTokens[from][_heldTokens[from].length - 1];
-                    }
+            if (from != address(0) && balanceOf(from, ids[i]) == amounts[i]) {
+                // find and delete the token id from the token holders held tokens
+                if (_heldTokens[from].exists(ids[i])) {
+                    _heldTokens[from].remove(ids[i]);
                 }
-                // remove from tokenHolders
-                for (uint256 j = 0; j < _tokenHolders[ids[i]].length; j++) {
-                    if (_tokenHolders[ids[i]][j] == from) {
-                        _tokenHolders[ids[i]][j] = _tokenHolders[ids[i]][_tokenHolders[ids[i]].length - 1];
-                        delete _tokenHolders[ids[i]][_tokenHolders[ids[i]].length - 1];
-                    }
+                if (_tokenHolders[ids[i]].exists(from)) {
+                    _tokenHolders[ids[i]].remove(from);
                 }
             }
 
             // if this is not a burn and receiver does not yet own token then
             // add that account to the token for that id
             if (to != address(0) && balanceOf(to, ids[i]) == 0) {
-                _heldTokens[to].push(ids[i]);
-                _tokenHolders[ids[i]].push(to);
+                // insert the token id from the token holders held tokens
+                if (!_heldTokens[to].exists(ids[i])) {
+                    _heldTokens[to].insert(ids[i]);
+                }
+                if (!_tokenHolders[ids[i]].exists(to)) {
+                    _tokenHolders[ids[i]].insert(to);
+                }
             }
 
             // inc and dec balances for each token type

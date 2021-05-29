@@ -1,6 +1,7 @@
-import {formatEther} from 'ethers/lib/utils';
+import {formatEther, parseEther} from 'ethers/lib/utils';
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {pack, keccak256} from '@ethersproject/solidity';
+import {BigNumber} from 'ethers';
 const func: any = async function (
   hre: HardhatRuntimeEnvironment,
   noDeploy?: boolean
@@ -23,6 +24,25 @@ const func: any = async function (
     const nbal = await sender.getBalance();
     console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
     return new Promise((resolve) => setTimeout(resolve, n * 1000));
+  };
+
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      const interval = setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
   };
 
   /**
@@ -50,9 +70,54 @@ const func: any = async function (
         (await get('NFTGemFeeManager')).address,
         sender
       ),
+      NFTGemWrapperFeeManager: await getContractAt(
+        'NFTGemWrapperFeeManager',
+        (await get('NFTGemWrapperFeeManager')).address,
+        sender
+      ),
       ProposalFactory: await getContractAt(
         'ProposalFactory',
         (await get('ProposalFactory')).address,
+        sender
+      ),
+      ERC20GemTokenFactory: await getContractAt(
+        'ERC20GemTokenFactory',
+        (await get('ERC20GemTokenFactory')).address,
+        sender
+      ),
+      Unigem1155Factory: await getContractAt(
+        'Unigem1155Factory',
+        (await get('Unigem1155Factory')).address,
+        sender
+      ),
+      Unigem20Factory: await getContractAt(
+        'Unigem20Factory',
+        (await get('Unigem20Factory')).address,
+        sender
+      ),
+      WETH9: await getContractAt(
+        'WETH9',
+        (await get('WETH9')).address,
+        sender
+      ),
+      Multicall: await getContractAt(
+        'Multicall',
+        (await get('Multicall')).address,
+        sender
+      ),
+      Multicall2: await getContractAt(
+        'Multicall2',
+        (await get('Multicall2')).address,
+        sender
+      ),
+      TokenPoolQuerier: await getContractAt(
+        'TokenPoolQuerier',
+        (await get('TokenPoolQuerier')).address,
+        sender
+      ),
+      MockProxyRegistry: await getContractAt(
+        'MockProxyRegistry',
+        (await get('MockProxyRegistry')).address,
         sender
       ),
     };
@@ -61,10 +126,16 @@ const func: any = async function (
      * @dev Load the network-specific DEX-adapters - Uniswap for ETH and FTM,
      * PancakeSwap for BNB, Pangolin for AVAX, or a Mock helper for testing
      */
-    if (parseInt(networkId) === 1 || parseInt(networkId) === 250) {
+    if (parseInt(networkId) === 1) {
       ret.SwapHelper = await getContractAt(
         'UniswapQueryHelper',
         (await get('UniswapQueryHelper')).address,
+        sender
+      );
+    } else if (parseInt(networkId) === 250) {
+      ret.SwapHelper = await getContractAt(
+        'SushiSwapQueryHelper',
+        (await get('SushiSwapQueryHelper')).address,
         sender
       );
     } else if (parseInt(networkId) === 43114) {
@@ -114,13 +185,20 @@ const func: any = async function (
    */
   console.log('deploying libraries...');
   const govLib = (await deploy('GovernanceLib', libDeployParams)).address;
+  const strings = (await deploy('Strings', libDeployParams)).address;
+  const safeMath = (await deploy('SafeMath', libDeployParams)).address;
+  const addressSet = (await deploy('AddressSet', libDeployParams)).address;
+  const uint256Set = (await deploy('UInt256Set', libDeployParams)).address;
   const deployParams: any = {
     from: sender.address,
     log: true,
     libraries: {
       GovernanceLib: govLib,
-      Strings: (await deploy('Strings', libDeployParams)).address,
-      SafeMath: (await deploy('SafeMath', libDeployParams)).address,
+      Strings: strings,
+      SafeMath: safeMath,
+      AddressSet: addressSet,
+      UInt256Set: uint256Set,
+      Create2: (await deploy('Create2', libDeployParams)).address,
       ProposalsLib: (
         await deploy('ProposalsLib', {
           from: sender.address,
@@ -130,7 +208,34 @@ const func: any = async function (
           },
         })
       ).address,
-      Create2: (await deploy('Create2', libDeployParams)).address,
+      ComplexPoolLib: (
+        await deploy('ComplexPoolLib', {
+          from: sender.address,
+          log: true,
+          libraries: {
+            AddressSet: addressSet,
+            SafeMath: safeMath,
+          },
+        })
+      ).address,
+      WrappedTokenLib: (
+        await deploy('WrappedTokenLib', {
+          from: sender.address,
+          log: true,
+          libraries: {
+            SafeMath: safeMath,
+          },
+        })
+      ).address,
+      Unigem20Library: (
+        await deploy('Unigem20Library', {
+          from: sender.address,
+          log: true,
+          libraries: {
+            SafeMath: safeMath,
+          },
+        })
+      ).address,
     },
   };
 
@@ -144,16 +249,27 @@ const func: any = async function (
     NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
     NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
+    NFTGemWrapperFeeManager: await deploy(
+      'NFTGemWrapperFeeManager',
+      deployParams
+    ),
     ProposalFactory: await deploy('ProposalFactory', deployParams),
+    MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
+    ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
+    Unigem1155Factory: await deploy('Unigem1155Factory', deployParams),
+    Unigem20Factory: await deploy('Unigem20Factory', deployParams),
+    Multicall: await deploy('Multicall', deployParams),
+    Multicall2: await deploy('Multicall2', deployParams),
+    TokenPoolQuerier: await deploy('TokenPoolQuerier', deployParams),
   };
-
-  let ip = utils.parseEther('0.1'),
-    pepe = utils.parseEther('10');
 
   /**
    * @dev Deploy the ETH mainnet / Fantom Uniswap adapter
    */
-  if (parseInt(networkId) === 1 || parseInt(networkId) === 250) {
+  if (parseInt(networkId) === 1) {
+    /**
+     * @dev Deploy the Uniswap adapter
+     */
     deploymentData.SwapHelper = await deploy('UniswapQueryHelper', {
       from: sender.address,
       log: true,
@@ -161,13 +277,31 @@ const func: any = async function (
         UniswapLib: (await deploy('UniswapLib', libDeployParams)).address,
       },
     });
+    deployParams.args = [
+      'Wrapped Ether',
+      'WETH',
+      18
+    ];
+  } else if (parseInt(networkId) === 250) {
+    /**
+     * @dev Deploy the SushiSwap adapter
+     */
+    deploymentData.SwapHelper = await deploy('SushiSwapQueryHelper', {
+      from: sender.address,
+      log: true,
+      libraries: {
+        SushiSwapLib: (await deploy('SushiSwapLib', libDeployParams)).address,
+      },
+    });
+    deployParams.args = [
+      'Wrapped Fantom',
+      'WFTM',
+      18
+    ];
   } else if (parseInt(networkId) === 56) {
     /**
-     * @dev Deploy the ETH mainnet / Fantom Uniswap adapter
+     * @dev Deploy the PancakeSwap adapter
      */
-    ip = utils.parseEther('0.05');
-    pepe = utils.parseEther('1');
-
     deploymentData.SwapHelper = await deploy('PancakeSwapQueryHelper', {
       from: sender.address,
       log: true,
@@ -176,13 +310,15 @@ const func: any = async function (
           .address,
       },
     });
+    deployParams.args = [
+      'Wrapped Binance Token',
+      'WBNB',
+      18
+    ];
   } else if (parseInt(networkId) === 43114) {
     /**
      * @dev Deploy the Avanlanche Pangolin adapter
      */
-    ip = utils.parseEther('1');
-    pepe = utils.parseEther('10');
-
     deploymentData.SwapHelper = await deploy('PangolinQueryHelper', {
       from: sender.address,
       log: true,
@@ -190,365 +326,182 @@ const func: any = async function (
         PangolinLib: (await deploy('PangolinLib', libDeployParams)).address,
       },
     });
+    deployParams.args = [
+      'Wrapped Avalanche',
+      'WAVAX',
+      18
+    ];
   } else {
     /**
      * @dev Test adapter
      */
-    ip = utils.parseEther('0.1');
-    pepe = utils.parseEther('1');
     deploymentData.SwapHelper = await deploy('MockQueryHelper', deployParams);
-  }
-  if (parseInt(networkId) === 250) {
-    ip = utils.parseEther('100');
-    pepe = utils.parseEther('10000');
+    deployParams.args = [
+      'Wrapped Base Token',
+      'WBT',
+      18
+    ];
   }
 
+  deploymentData.WETH9 = await deploy('WETH9', deployParams);
+  delete deployParams.args;
+  
   console.log('loading contracts...');
-  await waitFor(5);
+  await waitFor(waitForTime);
 
   const deployedContracts = await getDeployedContracts(sender);
   const dc = deployedContracts;
-  const ds = 86400;
-  const ms = ds * 30;
-
-  await dc.NFTGemMultiToken.removeProxyRegistryAt(0);
 
   console.log('initializing governor...');
-  try {
-  await dc.NFTGemGovernor.initialize(
-    dc.NFTGemMultiToken.address,
-    dc.NFTGemPoolFactory.address,
-    dc.NFTGemFeeManager.address,
-    dc.ProposalFactory.address,
-    dc.SwapHelper.address
-  );
-  } catch(e) { console.log('already inited'); }
-  await waitFor(waitForTime);
-  try {
-  console.log('propagating governor controller...');
-  await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-  await waitFor(waitForTime);
-  } catch(e) { console.log('already inited'); }
-  try {
-  console.log('propagating governor controller...');
-  await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
-  await waitFor(waitForTime);
-  } catch(e) { console.log('already inited'); }
-  try {
-  console.log('propagating governor controller...');
-  await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
-  await waitFor(waitForTime);
-  } catch(e) { console.log('already inited'); }
-  try {
-  console.log('propagating governor controller...');
-  await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
-  await waitFor(waitForTime);
-  } catch(e) { console.log('already inited'); }
 
-  await waitFor(waitForTime);
-  try {
+  const inited = await dc.NFTGemGovernor.initialized();
+
+  if (!inited) {
+    
+    let tx = await dc.NFTGemGovernor.initialize(
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemPoolFactory.address,
+      dc.NFTGemFeeManager.address,
+      dc.ProposalFactory.address,
+      dc.SwapHelper.address
+    );
+    await waitForMined(tx.hash);
+
+    console.log('propagating multitoken controller...');
+    tx = await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
+    await waitForMined(tx.hash);
+
+    console.log('propagating pool factory  controller...');
+    tx = await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
+    await waitForMined(tx.hash);
+
+    console.log('propagating proposal factory controller...');
+    tx = await dc.ProposalFactory.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
+    await waitForMined(tx.hash);
+
+    console.log('propagating fee manager controller...');
+    tx = await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
+    await waitForMined(tx.hash);
+
+    console.log('propagating wrapper fee manager controller...');
+    tx = await dc.NFTGemWrapperFeeManager.addController(
+      dc.NFTGemGovernor.address, {gasLimit: 500000}
+    );
+    await waitForMined(tx.hash);
+
+    console.log('propagating gem token controller...');
+    tx = await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
+    await waitForMined(tx.hash);
+
     console.log('minting initial governance tokens...');
-    await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address);
-  } catch (e) {
-    console.log('already inited');
+    tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(sender.address, {
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
+
+    // deploy the governance token wrapper
+    console.log('deploying wrapped governance token...');
+    deployParams.args = [
+      'NFTGem Governance',
+      'NFTGG',
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemWrapperFeeManager.address
+    ];
+    await deploy('NFTGemWrappedERC20Governance', deployParams);
+
+    // init governance token wrapper
+    console.log('intializing wrapped governance token...');
+    await waitFor(1);
+    dc.NFTGemWrappedERC20Governance = await getContractAt(
+      'NFTGemWrappedERC20Governance',
+      (await get('NFTGemWrappedERC20Governance')).address,
+      sender
+    );
+    tx = await dc.NFTGemWrappedERC20Governance.initialize(
+      '',
+      '',
+      '0x0000000000000000000000000000000000000000',
+      '0x0000000000000000000000000000000000000000',
+      0,
+      dc.NFTGemWrapperFeeManager.address
+    );
+    await waitForMined(tx.hash);
+
+    // approve the wrappedgem contract
+    console.log('approving wrapped governance token as operator...');
+    tx = await dc.NFTGemMultiToken.setApprovalForAll(
+      dc.NFTGemWrappedERC20Governance.address,
+      true,
+      {from: sender.address}
+    );
+    await waitForMined(tx.hash);
+
+    console.log('minting initial fuel tokens...');
+    tx = await dc.NFTGemGovernor.issueInitialFuelTokens(sender.address, {
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
+
+    // deploy the fuel token wrapper
+    console.log('deploying wrapped fuel token...');
+    deployParams.args = [
+      'NFTGem Fuel',
+      'NFTGF',
+      dc.NFTGemMultiToken.address,
+      dc.NFTGemWrapperFeeManager.address
+    ];
+    await deploy('NFTGemWrappedERC20Fuel', deployParams);
+
+    // init fuel token wrapper
+    console.log('intializing wrapped fuel token...');
+    await waitFor(1);
+    dc.NFTGemWrappedERC20Fuel = await getContractAt(
+      'NFTGemWrappedERC20Fuel',
+      (await get('NFTGemWrappedERC20Fuel')).address,
+      sender
+    );
+    tx = await dc.NFTGemWrappedERC20Fuel.initialize(
+      '',
+      '',
+      '0x0000000000000000000000000000000000000000',
+      '0x0000000000000000000000000000000000000000',
+      0,
+      dc.NFTGemWrapperFeeManager.address
+    );
+    await waitForMined(tx.hash);
+
+    // approve the wrapped fuel contract
+    console.log('approving wrapped fuel token as operator...');
+    tx = await dc.NFTGemMultiToken.setApprovalForAll(
+      dc.NFTGemWrappedERC20Fuel.address,
+      true,
+      {from: sender.address}
+    );
+    await waitForMined(tx.hash);
+
+    // wrap 100k governance tokens
+    console.log('wrapping 500k fuel tokens...');
+    tx = await dc.NFTGemWrappedERC20Governance.wrap('100000', {
+      from: sender.address,
+      gasLimit: 5000000,
+    });
+    await waitForMined(tx.hash);
+
+        // deploy the governance token wrapper
+    console.log('deploying unigem20 router...');
+    deployParams.args = [
+      dc.Unigem20Factory.address,
+      dc.WETH9.address
+    ];
+    await deploy('Unigem20Router', deployParams);
+
   }
 
-  await waitFor(waitForTime);
-
-  const gemTokens:any = {};
-
-  // ruby
-  console.log('Creating Ruby pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'RUBY',
-    'Ruby',
-    ip,
-    ds,
-    ms,
-    32,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  console.log('Creating wrapped Ruby token...');
-  gemTokens.ruby = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Ruby',
-      'wRUBY',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['RUBY'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-  await waitFor(waitForTime);
-
-  // opal
-  console.log('Creating Opal pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'OPAL',
-    'Opal',
-    ip,
-    ds,
-    ms,
-    64,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  console.log('Creating wrapped Opal token...');
-  gemTokens.opal =  await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Opal',
-      'wOPAL',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['OPAL'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-  await waitFor(waitForTime)
-
-  // emerald
-  console.log('Creating Emerald pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'MRLD',
-    'Emerald',
-    ip,
-    ds,
-    ms,
-    128,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.emerald = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Emerald',
-      'wMRLD',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['MRLD'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-  await waitFor(waitForTime);
-
-  // sapphire
-  console.log('Creating Sapphire pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'SPHR',
-    'Sapphire',
-    ip,
-    ds,
-    ms,
-    256,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.sapphire = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Sapphire',
-      'wSPHR',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['SPHR'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  // diamond
-  console.log('Creating Diamond pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'DNMD',
-    'Diamond',
-    ip,
-    ds,
-    ms,
-    512,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.diamond = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Diamond',
-      'wDMND',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['DNMD'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  console.log('Creating Jade pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'JADE',
-    'Jade',
-    ip,
-    ds,
-    ms,
-    1024,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.jade =  await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Jade',
-      'wJADE',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['JADE'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  console.log('Creating Topaz pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'TPAZ',
-    'Topaz',
-    ip,
-    ds,
-    ms,
-    2048,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.topaz =  await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Topaz',
-      'wTPAZ',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['TPAZ'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  console.log('Creating Pearl pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'PERL',
-    'Pearl',
-    ip,
-    ds,
-    ms,
-    4096,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.pearl = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Pearl',
-      'wPERL',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['PERL'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  console.log('Creating Pepe pool...');
-  await dc.NFTGemGovernor.createSystemPool(
-    'PEPE',
-    'Pepe',
-    pepe,
-    ds,
-    ms,
-    4,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-  await waitFor(waitForTime);
-  gemTokens.pearl = await deploy('ERC20WrappedGem', {
-    from: sender.address,
-    log: true,
-    args: [
-      'Wrapped Pepe',
-      'wPEPE',
-      await deployedContracts.NFTGemPoolFactory.getNFTGemPool(
-        keccak256(['bytes'], [pack(['string'], ['PEPE'])])
-      ),
-      dc.NFTGemMultiToken.address,
-      4,
-    ],
-  });
-
-  const tokens = Object
-    .keys(gemTokens)
-    .map((k: any) => ({ address: gemTokens[k].address, name: k }))
-
-  // // relinquish control
-  // console.log('Relinquishing control of multitoken, factory, and governor');
-  // await dc.NFTGemMultiToken.relinquishControl();await waitFor(waitForTime);
-  // await dc.NFTGemPoolFactory.relinquishControl();await waitFor(waitForTime);
-  // await dc.NFTGemGovernor.relinquishControl();await waitFor(waitForTime);
-  // await dc.ProposalFactory.relinquishControl();await waitFor(waitForTime);
-
-  // // lock owned governance tokens from moving for one year
-  // console.log('Locking initial governance token issuance for one year');
-  // const lockTil = ~~(Date.now() / 1000) + 31536000;
-  // await dc.NFTGemMultiToken.lock(0, lockTil);
-
-  // // init code hash for nft gem pool
-  // const NFTGemPoolABI = await get('NFTGemPool');
-  // const NFTGEMPOOL_INIT_CODE_HASH = keccak256(
-  //   ['bytes'],
-  //   [`${NFTGemPoolABI.bytecode}`]
-  // );
-  // console.log('NFTGemPool', NFTGEMPOOL_INIT_CODE_HASH);
-
-  // // init code hash for proposal
-  // const ProposalABI = await get('Proposal');
-  // const PROPOSAL_INIT_CODE_HASH = keccak256(
-  //   ['bytes'],
-  //   [`${ProposalABI.bytecode}`]
-  // );
-  // console.log('Proposal', PROPOSAL_INIT_CODE_HASH);
-
+  // we are done!
   console.log('Deploy complete\n');
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
-
-  console.log('tokens', tokens);
-  tokens
 
   return deployedContracts;
 };

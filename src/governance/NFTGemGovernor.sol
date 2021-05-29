@@ -2,14 +2,12 @@
 pragma solidity >=0.7.0;
 
 import "../access/Controllable.sol";
-import "../utils/Initializable.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/IProposalFactory.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IERC1155.sol";
-import "../interfaces/INFTGemPoolFactory.sol";
-import "../interfaces/INFTGemPool.sol";
+import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/IProposalData.sol";
@@ -20,8 +18,7 @@ import "../governance/ProposalsLib.sol";
 
 import "hardhat/console.sol";
 
-
-contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
+contract NFTGemGovernor is Controllable, INFTGemGovernor {
     using SafeMath for uint256;
 
     address private multitoken;
@@ -30,12 +27,16 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
     address private proposalFactory;
     address private swapHelper;
 
+    bool private _initialized;
+
     uint256 private constant GOVERNANCE = 0;
     uint256 private constant FUEL = 1;
+    uint256 private constant FUEL_TOKEN_INITIAL= 1000000;
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
-    uint256 private constant GOV_TOKEN_MAX     = 1000000;
+    uint256 private constant GOV_TOKEN_MAX = 1000000;
 
     bool private governanceIssued;
+    bool private fuelIssued;
 
     /**
      * @dev contract controller
@@ -53,12 +54,55 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         address _feeTracker,
         address _proposalFactory,
         address _swapHelper
-    ) external override initializer {
+    ) external override onlyController {
         multitoken = _multitoken;
         factory = _factory;
         feeTracker = _feeTracker;
         proposalFactory = _proposalFactory;
         swapHelper = _swapHelper;
+        _initialized = true;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setSwapHelper(address a) external onlyController {
+        swapHelper = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setFactory(address a) external onlyController {
+        factory = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setProposalFactory(address a) external onlyController {
+        proposalFactory = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setMultitoken(address a) external onlyController {
+        multitoken = a;
+    }
+
+    /**
+     * @dev set category category
+     */
+    function setFeeTracker(address a) external onlyController {
+        feeTracker = a;
+    }
+
+    /**
+     * @dev is the conntract inited
+     */
+    function initialized() external view override returns (bool) {
+        return _initialized;
     }
 
     /**
@@ -90,6 +134,16 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         INFTGemMultiToken(multitoken).mint(receiver, GOVERNANCE, GOV_TOKEN_INITIAL);
         governanceIssued = true;
         emit GovernanceTokenIssued(receiver, GOV_TOKEN_INITIAL);
+    }
+
+    /**
+     * @dev issue initial fuel tokens
+     */
+    function issueInitialFuelTokens(address receiver) external override returns (uint256) {
+        require(!fuelIssued, "ALREADY_ISSUED");
+        INFTGemMultiToken(multitoken).mint(receiver, FUEL, FUEL_TOKEN_INITIAL);
+        fuelIssued = true;
+        emit FuelTokenIssued(receiver, FUEL_TOKEN_INITIAL);
     }
 
     /**
@@ -148,12 +202,13 @@ contract NFTGemGovernor is Initializable, Controllable, INFTGemGovernor {
         address pool
     ) internal {
         IControllable(multitoken).addController(pool);
+        INFTGemMultiToken(multitoken).addProxyRegistry(pool);
         IControllable(this).addController(pool);
-        INFTGemPool(pool).setMultiToken(multitoken);
-        INFTGemPool(pool).setSwapHelper(swapHelper);
-        INFTGemPool(pool).setGovernor(address(this));
-        INFTGemPool(pool).setFeeTracker(feeTracker);
-        INFTGemPool(pool).mintGenesisGems(creator, funder);
+        INFTComplexGemPool(pool).setMultiToken(multitoken);
+        INFTComplexGemPool(pool).setSwapHelper(swapHelper);
+        INFTComplexGemPool(pool).setGovernor(address(this));
+        INFTComplexGemPool(pool).setFeeTracker(feeTracker);
+        INFTComplexGemPool(pool).mintGenesisGems(creator, funder);
     }
 
     /**

@@ -20,9 +20,13 @@ interface INFTGemMultiToken {
         uint256 amount
     ) external;
 
+    function heldTokens(address holder) external view returns (uint256[] memory);
+
     function allHeldTokens(address holder, uint256 _idx) external view returns (uint256);
 
     function allHeldTokensLength(address holder) external view returns (uint256);
+
+    function tokenHolders(uint256 _token) external view returns (address[] memory);
 
     function allTokenHolders(uint256 _token, uint256 _idx) external view returns (address);
 
@@ -45,4 +49,12 @@ interface INFTGemMultiToken {
     function lock(uint256 token, uint256 timeframe) external;
 
     function unlockTime(address account, uint256 token) external view returns (uint256);
+
+    function setTokenData(
+        uint256 tokenHash,
+        uint8 tokenType,
+        address tokenPool
+    ) external;
+
+    function getTokenData(uint256 tokenHash) external view returns (uint8, address);
 }

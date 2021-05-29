@@ -65,7 +65,7 @@ describe('NFTGem Core', async () => {
     )) as unknown) as NFTGemPool;
 
     const ds = 86400;
-    const ms = ds * 90;
+    const ms = ds * 30;
     assert.equal(await rubyMarket.name(), 'Ruby');
     assert.equal(await rubyMarket.symbol(), 'RUBY');
     assert.equal((await rubyMarket.minTime()).toNumber(), ds);

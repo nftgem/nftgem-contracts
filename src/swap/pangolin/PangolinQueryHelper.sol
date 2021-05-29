@@ -10,7 +10,6 @@ import "../../access/Controllable.sol";
  * @dev Uniswap helpers
  */
 contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
-
     address private _routerAddress;
 
     address public constant PANGOLIN_ROUTER_ADDRESS = 0xefa94DE7a4656D787667C749f7E1223D71E9FD88;
@@ -33,7 +32,7 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
             uint256 ethReserve
         )
     {
-       return PangolinLib.avaxQuote(token, tokenAmount);
+        return PangolinLib.avaxQuote(token, tokenAmount);
     }
 
     /**
@@ -68,21 +67,8 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(
-        address pair
-    ) external view override returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair) external view override returns (uint256 reserveA, uint256 reserveB) {
         (reserveA, reserveB) = PangolinLib.getReserves(pair);
-    }
-
-    /**
-     * @dev calculate pair address
-     */
-    function pairFor(
-        address tokenA,
-        address tokenB
-    ) external pure override returns (address pair) {
-        address _factory = PangolinLib.factory();
-        pair = PangolinLib.pairFor(_factory, tokenA, tokenB);
     }
 
     /**
@@ -92,4 +78,8 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
         return PangolinLib.getPathForAVAXoToken(token);
     }
 
+    /**
+     * @dev set factory
+     */
+    function setFactory(address) external override {}
 }

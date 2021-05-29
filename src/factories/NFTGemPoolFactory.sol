@@ -2,7 +2,8 @@
 pragma solidity >=0.7.0;
 
 import "../access/Controllable.sol";
-import "../pool/NFTGemPool.sol";
+import "../pool/NFTComplexGemPool.sol";
+import "../pool/ComplexPoolLib.sol";
 import "../libs/Create2.sol";
 import "../interfaces/INFTGemPoolFactory.sol";
 
@@ -26,6 +27,13 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
     /**
      * @dev get the quantized token for this
      */
+    function nftGemPools() external view override returns (address[] memory) {
+        return _allNFTGemPools;
+    }
+
+    /**
+     * @dev get the quantized token for this
+     */
     function allNFTGemPools(uint256 idx) external view override returns (address gemPool) {
         gemPool = _allNFTGemPools[idx];
     }
@@ -35,6 +43,50 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
      */
     function allNFTGemPoolsLength() external view override returns (uint256) {
         return _allNFTGemPools.length;
+    }
+
+    /**
+     * @dev deploy a new erc20 token using create2
+     */
+    function createCustomNFTGemPool(
+        bytes memory bytecode,
+        string memory gemSymbol,
+        string memory gemName
+    ) external override onlyController returns (address payable gemPool) {
+        bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
+        require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
+
+        // use create2 to deploy the quantized erc20 contract
+        gemPool = payable(Create2.deploy(0, salt, bytecode));
+
+        // insert the erc20 contract address into lists - one that maps source to quantized,
+        _getNFTGemPool[uint256(salt)] = gemPool;
+        _allNFTGemPools.push(gemPool);
+
+        // emit an event about the new pool being created
+        emit CustomNFTGemPoolCreated(gemSymbol, gemName);
+    }
+
+    /**
+     * @dev add an existing gem pool to factory(for migrations)
+     */
+    function addCustomNFTGemPool(
+        address poolAddress,
+        string memory gemSymbol,
+        string memory gemName
+    ) external override onlyController returns (address payable gemPool) {
+        bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
+        require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
+
+        // insert the erc20 contract address into lists - one that maps source to quantized,
+        _getNFTGemPool[uint256(salt)] = poolAddress;
+        _allNFTGemPools.push(poolAddress);
+
+        // return the address that was passed in
+        gemPool = payable(poolAddress);
+
+        // emit an event about the new pool being created
+        emit CustomNFTGemPoolCreated(gemSymbol, gemName);
     }
 
     /**
@@ -60,19 +112,59 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
 
         // create the quantized erc20 token using create2, which lets us determine the
         // quantized erc20 address of a token without interacting with the contract itself
-        bytes memory bytecode = type(NFTGemPool).creationCode;
+        bytes memory bytecode = type(NFTComplexGemPool).creationCode;
 
         // use create2 to deploy the quantized erc20 contract
         gemPool = payable(Create2.deploy(0, salt, bytecode));
 
         // initialize the erc20 contract with the relevant addresses which it proxies
-        NFTGemPool(gemPool).initialize(gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
+        NFTComplexGemPool(gemPool).initialize(
+            gemSymbol,
+            gemName,
+            ethPrice,
+            minTime,
+            maxTime,
+            diffstep,
+            maxMint,
+            allowedToken
+        );
 
-        // insert the erc20 contract address into lists - one that maps source to quantized,
+        // insert the erc20 contract address into lists
         _getNFTGemPool[uint256(salt)] = gemPool;
         _allNFTGemPools.push(gemPool);
 
         // emit an event about the new pool being created
         emit NFTGemPoolCreated(gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
+    }
+
+    /**
+     * @dev remove a gem pool from the list using its symbol hash
+     */
+    function removeGemPool(uint256 poolHash) external override onlyController {
+        address oldPool = _getNFTGemPool[poolHash];
+        delete _getNFTGemPool[poolHash];
+        for (uint256 i = 0; i < _allNFTGemPools.length; i++) {
+            if (_allNFTGemPools[i] == oldPool) {
+                if (_allNFTGemPools.length == 1) {
+                    delete _allNFTGemPools;
+                } else {
+                    _allNFTGemPools[i] == _allNFTGemPools[_allNFTGemPools.length - 1];
+                    delete _allNFTGemPools[_allNFTGemPools.length - 1];
+                }
+            }
+        }
+    }
+
+    /**
+     * @dev remove a gem pool from the list using its index into pools array
+     */
+    function removeGemPoolAt(uint256 ndx) external override onlyController {
+        require(_allNFTGemPools.length > ndx, "INDEX_OUT_OF_RANGE");
+        if (_allNFTGemPools.length == 1) {
+            delete _allNFTGemPools;
+        } else {
+            _allNFTGemPools[ndx] == _allNFTGemPools[_allNFTGemPools.length - 1];
+            delete _allNFTGemPools[_allNFTGemPools.length - 1];
+        }
     }
 }
