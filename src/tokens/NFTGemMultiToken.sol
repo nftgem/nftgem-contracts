@@ -61,7 +61,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function lock(uint256 token, uint256 timestamp) external override {
         require(_tokenLocks[_msgSender()][token] < timestamp, "ALREADY_LOCKED");
-        _tokenLocks[_msgSender()][timestamp] = timestamp;
+        _tokenLocks[_msgSender()][token] = timestamp;
     }
 
     /**
@@ -200,6 +200,26 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         uint256 amount
     ) external override onlyController {
         _mint(account, uint256(tokenHash), amount, "0x0");
+    }
+
+    /**
+     * @dev mint some amount of tokens to multiple recipients. Only callable by token owner
+     */
+
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    )  external override onlyController {
+        _mintBatch(to, ids, amounts, "0x0");
+    }
+
+    function burnBatch(
+        address account,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) external override onlyController {
+        _burnBatch(account, ids, amounts);
     }
 
     /**

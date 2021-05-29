@@ -165,8 +165,8 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
      */
-    function collectClaim(uint256 claimHash) external override {
-        poolData.collectClaim(claimHash);
+    function collectClaim(uint256 claimHash, bool requireMature) external override {
+        poolData.collectClaim(claimHash, requireMature);
     }
 
     /**

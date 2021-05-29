@@ -551,9 +551,17 @@ library ComplexPoolLib {
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
      */
-    function collectClaim(ComplexPoolData storage self, uint256 claimHash) public {
+    function collectClaim(ComplexPoolData storage self, uint256 claimHash, bool requireMature) public {
         // enabled
         require(self.enabled == true, "DISABLED");
+                // check the maturity of the claim - only issue gem if mature
+        uint256 unlockTime = self.claimLockTimestamps[claimHash];
+        bool isMature = unlockTime < block.timestamp;
+        require((requireMature && isMature ) || !requireMature, "IMMATURE_CLAIM");
+        __collectClaim(self, claimHash);
+    }
+
+    function __collectClaim(ComplexPoolData storage self, uint256 claimHash) internal {
         // validation checks - disallow if not owner (holds coin with claimHash)
         // or if the unlockTime amd unlockPaid data is in an invalid state
         require(IERC1155(self.multitoken).balanceOf(msg.sender, claimHash) == 1, "NOT_CLAIM_OWNER");

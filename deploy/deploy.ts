@@ -120,6 +120,11 @@ const func: any = async function (
         (await get('MockProxyRegistry')).address,
         sender
       ),
+      BulkTokenMinter: await getContractAt(
+        'BulkTokenMinter',
+        (await get('BulkTokenMinter')).address,
+        sender
+      ),
     };
 
     /**
@@ -261,6 +266,7 @@ const func: any = async function (
     Multicall: await deploy('Multicall', deployParams),
     Multicall2: await deploy('Multicall2', deployParams),
     TokenPoolQuerier: await deploy('TokenPoolQuerier', deployParams),
+    BulkTokenMinter: await deploy('BulkTokenMinter', deployParams),
   };
 
   /**
@@ -345,7 +351,7 @@ const func: any = async function (
 
   deploymentData.WETH9 = await deploy('WETH9', deployParams);
   delete deployParams.args;
-  
+
   console.log('loading contracts...');
   await waitFor(waitForTime);
 
@@ -357,7 +363,7 @@ const func: any = async function (
   const inited = await dc.NFTGemGovernor.initialized();
 
   if (!inited) {
-    
+
     let tx = await dc.NFTGemGovernor.initialize(
       dc.NFTGemMultiToken.address,
       dc.NFTGemPoolFactory.address,

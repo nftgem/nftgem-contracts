@@ -84,7 +84,7 @@ interface INFTComplexGemPool {
         uint256 count
     ) external;
 
-    function collectClaim(uint256 claimHash) external;
+    function collectClaim(uint256 claimHash, bool requireMature) external;
 
     function purchaseGems(uint256 count) external payable;
 

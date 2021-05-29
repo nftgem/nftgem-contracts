@@ -563,6 +563,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             poolData.tokenSources[tokenHash] = legacyToken;
             poolData.importedLegacyToken[tokenHash] = true;
 
+            INFTGemGovernor(poolData.governor).maybeIssueGovernanceToken(msg.sender);
             emit NFTGemImported(msg.sender, address(this), pool, legacyToken, tokenHash, quantity);
         }
     }

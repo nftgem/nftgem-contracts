@@ -13,6 +13,19 @@ interface INFTGemMultiToken {
         uint256 amount
     ) external;
 
+    // called by controller to mint a claim or a gem
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) external;
+
+    function burnBatch(
+        address account,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) external;
+
     // called by controller to burn a claim
     function burn(
         address account,

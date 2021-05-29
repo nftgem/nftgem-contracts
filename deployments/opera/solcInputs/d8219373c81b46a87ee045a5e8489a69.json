@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "src/tokens/WETH9.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.7.0;\n\ncontract WETH9 {\n    string public name = \"Wrapped Fantom\";\n    string public symbol = \"WFTM\";\n    uint8 public decimals = 18;\n\n    constructor(string memory _name, string memory _symbol, uint8 _decimals) {\n        name = _name;\n        symbol = _symbol;\n        decimals = _decimals; \n    }\n\n    event Approval(address indexed src, address indexed guy, uint wad);\n    event Transfer(address indexed src, address indexed dst, uint wad);\n    event Deposit(address indexed dst, uint wad);\n    event Withdrawal(address indexed src, uint wad);\n\n    mapping (address => uint) public balanceOf;\n    mapping (address => mapping (address => uint)) public allowance;\n\n    function deposit() public payable {\n        balanceOf[msg.sender] += msg.value;\n        emit Deposit(msg.sender, msg.value);\n    }\n\n    function withdraw(uint wad) public {\n        require(balanceOf[msg.sender] >= wad, \"INSUFFICIENT_BALANCE\");\n        balanceOf[msg.sender] -= wad;\n        payable(msg.sender).transfer(wad);\n        emit Withdrawal(msg.sender, wad);\n    }\n\n    function totalSupply() public view returns (uint) {\n        return address(this).balance;\n    }\n\n    function approve(address guy, uint wad) public returns (bool) {\n        allowance[msg.sender][guy] = wad;\n        emit Approval(msg.sender, guy, wad);\n        return true;\n    }\n\n    function transfer(address dst, uint wad) public returns (bool) {\n        return transferFrom(msg.sender, dst, wad);\n    }\n\n    function transferFrom(address src, address dst, uint wad) public returns (bool) {\n        require(balanceOf[src] >= wad, \"INSUFFICIENT_BALANCE\");\n\n        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {\n            require(allowance[src][msg.sender] >= wad, \"INSUFFICIENT_ALLOWANCE\");\n            allowance[src][msg.sender] -= wad;\n        }\n\n        balanceOf[src] -= wad;\n        balanceOf[dst] += wad;\n\n        emit Transfer(src, dst, wad);\n\n        return true;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 500
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
