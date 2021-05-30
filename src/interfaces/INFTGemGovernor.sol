@@ -40,13 +40,13 @@ interface INFTGemGovernor {
 
     function executeProposal(address propAddress) external;
 
-    function issueInitialGovernanceTokens(address receiver) external returns (uint256);
+    function issueInitialGovernanceTokens(address receiver) external;
 
-    function issueInitialFuelTokens(address receiver) external returns (uint256);
+    function issueInitialFuelTokens(address receiver) external;
 
-    function maybeIssueGovernanceToken(address receiver) external returns (uint256);
+    function maybeIssueGovernanceToken(address receiver) external;
 
-    function issueFuelToken(address receiver, uint256 amount) external returns (uint256);
+    function issueFuelToken(address receiver, uint256 amount) external;
 
     function createPool(
         string memory symbol,
