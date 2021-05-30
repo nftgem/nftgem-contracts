@@ -99,7 +99,7 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     }
 
     /**
-     * @dev is the conntract inited
+     * @dev is the contract initialized
      */
     function initialized() external view override returns (bool) {
         return _initialized;
