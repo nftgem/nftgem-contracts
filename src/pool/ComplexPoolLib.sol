@@ -849,7 +849,7 @@ library ComplexPoolLib {
         uint256 tokenId,
         uint256 tokenAmount
     ) public {
-        require(IERC1155(erc1155token).balanceOf(msg.sender, tokenId) >= tokenAmount);
+        require(IERC1155(erc1155token).balanceOf(msg.sender, tokenId) >= tokenAmount, "INSUFFICIENT_BALANCE");
         IERC1155(erc1155token).safeTransferFrom(msg.sender, address(self.pool), tokenId, tokenAmount, "");
     }
 
