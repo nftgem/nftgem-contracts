@@ -16,11 +16,21 @@ export const setupNftGemGovernor = deployments.createFixture(
         libraries: {GovernanceLib: GovernanceLib.address},
       })
     ).deploy();
+    const ComplexPoolLib = await (
+      await ethers.getContractFactory('ComplexPoolLib')
+    ).deploy();
+
     const factoryOptions: FactoryOptions = {
       signer: owner,
       libraries: {
         GovernanceLib: GovernanceLib.address,
-        ProposalsLib: ProposalsLib.address,
+        ProposalsLib: ProposalsLib.address
+      },
+    };
+    const factoryOptions1: FactoryOptions = {
+      signer: owner,
+      libraries: {
+        ComplexPoolLib: ComplexPoolLib.address
       },
     };
     // deploy contracts
@@ -31,7 +41,7 @@ export const setupNftGemGovernor = deployments.createFixture(
       await ethers.getContractFactory('NFTGemMultiToken', owner)
     ).deploy();
     const NFTGemPoolFactory = await (
-      await ethers.getContractFactory('NFTGemPoolFactory', owner)
+      await ethers.getContractFactory('NFTGemPoolFactory', factoryOptions1)
     ).deploy();
     const NFTGemFeeManager = await (
       await ethers.getContractFactory('NFTGemFeeManager', owner)
@@ -50,7 +60,6 @@ export const setupNftGemGovernor = deployments.createFixture(
     await ProposalFactory.deployed();
     await SwapHelper.deployed();
 
-    await NFTGemMultiToken.removeProxyRegistryAt(0);
     // initialize NFTGemGovernance contract
     await NFTGemGovernor.initialize(
       NFTGemMultiToken.address,

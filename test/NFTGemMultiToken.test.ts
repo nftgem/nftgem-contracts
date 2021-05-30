@@ -26,8 +26,6 @@ describe('NFTGemMultiToken contract', function () {
     ).deploy();
 
     await NFTGemMultiToken.deployed();
-
-    await NFTGemMultiToken.removeProxyRegistryAt(0);
     await NFTGemMultiToken.addController(owner.address);
   });
 
@@ -35,8 +33,7 @@ describe('NFTGemMultiToken contract', function () {
     expect(await NFTGemMultiToken.getRegistryManager()).to.equal(owner.address);
     expect(
       (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-    ).to.equal(1);
-    expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(ZERO_ADDRESS);
+    ).to.equal(0);
     expect(await NFTGemMultiToken.isController(owner.address)).to.be.true;
   });
   describe('Registry manager', function () {
@@ -50,12 +47,12 @@ describe('NFTGemMultiToken contract', function () {
   describe('Add/remove proxy registry', function () {
     it('Should add proxy registry', async function () {
       await NFTGemMultiToken.addProxyRegistry(proxyRegistry.address);
-      expect(await NFTGemMultiToken.allProxyRegistries(1)).to.equal(
+      expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(
         proxyRegistry.address
       );
       expect(
         (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-      ).to.equal(2);
+      ).to.equal(1);
     });
     it('Should not add proxy registry', async function () {
       await expect(
@@ -68,9 +65,9 @@ describe('NFTGemMultiToken contract', function () {
       await NFTGemMultiToken.addProxyRegistry(proxyRegistry.address);
       expect(
         (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-      ).to.equal(2);
-      await NFTGemMultiToken.removeProxyRegistryAt(1);
-      expect(await NFTGemMultiToken.allProxyRegistries(1)).to.equal(
+      ).to.equal(1);
+      await NFTGemMultiToken.removeProxyRegistryAt(0);
+      expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(
         ZERO_ADDRESS
       );
     });
