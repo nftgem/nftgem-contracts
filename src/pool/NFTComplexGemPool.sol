@@ -42,14 +42,14 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev Check if this address is a controller
+     * @dev Remove the sender's address from the list of controllers
      */
     function relinquishControl() external {
         require(
             poolData.controllers[msg.sender] == true || address(this) == msg.sender,
             "Controllable: caller is not a controller"
         );
-        poolData.controllers[msg.sender] = false;
+        delete poolData.controllers[msg.sender];
     }
 
     constructor() {
@@ -163,7 +163,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
+     * @dev collect an open claim (take custody of the funds the claim is redeemable for and maybe a gem too)
      */
     function collectClaim(uint256 claimHash, bool requireMature) external override {
         poolData.collectClaim(claimHash, requireMature);
