@@ -24,8 +24,8 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
             uint8 tokenType = INFTComplexGemPoolData(gemPool).tokenType(claimHash);
             uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);
             if(bal == 0 || claimHash == 0 || claimHash == 1) continue;
-            if(tokenType == 1) claims[claimLen++] = claimHash;
-            if(tokenType == 2) gems[gemLen++] = claimHash;
+            else if(tokenType == 1) claims[claimLen++] = claimHash;
+            else if(tokenType == 2) gems[gemLen++] = claimHash;
         }
     }
 
