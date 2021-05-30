@@ -415,8 +415,8 @@ library ComplexPoolLib {
         addToken(self, claimHash, 1);
 
         // record the claim unlock time and cost paid for this claim
-        uint256 claimUnlockTime = block.timestamp.add(timeframe);
-        self.claimLockTimestamps[claimHash] = claimUnlockTime;
+        uint256 claimUnlockTimestamp = block.timestamp.add(timeframe);
+        self.claimLockTimestamps[claimHash] = claimUnlockTimestamp;
         self.claimAmountPaid[claimHash] = cost.mul(count);
         self.claimQuant[claimHash] = count;
         self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
@@ -515,8 +515,8 @@ library ComplexPoolLib {
         addToken(self, claimHash, 1);
 
         // record the claim unlock time and cost paid for this claim
-        uint256 claimUnlockTime = block.timestamp.add(maturityTime);
-        self.claimLockTimestamps[claimHash] = claimUnlockTime;
+        uint256 claimUnlockTimestamp = block.timestamp.add(maturityTime);
+        self.claimLockTimestamps[claimHash] = claimUnlockTimestamp;
         self.claimAmountPaid[claimHash] = ethereum;
         self.claimLockToken[claimHash] = erc20token;
         self.claimTokenAmountPaid[claimHash] = tokenAmount;
@@ -832,10 +832,10 @@ library ComplexPoolLib {
         uint256 tokenAmount
     ) public {
         if (erc20token == address(0)) {
-            require(msg.sender.balance >= tokenAmount);
+            require(msg.sender.balance >= tokenAmount, "INSUFFICIENT_BALANCE");
             self.totalStakedEth = self.totalStakedEth.add(msg.sender.balance);
         } else {
-            require(IERC20(erc20token).balanceOf(msg.sender) >= tokenAmount);
+            require(IERC20(erc20token).balanceOf(msg.sender) >= tokenAmount, "INSUFFICIENT_BALANCE");
             IERC20(erc20token).transferFrom(msg.sender, address(self.pool), tokenAmount);
         }
     }
