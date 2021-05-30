@@ -298,7 +298,7 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     }
 
     /**
-     * @dev create a proposal to craete a project funding proposal
+     * @dev create a proposal to create a project funding proposal
      */
     function createFundProjectProposal(
         address submitter,
