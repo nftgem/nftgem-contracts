@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "./INFTGemMultiToken.sol";
+
 interface INFTGemPoolData {
 
     // pool is inited with these parameters. Once inited, all
@@ -21,7 +23,7 @@ interface INFTGemPoolData {
     function mintedCount() external view returns (uint256);
     function totalStakedEth() external view returns (uint256);
     function tokenId(uint256 tokenHash) external view returns (uint256);
-    function tokenType(uint256 tokenHash) external view returns (uint8);
+    function tokenType(uint256 tokenHash) external view returns (INFTGemMultiToken.TokenType);
     function allTokenHashesLength() external view returns (uint256);
     function allTokenHashes(uint256 ndx) external view returns (uint256);
     function nextClaimHash() external view returns (uint256);

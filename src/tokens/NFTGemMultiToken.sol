@@ -45,7 +45,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     mapping(uint256 => AddressSet.Set) private _tokenHolders;
 
     // token types and token pool addresses, to link the multitoken to the tokens created on it
-    mapping(uint256 => uint8) private _tokenTypes;
+    mapping(uint256 => INFTGemMultiToken.TokenType) private _tokenTypes;
     mapping(uint256 => address) private _tokenPools;
 
     /**
@@ -227,7 +227,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      */
     function setTokenData(
         uint256 tokenHash,
-        uint8 tokenType,
+        INFTGemMultiToken.TokenType tokenType,
         address tokenPool
     ) external override onlyController {
         _tokenTypes[tokenHash] = tokenType;
@@ -237,7 +237,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev get the token data for this token id
      */
-    function getTokenData(uint256 tokenHash) external view override returns (uint8 tokenType, address tokenPool) {
+    function getTokenData(uint256 tokenHash) external view override returns (INFTGemMultiToken.TokenType tokenType, address tokenPool) {
         tokenType = _tokenTypes[tokenHash];
         tokenPool = _tokenPools[tokenHash];
     }

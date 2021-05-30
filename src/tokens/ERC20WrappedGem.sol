@@ -39,7 +39,7 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
         tokenData.tokenPool = gemPool;
         tokenData.index = 0;
         tokenData.rate = 1;
-        tokenData.tokenType = 2;
+        tokenData.tokenType = INFTGemMultiToken.TokenType.GEM;
     }
 
     /**

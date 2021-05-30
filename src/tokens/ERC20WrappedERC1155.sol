@@ -30,7 +30,7 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
         tokenData.erc1155token = erc1155Token;
         tokenData.tokenPool = address(0);
         tokenData.index = tokenIndex;
-        tokenData.tokenType = 0;
+        tokenData.tokenType = INFTGemMultiToken.TokenType.GOVERNANCE;
         tokenData.rate = exchangeRate;
         _setupDecimals(decimals);
     }

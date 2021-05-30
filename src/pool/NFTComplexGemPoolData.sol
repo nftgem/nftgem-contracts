@@ -159,7 +159,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev get token type of hash - 1 is for claim, 2 is for gem
      */
-    function tokenType(uint256 tokenHash) external view override returns (uint8) {
+    function tokenType(uint256 tokenHash) external view override returns (INFTGemMultiToken.TokenType) {
         return poolData.tokenTypes[tokenHash];
     }
 
@@ -351,7 +351,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     function addInputRequirement(
         address theToken,
         address pool,
-        uint8 inputType,
+        INFTComplexGemPool.RequirementType inputType,
         uint256 theTokenId,
         uint256 minAmount,
         bool takeCustody,
@@ -367,7 +367,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 ndx,
         address theToken,
         address pool,
-        uint8 inputType,
+        INFTComplexGemPool.RequirementType inputType,
         uint256 tid,
         uint256 minAmount,
         bool takeCustody,
@@ -393,7 +393,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         returns (
             address,
             address,
-            uint8,
+            INFTComplexGemPool.RequirementType,
             uint256,
             uint256,
             bool,
@@ -520,7 +520,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            uint8 tokenType,
+            INFTGemMultiToken.TokenType tokenType,
             uint256 tokenId,
             address tokenSource
         )
@@ -548,17 +548,17 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         bytes32 poolSymHash = keccak256(abi.encodePacked(poolData.symbol));
         require(importedSymHash == poolSymHash, "INVALID_POOLHASH");
 
-        uint8 importTokenType = INFTGemPoolData(pool).tokenType(tokenHash);
-        require(importTokenType == 2, "INVALID_TOKENTYPE");
+        INFTGemMultiToken.TokenType importTokenType = INFTGemPoolData(pool).tokenType(tokenHash);
+        require(importTokenType == INFTGemMultiToken.TokenType.GEM, "INVALID_TOKENTYPE");
 
         uint256 quantity = IERC1155(legacyToken).balanceOf(recipient, tokenHash);
         uint256 importTokenId = INFTGemPoolData(pool).tokenId(tokenHash);
 
         if(quantity > 0) {
             INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, quantity);
-            INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, 2, address(this));
+            INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, INFTGemMultiToken.TokenType.GEM, address(this));
 
-            poolData.tokenTypes[tokenHash] = 2;
+            poolData.tokenTypes[tokenHash] = INFTGemMultiToken.TokenType.GEM;
             poolData.tokenIds[tokenHash] = importTokenId;
             poolData.tokenSources[tokenHash] = legacyToken;
             poolData.importedLegacyToken[tokenHash] = true;

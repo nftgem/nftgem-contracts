@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "./INFTGemMultiToken.sol";
+import "./INFTComplexGemPool.sol";
+
 interface INFTComplexGemPoolData {
     enum PriceIncrementType {COMPOUND, INVERSELOG, NONE}
 
@@ -19,7 +22,7 @@ interface INFTComplexGemPoolData {
     function addInputRequirement(
         address theToken,
         address pool,
-        uint8 inputType,
+        INFTComplexGemPool.RequirementType inputType,
         uint256 theTokenId,
         uint256 minAmount,
         bool takeCustody,
@@ -30,7 +33,7 @@ interface INFTComplexGemPoolData {
         uint256 ndx,
         address theToken,
         address pool,
-        uint8 inputType,
+        INFTComplexGemPool.RequirementType inputType,
         uint256 tid,
         uint256 minAmount,
         bool takeCustody,
@@ -45,7 +48,7 @@ interface INFTComplexGemPoolData {
         returns (
             address,
             address,
-            uint8,
+            INFTComplexGemPool.RequirementType,
             uint256,
             uint256,
             bool,
@@ -99,7 +102,7 @@ interface INFTComplexGemPoolData {
         external
         view
         returns (
-            uint8 tokenType,
+            INFTGemMultiToken.TokenType tokenType,
             uint256 tokenId,
             address tokenSource
         );
@@ -165,7 +168,7 @@ interface INFTComplexGemPoolData {
 
     function tokenId(uint256 tokenHash) external view returns (uint256);
 
-    function tokenType(uint256 tokenHash) external view returns (uint8);
+    function tokenType(uint256 tokenHash) external view returns (INFTGemMultiToken.TokenType);
 
     function allTokenHashesLength() external view returns (uint256);
 

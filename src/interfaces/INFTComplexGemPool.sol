@@ -6,6 +6,9 @@ pragma solidity >=0.7.0;
  * @dev Interface for a Bitgem staking pool
  */
 interface INFTComplexGemPool {
+
+    enum RequirementType { ERC20, ERC1155, POOL }
+    
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */

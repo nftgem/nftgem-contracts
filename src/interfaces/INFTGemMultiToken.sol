@@ -6,6 +6,9 @@ pragma solidity >=0.7.0;
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
 interface INFTGemMultiToken {
+
+    enum TokenType { GOVERNANCE, CLAIM, GEM }
+
     // called by controller to mint a claim or a gem
     function mint(
         address account,
@@ -65,9 +68,9 @@ interface INFTGemMultiToken {
 
     function setTokenData(
         uint256 tokenHash,
-        uint8 tokenType,
+        TokenType tokenType,
         address tokenPool
     ) external;
 
-    function getTokenData(uint256 tokenHash) external view returns (uint8, address);
+    function getTokenData(uint256 tokenHash) external view returns (TokenType, address);
 }
