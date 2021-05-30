@@ -1,4 +1,4 @@
-import {assert} from './chai-setup';
+import {assert} from '../test/chai-setup';
 import hre from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
 import func from '../scripts/minimalDeploy';
