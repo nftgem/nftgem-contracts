@@ -103,7 +103,7 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
     }
 
     function fund() external payable override {
-        // ensure we cannot fund while in an invalida state
+        // ensure we cannot fund while in an invalid state
         require(!_funded, "ALREADY_FUNDED");
         require(!_closed, "ALREADY_CLOSED");
         require(!_executed, "ALREADY_EXECUTED");

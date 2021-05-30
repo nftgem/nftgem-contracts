@@ -20,7 +20,7 @@ library ComplexPoolLib {
     using AddressSet for AddressSet.Set;
 
     /**
-     * @dev Event generated when an NFT claim is created using ETH
+     * @dev Event generated when an NFT claim is created using base currency
      */
     event NFTGemClaimCreated(
         address indexed account,
