@@ -31,8 +31,6 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
     bool private _executed;
     bool private _closed;
 
-    constructor() {}
-
     function initialize(
         address __creator,
         string memory __title,
