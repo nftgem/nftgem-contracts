@@ -40,9 +40,9 @@ abstract contract Controllable is IControllable {
     }
 
     /**
-     * @dev Check if this address is a controller
+     * @dev Remove the sender address from the list of controllers
      */
-    function relinquishControl() external view override onlyController {
-        _controllers[msg.sender];
+    function relinquishControl() external override onlyController {
+        delete _controllers[msg.sender];
     }
 }
