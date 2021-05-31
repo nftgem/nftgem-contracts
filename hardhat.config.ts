@@ -80,6 +80,7 @@ const config: HardhatUserConfig = {
       accounts: accounts('mainnet'),
       gasPrice: 'auto',
       gas: 'auto',
+      gasMultiplier: 1.5
     },
     rinkeby: {
       url: node_url('rinkeby'),

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('dotenv').config();
+const { formatEther } = require('ethers/lib/utils');
 const hre = require('hardhat');
 require('@nomiclabs/hardhat-waffle');
 
@@ -21,7 +22,7 @@ require('@nomiclabs/hardhat-waffle');
 
   const multitoken = await getContractAt(
     'NFTGemMultiToken',
-    atoken,
+    (await get('NFTGemMultiToken')).address,
     sender
   )
   const gemPoolFactory = await getContractAt(
@@ -35,27 +36,29 @@ require('@nomiclabs/hardhat-waffle');
     sender
   )
 
-  const poolContract = await ethers.getContractAt('NFTComplexGemPoolData', '0x3eD40cbeA5C347aEB6280211d4D623d6C8193f29', sender, {
-    libraries: {
-      ComplexPoolLib: '0x988d5537f746daE83838d13F3fe875030e3F3fE7',
-    },
-  })
+  // const poolContract = await ethers.getContractAt('NFTComplexGemPoolData', '0x3eD40cbeA5C347aEB6280211d4D623d6C8193f29', sender, {
+  //   libraries: {
+  //     ComplexPoolLib: '0x988d5537f746daE83838d13F3fe875030e3F3fE7',
+  //   },
+  // })
 
-  const allTokensLen = await poolContract.allTokenHashesLength();
-  console.log('allTokensLen', allTokensLen.toNumber());
+  // const allTokensLen = await poolContract.allTokenHashesLength();
+  // console.log('allTokensLen', allTokensLen.toNumber());
 
-  const gems = [], claims = [];
+  // const gems = [], claims = [];
 
-  for(var i = 0; i < ~~(allTokensLen.toNumber() / 20); i++) {
-    const results = await tokenPoolQuerier.getOwnedTokens(poolContract.address, atoken, atarget, i, 20, { gasLimit: 500000});
-    results.claims.forEach(c => { if(!c.eq(0)) claims.push(c); });
-    results.gems.forEach(c => { if(!c.eq(0)) gems.push(c); });
-    console.log('claims', claims);
-    console.log('gems', gems);
-  }
+  // for(var i = 0; i < ~~(allTokensLen.toNumber() / 20); i++) {
+  //   const results = await tokenPoolQuerier.getOwnedTokens(poolContract.address, atoken, atarget, i, 20, { gasLimit: 500000});
+  //   results.claims.forEach(c => { if(!c.eq(0)) claims.push(c); });
+  //   results.gems.forEach(c => { if(!c.eq(0)) gems.push(c); });
+  //   console.log('claims', claims);
+  //   console.log('gems', gems);
+  // }
 
-
-
+const bo = await multitoken.balanceOf('0xce1DB19c21da28B70FB663EC0c49C8C8e69a16DA', 0);
+const b2o = await multitoken.balanceOf('0xce1DB19c21da28B70FB663EC0c49C8C8e69a16DA', 1);
+console.log('bo', bo.toString());
+console.log('gems',  formatEther(b2o.toString()));
 
   // const allTokenHashes = {};
   // const gemPools = await gemPoolFactory.nftGemPools();
