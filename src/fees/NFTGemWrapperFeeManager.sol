@@ -58,14 +58,14 @@ contract NFTGemWrapperFeeManager is Controllable, INFTGemWrapperFeeManager {
     }
 
     /**
-     * @dev get the token balance of this fee manager
+     * @dev get the erc20 token balance of this fee manager
      */
     function balanceOfERC20(address token) external view override returns (uint256) {
         return IERC20(token).balanceOf(address(this));
     }
 
     /**
-     * @dev get the token balance of this fee manager
+     * @dev get the erc1155 token balance of this fee manager
      */
     function balanceOfERC1155(address token, uint256 id) external view override returns (uint256) {
         return IERC1155(token).balanceOf(address(this), id);
@@ -80,7 +80,7 @@ contract NFTGemWrapperFeeManager is Controllable, INFTGemWrapperFeeManager {
     }
 
     /**
-     * @dev transfer tokens from this contract to the to given recipient
+     * @dev transfer erc20 tokens from this contract to the to given recipient
      */
     function transferERC20Token(
         address token,
@@ -92,7 +92,7 @@ contract NFTGemWrapperFeeManager is Controllable, INFTGemWrapperFeeManager {
     }
 
     /**
-     * @dev transfer tokens from this contract to another contract
+     * @dev transfer erc1155 tokens from this contract to another contract
      */
     function transferERC1155Token(
         address token,

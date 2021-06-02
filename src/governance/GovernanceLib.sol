@@ -10,7 +10,7 @@ import "../interfaces/IProposalData.sol";
 
 library GovernanceLib {
     // calculates the CREATE2 address for the quantized erc20 without making any external calls
-    function addressOfPropoal(
+    function addressOfProposal(
         address factory,
         address submitter,
         string memory title
