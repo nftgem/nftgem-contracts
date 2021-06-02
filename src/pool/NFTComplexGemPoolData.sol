@@ -241,7 +241,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev add ad allowed token to the pool
+     * @dev add an allowed token to the pool
      */
     function removeAllowedToken(address tkn) external override onlyController {
         poolData.allowedTokens.remove(tkn);
