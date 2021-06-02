@@ -7,12 +7,12 @@ require('@nomiclabs/hardhat-waffle');
   const {ethers} = hre;
   const addressBitLootFeeManager = ethers.utils.getAddress(
     process.env.FEE_MANAGER_ADDRESS ||
-      '0x7Fd79a2E4421A2b16b007375985C3B13E16F660F'
+      '0xFF32E5Db9Eb8b4b546EC8Dc968795654f414f87c'
   );
 
   const addressBitgemFeeManager = ethers.utils.getAddress(
     process.env.BG_FEE_MANAGER_ADDRESS ||
-      '0x70EC520bC874750815a1CD5109F6dF9A971AcF2A'
+      '0x00ffE2dadbBD172e3EfE1a33FCa8dE77F11A472F'
   );
 
   const FeeManager = await ethers.getContractFactory('NFTGemFeeManager');

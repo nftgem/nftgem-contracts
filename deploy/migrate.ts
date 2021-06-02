@@ -334,7 +334,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
 
   // bitlootbox.com
   const afactory = ethers.utils.getAddress(
-    '0xd8bf0D941FC41e44f383d78183807669c230BDed'
+    '0x9c393955D39c3C7A80Fe6A11B0e4B834a2c5301e'
   );
   const alegacyToken = ethers.utils.getAddress(
     '0x481d559466a04EB3744832e02a05aB1AE68fEb17'
@@ -345,54 +345,54 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const newToken = await getContractAt('NFTGemMultiToken', dc.NFTGemMultiToken.address, sender);
   const newFactory = dc.NFTGemPoolFactory;
 
-  // const tx = await newToken.addController(dc.BulkTokenMinter.address);
-  // await waitForMined(tx.hash);
+  const tx = await newToken.addController(dc.BulkTokenMinter.address);
+  await waitForMined(tx.hash);
 
-  // const gpLen = await oldFactory.allNFTGemPoolsLength();
-  // for (let gp = 0; gp < gpLen.toNumber(); gp++) {
-  //   const gpAddr = await oldFactory.allNFTGemPools(gp);
-  //   const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
-  //   const sym = await oldData.symbol();
-  //   if (sym === 'ASTRO' || sym === 'MCU') {
-  //     continue;
-  //   }
-  //   console.log(`processing pool symbol ${sym}`);
-  //   let newGpAddr = await newFactory.getNFTGemPool(
-  //     keccak256(['bytes'], [pack(['string'], [sym])])
-  //   );
-  //   if (BigNumber.from(newGpAddr).eq(0)) {
-  //     newGpAddr = await createPool(
-  //       sym,
-  //       await oldData.name(),
-  //       await oldData.ethPrice(),
-  //       await oldData.minTime(),
-  //       await oldData.maxTime(),
-  //       await oldData.difficultyStep(),
-  //       await oldData.maxClaims(),
-  //       '0x0000000000000000000000000000000000000000'
-  //     );
-  //   }
-  //   if (BigNumber.from(newGpAddr).eq(0)) {
-  //     console.log(`cant create pool symbol ${sym}`);
-  //     continue;
-  //   }
+  const gpLen = await oldFactory.allNFTGemPoolsLength();
+  for (let gp = 0; gp < gpLen.toNumber(); gp++) {
+    const gpAddr = await oldFactory.allNFTGemPools(gp);
+    const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
+    const sym = await oldData.symbol();
+    if (sym === 'ASTRO' || sym === 'MCU') {
+      continue;
+    }
+    console.log(`processing pool symbol ${sym}`);
+    let newGpAddr = await newFactory.getNFTGemPool(
+      keccak256(['bytes'], [pack(['string'], [sym])])
+    );
+    if (BigNumber.from(newGpAddr).eq(0)) {
+      newGpAddr = await createPool(
+        sym,
+        await oldData.name(),
+        await oldData.ethPrice(),
+        await oldData.minTime(),
+        await oldData.maxTime(),
+        await oldData.difficultyStep(),
+        await oldData.maxClaims(),
+        '0x0000000000000000000000000000000000000000'
+      );
+    }
+    if (BigNumber.from(newGpAddr).eq(0)) {
+      console.log(`cant create pool symbol ${sym}`);
+      continue;
+    }
 
-  //   const pc = await getPoolContract(newGpAddr);
-  //   const nextGemId = await oldData.mintedCount();
-  //   const nextClaimId = await oldData.claimedCount();
+    const pc = await getPoolContract(newGpAddr);
+    const nextGemId = await oldData.mintedCount();
+    const nextClaimId = await oldData.claimedCount();
 
-  //   let tx = await pc.setNextIds(nextClaimId, nextGemId);
-  //   await waitForMined(tx.hash);
-  //   console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
+    let tx = await pc.setNextIds(nextClaimId, nextGemId);
+    await waitForMined(tx.hash);
+    console.log(`${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`);
 
-  //   tx = await pc.addAllowedTokenSource(alegacyToken);
-  //   await waitForMined(tx.hash);
-  //   console.log(`${sym} added token source ${alegacyToken.toString()}`);
+    tx = await pc.addAllowedTokenSource(alegacyToken);
+    await waitForMined(tx.hash);
+    console.log(`${sym} added token source ${alegacyToken.toString()}`);
 
-  //   tx = await pc.setCategory(1);
-  //   await waitForMined(tx.hash);
-  //   console.log(`${sym} set category - 1`);
-  // }
+    //tx = await pc.setCategory(1);
+  //  await waitForMined(tx.hash);
+    console.log(`${sym} set category - 0`);
+  }
 
   const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
   console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
