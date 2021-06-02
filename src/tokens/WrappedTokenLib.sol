@@ -5,31 +5,39 @@ pragma solidity >=0.7.0;
 import "../libs/SafeMath.sol";
 
 import "../interfaces/IERC1155.sol";
-import "../interfaces/IERC20.sol";
+import "../interfaces/IERC20.sol";v
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 
 import "hardhat/console.sol";
 
+/**
+* @dev wrapped token library
+*/
 library WrappedTokenLib {
     using SafeMath for uint256;
 
     event Wrap(address indexed account, uint256 quantity);
     event Unwrap(address indexed account, uint256 quantity);
 
+    /**
+    * @dev data struct for wrapped token
+    */
     struct WrappedTokenData {
         address erc1155token;
         address erc20token;
         address tokenPool;
         uint256 index;
-        uint256 wrappedBalance;
         INFTGemMultiToken.TokenType tokenType;
         uint256 rate;
         mapping(address => uint256[]) ids;
         mapping(address => uint256[]) amounts;
     }
 
+    /**
+    * @dev get pool balance (number of minted claims or gems) for given token pool, token type, for account
+    */
     function getPoolTypeBalance(
         address erc1155token,
         address tokenPool,
@@ -48,6 +56,9 @@ library WrappedTokenLib {
         }
     }
 
+    /**
+    * @dev transfer a given number of claims / gems from account to recipient
+    */
     function transferPoolTypesFrom(
         WrappedTokenData storage self,
         address from,

@@ -6,10 +6,16 @@ import "../libs/SafeMath.sol";
 import "../interfaces/INFTGemWrapperFeeManager.sol";
 import "./ERC20WrappedERC1155.sol";
 
+/**
+* @dev wraps governance (token id 1155)
+*/
 contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
     using SafeMath for uint256;
     address internal _feeManager;
 
+    /**
+    * @dev create contract
+    */
     constructor(
         string memory name,
         string memory symbol,
@@ -19,6 +25,9 @@ contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
         _feeManager = feeManager;
     }
 
+    /**
+    * @dev wrap tokens - transfer erc1155 to contract, mintt erc20
+    */
     function wrap(uint256 quantity) external override {
         require(quantity != 0, "ZERO_QUANTITY");
         require(
@@ -34,6 +43,9 @@ contract NFTGemWrappedERC20Governance is ERC20WrappedERC1155 {
         _mint(_feeManager, fee);
     }
 
+    /**
+    * @dev unwrap tokens - transfer erc1155 to contract, mintt erc20
+    */
     function unwrap(uint256 quantity) external override {
         _unwrap(quantity);
     }

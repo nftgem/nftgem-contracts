@@ -38,14 +38,14 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev The symbol for this pool / NFT
+     * @dev all the tokenhashes (both claim and gem) for this pool
      */
     function tokenHashes() external view override returns (uint256[] memory) {
         return poolData.tokenHashes;
     }
 
     /**
-     * @dev The symbol for this pool / NFT
+     * @dev set all the token hashes for this pool
      */
     function setTokenHashes(uint256[] memory inTokenHashes) external override onlyController {
         poolData.tokenHashes = inTokenHashes;
@@ -66,91 +66,91 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev max allowable quantity per claim
      */
     function maxQuantityPerClaim() external view override returns (uint256) {
         return poolData.maxQuantityPerClaim;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev max claims that can be made on this NFT on any given account
      */
     function maxClaimsPerAccount() external view override returns (uint256) {
         return poolData.maxClaimsPerAccount;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev update max quantity per claim
      */
     function setMaxQuantityPerClaim(uint256 maxQty) external override onlyController {
         poolData.maxQuantityPerClaim = maxQty;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev update max claims that can be made on this NFT
      */
     function setMaxClaimsPerAccount(uint256 maxCPA) external override onlyController {
         poolData.maxClaimsPerAccount = maxCPA;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev returns if pool allows purchase
      */
     function allowPurchase() external view override returns (bool) {
         return poolData.allowPurchase;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev set whether pool allows purchase
      */
     function setAllowPurchase(bool allow) external override onlyController {
         poolData.allowPurchase = allow;
     }
 
     /**
-     * @dev is the pool enabled and taking orders
+     * @dev is pool enabled (taking claim requests)
      */
     function enabled() external view override returns (bool) {
         return poolData.enabled;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev set the enabled status of this pool
      */
     function setEnabled(bool enable) external override onlyController {
         poolData.enabled = enable;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev return the appreciation curve of this pool.
      */
     function priceIncrementType() external view override returns (PriceIncrementType) {
         return poolData.priceIncrementType;
     }
 
     /**
-     * @dev max claims that can be made on this NFT
+     * @dev set the appreciation curve of this pool.
      */
     function setPriceIncrementType(PriceIncrementType incrementType) external override onlyController {
         poolData.priceIncrementType = incrementType;
     }
 
     /**
-     * @dev number of claims made thus far
+     * @dev return the number of claims made thus far
      */
     function claimedCount() external view override returns (uint256) {
         return poolData.nextClaimIdVal;
     }
 
     /**
-     * @dev the number of gems minted in this
+     * @dev return the number of gems made thus far
      */
     function mintedCount() external view override returns (uint256) {
         return poolData.nextGemIdVal;
     }
 
     /**
-     * @dev the number of gems minted in this
+     * @dev the total amopunt of staked eth in this pool
      */
     function totalStakedEth() external view override returns (uint256) {
         return poolData.totalStakedEth;
@@ -178,56 +178,56 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
+     * @dev returns a count of all token hashes
      */
     function allTokenHashesLength() external view override returns (uint256) {
         return poolData.tokenHashes.length;
     }
 
     /**
-     * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
+     * @dev get the token hash at index
      */
     function allTokenHashes(uint256 ndx) external view override returns (uint256) {
         return poolData.tokenHashes[ndx];
     }
 
     /**
-     * @dev the external version of the above
+     * @dev return the next claim hash
      */
     function nextClaimHash() external view override returns (uint256) {
         return poolData.nextClaimHash();
     }
 
     /**
-     * @dev the external version of the above
+     * @dev return the next gem hash
      */
     function nextGemHash() external view override returns (uint256) {
         return poolData.nextGemHash();
     }
 
     /**
-     * @dev the external version of the above
+     * @dev return the next claim id
      */
     function nextClaimId() external view override returns (uint256) {
         return poolData.nextClaimIdVal;
     }
 
     /**
-     * @dev the external version of the above
+     * @dev return the next gem id
      */
     function nextGemId() external view override returns (uint256) {
         return poolData.nextGemIdVal;
     }
 
     /**
-     * @dev the external version of the above
+     * @dev return the count of allowed tokens
      */
     function allowedTokensLength() external view override returns (uint256) {
         return poolData.allowedTokens.count();
     }
 
     /**
-     * @dev the external version of the above
+     * @dev the allowed token address at index
      */
     function allowedTokens(uint256 idx) external view override returns (address) {
         return poolData.allowedTokens.keyAtIndex(idx);
@@ -248,7 +248,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     }
 
     /**
-     * @dev the external version of the above
+     * @dev is the token in the allowed tokens list
      */
     function isTokenAllowed(address tkn) external view override returns (bool) {
         return poolData.allowedTokens.exists(tkn);
@@ -469,6 +469,9 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         maxClaimsPerAccount = poolData.maxClaimsPerAccount;
     }
 
+    /**
+     * @dev these stats reflect the current pool state
+     */
     function stats()
         external
         view
@@ -494,6 +497,9 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         nextGemId = poolData.nextGemIdVal;
     }
 
+    /**
+     * @dev return the claim details for the given claim hash
+     */
     function claim(uint256 claimHash)
         external
         view
@@ -515,6 +521,9 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         nextClaimId = poolData.nextClaimIdVal;
     }
 
+    /**
+     * @dev return the token data for the given hash
+     */
     function token(uint256 tokenHash)
         external
         view
@@ -530,6 +539,9 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         tokenSource = poolData.tokenSources[tokenHash];
     }
 
+    /**
+     * @dev import the legacy gem
+     */
     function importLegacyGem(
         address pool,
         address legacyToken,
@@ -568,10 +580,16 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         }
     }
 
+    /**
+     * @dev returns if legacy gem with given hash is imported
+     */
     function isLegacyGemImported(uint256 tokenhash) external view override returns (bool isImported) {
         isImported = poolData.importedLegacyToken[tokenhash];
     }
 
+    /**
+     * @dev set the next claim and gem ids
+     */
     function setNextIds(uint256 _nextClaimId, uint256 _nextGemId) external override onlyController {
         poolData.nextClaimIdVal = _nextClaimId;
         poolData.nextGemIdVal = _nextGemId;

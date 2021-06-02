@@ -12,6 +12,9 @@ import "./ERC1155.sol";
  * _Available since v3.1._
  */
 abstract contract ERC1155Burnable is ERC1155 {
+    /**
+    * @dev burn this token type for the given account
+    */
     function burn(address account, uint256 id, uint256 value) public virtual {
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),
@@ -21,6 +24,9 @@ abstract contract ERC1155Burnable is ERC1155 {
         _burn(account, id, value);
     }
 
+    /**
+    * @dev burn this token batch for the given account
+    */
     function burnBatch(address account, uint256[] memory ids, uint256[] memory values) public virtual {
         require(
             account == _msgSender() || isApprovedForAll(account, _msgSender()),

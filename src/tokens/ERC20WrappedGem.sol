@@ -15,6 +15,9 @@ import "./WrappedTokenLib.sol";
 
 import "./ERC1155Holder.sol";
 
+/**
+* @dev Wraps a gem (erc1155 'gem' type issued by an NFTGemPool) into erc1155
+*/
 contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGem, Initializable {
     using SafeMath for uint256;
     using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
@@ -22,6 +25,9 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
 
     WrappedTokenLib.WrappedTokenData internal tokenData;
 
+    /**
+    * @dev initialize contract state
+    */
     function initialize(
         string memory name,
         string memory symbol,

@@ -10,6 +10,9 @@ import "../interfaces/IERC20.sol";
 import "./ERC1155Holder.sol";
 import "./WrappedTokenLib.sol";
 
+/**
+* @dev Wrap a single ERC1155 token hash into an ERC20 token.
+*/
 contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
     using SafeMath for uint256;
     using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
@@ -17,7 +20,7 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
     WrappedTokenLib.WrappedTokenData internal tokenData;
 
     /**
-     * @dev constructor sets up token parameters. this token wraps bitgem governance tokens.
+     * @dev constructor sets up token parameters.
      */
     constructor(
         string memory name,
@@ -49,6 +52,9 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
         tokenData.erc20token = address(this);
     }
 
+    /**
+     * @dev wrap a quantity of tokens by transferring ERC1155 to this contract and minting ERC20 token
+     */
     function _wrap(uint256 quantity) internal {
         require(quantity != 0, "ZERO_QUANTITY");
         require(

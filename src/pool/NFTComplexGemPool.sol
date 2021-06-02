@@ -93,7 +93,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev set the governor. pool uses the governor to issue gov token issuance requests
+     * @dev set the fee tracker. pool uses the  fee tracker to issue  fee tracker token issuance requests
      */
     function setFeeTracker(address addr) external override {
         require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
@@ -124,21 +124,21 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev the external version of the above
+     * @dev create a single claim with given timeframe
      */
     function createClaim(uint256 timeframe) external payable override {
         poolData.createClaims(timeframe, 1);
     }
 
     /**
-     * @dev the external version of the above
+     * @dev create multiple claims with given timeframe
      */
     function createClaims(uint256 timeframe, uint256 count) external payable override {
         poolData.createClaims(timeframe, count);
     }
 
     /**
-     * @dev the external version of the above
+     * @dev purchase gems
      */
     function purchaseGems(uint256 count) external payable override {
         poolData.purchaseGems(msg.sender, msg.value, count);
@@ -177,7 +177,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev deposit into pool
+     * @dev deposit NFT into pool
      */
     function depositNFT(
         address erc1155token,
@@ -199,7 +199,7 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     }
 
     /**
-     * @dev withdraw pool contents
+     * @dev withdraw pool  NFT contents
      */
     function withdrawNFT(
         address erc1155token,

@@ -57,7 +57,7 @@ library ComplexPoolLib {
     );
 
     /**
-     * @dev Event generated when an NFT claim is redeemed
+     * @dev Event generated when an NFT erc20 claim is redeemed
      */
     event NFTGemERC20ClaimRedeemed(
         address indexed account,
@@ -70,6 +70,9 @@ library ComplexPoolLib {
         uint256 feeAssessed
     );
 
+    /**
+     * @dev a requirement of erc20, erc1155, or nft gem
+     */
     struct InputRequirement {
         address token;
         address pool;
@@ -85,6 +88,9 @@ library ComplexPoolLib {
      */
     event NFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
 
+    /**
+     * @dev data describes complex pool
+     */
     struct ComplexPoolData {
         // governor and multitoken target
         address pool;
@@ -137,7 +143,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev Transfer a quantity of input reqs from to
+     * @dev checks to see that account owns all the pool requirements needed to mint at least the given quantity of NFT
      */
     function requireInputReqs(
         ComplexPoolData storage self,
@@ -247,7 +253,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev Transfer a quantity of input reqs from to
+     * @dev Return the returnable input requirements for claimhash to account
      */
     function returnInputReqsTo(
         ComplexPoolData storage self,
@@ -316,7 +322,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev update input requirements
+     * @dev update input requirement at index
      */
     function updateInputRequirement(
         ComplexPoolData storage self,
@@ -340,7 +346,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev number of input requirements
+     * @dev count of input requirements
      */
     function allInputRequirementsLength(ComplexPoolData storage self) public view returns (uint256) {
         return self.inputRequirements.length;
@@ -368,7 +374,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev attempt to create a claim using the given timeframe
+     * @dev attempt to create a claim using the given timeframe with count
      */
     function createClaims(
         ComplexPoolData storage self,
@@ -561,6 +567,9 @@ library ComplexPoolLib {
         __collectClaim(self, claimHash);
     }
 
+    /**
+     * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
+     */
     function __collectClaim(ComplexPoolData storage self, uint256 claimHash) internal {
         // validation checks - disallow if not owner (holds coin with claimHash)
         // or if the unlockTime amd unlockPaid data is in an invalid state
@@ -660,7 +669,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev purchase a gem at the listed pool price
+     * @dev purchase gem(s) at the listed pool price
      */
     function purchaseGems(ComplexPoolData storage self, address sender, uint256 value, uint256 count) public {
         // enabled
@@ -686,12 +695,14 @@ library ComplexPoolLib {
         INFTGemGovernor(self.governor).maybeIssueGovernanceToken(sender);
         INFTGemGovernor(self.governor).issueFuelToken(sender, value);
 
+        payable(self.feeTracker).transfer(value);
+
         // emit an event about a gem getting created
         emit NFTGemCreated(sender, address(self.pool), 0, nextHash, count);
     }
 
     /**
-     * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
+     * @dev create a token of token hash / token type
      */
     function addToken(
         ComplexPoolData storage self,
@@ -757,56 +768,56 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
+     * @dev get the token hash at index
      */
     function allTokenHashes(ComplexPoolData storage self, uint256 ndx) public view returns (uint256) {
         return self.tokenHashes[ndx];
     }
 
     /**
-     * @dev the claim amount for the given claim id
+     * @dev return the claim amount paid for this claim
      */
     function claimAmount(ComplexPoolData storage self, uint256 claimHash) public view returns (uint256) {
         return self.claimAmountPaid[claimHash];
     }
 
     /**
-     * @dev the claim quantity (count of gems staked) for the given claim id
+     * @dev the claim quantity (count of gems staked) for the given claim hash
      */
     function claimQuantity(ComplexPoolData storage self, uint256 claimHash) public view returns (uint256) {
         return self.claimQuant[claimHash];
     }
 
     /**
-     * @dev the lock time for this claim. once past lock time a gema is minted
+     * @dev the lock time for this claim hash. once past lock time a gem is minted
      */
     function claimUnlockTime(ComplexPoolData storage self, uint256 claimHash) public view returns (uint256) {
         return self.claimLockTimestamps[claimHash];
     }
 
     /**
-     * @dev claim token amount if paid using erc20
+     * @dev return the claim token amount for this claim hash
      */
     function claimTokenAmount(ComplexPoolData storage self, uint256 claimHash) public view returns (uint256) {
         return self.claimTokenAmountPaid[claimHash];
     }
 
     /**
-     * @dev the claim hash of the gem
+     * @dev return the claim hash of the given gemhash
      */
     function gemClaimHash(ComplexPoolData storage self, uint256 gemHash) public view returns (uint256) {
         return self.gemClaims[gemHash];
     }
 
     /**
-     * @dev the staked token if staking with erc20
+     * @dev return the token that was staked to create the given token hash. 0 if the native token
      */
     function stakedToken(ComplexPoolData storage self, uint256 claimHash) public view returns (address) {
         return self.claimLockToken[claimHash];
     }
 
     /**
-     * @dev the public version of the above
+     * @dev add a token that is allowed to be used to create a claim
      */
     function addAllowedToken(ComplexPoolData storage self, address token) public {
         if (!self.allowedTokens.exists(token)) {
@@ -815,7 +826,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev the public version of the above
+     * @dev  remove a token that is allowed to be used to create a claim
      */
     function removeAllowedToken(ComplexPoolData storage self, address token) public {
         if (self.allowedTokens.exists(token)) {
@@ -841,7 +852,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev deposit into pool
+     * @dev deposit NFT into pool
      */
     function depositNFT(
         ComplexPoolData storage self,
@@ -872,7 +883,7 @@ library ComplexPoolLib {
     }
 
     /**
-     * @dev withdraw pool contents
+     * @dev withdraw pool NFT
      */
     function withdrawNFT(
         ComplexPoolData storage self,
