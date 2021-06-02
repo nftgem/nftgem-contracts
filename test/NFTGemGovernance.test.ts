@@ -7,10 +7,10 @@ import {
   executeProposal,
 } from './fixtures/Governance.fixture';
 import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
-const {BigNumber, utils} = ethers;
+const {utils} = ethers;
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 describe('NFTGemGovernance contract', function () {
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
   let sender: SignerWithAddress;
   let ProposalData = {
     ProposalSubmitter: '',
