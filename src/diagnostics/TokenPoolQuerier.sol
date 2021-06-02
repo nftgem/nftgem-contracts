@@ -9,16 +9,13 @@ import "../interfaces/IERC1155.sol";
 contract TokenPoolQuerier is ITokenPoolQuerier {
 
     function getOwnedTokens(address gemPool, address multitoken, address account, uint256 page, uint256 count) external override view returns (uint256[] memory claims, uint256[] memory gems) {
-        uint256 allLen = INFTComplexGemPoolData(gemPool).allTokenHashesLength();
-        require((page + 1) * count < allLen, "OUT_OF_RANGE");
+        require((page + 1) * count < INFTComplexGemPoolData(gemPool).allTokenHashesLength(), "OUT_OF_RANGE");
 
         uint256 claimLen = 0;
         uint256 gemLen = 0;
 
         claims = new uint256[](count);
         gems = new uint256[](count);
-        claimLen = 0;
-        gemLen = 0;
 
         for(uint256 i = page * count; i < (page * count) + count; i++) {
             uint256 claimHash = INFTComplexGemPoolData(gemPool).allTokenHashes(i);

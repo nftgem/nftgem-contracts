@@ -34,21 +34,21 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     }
 
     /**
-     * @dev Get the fee divisor for the specified token
+     * @dev Get the liquidity for the specified token
      */
     function liquidity(address token) external view override returns (uint256) {
         return _liquidity[token] != 0 ? _liquidity[token] : _defaultLiquidity;
     }
 
     /**
-     * @dev Get the fee divisor for the specified token
+     * @dev Get the default liquidity for the specified token
      */
     function defaultLiquidity() external view override returns (uint256 multiplier) {
         return _defaultLiquidity;
     }
 
     /**
-     * @dev Set the fee divisor for the specified token
+     * @dev Set the liquidity liquidity for the specified token
      */
     function setDefaultLiquidity(uint256 _liquidityMult)
         external
@@ -71,14 +71,14 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     }
 
     /**
-     * @dev Get the fee divisor for the specified token
+     * @dev Get the default fee divisor for the specified token
      */
     function defaultFeeDivisor() external view override returns (uint256 multiplier) {
         return _defaultFeeDivisor;
     }
 
     /**
-     * @dev Set the fee divisor for the specified token
+     * @dev Set the default fee divisor for the specified token
      */
     function setDefaultFeeDivisor(uint256 _feeDivisor) external override onlyController returns (uint256 oldDivisor) {
         require(_feeDivisor != 0, "DIVISIONBYZERO");
