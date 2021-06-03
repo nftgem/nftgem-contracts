@@ -1,3 +1,7 @@
 [submodule "nftgem-ui"]
-	path = nftgem-ui
-	url = https://github.com/nftgem/nftgem-ui
+path = nftgem-ui
+url = git@github.com:nftgem/nftgem-ui.git
+
+[submodule "nftgem-subgraph"]
+	path = nftgem-subgraph
+	url = git@github.com:nftgem/nftgem-subgraph.git
