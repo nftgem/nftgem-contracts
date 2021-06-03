@@ -14,7 +14,7 @@ interface INFTGemPoolFactory {
         string gemSymbol,
         string gemName,
         uint256 ethPrice,
-        uint256 mintTime,
+        uint256 minTime,
         uint256 maxTime,
         uint256 diffstep,
         uint256 maxMint,
