@@ -911,12 +911,17 @@ library ComplexPoolLib {
         require(creator != address(0) && funder != address(0), "ZERO_DESTINATION");
         require(self.nextGemIdVal == 0, "ALREADY_MINTED");
 
+        uint8 quantity = 1;
         uint256 gemHash = nextGemHash(self);
-        INFTGemMultiToken(self.multitoken).mint(creator, gemHash, 1);
+        INFTGemMultiToken(self.multitoken).mint(creator, gemHash, quantity);
         addToken(self, gemHash, INFTGemMultiToken.TokenType.GEM);
+        // emit an event about a gem getting created
+        emit NFTGemCreated(creator, address(self.pool), 0, gemHash, quantity);
 
         gemHash = nextGemHash(self);
-        INFTGemMultiToken(self.multitoken).mint(creator, gemHash, 1);
+        INFTGemMultiToken(self.multitoken).mint(creator, gemHash, quantity);
         addToken(self, gemHash, INFTGemMultiToken.TokenType.GEM);
+        // emit an event about a gem getting created
+        emit NFTGemCreated(creator, address(self.pool), 0, gemHash, quantity);
     }
 }

@@ -11,8 +11,8 @@ interface INFTGemPoolFactory {
      */
     event NFTGemPoolCreated(
         address indexed gemPoolAddress,
-        string indexed gemSymbol,
-        string indexed gemName,
+        string gemSymbol,
+        string gemName,
         uint256 ethPrice,
         uint256 minTime,
         uint256 maxTime,
@@ -26,8 +26,8 @@ interface INFTGemPoolFactory {
      */
     event CustomNFTGemPoolCreated(
         address indexed gemPoolAdress, 
-        string indexed gemSymbol, 
-        string indexed gemName
+        string gemSymbol, 
+        string gemName
     );
 
     function nftGemPools() external view returns (address[] memory);
