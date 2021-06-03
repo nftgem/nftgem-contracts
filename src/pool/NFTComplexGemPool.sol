@@ -26,19 +26,19 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev Add an address allowed to control this contract
      */
-    function addController(address controller) external {
+    function addController(address _controllerAddress) external {
         require(
             poolData.controllers[msg.sender] == true || address(this) == msg.sender,
             "Controllable: caller is not a controller"
         );
-        poolData.controllers[controller] = true;
+        poolData.controllers[_controllerAddress] = true;
     }
 
     /**
      * @dev Check if this address is a controller
      */
-    function isController(address caddress) external view returns (bool) {
-        return poolData.controllers[caddress];
+    function isController(address _controllerAddress) external view returns (bool) {
+        return poolData.controllers[_controllerAddress];
     }
 
     /**
@@ -60,153 +60,153 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev initializer called when contract is deployed
      */
     function initialize(
-        string memory __symbol,
-        string memory __name,
-        uint256 __ethPrice,
-        uint256 __minTime,
-        uint256 __maxTime,
-        uint256 __diffstep,
-        uint256 __maxClaims,
-        address __allowedToken
+        string memory _symbol,
+        string memory _name,
+        uint256 _ethPrice,
+        uint256 _minTime,
+        uint256 _maxTime,
+        uint256 _diffstep,
+        uint256 _maxClaims,
+        address _allowedToken
     ) external override onlyController {
         poolData.pool = address(this);
-        poolData.symbol = __symbol;
-        poolData.name = __name;
-        poolData.ethPrice = __ethPrice;
-        poolData.minTime = __minTime;
-        poolData.maxTime = __maxTime;
-        poolData.diffstep = __diffstep;
-        poolData.maxClaims = __maxClaims;
+        poolData.symbol = _symbol;
+        poolData.name = _name;
+        poolData.ethPrice = _ethPrice;
+        poolData.minTime = _minTime;
+        poolData.maxTime = _maxTime;
+        poolData.diffstep = _diffstep;
+        poolData.maxClaims = _maxClaims;
         poolData.visible = true;
         poolData.enabled = true;
-        if (__allowedToken != address(0)) {
-            poolData.allowedTokens.insert(__allowedToken);
+        if (_allowedToken != address(0)) {
+            poolData.allowedTokens.insert(_allowedToken);
         }
     }
 
     /**
      * @dev set the governor. pool uses the governor to issue gov token issuance requests
      */
-    function setGovernor(address addr) external override {
+    function setGovernor(address _governorAddress) external override {
         require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.governor = addr;
+        poolData.governor = _governorAddress;
     }
 
     /**
      * @dev set the fee tracker. pool uses the  fee tracker to issue  fee tracker token issuance requests
      */
-    function setFeeTracker(address addr) external override {
+    function setFeeTracker(address _feeTrackerAddress) external override {
         require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.feeTracker = addr;
+        poolData.feeTracker = _feeTrackerAddress;
     }
 
     /**
      * @dev set the multitoken that this pool will mint new tokens on. Must be a controller of the multitoken
      */
-    function setMultiToken(address addr) external override {
+    function setMultiToken(address _multiTokenAddress) external override {
         require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.multitoken = addr;
+        poolData.multitoken = _multiTokenAddress;
     }
 
     /**
      * @dev set the AMM swap helper that gets token prices
      */
-    function setSwapHelper(address addr) external override {
+    function setSwapHelper(address _swapHelperAddress) external override {
         require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
-        poolData.swapHelper = addr;
+        poolData.swapHelper = _swapHelperAddress;
     }
 
     /**
      * @dev mint the genesis gems earned by the pools creator and funder
      */
-    function mintGenesisGems(address creator, address funder) external override {
-        poolData.mintGenesisGems(creator, funder);
+    function mintGenesisGems(address _creatorAddress, address _funderAddress) external override {
+        poolData.mintGenesisGems(_creatorAddress, _funderAddress);
     }
 
     /**
      * @dev create a single claim with given timeframe
      */
-    function createClaim(uint256 timeframe) external payable override {
-        poolData.createClaims(timeframe, 1);
+    function createClaim(uint256 _timeframe) external payable override {
+        poolData.createClaims(_timeframe, 1);
     }
 
     /**
      * @dev create multiple claims with given timeframe
      */
-    function createClaims(uint256 timeframe, uint256 count) external payable override {
-        poolData.createClaims(timeframe, count);
+    function createClaims(uint256 _timeframe, uint256 _count) external payable override {
+        poolData.createClaims(_timeframe, _count);
     }
 
     /**
      * @dev purchase gems
      */
-    function purchaseGems(uint256 count) external payable override {
-        poolData.purchaseGems(msg.sender, msg.value, count);
+    function purchaseGems(uint256 _count) external payable override {
+        poolData.purchaseGems(msg.sender, msg.value, _count);
     }
 
     /**
      * @dev create a claim using a erc20 token
      */
-    function createERC20Claim(address erc20token, uint256 tokenAmount) external override {
-        poolData.createERC20Claims(erc20token, tokenAmount, 1);
+    function createERC20Claim(address _erc20TokenAddress, uint256 _tokenAmount) external override {
+        poolData.createERC20Claims(_erc20TokenAddress, _tokenAmount, 1);
     }
 
     /**
      * @dev create a claim using a erc20 token
      */
     function createERC20Claims(
-        address erc20token,
-        uint256 tokenAmount,
-        uint256 count
+        address _erc20TokenAddress,
+        uint256 _tokenAmount,
+        uint256 _count
     ) external override {
-        poolData.createERC20Claims(erc20token, tokenAmount, count);
+        poolData.createERC20Claims(_erc20TokenAddress, _tokenAmount, _count);
     }
 
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeemable for and maybe a gem too)
      */
-    function collectClaim(uint256 claimHash, bool requireMature) external override {
-        poolData.collectClaim(claimHash, requireMature);
+    function collectClaim(uint256 _claimHash, bool _requireMature) external override {
+        poolData.collectClaim(_claimHash, _requireMature);
     }
 
     /**
      * @dev deposit into pool
      */
-    function deposit(address erc20token, uint256 tokenAmount) external override {
-        poolData.deposit(erc20token, tokenAmount);
+    function deposit(address _erc20TokenAddress, uint256 _tokenAmount) external override {
+        poolData.deposit(_erc20TokenAddress, _tokenAmount);
     }
 
     /**
      * @dev deposit NFT into pool
      */
     function depositNFT(
-        address erc1155token,
-        uint256 tokenId,
-        uint256 tokenAmount
+        address _erc1155TokenAddress,
+        uint256 _tokenId,
+        uint256 _tokenAmount
     ) external override {
-        poolData.depositNFT(erc1155token, tokenId, tokenAmount);
+        poolData.depositNFT(_erc1155TokenAddress, _tokenId, _tokenAmount);
     }
 
     /**
      * @dev withdraw pool contents
      */
     function withdraw(
-        address erc20token,
+        address _erc20TokenAddress,
         address destination,
-        uint256 tokenAmount
+        uint256 _tokenAmount
     ) external override {
-        poolData.withdraw(erc20token, destination, tokenAmount);
+        poolData.withdraw(_erc20TokenAddress, destination, _tokenAmount);
     }
 
     /**
      * @dev withdraw pool  NFT contents
      */
     function withdrawNFT(
-        address erc1155token,
-        address destination,
-        uint256 tokenId,
-        uint256 tokenAmount
+        address _erc1155TokenAddress,
+        address _destinationAddress,
+        uint256 _tokenId,
+        uint256 _tokenAmount
     ) external override {
-        poolData.withdrawNFT(erc1155token, destination, tokenId, tokenAmount);
+        poolData.withdrawNFT(_erc1155TokenAddress, _destinationAddress, _tokenId, _tokenAmount);
     }
 }

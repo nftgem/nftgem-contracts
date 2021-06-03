@@ -142,49 +142,59 @@ library ComplexPoolLib {
         AddressSet.Set allowedTokens;
     }
 
+    function checkGemRequirement(
+        ComplexPoolData storage self,
+        uint256 _index,
+        address _holderAddress,
+        uint256 _quantity
+    )  internal view returns (address) {
+        address gemtoken;
+        uint256 required = self.inputRequirements[_index].minVal.mul(_quantity);
+        uint256 hashCount = INFTGemMultiToken(self.inputRequirements[_index].token).allHeldTokensLength(_holderAddress);
+        for (uint256 j = 0; j < hashCount; j++) {
+            uint256 hashAt = INFTGemMultiToken(self.inputRequirements[_index].token).allHeldTokens(_holderAddress, j);
+            if (INFTComplexGemPoolData(self.inputRequirements[_index].pool).tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM) {
+                gemtoken = self.inputRequirements[_index].token;
+                uint256 balance = IERC1155(self.inputRequirements[_index].token).balanceOf(_holderAddress, hashAt);
+                if (balance > required) {
+                    balance = required;
+                }
+                if (balance == 0) {
+                    continue;
+                }
+                required = required - balance;
+            }
+            if (required == 0) {
+                break;
+            }
+        }
+        require(required == 0, "UNMET_GEM_REQUIREMENT");
+        return gemtoken;
+    }
+
     /**
      * @dev checks to see that account owns all the pool requirements needed to mint at least the given quantity of NFT
      */
     function requireInputReqs(
         ComplexPoolData storage self,
-        address account,
-        uint256 quantity
+        address _holderAddress,
+        uint256 _quantity
     ) public view {
-        address gemtoken;
-        for (uint256 i = 0; i < self.inputRequirements.length; i++) {
-            if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.ERC20) {
+        for (uint256 _index = 0; _index < self.inputRequirements.length; _index += 1) {
+            if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.ERC20) {
                 require(
-                    IERC20(self.inputRequirements[i].token).balanceOf(account) >=
-                        self.inputRequirements[i].minVal.mul(quantity),
+                    IERC20(self.inputRequirements[_index].token).balanceOf(_holderAddress) >=
+                        self.inputRequirements[_index].minVal.mul(_quantity),
                     "UNMET_ERC20_REQUIREMENT"
                 );
-            } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
+            } else if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
                 require(
-                    IERC1155(self.inputRequirements[i].token).balanceOf(account, self.inputRequirements[i].tokenId) >=
-                        self.inputRequirements[i].minVal.mul(quantity),
+                    IERC1155(self.inputRequirements[_index].token).balanceOf(_holderAddress, self.inputRequirements[_index].tokenId) >=
+                        self.inputRequirements[_index].minVal.mul(_quantity),
                     "UNMET_ERC1155_REQUIREMENT"
                 );
-            } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.POOL) {
-                uint256 required = self.inputRequirements[i].minVal.mul(quantity);
-                uint256 hashCount = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokensLength(account);
-                for (uint256 j = 0; j < hashCount; j++) {
-                    uint256 hashAt = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokens(account, j);
-                    if (INFTComplexGemPoolData(self.inputRequirements[i].pool).tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM) {
-                        gemtoken = self.inputRequirements[i].token;
-                        uint256 bal = IERC1155(self.inputRequirements[i].token).balanceOf(account, hashAt);
-                        if (bal > required) {
-                            bal = required;
-                        }
-                        if (bal == 0) {
-                            continue;
-                        }
-                        required = required - bal;
-                    }
-                    if (required == 0) {
-                        break;
-                    }
-                }
-                require(required == 0, "UNMET_GEM_REQUIREMENT");
+            } else if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.POOL) {
+                checkGemRequirement(self, _index, _holderAddress, _quantity);
             }
         }
     }
@@ -194,59 +204,38 @@ library ComplexPoolLib {
      */
     function takeInputReqsFrom(
         ComplexPoolData storage self,
-        uint256 claimHash,
-        address from,
-        uint256 quantity
+        uint256 _claimHash,
+        address _fromAddress,
+        uint256 _quantity
     ) internal {
         address gemtoken;
-        for (uint256 i = 0; i < self.inputRequirements.length; i++) {
-            if(!self.inputRequirements[i].takeCustody) {
+        for (uint256 _inputIndex = 0; _inputIndex < self.inputRequirements.length; _inputIndex += 1) {
+            if(!self.inputRequirements[_inputIndex].takeCustody) {
                 continue;
             }
-            if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.ERC20) {
-                IERC20 token = IERC20(self.inputRequirements[i].token);
-                token.transferFrom(from, self.pool, self.inputRequirements[i].minVal.mul(quantity));
-            } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
-                IERC1155 token = IERC1155(self.inputRequirements[i].token);
+            if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.ERC20) {
+                IERC20 token = IERC20(self.inputRequirements[_inputIndex].token);
+                token.transferFrom(_fromAddress, self.pool, self.inputRequirements[_inputIndex].minVal.mul(_quantity));
+            } else if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
+                IERC1155 token = IERC1155(self.inputRequirements[_inputIndex].token);
                 token.safeTransferFrom(
-                    from,
+                    _fromAddress,
                     self.pool,
-                    self.inputRequirements[i].tokenId,
-                    self.inputRequirements[i].minVal.mul(quantity),
+                    self.inputRequirements[_inputIndex].tokenId,
+                    self.inputRequirements[_inputIndex].minVal.mul(_quantity),
                     ""
                 );
-            } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.POOL) {
-                uint256 required = self.inputRequirements[i].minVal.mul(quantity);
-                uint256 hashCount = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokensLength(from);
-                for (uint256 j = 0; j < hashCount; j++) {
-                    uint256 hashAt = INFTGemMultiToken(self.inputRequirements[i].token).allHeldTokens(from, j);
-                    if (INFTComplexGemPoolData(self.inputRequirements[i].pool).tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM) {
-                        gemtoken = self.inputRequirements[i].token;
-                        uint256 bal = IERC1155(self.inputRequirements[i].token).balanceOf(from, hashAt);
-                        if (bal > required) {
-                            bal = required;
-                        }
-                        if (bal == 0) {
-                            continue;
-                        }
-                        self.claimIds[claimHash].push(hashAt);
-                        self.claimQuantities[claimHash].push(bal);
-                        required = required - bal;
-                    }
-                    if (required == 0) {
-                        break;
-                    }
-                }
-                require(required == 0, "UNMET_REQUIREMENTS");
+            } else if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.POOL) {
+                gemtoken = checkGemRequirement(self, _inputIndex, _fromAddress, _quantity);
             }
         }
 
-        if (self.claimIds[claimHash].length > 0 && gemtoken != address(0)) {
+        if (self.claimIds[_claimHash].length > 0 && gemtoken != address(0)) {
             IERC1155(gemtoken).safeBatchTransferFrom(
-                from,
+                _fromAddress,
                 self.pool,
-                self.claimIds[claimHash],
-                self.claimQuantities[claimHash],
+                self.claimIds[_claimHash],
+                self.claimQuantities[_claimHash],
                 ""
             );
         }
@@ -257,9 +246,9 @@ library ComplexPoolLib {
      */
     function returnInputReqsTo(
         ComplexPoolData storage self,
-        uint256 claimHash,
-        address to,
-        uint256 quantity
+        uint256 _claimHash,
+        address _toAddress,
+        uint256 _quantity
     ) internal {
         address gemtoken;
         for (uint256 i = 0; i < self.inputRequirements.length; i++) {
@@ -267,16 +256,16 @@ library ComplexPoolLib {
                 && self.inputRequirements[i].burn == false
                 && self.inputRequirements[i].takeCustody == true) {
                 IERC20 token = IERC20(self.inputRequirements[i].token);
-                token.transferFrom(self.pool, to, self.inputRequirements[i].minVal.mul(quantity));
+                token.transferFrom(self.pool, _toAddress, self.inputRequirements[i].minVal.mul(_quantity));
             } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.ERC1155
                 && self.inputRequirements[i].burn == false
                 && self.inputRequirements[i].takeCustody == true) {
                 IERC1155 token = IERC1155(self.inputRequirements[i].token);
                 token.safeTransferFrom(
                     self.pool,
-                    to,
+                    _toAddress,
                     self.inputRequirements[i].tokenId,
-                    self.inputRequirements[i].minVal.mul(quantity),
+                    self.inputRequirements[i].minVal.mul(_quantity),
                     ""
                 );
             } else if (self.inputRequirements[i].inputType == INFTComplexGemPool.RequirementType.POOL
@@ -285,12 +274,12 @@ library ComplexPoolLib {
                 gemtoken = self.inputRequirements[i].token;
             }
         }
-        if (self.claimIds[claimHash].length > 0 && gemtoken != address(0)) {
+        if (self.claimIds[_claimHash].length > 0 && gemtoken != address(0)) {
             IERC1155(gemtoken).safeBatchTransferFrom(
                 self.pool,
-                to,
-                self.claimIds[claimHash],
-                self.claimQuantities[claimHash],
+                _toAddress,
+                self.claimIds[_claimHash],
+                self.claimQuantities[_claimHash],
                 ""
             );
         }
@@ -326,23 +315,34 @@ library ComplexPoolLib {
      */
     function updateInputRequirement(
         ComplexPoolData storage self,
-        uint256 ndx,
-        address token,
-        address pool,
-        INFTComplexGemPool.RequirementType inputType,
-        uint256 tokenId,
-        uint256 minAmount,
-        bool takeCustody,
-        bool burn
+        uint256 _index,
+        address _tokenAddress,
+        address _poolAddress,
+        INFTComplexGemPool.RequirementType _inputRequirementType,
+        uint256 _tokenId,
+        uint256 _minAmount,
+        bool _takeCustody,
+        bool _burn
     ) public {
-        require(ndx < self.inputRequirements.length, "OUT_OF_RANGE");
-        require(token != address(0), "INVALID_TOKEN");
-        require(inputType == INFTComplexGemPool.RequirementType.ERC20 || inputType == INFTComplexGemPool.RequirementType.ERC1155 || inputType == INFTComplexGemPool.RequirementType.POOL, "INVALID_INPUTTYPE");
-        require((inputType == INFTComplexGemPool.RequirementType.POOL && pool != address(0)) || inputType != INFTComplexGemPool.RequirementType.POOL, "INVALID_POOL");
-        require((inputType == INFTComplexGemPool.RequirementType.ERC20 && tokenId == 0) || inputType == INFTComplexGemPool.RequirementType.ERC1155 || (inputType == INFTComplexGemPool.RequirementType.POOL && tokenId == 0), "INVALID_TOKENID");
-        require(minAmount != 0, "ZERO_AMOUNT");
-        require(!(!takeCustody && burn), "INVALID_TOKENSTATE");
-        self.inputRequirements[ndx] = InputRequirement(token, pool, inputType, tokenId, minAmount, takeCustody, burn);
+        require(_index < self.inputRequirements.length, "OUT_OF_RANGE");
+        require(_tokenAddress != address(0), "INVALID_TOKEN");
+        require(
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 || 
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 || 
+            _inputRequirementType == INFTComplexGemPool.RequirementType.POOL
+            , "INVALID_INPUTTYPE");
+        require(
+            (_inputRequirementType == INFTComplexGemPool.RequirementType.POOL && _poolAddress != address(0)) || 
+            _inputRequirementType != INFTComplexGemPool.RequirementType.POOL
+            , "INVALID_POOL");
+        require(
+            (_inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 && _tokenId == 0) || 
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 || 
+            (_inputRequirementType == INFTComplexGemPool.RequirementType.POOL && _tokenId == 0)
+            , "INVALID_TOKENID");
+        require(_minAmount != 0, "ZERO_AMOUNT");
+        require(!(!_takeCustody && _burn), "INVALID_TOKENSTATE");
+        self.inputRequirements[_index] = InputRequirement(_tokenAddress, _poolAddress, _inputRequirementType, _tokenId, _minAmount, _takeCustody, _burn);
     }
 
     /**
