@@ -144,18 +144,18 @@ library ComplexPoolLib {
 
     function checkGemRequirement(
         ComplexPoolData storage self,
-        uint256 _index,
+        uint256 _inputIndex,
         address _holderAddress,
         uint256 _quantity
     )  internal view returns (address) {
         address gemtoken;
-        uint256 required = self.inputRequirements[_index].minVal.mul(_quantity);
-        uint256 hashCount = INFTGemMultiToken(self.inputRequirements[_index].token).allHeldTokensLength(_holderAddress);
-        for (uint256 j = 0; j < hashCount; j++) {
-            uint256 hashAt = INFTGemMultiToken(self.inputRequirements[_index].token).allHeldTokens(_holderAddress, j);
-            if (INFTComplexGemPoolData(self.inputRequirements[_index].pool).tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM) {
-                gemtoken = self.inputRequirements[_index].token;
-                uint256 balance = IERC1155(self.inputRequirements[_index].token).balanceOf(_holderAddress, hashAt);
+        uint256 required = self.inputRequirements[_inputIndex].minVal.mul(_quantity);
+        uint256 hashCount = INFTGemMultiToken(self.inputRequirements[_inputIndex].token).allHeldTokensLength(_holderAddress);
+        for (uint256 _hashIndex = 0; _hashIndex < hashCount; _hashIndex += 1) {
+            uint256 hashAt = INFTGemMultiToken(self.inputRequirements[_inputIndex].token).allHeldTokens(_holderAddress, _hashIndex);
+            if (INFTComplexGemPoolData(self.inputRequirements[_inputIndex].pool).tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM) {
+                gemtoken = self.inputRequirements[_inputIndex].token;
+                uint256 balance = IERC1155(self.inputRequirements[_inputIndex].token).balanceOf(_holderAddress, hashAt);
                 if (balance > required) {
                     balance = required;
                 }
@@ -180,21 +180,21 @@ library ComplexPoolLib {
         address _holderAddress,
         uint256 _quantity
     ) public view {
-        for (uint256 _index = 0; _index < self.inputRequirements.length; _index += 1) {
-            if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.ERC20) {
+        for (uint256 _inputIndex = 0; _inputIndex < self.inputRequirements.length; _inputIndex += 1) {
+            if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.ERC20) {
                 require(
-                    IERC20(self.inputRequirements[_index].token).balanceOf(_holderAddress) >=
-                        self.inputRequirements[_index].minVal.mul(_quantity),
+                    IERC20(self.inputRequirements[_inputIndex].token).balanceOf(_holderAddress) >=
+                        self.inputRequirements[_inputIndex].minVal.mul(_quantity),
                     "UNMET_ERC20_REQUIREMENT"
                 );
-            } else if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
+            } else if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.ERC1155) {
                 require(
-                    IERC1155(self.inputRequirements[_index].token).balanceOf(_holderAddress, self.inputRequirements[_index].tokenId) >=
-                        self.inputRequirements[_index].minVal.mul(_quantity),
+                    IERC1155(self.inputRequirements[_inputIndex].token).balanceOf(_holderAddress, self.inputRequirements[_inputIndex].tokenId) >=
+                        self.inputRequirements[_inputIndex].minVal.mul(_quantity),
                     "UNMET_ERC1155_REQUIREMENT"
                 );
-            } else if (self.inputRequirements[_index].inputType == INFTComplexGemPool.RequirementType.POOL) {
-                checkGemRequirement(self, _index, _holderAddress, _quantity);
+            } else if (self.inputRequirements[_inputIndex].inputType == INFTComplexGemPool.RequirementType.POOL) {
+                checkGemRequirement(self, _inputIndex, _holderAddress, _quantity);
             }
         }
     }
@@ -355,7 +355,7 @@ library ComplexPoolLib {
     /**
      * @dev input requirements at index
      */
-    function allInputRequirements(ComplexPoolData storage self, uint256 ndx)
+    function allInputRequirements(ComplexPoolData storage self, uint256 _index)
         public
         view
         returns (
@@ -368,8 +368,8 @@ library ComplexPoolLib {
             bool
         )
     {
-        require(ndx < self.inputRequirements.length, "OUT_OF_RANGE");
-        InputRequirement memory req = self.inputRequirements[ndx];
+        require(_index < self.inputRequirements.length, "OUT_OF_RANGE");
+        InputRequirement memory req = self.inputRequirements[_index];
         return (req.token, req.pool, req.inputType, req.tokenId, req.minVal, req.takeCustody, req.burn);
     }
 
@@ -378,22 +378,22 @@ library ComplexPoolLib {
      */
     function createClaims(
         ComplexPoolData storage self,
-        uint256 timeframe,
-        uint256 count
+        uint256 _timeframe,
+        uint256 _count
     ) public {
         // enabled
         require(self.enabled == true, "DISABLED");
         // minimum timeframe
-        require(timeframe >= self.minTime, "TIMEFRAME_TOO_SHORT");
+        require(_timeframe >= self.minTime, "TIMEFRAME_TOO_SHORT");
         // no ETH
         require(msg.value != 0, "ZERO_BALANCE");
         // zero qty
-        require(count != 0, "ZERO_QUANTITY");
+        require(_count != 0, "ZERO_QUANTITY");
         // maximum timeframe
-        require((self.maxTime != 0 && timeframe <= self.maxTime) || self.maxTime == 0, "TIMEFRAME_TOO_LONG");
+        require((self.maxTime != 0 && _timeframe <= self.maxTime) || self.maxTime == 0, "TIMEFRAME_TOO_LONG");
         // max quantity per claim
         require(
-            (self.maxQuantityPerClaim != 0 && count <= self.maxQuantityPerClaim) || self.maxQuantityPerClaim == 0,
+            (self.maxQuantityPerClaim != 0 && _count <= self.maxQuantityPerClaim) || self.maxQuantityPerClaim == 0,
             "MAX_QUANTITY_EXCEEDED"
         );
         require(
@@ -402,10 +402,10 @@ library ComplexPoolLib {
             "MAX_QUANTITY_EXCEEDED"
         );
 
-        uint256 adjustedBalance = msg.value.div(count);
+        uint256 adjustedBalance = msg.value.div(_count);
         // cost given this timeframe
 
-        uint256 cost = self.ethPrice.mul(self.minTime).div(timeframe);
+        uint256 cost = self.ethPrice.mul(self.minTime).div(_timeframe);
         require(adjustedBalance >= cost, "INSUFFICIENT_ETH");
 
         // get the nest claim hash, revert if no more claims
@@ -413,7 +413,7 @@ library ComplexPoolLib {
         require(claimHash != 0, "NO_MORE_CLAIMABLE");
 
         // require the user to have the input requirements
-        requireInputReqs(self, msg.sender, count);
+        requireInputReqs(self, msg.sender, _count);
 
         // mint the new claim to the caller's address
         INFTGemMultiToken(self.multitoken).mint(msg.sender, claimHash, 1);
@@ -421,27 +421,27 @@ library ComplexPoolLib {
         addToken(self, claimHash, INFTGemMultiToken.TokenType.CLAIM);
 
         // record the claim unlock time and cost paid for this claim
-        uint256 claimUnlockTimestamp = block.timestamp.add(timeframe);
+        uint256 claimUnlockTimestamp = block.timestamp.add(_timeframe);
         self.claimLockTimestamps[claimHash] = claimUnlockTimestamp;
-        self.claimAmountPaid[claimHash] = cost.mul(count);
-        self.claimQuant[claimHash] = count;
+        self.claimAmountPaid[claimHash] = cost.mul(_count);
+        self.claimQuant[claimHash] = _count;
         self.claimsMade[msg.sender] = self.claimsMade[msg.sender].add(1);
 
         // tranasfer NFT input requirements from user to pool
-        takeInputReqsFrom(self, claimHash, msg.sender, count);
+        takeInputReqsFrom(self, claimHash, msg.sender, _count);
 
         // maybe mint a governance token for the claimant
         INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
         INFTGemGovernor(self.governor).issueFuelToken(msg.sender, cost);
 
-        emit NFTGemClaimCreated(msg.sender, address(self.pool), claimHash, timeframe, count, cost);
+        emit NFTGemClaimCreated(msg.sender, address(self.pool), claimHash, _timeframe, _count, cost);
 
         // increase the staked eth balance
-        self.totalStakedEth = self.totalStakedEth.add(cost.mul(count));
+        self.totalStakedEth = self.totalStakedEth.add(cost.mul(_count));
 
         // return the extra to sender
-        if (msg.value > cost.mul(count)) {
-            (bool success, ) = payable(msg.sender).call{value: msg.value.sub(cost.mul(count))}("");
+        if (msg.value > cost.mul(_count)) {
+            (bool success, ) = payable(msg.sender).call{value: msg.value.sub(cost.mul(_count))}("");
             require(success, "REFUND_FAILED");
         }
     }
@@ -557,14 +557,14 @@ library ComplexPoolLib {
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeeemable for and maybe a gem too)
      */
-    function collectClaim(ComplexPoolData storage self, uint256 claimHash, bool requireMature) public {
+    function collectClaim(ComplexPoolData storage self, uint256 _claimHash, bool _requireMature) public {
         // enabled
         require(self.enabled == true, "DISABLED");
                 // check the maturity of the claim - only issue gem if mature
-        uint256 unlockTime = self.claimLockTimestamps[claimHash];
+        uint256 unlockTime = self.claimLockTimestamps[_claimHash];
         bool isMature = unlockTime < block.timestamp;
-        require((requireMature && isMature ) || !requireMature, "IMMATURE_CLAIM");
-        __collectClaim(self, claimHash);
+        require(!_requireMature || (_requireMature && isMature), "IMMATURE_CLAIM");
+        __collectClaim(self, _claimHash);
     }
 
     /**
