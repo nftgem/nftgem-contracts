@@ -64,7 +64,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         _allNFTGemPools.push(gemPool);
 
         // emit an event about the new pool being created
-        emit CustomNFTGemPoolCreated(gemSymbol, gemName);
+        emit CustomNFTGemPoolCreated(gemPool, gemSymbol, gemName);
     }
 
     /**
@@ -86,7 +86,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         gemPool = payable(poolAddress);
 
         // emit an event about the new pool being created
-        emit CustomNFTGemPoolCreated(gemSymbol, gemName);
+        emit CustomNFTGemPoolCreated(gemPool, gemSymbol, gemName);
     }
 
     /**
@@ -134,7 +134,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         _allNFTGemPools.push(gemPool);
 
         // emit an event about the new pool being created
-        emit NFTGemPoolCreated(gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
+        emit NFTGemPoolCreated(gemPool, gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
     }
 
     /**
