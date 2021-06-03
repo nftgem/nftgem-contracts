@@ -68,7 +68,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
     }
 
     /**
-     * @dev add an existing gem pool to factory(for migrations)
+     * @dev add an existing gem pool to factory (for migrations)
      */
     function addCustomNFTGemPool(
         address poolAddress,
