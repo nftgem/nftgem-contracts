@@ -47,8 +47,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set all the token hashes for this pool
      */
-    function setTokenHashes(uint256[] memory inTokenHashes) external override onlyController {
-        poolData.tokenHashes = inTokenHashes;
+    function setTokenHashes(uint256[] memory _tokenHashes) external override onlyController {
+        poolData.tokenHashes = _tokenHashes;
     }
 
     /**
@@ -82,15 +82,15 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev update max quantity per claim
      */
-    function setMaxQuantityPerClaim(uint256 maxQty) external override onlyController {
-        poolData.maxQuantityPerClaim = maxQty;
+    function setMaxQuantityPerClaim(uint256 _maxQuantityPerClaim) external override onlyController {
+        poolData.maxQuantityPerClaim = _maxQuantityPerClaim;
     }
 
     /**
      * @dev update max claims that can be made on this NFT
      */
-    function setMaxClaimsPerAccount(uint256 maxCPA) external override onlyController {
-        poolData.maxClaimsPerAccount = maxCPA;
+    function setMaxClaimsPerAccount(uint256 _maxClaimsPerAccount) external override onlyController {
+        poolData.maxClaimsPerAccount = _maxClaimsPerAccount;
     }
 
     /**
@@ -103,8 +103,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set whether pool allows purchase
      */
-    function setAllowPurchase(bool allow) external override onlyController {
-        poolData.allowPurchase = allow;
+    function setAllowPurchase(bool _allowPurchase) external override onlyController {
+        poolData.allowPurchase = _allowPurchase;
     }
 
     /**
@@ -117,8 +117,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set the enabled status of this pool
      */
-    function setEnabled(bool enable) external override onlyController {
-        poolData.enabled = enable;
+    function setEnabled(bool _enabled) external override onlyController {
+        poolData.enabled = _enabled;
     }
 
     /**
@@ -131,8 +131,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev set the appreciation curve of this pool.
      */
-    function setPriceIncrementType(PriceIncrementType incrementType) external override onlyController {
-        poolData.priceIncrementType = incrementType;
+    function setPriceIncrementType(PriceIncrementType _incrementType) external override onlyController {
+        poolData.priceIncrementType = _incrementType;
     }
 
     /**
@@ -159,22 +159,22 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev get token type of hash - 1 is for claim, 2 is for gem
      */
-    function tokenType(uint256 tokenHash) external view override returns (INFTGemMultiToken.TokenType) {
-        return poolData.tokenTypes[tokenHash];
+    function tokenType(uint256 _tokenHash) external view override returns (INFTGemMultiToken.TokenType) {
+        return poolData.tokenTypes[_tokenHash];
     }
 
     /**
      * @dev get the claim hash of the gem
      */
-    function gemClaimHash(uint256 gemHash) external view override returns (uint256) {
-        return poolData.gemClaims[gemHash];
+    function gemClaimHash(uint256 _claimHash) external view override returns (uint256) {
+        return poolData.gemClaims[_claimHash];
     }
 
     /**
      * @dev get token id (serial #) of the given token hash. 0 if not a token, 1 if claim, 2 if gem
      */
-    function tokenId(uint256 tokenHash) external view override returns (uint256) {
-        return poolData.tokenIds[tokenHash];
+    function tokenId(uint256 _tokenHash) external view override returns (uint256) {
+        return poolData.tokenIds[_tokenHash];
     }
 
     /**
@@ -229,92 +229,92 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev the allowed token address at index
      */
-    function allowedTokens(uint256 idx) external view override returns (address) {
-        return poolData.allowedTokens.keyAtIndex(idx);
+    function allowedTokens(uint256 _index) external view override returns (address) {
+        return poolData.allowedTokens.keyAtIndex(_index);
     }
 
     /**
      * @dev add an allowed token to the pool
      */
-    function addAllowedToken(address tkn) external override onlyController {
-        poolData.allowedTokens.insert(tkn);
+    function addAllowedToken(address _tokenAddress) external override onlyController {
+        poolData.allowedTokens.insert(_tokenAddress);
     }
 
     /**
      * @dev add an allowed token to the pool
      */
-    function removeAllowedToken(address tkn) external override onlyController {
-        poolData.allowedTokens.remove(tkn);
+    function removeAllowedToken(address _tokenAddress) external override onlyController {
+        poolData.allowedTokens.remove(_tokenAddress);
     }
 
     /**
      * @dev is the token in the allowed tokens list
      */
-    function isTokenAllowed(address tkn) external view override returns (bool) {
-        return poolData.allowedTokens.exists(tkn);
+    function isTokenAllowed(address _tokenAddress) external view override returns (bool) {
+        return poolData.allowedTokens.exists(_tokenAddress);
     }
 
     /**
      * @dev the claim amount for the given claim id
      */
-    function claimAmount(uint256 claimHash) external view override returns (uint256) {
-        return poolData.claimAmount(claimHash);
+    function claimAmount(uint256 _claimHash) external view override returns (uint256) {
+        return poolData.claimAmount(_claimHash);
     }
 
     /**
      * @dev the claim quantity (count of gems staked) for the given claim id
      */
-    function claimQuantity(uint256 claimHash) external view override returns (uint256) {
-        return poolData.claimQuantity(claimHash);
+    function claimQuantity(uint256 _claimHash) external view override returns (uint256) {
+        return poolData.claimQuantity(_claimHash);
     }
 
     /**
      * @dev the lock time for this claim. once past lock time a gema is minted
      */
-    function claimUnlockTime(uint256 claimHash) external view override returns (uint256) {
-        return poolData.claimUnlockTime(claimHash);
+    function claimUnlockTime(uint256 _claimHash) external view override returns (uint256) {
+        return poolData.claimUnlockTime(_claimHash);
     }
 
     /**
      * @dev claim token amount if paid using erc20
      */
-    function claimTokenAmount(uint256 claimHash) external view override returns (uint256) {
-        return poolData.claimTokenAmount(claimHash);
+    function claimTokenAmount(uint256 _claimHash) external view override returns (uint256) {
+        return poolData.claimTokenAmount(_claimHash);
     }
 
     /**
      * @dev the staked token if staking with erc20
      */
-    function stakedToken(uint256 claimHash) external view override returns (address) {
-        return poolData.stakedToken(claimHash);
+    function stakedToken(uint256 _claimHash) external view override returns (address) {
+        return poolData.stakedToken(_claimHash);
     }
 
     /**
      * @dev set market visibility
      */
-    function setVisible(bool isVisible) external override onlyController {
-        poolData.visible = isVisible;
+    function setVisible(bool _visible) external override onlyController {
+        poolData.visible = _visible;
     }
 
     /**
      * @dev set market visibility
      */
-    function visible() external view override returns (bool v) {
-        v = poolData.visible;
+    function visible() external view override returns (bool) {
+        return poolData.visible;
     }
 
     /**
      * @dev set category category
      */
-    function setCategory(uint256 theCategory) external override onlyController {
-        poolData.category = theCategory;
+    function setCategory(uint256 _category) external override onlyController {
+        poolData.category = _category;
     }
 
     /**
      * @dev get market category
      */
-    function category() external view override returns (uint256 c) {
-        c = poolData.category;
+    function category() external view override returns (uint256) {
+        return poolData.category;
     }
 
     /**
@@ -327,8 +327,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev get description
      */
-    function description() external view override returns (string memory c) {
-        c = poolData.description;
+    function description() external view override returns (string memory) {
+        return poolData.description;
     }
 
     /**
@@ -349,31 +349,31 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
      * @dev add an input requirement for this token
      */
     function addInputRequirement(
-        address theToken,
-        address pool,
-        INFTComplexGemPool.RequirementType inputType,
-        uint256 theTokenId,
-        uint256 minAmount,
-        bool takeCustody,
-        bool burn
+        address _tokenAddress,
+        address _poolAddress,
+        INFTComplexGemPool.RequirementType _inputType,
+        uint256 _tokenId,
+        uint256 _minAmount,
+        bool _takeCustody,
+        bool _burn
     ) external override onlyController {
-        poolData.addInputRequirement(theToken, pool, inputType, theTokenId, minAmount, takeCustody, burn);
+        poolData.addInputRequirement(_tokenAddress, _poolAddress, _inputType, _tokenId, _minAmount, _takeCustody, _burn);
     }
 
     /**
      * @dev add an input requirement for this token
      */
     function updateInputRequirement(
-        uint256 ndx,
-        address theToken,
-        address pool,
-        INFTComplexGemPool.RequirementType inputType,
-        uint256 tid,
-        uint256 minAmount,
-        bool takeCustody,
-        bool burn
+        uint256 _index,
+        address _tokenAddress,
+        address _poolAddress,
+        INFTComplexGemPool.RequirementType _inputType,
+        uint256 _tokenId,
+        uint256 _minAmount,
+        bool _takeCustody,
+        bool _burn
     ) external override onlyController {
-        poolData.updateInputRequirement(ndx, theToken, pool, inputType, tid, minAmount, takeCustody, burn);
+        poolData.updateInputRequirement(_index, _tokenAddress, _poolAddress, _inputType, _tokenId, _minAmount, _takeCustody, _burn);
     }
 
     /**
@@ -386,7 +386,7 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     /**
      * @dev all Input Requirements at element
      */
-    function allInputRequirements(uint256 ndx)
+    function allInputRequirements(uint256 _index)
         external
         view
         override
@@ -400,24 +400,24 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             bool
         )
     {
-        return poolData.allInputRequirements(ndx);
+        return poolData.allInputRequirements(_index);
     }
 
     /**
      * @dev add an allowed token source
      */
-    function addAllowedTokenSource(address allowedToken) external override {
-        if (!poolData.allowedTokenSources.exists(allowedToken)) {
-            poolData.allowedTokenSources.insert(allowedToken);
+    function addAllowedTokenSource(address _allowedToken) external override {
+        if (!poolData.allowedTokenSources.exists(_allowedToken)) {
+            poolData.allowedTokenSources.insert(_allowedToken);
         }
     }
 
     /**
      * @dev remove an allowed token source
      */
-    function removeAllowedTokenSource(address allowedToken) external override {
-        if (poolData.allowedTokenSources.exists(allowedToken)) {
-            poolData.allowedTokenSources.remove(allowedToken);
+    function removeAllowedTokenSource(address _allowedToken) external override {
+        if (poolData.allowedTokenSources.exists(_allowedToken)) {
+            poolData.allowedTokenSources.remove(_allowedToken);
         }
     }
 
@@ -443,30 +443,32 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            string memory symbol,
-            string memory name,
-            string memory description,
-            uint256 category,
-            uint256 ethPrice,
-            uint256 minTime,
-            uint256 maxTime,
-            uint256 diffstep,
-            uint256 maxClaims,
-            uint256 maxQuantityPerClaim,
-            uint256 maxClaimsPerAccount
+            string memory,
+            string memory,
+            string memory,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
         )
     {
-        symbol = poolData.symbol;
-        name = poolData.name;
-        description = poolData.description;
-        category = poolData.category;
-        ethPrice = poolData.ethPrice;
-        minTime = poolData.minTime;
-        maxTime = poolData.maxTime;
-        diffstep = poolData.diffstep;
-        maxClaims = poolData.maxClaims;
-        maxQuantityPerClaim = poolData.maxQuantityPerClaim;
-        maxClaimsPerAccount = poolData.maxClaimsPerAccount;
+        return (
+            poolData.symbol,
+            poolData.name,
+            poolData.description,
+            poolData.category,
+            poolData.ethPrice,
+            poolData.minTime,
+            poolData.maxTime,
+            poolData.diffstep,
+            poolData.maxClaims,
+            poolData.maxQuantityPerClaim,
+            poolData.maxClaimsPerAccount
+        );
     }
 
     /**
@@ -477,24 +479,26 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            bool visible,
-            uint256 claimedCount,
-            uint256 mintedCount,
-            uint256 totalStakedEth,
-            uint256 nextClaimHash,
-            uint256 nextGemHash,
-            uint256 nextClaimId,
-            uint256 nextGemId
+            bool,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
         )
     {
-        visible = poolData.visible;
-        claimedCount = poolData.nextClaimIdVal;
-        mintedCount = poolData.nextGemIdVal;
-        totalStakedEth = poolData.totalStakedEth;
-        nextClaimHash = poolData.nextClaimHash();
-        nextGemHash = poolData.nextGemHash();
-        nextClaimId = poolData.nextClaimIdVal;
-        nextGemId = poolData.nextGemIdVal;
+        return (
+            poolData.visible,
+            poolData.nextClaimIdVal,
+            poolData.nextGemIdVal,
+            poolData.totalStakedEth,
+            poolData.nextClaimHash(),
+            poolData.nextGemHash(),
+            poolData.nextClaimIdVal,
+            poolData.nextGemIdVal
+        );
     }
 
     /**
@@ -505,86 +509,90 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         view
         override
         returns (
-            uint256 claimAmount,
-            uint256 claimQuantity,
-            uint256 claimUnlockTime,
-            uint256 claimTokenAmount,
-            address stakedToken,
-            uint256 nextClaimId
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address,
+            uint256
         )
     {
-        claimAmount = poolData.claimAmount(claimHash);
-        claimQuantity = poolData.claimQuantity(claimHash);
-        claimUnlockTime = poolData.claimUnlockTime(claimHash);
-        claimTokenAmount = poolData.claimTokenAmount(claimHash);
-        stakedToken = poolData.stakedToken(claimHash);
-        nextClaimId = poolData.nextClaimIdVal;
+        return (
+            poolData.claimAmount(claimHash),
+            poolData.claimQuantity(claimHash),
+            poolData.claimUnlockTime(claimHash),
+            poolData.claimTokenAmount(claimHash),
+            poolData.stakedToken(claimHash),
+            poolData.nextClaimIdVal
+        );
     }
 
     /**
      * @dev return the token data for the given hash
      */
-    function token(uint256 tokenHash)
+    function token(uint256 _tokenHash)
         external
         view
         override
         returns (
-            INFTGemMultiToken.TokenType tokenType,
-            uint256 tokenId,
-            address tokenSource
+            INFTGemMultiToken.TokenType,
+            uint256,
+            address
         )
     {
-        tokenType = poolData.tokenTypes[tokenHash];
-        tokenId = poolData.tokenIds[tokenHash];
-        tokenSource = poolData.tokenSources[tokenHash];
+        return (
+            poolData.tokenTypes[_tokenHash],
+            poolData.tokenIds[_tokenHash],
+            poolData.tokenSources[_tokenHash]
+        );
     }
 
     /**
      * @dev import the legacy gem
      */
     function importLegacyGem(
-        address pool,
-        address legacyToken,
-        uint256 tokenHash,
-        address recipient
+        address _poolAddress,
+        address _legacyToken,
+        uint256 _tokenHash,
+        address _recipient
     ) external override {
 
-        require(tokenHash > 0, "INVALID_TOKENHASH");
-        require(pool > address(0), "INVALID_POOL");
-        require(legacyToken > address(0), "INVALID_TOKEN");
-        require(recipient > address(0), "INVALID_RECIPIENT");
-        require(poolData.allowedTokenSources.exists(legacyToken) == true, "INVALID_TOKENSOURCE");
-        require(poolData.importedLegacyToken[tokenHash] == false, "ALREADY_IMPORTED");
+        require(_tokenHash > 0, "INVALID_TOKENHASH");
+        require(_poolAddress > address(0), "INVALID_POOL");
+        require(_legacyToken > address(0), "INVALID_TOKEN");
+        require(_recipient > address(0), "INVALID_RECIPIENT");
+        require(poolData.allowedTokenSources.exists(_legacyToken) == true, "INVALID_TOKENSOURCE");
+        require(poolData.importedLegacyToken[_tokenHash] == false, "ALREADY_IMPORTED");
 
-        bytes32 importedSymHash = keccak256(abi.encodePacked(INFTGemPoolData(pool).symbol()));
+        bytes32 importedSymHash = keccak256(abi.encodePacked(INFTGemPoolData(_poolAddress).symbol()));
         bytes32 poolSymHash = keccak256(abi.encodePacked(poolData.symbol));
         require(importedSymHash == poolSymHash, "INVALID_POOLHASH");
 
-        INFTGemMultiToken.TokenType importTokenType = INFTGemPoolData(pool).tokenType(tokenHash);
+        INFTGemMultiToken.TokenType importTokenType = INFTGemPoolData(_poolAddress).tokenType(_tokenHash);
         require(importTokenType == INFTGemMultiToken.TokenType.GEM, "INVALID_TOKENTYPE");
 
-        uint256 quantity = IERC1155(legacyToken).balanceOf(recipient, tokenHash);
-        uint256 importTokenId = INFTGemPoolData(pool).tokenId(tokenHash);
+        uint256 quantity = IERC1155(_legacyToken).balanceOf(_recipient, _tokenHash);
+        uint256 importTokenId = INFTGemPoolData(_poolAddress).tokenId(_tokenHash);
 
         if(quantity > 0) {
-            INFTGemMultiToken(poolData.multitoken).mint(recipient, tokenHash, quantity);
-            INFTGemMultiToken(poolData.multitoken).setTokenData(tokenHash, INFTGemMultiToken.TokenType.GEM, address(this));
+            INFTGemMultiToken(poolData.multitoken).mint(_recipient, _tokenHash, quantity);
+            INFTGemMultiToken(poolData.multitoken).setTokenData(_tokenHash, INFTGemMultiToken.TokenType.GEM, address(this));
 
-            poolData.tokenTypes[tokenHash] = INFTGemMultiToken.TokenType.GEM;
-            poolData.tokenIds[tokenHash] = importTokenId;
-            poolData.tokenSources[tokenHash] = legacyToken;
-            poolData.importedLegacyToken[tokenHash] = true;
+            poolData.tokenTypes[_tokenHash] = INFTGemMultiToken.TokenType.GEM;
+            poolData.tokenIds[_tokenHash] = importTokenId;
+            poolData.tokenSources[_tokenHash] = _legacyToken;
+            poolData.importedLegacyToken[_tokenHash] = true;
 
             INFTGemGovernor(poolData.governor).maybeIssueGovernanceToken(msg.sender);
-            emit NFTGemImported(msg.sender, address(this), pool, legacyToken, tokenHash, quantity);
+            emit NFTGemImported(msg.sender, address(this), _poolAddress, _legacyToken, _tokenHash, quantity);
         }
     }
 
     /**
      * @dev returns if legacy gem with given hash is imported
      */
-    function isLegacyGemImported(uint256 tokenhash) external view override returns (bool isImported) {
-        isImported = poolData.importedLegacyToken[tokenhash];
+    function isLegacyGemImported(uint256 _tokenhash) external view override returns (bool) {
+        return poolData.importedLegacyToken[_tokenhash];
     }
 
     /**
