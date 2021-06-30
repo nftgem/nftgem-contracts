@@ -10,10 +10,11 @@ interface INFTGemPoolFactory {
      * @dev emitted when a new gem pool has been added to the system
      */
     event NFTGemPoolCreated(
+        address indexed gemPoolAddress,
         string gemSymbol,
         string gemName,
         uint256 ethPrice,
-        uint256 mintTime,
+        uint256 minTime,
         uint256 maxTime,
         uint256 diffstep,
         uint256 maxMint,
@@ -23,7 +24,11 @@ interface INFTGemPoolFactory {
     /**
      * @dev emitted when a new gem pool has been added to the system
      */
-    event CustomNFTGemPoolCreated(string gemSymbol, string gemName);
+    event CustomNFTGemPoolCreated(
+        address indexed gemPoolAdress, 
+        string gemSymbol, 
+        string gemName
+    );
 
     function nftGemPools() external view returns (address[] memory);
 

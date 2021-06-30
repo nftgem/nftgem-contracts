@@ -5,7 +5,7 @@ pragma solidity >=0.7.0;
 import "../libs/SafeMath.sol";
 
 import "../interfaces/IERC1155.sol";
-import "../interfaces/IERC20.sol";v
+import "../interfaces/IERC20.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
@@ -31,6 +31,7 @@ library WrappedTokenLib {
         uint256 index;
         INFTGemMultiToken.TokenType tokenType;
         uint256 rate;
+        uint256 wrappedBalance;
         mapping(address => uint256[]) ids;
         mapping(address => uint256[]) amounts;
     }

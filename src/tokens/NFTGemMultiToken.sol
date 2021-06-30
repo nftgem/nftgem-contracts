@@ -338,24 +338,16 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
             // this is the last token if this type the sender owns
             if (from != address(0) && balanceOf(from, ids[i]) == amounts[i]) {
                 // find and delete the token id from the token holders held tokens
-                if (_heldTokens[from].exists(ids[i])) {
-                    _heldTokens[from].remove(ids[i]);
-                }
-                if (_tokenHolders[ids[i]].exists(from)) {
-                    _tokenHolders[ids[i]].remove(from);
-                }
+                _heldTokens[from].remove(ids[i]);
+                _tokenHolders[ids[i]].remove(from);
             }
 
             // if this is not a burn and receiver does not yet own token then
             // add that account to the token for that id
             if (to != address(0) && balanceOf(to, ids[i]) == 0) {
-                // insert the token id from the token holders held tokens
-                if (!_heldTokens[to].exists(ids[i])) {
-                    _heldTokens[to].insert(ids[i]);
-                }
-                if (!_tokenHolders[ids[i]].exists(to)) {
-                    _tokenHolders[ids[i]].insert(to);
-                }
+                // insert the token id from the token holders held tokens\
+                _heldTokens[to].insert(ids[i]);
+                _tokenHolders[ids[i]].insert(to);
             }
 
             // inc and dec balances for each token type
