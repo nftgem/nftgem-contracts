@@ -42,12 +42,6 @@ interface INFTGemGovernor {
 
     function issueInitialGovernanceTokens(address receiver) external;
 
-    function issueInitialFuelTokens(address receiver) external;
-
-    function maybeIssueGovernanceToken(address receiver) external;
-
-    function issueFuelToken(address receiver, uint256 amount) external;
-
     function createPool(
         string memory symbol,
         string memory name,

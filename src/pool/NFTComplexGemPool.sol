@@ -120,6 +120,8 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev mint the genesis gems earned by the pools creator and funder
      */
     function mintGenesisGems(address _creatorAddress, address _funderAddress) external override {
+        // security checks for this method are in the library - this
+        // method  may only be  called one time per new pool creation
         poolData.mintGenesisGems(_creatorAddress, _funderAddress);
     }
 
@@ -169,44 +171,4 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
         poolData.collectClaim(_claimHash, _requireMature);
     }
 
-    /**
-     * @dev deposit into pool
-     */
-    function deposit(address _erc20TokenAddress, uint256 _tokenAmount) external override {
-        poolData.deposit(_erc20TokenAddress, _tokenAmount);
-    }
-
-    /**
-     * @dev deposit NFT into pool
-     */
-    function depositNFT(
-        address _erc1155TokenAddress,
-        uint256 _tokenId,
-        uint256 _tokenAmount
-    ) external override {
-        poolData.depositNFT(_erc1155TokenAddress, _tokenId, _tokenAmount);
-    }
-
-    /**
-     * @dev withdraw pool contents
-     */
-    function withdraw(
-        address _erc20TokenAddress,
-        address destination,
-        uint256 _tokenAmount
-    ) external override {
-        poolData.withdraw(_erc20TokenAddress, destination, _tokenAmount);
-    }
-
-    /**
-     * @dev withdraw pool  NFT contents
-     */
-    function withdrawNFT(
-        address _erc1155TokenAddress,
-        address _destinationAddress,
-        uint256 _tokenId,
-        uint256 _tokenAmount
-    ) external override {
-        poolData.withdrawNFT(_erc1155TokenAddress, _destinationAddress, _tokenId, _tokenAmount);
-    }
 }

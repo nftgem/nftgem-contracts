@@ -41,9 +41,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     using SafeMath for uint256;
     using Strings for string;
 
-    // Opensea's proxy registry address.
-    address private constant OPENSEA_REGISTRY_ADDRESS = 0xa5409ec958C83C3f309868babACA7c86DCB077c1;
-
+    // proxy registries for exchanges to enable no-fee trading
     AddressSet.Set private proxyRegistries;
     address private registryManager;
 
@@ -88,6 +86,9 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev Returns the metadata URI for this token type
      */
     function uri(uint256 _id) public view override(ERC1155) returns (string memory) {
+        // the URI override is here to support IPFS addresses - we need to do the
+        // id concat here because IPFS can't do it. This makes this call take a little
+        // longer but the advantage is that the call returns an already-formed URI
         require(_totalBalances[_id] != 0, "NFTGemMultiToken#uri: NONEXISTENT_TOKEN");
         return Strings.strConcat(ERC1155Pausable(this).uri(_id), Strings.uint2str(_id));
     }

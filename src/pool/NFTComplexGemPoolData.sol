@@ -556,7 +556,9 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         uint256 _tokenHash,
         address _recipient
     ) external override {
-
+        // this method is callable by anyone - this is used to import historical
+        // gems into the new contracts. A gem can only be imported in once
+        // per source
         require(_tokenHash > 0, "INVALID_TOKENHASH");
         require(_poolAddress > address(0), "INVALID_POOL");
         require(_legacyToken > address(0), "INVALID_TOKEN");
@@ -583,7 +585,6 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             poolData.tokenSources[_tokenHash] = _legacyToken;
             poolData.importedLegacyToken[_tokenHash] = true;
 
-            INFTGemGovernor(poolData.governor).maybeIssueGovernanceToken(msg.sender);
             emit NFTGemImported(msg.sender, address(this), _poolAddress, _legacyToken, _tokenHash, quantity);
         }
     }

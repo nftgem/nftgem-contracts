@@ -30,10 +30,7 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     bool private _initialized;
 
     uint256 private constant GOVERNANCE = 0;
-    uint256 private constant FUEL = 1;
-    uint256 private constant FUEL_TOKEN_INITIAL= 1000000;
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
-    uint256 private constant GOV_TOKEN_MAX = 1000000;
 
     bool private governanceIssued;
     bool private fuelIssued;
@@ -134,35 +131,6 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         INFTGemMultiToken(multitoken).mint(receiver, GOVERNANCE, GOV_TOKEN_INITIAL);
         governanceIssued = true;
         emit GovernanceTokenIssued(receiver, GOV_TOKEN_INITIAL);
-    }
-
-    /**
-     * @dev issue initial fuel tokens
-     */
-    function issueInitialFuelTokens(address receiver) external override {
-        require(!fuelIssued, "ALREADY_ISSUED");
-        INFTGemMultiToken(multitoken).mint(receiver, FUEL, FUEL_TOKEN_INITIAL);
-        fuelIssued = true;
-        emit FuelTokenIssued(receiver, FUEL_TOKEN_INITIAL);
-    }
-
-    /**
-     * @dev maybe issue a governance token to receiver
-     */
-    function maybeIssueGovernanceToken(address receiver) external override onlyController {
-        uint256 totalSupplyOf = INFTGemMultiToken(multitoken).totalBalances(GOVERNANCE);
-        if (totalSupplyOf >= GOV_TOKEN_MAX) {
-            return;
-        }
-        INFTGemMultiToken(multitoken).mint(receiver, GOVERNANCE, 1);
-        emit GovernanceTokenIssued(receiver, 1);
-    }
-
-    /**
-     * @dev shhh
-     */
-    function issueFuelToken(address receiver, uint256 amount) external override onlyController {
-        INFTGemMultiToken(multitoken).mint(receiver, FUEL, amount);
     }
 
     /**

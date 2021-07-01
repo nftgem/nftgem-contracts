@@ -9,7 +9,7 @@ import "../interfaces/IERC1155.sol";
 import "../interfaces/IERC20.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
-import "../interfaces/INFTGemWrapperFeeManager.sol";
+import "../interfaces/INFTGemFeeManager.sol";
 
 import "./WrappedTokenLib.sol";
 
@@ -63,7 +63,7 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
             "INSUFFICIENT_QUANTITY"
         );
         uint256 tq = quantity.mul(tokenData.rate * 10**decimals());
-        uint256 fd = INFTGemWrapperFeeManager(_feeManager).feeDivisor(address(this));
+        uint256 fd = INFTGemFeeManager(_feeManager).feeDivisor(address(this));
         uint256 fee = fd != 0 ? tq.div(fd) : 0;
         uint256 userQty = tq.sub(fee);
 

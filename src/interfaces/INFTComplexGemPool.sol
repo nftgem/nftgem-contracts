@@ -8,7 +8,7 @@ pragma solidity >=0.7.0;
 interface INFTComplexGemPool {
 
     enum RequirementType { ERC20, ERC1155, POOL }
-    
+
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */
@@ -90,27 +90,6 @@ interface INFTComplexGemPool {
     function collectClaim(uint256 claimHash, bool requireMature) external;
 
     function purchaseGems(uint256 count) external payable;
-
-    function deposit(address erc20token, uint256 tokenAmount) external;
-
-    function withdraw(
-        address erc20token,
-        address destination,
-        uint256 tokenAmount
-    ) external;
-
-    function depositNFT(
-        address erc20token,
-        uint256 tokenId,
-        uint256 tokenAmount
-    ) external;
-
-    function withdrawNFT(
-        address erc1155token,
-        address destination,
-        uint256 tokenId,
-        uint256 tokenAmount
-    ) external;
 
     function initialize(
         string memory,

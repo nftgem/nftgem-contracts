@@ -48,7 +48,7 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     }
 
     /**
-     * @dev Set the liquidity liquidity for the specified token
+     * @dev Set the default liquidity for the specified token
      */
     function setDefaultLiquidity(uint256 _liquidityMult)
         external

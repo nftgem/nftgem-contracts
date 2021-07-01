@@ -327,17 +327,17 @@ library ComplexPoolLib {
         require(_index < self.inputRequirements.length, "OUT_OF_RANGE");
         require(_tokenAddress != address(0), "INVALID_TOKEN");
         require(
-            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 || 
-            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 || 
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 ||
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 ||
             _inputRequirementType == INFTComplexGemPool.RequirementType.POOL
             , "INVALID_INPUTTYPE");
         require(
-            (_inputRequirementType == INFTComplexGemPool.RequirementType.POOL && _poolAddress != address(0)) || 
+            (_inputRequirementType == INFTComplexGemPool.RequirementType.POOL && _poolAddress != address(0)) ||
             _inputRequirementType != INFTComplexGemPool.RequirementType.POOL
             , "INVALID_POOL");
         require(
-            (_inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 && _tokenId == 0) || 
-            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 || 
+            (_inputRequirementType == INFTComplexGemPool.RequirementType.ERC20 && _tokenId == 0) ||
+            _inputRequirementType == INFTComplexGemPool.RequirementType.ERC1155 ||
             (_inputRequirementType == INFTComplexGemPool.RequirementType.POOL && _tokenId == 0)
             , "INVALID_TOKENID");
         require(_minAmount != 0, "ZERO_AMOUNT");
@@ -430,10 +430,7 @@ library ComplexPoolLib {
         // tranasfer NFT input requirements from user to pool
         takeInputReqsFrom(self, claimHash, msg.sender, _count);
 
-        // maybe mint a governance token for the claimant
-        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(self.governor).issueFuelToken(msg.sender, cost);
-
+        // emit an event about it
         emit NFTGemClaimCreated(msg.sender, address(self.pool), claimHash, _timeframe, _count, cost);
 
         // increase the staked eth balance
@@ -534,10 +531,6 @@ library ComplexPoolLib {
 
         // increase staked eth amount
         self.totalStakedEth = self.totalStakedEth.add(ethereum);
-
-        // maybe mint a governance token for the claimant
-        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(self.governor).issueFuelToken(msg.sender, ethereum);
 
         // emit a message indicating that an erc20 claim has been created
         emit NFTGemERC20ClaimCreated(
@@ -660,10 +653,6 @@ library ComplexPoolLib {
         INFTGemMultiToken(self.multitoken).mint(msg.sender, nextHash, self.claimQuant[claimHash]);
         addToken(self, nextHash, INFTGemMultiToken.TokenType.GEM);
 
-        // maybe mint a governance token
-        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(msg.sender);
-        INFTGemGovernor(self.governor).issueFuelToken(msg.sender, unlockPaid);
-
         // emit an event about a gem getting created
         emit NFTGemCreated(msg.sender, address(self.pool), claimHash, nextHash, self.claimQuant[claimHash]);
     }
@@ -691,10 +680,7 @@ library ComplexPoolLib {
         INFTGemMultiToken(self.multitoken).mint(sender, nextHash, count);
         addToken(self, nextHash, INFTGemMultiToken.TokenType.GEM);
 
-        // maybe mint a governance token
-        INFTGemGovernor(self.governor).maybeIssueGovernanceToken(sender);
-        INFTGemGovernor(self.governor).issueFuelToken(sender, value);
-
+        // transfer the funds for the gem to the fee tracker
         payable(self.feeTracker).transfer(value);
 
         // emit an event about a gem getting created
