@@ -1,6 +1,6 @@
 import hre from 'hardhat';
 import {expect} from 'chai';
-import {assert} from './chai-setup';
+import {assert} from '../test/chai-setup';
 import {pack, keccak256} from '@ethersproject/solidity';
 
 import func from "../deploy/deploy";
