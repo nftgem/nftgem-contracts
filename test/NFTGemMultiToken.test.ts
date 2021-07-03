@@ -2,9 +2,9 @@ import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
 import {Contract} from '@ethersproject/contracts';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
 
-const {getContractFactory, utils} = ethers;
+const {getContractFactory} = ethers;
 
 describe('NFTGemMultiToken contract', function () {
   let owner: SignerWithAddress;
@@ -12,7 +12,6 @@ describe('NFTGemMultiToken contract', function () {
   let proxyRegistry: SignerWithAddress;
   let receiver: SignerWithAddress;
   let NFTGemMultiToken: Contract;
-  let Proxy: Contract;
 
   const tokenHash = keccak256(['bytes'], [pack(['string'], ['Test Token'])]);
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -33,7 +32,7 @@ describe('NFTGemMultiToken contract', function () {
     expect(await NFTGemMultiToken.getRegistryManager()).to.equal(owner.address);
     expect(
       (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-    ).to.equal(0);
+    ).to.equal(1);
     expect(await NFTGemMultiToken.isController(owner.address)).to.be.true;
   });
   describe('Registry manager', function () {
@@ -47,12 +46,11 @@ describe('NFTGemMultiToken contract', function () {
   describe('Add/remove proxy registry', function () {
     it('Should add proxy registry', async function () {
       await NFTGemMultiToken.addProxyRegistry(proxyRegistry.address);
-      expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(
-        proxyRegistry.address
-      );
+      const proxyRegistriesLength = await NFTGemMultiToken.allProxyRegistriesLength();
       expect(
-        (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-      ).to.equal(1);
+        await NFTGemMultiToken.allProxyRegistries(proxyRegistriesLength - 1)
+      ).to.equal(proxyRegistry.address);
+      expect(proxyRegistriesLength.toNumber()).to.equal(2);
     });
     it('Should not add proxy registry', async function () {
       await expect(
@@ -63,13 +61,12 @@ describe('NFTGemMultiToken contract', function () {
     });
     it('Should remove proxy registry', async function () {
       await NFTGemMultiToken.addProxyRegistry(proxyRegistry.address);
+      const proxyRegistriesLength = await NFTGemMultiToken.allProxyRegistriesLength();
+      expect(proxyRegistriesLength).to.equal(2);
+      await NFTGemMultiToken.removeProxyRegistryAt(proxyRegistriesLength - 1);
       expect(
-        (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
-      ).to.equal(1);
-      await NFTGemMultiToken.removeProxyRegistryAt(0);
-      expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(
-        ZERO_ADDRESS
-      );
+        await NFTGemMultiToken.allProxyRegistries(proxyRegistriesLength - 1)
+      ).to.equal(ZERO_ADDRESS);
     });
     it('Should not remove proxy registry', async function () {
       await expect(

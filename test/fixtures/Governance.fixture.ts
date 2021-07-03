@@ -1,6 +1,6 @@
 import {deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {FactoryOptions} from 'hardhat-deploy-ethers/dist/src/helpers';
+import { FactoryOptions } from 'hardhat/types';
 
 export const setupNftGemGovernor = deployments.createFixture(
   async ({ethers}) => {
@@ -19,14 +19,14 @@ export const setupNftGemGovernor = deployments.createFixture(
     ).deploy();
 
 
-    const factoryOptions: FactoryOptions = {
+    const factoryOptions1: FactoryOptions = {
       signer: owner,
       libraries: {
         GovernanceLib: GovernanceLib.address,
         ProposalsLib: ProposalsLib.address,
       },
     };
-    const factoryOptions1: FactoryOptions = {
+    const factoryOptions2: FactoryOptions = {
       signer: owner,
       libraries: {
       },
@@ -34,13 +34,13 @@ export const setupNftGemGovernor = deployments.createFixture(
 
     // deploy contracts
     const NFTGemGovernor = await (
-      await ethers.getContractFactory('NFTGemGovernor', factoryOptions)
+      await ethers.getContractFactory('NFTGemGovernor', factoryOptions1)
     ).deploy();
     const NFTGemMultiToken = await (
       await ethers.getContractFactory('NFTGemMultiToken', owner)
     ).deploy();
     const NFTGemPoolFactory = await (
-      await ethers.getContractFactory('NFTGemPoolFactory', factoryOptions1)
+      await ethers.getContractFactory('NFTGemPoolFactory', factoryOptions2)
     ).deploy();
     const NFTGemFeeManager = await (
       await ethers.getContractFactory('NFTGemFeeManager',  owner)
@@ -170,8 +170,7 @@ export const createProposal = deployments.createFixture(
     const proposalAddress = await ProposalFactory.getProposal(salt);
     const ProposalContract = await ethers.getContractAt(
       'Proposal',
-      proposalAddress,
-      ProposalSubmitter
+      proposalAddress
     );
     return {
       ProposalContract,
