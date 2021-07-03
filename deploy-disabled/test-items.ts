@@ -63,11 +63,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         (await get('NFTGemFeeManager')).address,
         sender
       ),
-      NFTGemWrapperFeeManager: await getContractAt(
-        'NFTGemWrapperFeeManager',
-        (await get('NFTGemWrapperFeeManager')).address,
-        sender
-      ),
       ProposalFactory: await getContractAt(
         'ProposalFactory',
         (await get('ProposalFactory')).address,
@@ -236,7 +231,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         poolAddr,
         dc.NFTGemMultiToken.address,
         18,
-        dc.NFTGemWrapperFeeManager.address,
+        dc.NFTGemFeeManager.address,
         {gasLimit: 5000000, nonce}
       );
       await waitForMined(tx.hash);

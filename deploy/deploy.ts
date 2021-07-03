@@ -15,16 +15,6 @@ const func: any = async function (
     from: sender.address,
     log: true,
   };
-  const waitForTime = 0;
-
-  /**
-   * @dev Wait for the given number of seconds and display balance
-   */
-  const waitFor = async (n: number) => {
-    const nbal = await sender.getBalance();
-    console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
-    return new Promise((resolve) => setTimeout(resolve, n * 1000));
-  };
 
   const waitForMined = async (transactionHash: string) => {
     return new Promise((resolve) => {
@@ -68,11 +58,6 @@ const func: any = async function (
       NFTGemFeeManager: await getContractAt(
         'NFTGemFeeManager',
         (await get('NFTGemFeeManager')).address,
-        sender
-      ),
-      NFTGemWrapperFeeManager: await getContractAt(
-        'NFTGemWrapperFeeManager',
-        (await get('NFTGemWrapperFeeManager')).address,
         sender
       ),
       ProposalFactory: await getContractAt(
@@ -175,17 +160,6 @@ const func: any = async function (
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
 
   /**
-   * @dev adding a wait between contract calls is the only I have been able
-   * to successfully deploy w/o issues 100% of the time
-   */
-  await waitFor(5);
-
-  if (noDeploy) {
-    console.log('Already deployed, returning references\n');
-    return await getDeployedContracts(sender);
-  }
-
-  /**
    * @dev Deploy all llibraries that support the contract
    */
   console.log('deploying libraries...');
@@ -254,10 +228,6 @@ const func: any = async function (
     NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
     NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
     NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
-    NFTGemWrapperFeeManager: await deploy(
-      'NFTGemWrapperFeeManager',
-      deployParams
-    ),
     ProposalFactory: await deploy('ProposalFactory', deployParams),
     MockProxyRegistry: await deploy('MockProxyRegistry', deployParams),
     ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
@@ -353,7 +323,6 @@ const func: any = async function (
   delete deployParams.args;
 
   console.log('loading contracts...');
-  await waitFor(waitForTime);
 
   const deployedContracts = await getDeployedContracts(sender);
   const dc = deployedContracts;
@@ -389,12 +358,6 @@ const func: any = async function (
     tx = await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
     await waitForMined(tx.hash);
 
-    console.log('propagating wrapper fee manager controller...');
-    tx = await dc.NFTGemWrapperFeeManager.addController(
-      dc.NFTGemGovernor.address, {gasLimit: 500000}
-    );
-    await waitForMined(tx.hash);
-
     console.log('propagating gem token controller...');
     tx = await dc.ERC20GemTokenFactory.addController(dc.NFTGemGovernor.address, {gasLimit: 500000});
     await waitForMined(tx.hash);
@@ -411,13 +374,12 @@ const func: any = async function (
       'NFTGem Governance',
       'NFTGG',
       dc.NFTGemMultiToken.address,
-      dc.NFTGemWrapperFeeManager.address
+      dc.NFTGemFeeManager.address
     ];
     await deploy('NFTGemWrappedERC20Governance', deployParams);
 
     // init governance token wrapper
     console.log('intializing wrapped governance token...');
-    await waitFor(1);
     dc.NFTGemWrappedERC20Governance = await getContractAt(
       'NFTGemWrappedERC20Governance',
       (await get('NFTGemWrappedERC20Governance')).address,
@@ -429,7 +391,7 @@ const func: any = async function (
       '0x0000000000000000000000000000000000000000',
       '0x0000000000000000000000000000000000000000',
       0,
-      dc.NFTGemWrapperFeeManager.address
+      dc.NFTGemFeeManager.address
     );
     await waitForMined(tx.hash);
 
@@ -442,25 +404,18 @@ const func: any = async function (
     );
     await waitForMined(tx.hash);
 
-    console.log('minting initial fuel tokens...');
-    tx = await dc.NFTGemGovernor.issueInitialFuelTokens(sender.address, {
-      gasLimit: 5000000,
-    });
-    await waitForMined(tx.hash);
-
     // deploy the fuel token wrapper
     console.log('deploying wrapped fuel token...');
     deployParams.args = [
       'NFTGem Fuel',
       'NFTGF',
       dc.NFTGemMultiToken.address,
-      dc.NFTGemWrapperFeeManager.address
+      dc.NFTGemFeeManager.address
     ];
     await deploy('NFTGemWrappedERC20Fuel', deployParams);
 
     // init fuel token wrapper
     console.log('intializing wrapped fuel token...');
-    await waitFor(1);
     dc.NFTGemWrappedERC20Fuel = await getContractAt(
       'NFTGemWrappedERC20Fuel',
       (await get('NFTGemWrappedERC20Fuel')).address,
@@ -472,7 +427,7 @@ const func: any = async function (
       '0x0000000000000000000000000000000000000000',
       '0x0000000000000000000000000000000000000000',
       0,
-      dc.NFTGemWrapperFeeManager.address
+      dc.NFTGemFeeManager.address
     );
     await waitForMined(tx.hash);
 
