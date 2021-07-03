@@ -1,18 +1,22 @@
 import {expect} from './chai-setup';
 import hre, {ethers, deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
+import {Contract} from 'ethers';
 
 describe('ProposalFactory contract', function () {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+  let ProposalFactory: Contract;
   let sender: SignerWithAddress;
   beforeEach(async () => {
     await deployments.fixture();
+    ProposalFactory = await(
+      await ethers.getContractFactory('ProposalFactory')
+    ).deploy();
   });
 
   it('Should create a new proposal', async function () {
     [sender] = await hre.ethers.getSigners();
-    const ProposalFactory = await ethers.getContract('ProposalFactory');
     await ProposalFactory.createProposal(
       sender.address,
       'New Proposal',
@@ -41,7 +45,6 @@ describe('ProposalFactory contract', function () {
 
   it('Revert if the proposal already exists', async function () {
     [sender] = await hre.ethers.getSigners();
-    const ProposalFactory = await ethers.getContract('ProposalFactory');
     await ProposalFactory.createProposal(
       sender.address,
       'New Proposal',

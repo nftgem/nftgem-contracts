@@ -1,6 +1,6 @@
 import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
 import {Contract} from '@ethersproject/contracts';
 import {createERC20Token} from './fixtures/ERC20Token.fixture';
 
@@ -22,13 +22,14 @@ describe('NFTGemFeeManager contract', function () {
     );
     NFTGemFeeManager = await NFTGemFeeManagerFactory.deploy();
     await NFTGemFeeManager.deployed();
+    NFTGemFeeManager.setOperator(owner.address);
   });
 
   it('Should initialize NFTGemFeeManager contract ', async function () {
     const defaultFeeDivisor = await NFTGemFeeManager.defaultFeeDivisor();
     const defaultLiquidity = await NFTGemFeeManager.defaultLiquidity();
     expect(defaultFeeDivisor).to.equal(1000);
-    expect(defaultLiquidity).to.equal(50);
+    expect(defaultLiquidity).to.equal(100);
   });
   describe('Default Liquidity', function () {
     it('Should set default liquidity', async function () {
@@ -46,7 +47,7 @@ describe('NFTGemFeeManager contract', function () {
     it('Should return liquidity', async function () {
       expect(
         (await NFTGemFeeManager.liquidity(tokenAddress.address)).toNumber()
-      ).to.equal(50);
+      ).to.equal(100);
     });
   });
 
@@ -66,7 +67,7 @@ describe('NFTGemFeeManager contract', function () {
     it('Should return fee divisor', async function () {
         expect(
           (await NFTGemFeeManager.feeDivisor(tokenAddress.address)).toNumber()
-        ).to.equal(2000);
+        ).to.equal(1000);
       });
   });
 
@@ -135,7 +136,7 @@ describe('NFTGemFeeManager contract', function () {
         10
       );
       expect(
-        (await NFTGemFeeManager.balanceOf(ERC20Token.address)).toString()
+        (await NFTGemFeeManager.balanceOF(ERC20Token.address)).toString()
       ).to.equal('90');
       expect((await ERC20Token.balanceOf(sender.address)).toString()).to.equal(
         '10'
@@ -152,7 +153,7 @@ describe('NFTGemFeeManager contract', function () {
       const {ERC20Token} = await createERC20Token({owner});
       await ERC20Token.transfer(NFTGemFeeManager.address, 10);
       expect(
-        (await NFTGemFeeManager.balanceOf(ERC20Token.address)).toString()
+        (await NFTGemFeeManager.balanceOF(ERC20Token.address)).toString()
       ).to.equal('10');
     });
   });

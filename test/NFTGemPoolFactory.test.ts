@@ -1,18 +1,21 @@
 import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
+import {Contract} from 'ethers';
 
 const {utils} = ethers;
 
 describe('NFTGemPoolFactory contract', function () {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+  let NFTGemPoolFactory: Contract;
 
   beforeEach(async () => {
     await deployments.fixture();
+    NFTGemPoolFactory = await (
+      await ethers.getContractFactory('NFTGemPoolFactory')
+    ).deploy();
   });
 
   it('Should create a new nft gem pool', async function () {
-    
-    const NFTGemPoolFactory = await ethers.getContract('NFTGemPoolFactory');
     await expect(
       NFTGemPoolFactory.createNFTGemPool(
         'TST',
@@ -38,7 +41,6 @@ describe('NFTGemPoolFactory contract', function () {
       );
   });
   it('Revert if Gempool already exists', async function () {
-    const NFTGemPoolFactory = await ethers.getContract('NFTGemPoolFactory');
     await expect(
       NFTGemPoolFactory.createNFTGemPool(
         'TST',
@@ -65,7 +67,6 @@ describe('NFTGemPoolFactory contract', function () {
     ).to.be.revertedWith('GEMPOOL_EXISTS');
   });
   it('Revert if ETH price is zero', async function () {
-    const NFTGemPoolFactory = await ethers.getContract('NFTGemPoolFactory');
     await expect(
       NFTGemPoolFactory.createNFTGemPool(
         'TST',
@@ -80,7 +81,6 @@ describe('NFTGemPoolFactory contract', function () {
     ).to.be.revertedWith('INVALID_PRICE');
   });
   it('Revert if minTime is zero', async function () {
-    const NFTGemPoolFactory = await ethers.getContract('NFTGemPoolFactory');
     await expect(
       NFTGemPoolFactory.createNFTGemPool(
         'TST',
@@ -95,7 +95,6 @@ describe('NFTGemPoolFactory contract', function () {
     ).to.be.revertedWith('INVALID_MIN_TIME');
   });
   it('Revert if diffstep is zero', async function () {
-    const NFTGemPoolFactory = await ethers.getContract('NFTGemPoolFactory');
     await expect(
       NFTGemPoolFactory.createNFTGemPool(
         'TST',
