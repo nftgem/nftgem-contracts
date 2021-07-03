@@ -14,15 +14,25 @@ const func: any = async function (
     from: sender.address,
     log: true,
   };
-  const waitForTime = 5;
 
-  /**
-   * @dev Wait for the given number of seconds and display balance
-   */
-  const waitFor = async (n: number) => {
-    const nbal = await sender.getBalance();
-    console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
-    return new Promise((resolve) => setTimeout(resolve, n * 1000));
+
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      const interval = setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
   };
 
   /**
@@ -102,7 +112,6 @@ const func: any = async function (
    * @dev adding a wait between contract calls is the only I have been able
    * to successfully deploy w/o issues 100% of the time
    */
-  await waitFor(5);
 
   if (noDeploy) {
     console.log('Already deployed, returning references\n');
@@ -140,12 +149,12 @@ const func: any = async function (
   console.log('deploying contracts...');
   const deploymentData: any = {
     SwapHelper: null,
-    // NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
-    // NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
-    // NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
-    // NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
-    // ProposalFactory: await deploy('ProposalFactory', deployParams),
-    // ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
+    NFTGemGovernor: await deploy('NFTGemGovernor', deployParams),
+    NFTGemMultiToken: await deploy('NFTGemMultiToken', deployParams),
+    NFTGemPoolFactory: await deploy('NFTGemPoolFactory', deployParams),
+    NFTGemFeeManager: await deploy('NFTGemFeeManager', deployParams),
+    ProposalFactory: await deploy('ProposalFactory', deployParams),
+    ERC20GemTokenFactory: await deploy('ERC20GemTokenFactory', deployParams),
   };
 
   let ip = utils.parseEther('0.1'),
@@ -200,67 +209,60 @@ const func: any = async function (
     deploymentData.SwapHelper = await deploy('MockQueryHelper', deployParams);
   }
 
-  if (parseInt(networkId) === 250) {
-    ip = utils.parseEther('100');
-    pepe = utils.parseEther('10000');
-  }
-
   console.log('loading contracts...');
-  await waitFor(5);
 
   const deployedContracts = await getDeployedContracts(sender);
   const dc = deployedContracts;
-  const ds = 86400;
-  const ms = ds * 30;
   let inited = false;
 
   console.log('initializing governor...');
   try {
-    await dc.NFTGemGovernor.initialize(
+    const t = await dc.NFTGemGovernor.initialize(
       dc.NFTGemMultiToken.address,
       dc.NFTGemPoolFactory.address,
       dc.NFTGemFeeManager.address,
       dc.ProposalFactory.address,
       dc.SwapHelper.address
     );
+    await waitForMined(t.hash);
   } catch (e) {
     console.log('already inited');
     inited = true;
   }
+
   if (!inited) {
-    await waitFor(waitForTime);
     try {
       console.log('propagating governor controller...');
-      await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
-      await waitFor(waitForTime);
+      const t = await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address);
+      await waitForMined(t.hash);
     } catch (e) {
       console.log('already inited');
     }
     try {
       console.log('propagating governor controller...');
-      await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
-      await waitFor(waitForTime);
+      const t = await dc.NFTGemPoolFactory.addController(dc.NFTGemGovernor.address);
+      await waitForMined(t.hash);
     } catch (e) {
       console.log('already inited');
     }
     try {
       console.log('propagating governor controller...');
-      await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
-      await waitFor(waitForTime);
+      const t = await dc.ProposalFactory.addController(dc.NFTGemGovernor.address);
+      await waitForMined(t.hash);
     } catch (e) {
       console.log('already inited');
     }
     try {
       console.log('propagating governor controller...');
-      await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
-      await waitFor(waitForTime);
+      const t = await dc.NFTGemFeeManager.setOperator(dc.NFTGemGovernor.address);
+      await waitForMined(t.hash);
     } catch (e) {
       console.log('already inited');
     }
     try {
       console.log('propagating governor controller...');
-      await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
-      await waitFor(waitForTime);
+      const t = await dc.ERC20GemTokenFactory.setOperator(dc.NFTGemGovernor.address);
+      await waitForMined(t.hash);
     } catch (e) {
       console.log('already inited');
     }

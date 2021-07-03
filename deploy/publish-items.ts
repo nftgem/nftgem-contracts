@@ -11,14 +11,25 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const [sender] = await hre.ethers.getSigners();
   const waitForTime = BigNumber.from(networkId).eq(1337) ? 0 : 11;
 
-  /**
-   * @dev Wait for the given number of seconds and display balance
-   */
-  const waitFor = async (n: number) => {
-    const nbal = await sender.getBalance();
-    console.log(`${chainId} ${thisAddr} : spent ${formatEther(bal.sub(nbal))}`);
-    return new Promise((resolve) => setTimeout(resolve, n * 1000));
+  const waitForMined = async (transactionHash: string) => {
+    return new Promise((resolve) => {
+      const _checkReceipt = async () => {
+        const txReceipt = await await hre.ethers.provider.getTransactionReceipt(
+          transactionHash
+        );
+        return txReceipt && txReceipt.blockNumber ? txReceipt : null;
+      };
+      const interval = setInterval(() => {
+        _checkReceipt().then((r: any) => {
+          if (r) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        });
+      }, 500);
+    });
   };
+
 
   /**
    * @dev Load all deployed contracts
@@ -56,8 +67,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`${chainId} ${thisAddr} : ${formatEther(bal)}`);
   const dc = await getDeployedContracts(sender);
 
-  const nonce = BigNumber.from(0);
-
   const getGPA = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(
       keccak256(['bytes'], [pack(['string'], [sym])])
@@ -77,7 +86,7 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
     const poolAddr = await getGPA(symbol);
     if (BigNumber.from(poolAddr).eq(0)) {
       console.log(`Creating ${name} (${symbol}) pool...`);
-      await dc.NFTGemGovernor.createSystemPool(
+      const t = await dc.NFTGemGovernor.createSystemPool(
         symbol,
         name,
         price,
@@ -88,333 +97,20 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
         allowedToken,
         {gasLimit: 5000000}
       );
+      await waitForMined(t.hash);
     }
     return await getGPA(symbol);
   };
 
-  /**
-   ******************************************************************************
-   */
-  // await createPool(
-  //   'BOSS',
-  //   'Command Node',
-  //   parseEther('1'),
-  //   60,
-  //   60,
-  //   1,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   '1UP',
-  //   'Extra Life',
-  //   parseEther('1'),
-  //   60,
-  //   60,
-  //   1,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'PEPE',
-  //   'Pepe',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   4,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'RUBY',
-  //   'Ruby',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   32,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'OPAL',
-  //   'Opal',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   64,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'MRLD',
-  //   'Emerald',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   128,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'SPHR',
-  //   'Sapphire',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   256,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'DNMD',
-  //   'Diamond',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   512,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'JADE',
-  //   'Jade',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   1024,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'TPAZ',
-  //   'Topaz',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   2048,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'PERL',
-  //   'Pearl',
-  //   parseEther('1'),
-  //   86400,
-  //   86400 * 30,
-  //   4096,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'ROCK',
-  //   'Rock',
-  //   parseEther('0.01'),
-  //   60,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'STIK',
-  //   'Stick',
-  //   parseEther('0.01'),
-  //   30,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'MEAT',
-  //   'Meat',
-  //   parseEther('1'),
-  //   300,
-  //   86400,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'FIRE',
-  //   'Fire',
-  //   parseEther('0.25'),
-  //   10,
-  //   60,
-  //   1073741824,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'LAND',
-  //   'Land',
-  //   parseEther('0.005'),
-  //   60,
-  //   31104000,
-  //   1073741824,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'IRON',
-  //   'Iron',
-  //   parseEther('0.1'),
-  //   60,
-  //   31104000,
-  //   1048576,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'WATR',
-  //   'Water',
-  //   parseEther('0.002'),
-  //   60,
-  //   31104000,
-  //   16777216,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'SEED',
-  //   'Seed',
-  //   parseEther('0.25'),
-  //   86400 * 7,
-  //   86400 * 30,
-  //   65536 * 2,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'GOLD',
-  //   'Gold',
-  //   parseEther('2.82'),
-  //   86400,
-  //   86400,
-  //   65536 * 4,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'SLVR',
-  //   'Silver',
-  //   parseEther('0.04'),
-  //   86400,
-  //   86400,
-  //   65536 * 4,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'MANA',
-  //   'Mana',
-  //   parseEther('0.15'),
-  //   3600,
-  //   7200,
-  //   65536,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'RED',
-  //   'Red',
-  //   parseEther('0.01'),
-  //   3600,
-  //   7200,
-  //   16384,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'GREN',
-  //   'Green',
-  //   parseEther('0.01'),
-  //   3600,
-  //   7200,
-  //   16384,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
-  // await createPool(
-  //   'BLUE',
-  //   'Blue',
-  //   parseEther('0.01'),
-  //   3600,
-  //   7200,
-  //   16384,
-  //   0,
-  //   '0x0000000000000000000000000000000000000000'
-  // );
-
   await createPool(
-    'MTRL',
-    'Mithril',
-    parseEther('10000'),
-    86400,
-    86400,
+    'TEST',
+    'Test NFT',
+    parseEther('1'),
+    60,
+    60,
     262144,
     0,
     '0x0000000000000000000000000000000000000000'
-  );
-
-  await dc.NFTGemGovernor.createSystemPool(
-    'PLSM',
-    'Plasma',
-    parseEther('10'),
-    60,
-    60,
-    1073741824,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-
-  await dc.NFTGemGovernor.createSystemPool(
-    'COAL',
-    'Coal',
-    parseEther('1'),
-    86400 * 180,
-    86400 * 360,
-    1073741824,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
-  );
-
-  await dc.NFTGemGovernor.createSystemPool(
-    'MAGIC',
-    'Philosophers Stone',
-    parseEther('500'),
-    86400,
-    86400,
-    2,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    {gasLimit: 4200000}
   );
 
   // we are done!
@@ -422,8 +118,6 @@ const func: any = async function (hre: HardhatRuntimeEnvironment) {
   const nbal = await sender.getBalance();
   console.log(`${chainId} ${thisAddr} : ${formatEther(nbal)}`);
   console.log(`spent : ${formatEther(bal.sub(nbal))}`);
-
-  await waitFor(18);
 
   return dc;
 };
