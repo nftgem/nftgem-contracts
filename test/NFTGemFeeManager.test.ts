@@ -1,6 +1,6 @@
 import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
 import {Contract} from '@ethersproject/contracts';
 import {createERC20Token} from './fixtures/ERC20Token.fixture';
 

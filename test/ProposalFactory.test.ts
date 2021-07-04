@@ -1,7 +1,7 @@
 import {expect} from './chai-setup';
 import hre, {ethers, deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
 import {Contract} from 'ethers';
 
 describe('ProposalFactory contract', function () {

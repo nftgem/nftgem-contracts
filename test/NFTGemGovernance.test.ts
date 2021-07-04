@@ -6,7 +6,7 @@ import {
   createProposal,
   executeProposal,
 } from './fixtures/Governance.fixture';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
 const {utils} = ethers;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
