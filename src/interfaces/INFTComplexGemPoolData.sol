@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "./INFTGemMultiToken.sol";
 import "./INFTComplexGemPool.sol";
 
 interface INFTComplexGemPoolData {
-    enum PriceIncrementType {COMPOUND, INVERSELOG, NONE}
+    enum PriceIncrementType {
+        COMPOUND,
+        INVERSELOG,
+        NONE
+    }
 
     /**
      * @dev Event generated when an NFT claim is imported from a legacy contract
@@ -59,52 +63,52 @@ interface INFTComplexGemPoolData {
         external
         view
         returns (
-            string memory symbol,
-            string memory name,
-            string memory description,
-            uint256 category,
-            uint256 ethPrice,
-            uint256 minTime,
-            uint256 maxTime,
-            uint256 diffStep,
-            uint256 macClaims,
-            uint256 maxQuantityPerClaim,
-            uint256 maxClaimsPerAccount
+            string memory settingsSymbol,
+            string memory settingsName,
+            string memory settingsDescription,
+            uint256 settingsCategory,
+            uint256 settingsEthPrice,
+            uint256 settingsMinTime,
+            uint256 settingsMaxTime,
+            uint256 settingsDiffStep,
+            uint256 settingsMacClaims,
+            uint256 settingsMaxQuantityPerClaim,
+            uint256 settingsMaxClaimsPerAccount
         );
 
     function stats()
         external
         view
         returns (
-            bool visible,
-            uint256 claimedCount,
-            uint256 mintedCount,
-            uint256 totalStakedEth,
-            uint256 nextClaimHash,
-            uint256 nextGemHash,
-            uint256 nextClaimId,
-            uint256 nextGemId
+            bool statsVisible,
+            uint256 statsClaimedCount,
+            uint256 statsMintedCount,
+            uint256 statsTotalStakedEth,
+            uint256 statsNextClaimHash,
+            uint256 statsNextGemHash,
+            uint256 statsNextClaimId,
+            uint256 statsNextGemId
         );
 
     function claim(uint256 claimHash)
         external
         view
         returns (
-            uint256 claimAmount,
-            uint256 claimQuantity,
-            uint256 claimUnlockTime,
-            uint256 claimTokenAmount,
-            address stakedToken,
-            uint256 nextClaimId
+            uint256 claimClaimAmount,
+            uint256 claimClaimQuantity,
+            uint256 claimClaimUnlockTime,
+            uint256 claimClaimTokenAmount,
+            address claimStakedToken,
+            uint256 claimNNextClaimId
         );
 
     function token(uint256 tokenHash)
         external
         view
         returns (
-            INFTGemMultiToken.TokenType tokenType,
-            uint256 tokenId,
-            address tokenSource
+            INFTGemMultiToken.TokenType tokenTokenType,
+            uint256 tokenTokenId,
+            address tokenTokenSource
         );
 
     function addAllowedTokenSource(address allowedToken) external;
@@ -120,7 +124,10 @@ interface INFTComplexGemPoolData {
         address recipient
     ) external;
 
-    function isLegacyGemImported(uint256 tokenhash) external view returns (bool);
+    function isLegacyGemImported(uint256 tokenhash)
+        external
+        view
+        returns (bool);
 
     function setNextIds(uint256 _nextClaimId, uint256 _nextGemId) external;
 
@@ -168,7 +175,10 @@ interface INFTComplexGemPoolData {
 
     function tokenId(uint256 tokenHash) external view returns (uint256);
 
-    function tokenType(uint256 tokenHash) external view returns (INFTGemMultiToken.TokenType);
+    function tokenType(uint256 tokenHash)
+        external
+        view
+        returns (INFTGemMultiToken.TokenType);
 
     function allTokenHashesLength() external view returns (uint256);
 

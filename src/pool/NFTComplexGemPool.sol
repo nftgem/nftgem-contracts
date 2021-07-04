@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-pragma solidity >=0.7.0;
-
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemFeeManager.sol";
@@ -18,8 +16,11 @@ import "../libs/AddressSet.sol";
 
 import "./NFTComplexGemPoolData.sol";
 
-contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155Holder {
-    using SafeMath for uint256;
+contract NFTComplexGemPool is
+    NFTComplexGemPoolData,
+    INFTComplexGemPool,
+    ERC1155Holder
+{
     using AddressSet for AddressSet.Set;
     using ComplexPoolLib for ComplexPoolLib.ComplexPoolData;
 
@@ -28,7 +29,8 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      */
     function addController(address _controllerAddress) external {
         require(
-            poolData.controllers[msg.sender] == true || address(this) == msg.sender,
+            poolData.controllers[msg.sender] == true ||
+                address(this) == msg.sender,
             "Controllable: caller is not a controller"
         );
         poolData.controllers[_controllerAddress] = true;
@@ -37,7 +39,11 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev Check if this address is a controller
      */
-    function isController(address _controllerAddress) external view returns (bool) {
+    function isController(address _controllerAddress)
+        external
+        view
+        returns (bool)
+    {
         return poolData.controllers[_controllerAddress];
     }
 
@@ -46,7 +52,8 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      */
     function relinquishControl() external {
         require(
-            poolData.controllers[msg.sender] == true || address(this) == msg.sender,
+            poolData.controllers[msg.sender] == true ||
+                address(this) == msg.sender,
             "Controllable: caller is not a controller"
         );
         delete poolData.controllers[msg.sender];
@@ -88,7 +95,12 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev set the governor. pool uses the governor to issue gov token issuance requests
      */
     function setGovernor(address _governorAddress) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        require(
+            poolData.controllers[msg.sender] =
+                true ||
+                msg.sender == poolData.governor,
+            "UNAUTHORIZED"
+        );
         poolData.governor = _governorAddress;
     }
 
@@ -96,7 +108,12 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev set the fee tracker. pool uses the  fee tracker to issue  fee tracker token issuance requests
      */
     function setFeeTracker(address _feeTrackerAddress) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        require(
+            poolData.controllers[msg.sender] =
+                true ||
+                msg.sender == poolData.governor,
+            "UNAUTHORIZED"
+        );
         poolData.feeTracker = _feeTrackerAddress;
     }
 
@@ -104,7 +121,12 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev set the multitoken that this pool will mint new tokens on. Must be a controller of the multitoken
      */
     function setMultiToken(address _multiTokenAddress) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        require(
+            poolData.controllers[msg.sender] =
+                true ||
+                msg.sender == poolData.governor,
+            "UNAUTHORIZED"
+        );
         poolData.multitoken = _multiTokenAddress;
     }
 
@@ -112,14 +134,22 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
      * @dev set the AMM swap helper that gets token prices
      */
     function setSwapHelper(address _swapHelperAddress) external override {
-        require(poolData.controllers[msg.sender] = true || msg.sender == poolData.governor, "UNAUTHORIZED");
+        require(
+            poolData.controllers[msg.sender] =
+                true ||
+                msg.sender == poolData.governor,
+            "UNAUTHORIZED"
+        );
         poolData.swapHelper = _swapHelperAddress;
     }
 
     /**
      * @dev mint the genesis gems earned by the pools creator and funder
      */
-    function mintGenesisGems(address _creatorAddress, address _funderAddress) external override {
+    function mintGenesisGems(address _creatorAddress, address _funderAddress)
+        external
+        override
+    {
         // security checks for this method are in the library - this
         // method  may only be  called one time per new pool creation
         poolData.mintGenesisGems(_creatorAddress, _funderAddress);
@@ -135,7 +165,11 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev create multiple claims with given timeframe
      */
-    function createClaims(uint256 _timeframe, uint256 _count) external payable override {
+    function createClaims(uint256 _timeframe, uint256 _count)
+        external
+        payable
+        override
+    {
         poolData.createClaims(_timeframe, _count);
     }
 
@@ -149,7 +183,10 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev create a claim using a erc20 token
      */
-    function createERC20Claim(address _erc20TokenAddress, uint256 _tokenAmount) external override {
+    function createERC20Claim(address _erc20TokenAddress, uint256 _tokenAmount)
+        external
+        override
+    {
         poolData.createERC20Claims(_erc20TokenAddress, _tokenAmount, 1);
     }
 
@@ -167,8 +204,10 @@ contract NFTComplexGemPool is NFTComplexGemPoolData, INFTComplexGemPool, ERC1155
     /**
      * @dev collect an open claim (take custody of the funds the claim is redeemable for and maybe a gem too)
      */
-    function collectClaim(uint256 _claimHash, bool _requireMature) external override {
+    function collectClaim(uint256 _claimHash, bool _requireMature)
+        external
+        override
+    {
         poolData.collectClaim(_claimHash, _requireMature);
     }
-
 }

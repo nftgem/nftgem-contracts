@@ -29,7 +29,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.7.3',
+        version: '0.8.0',
         settings: {
           optimizer: {
             enabled: true,
@@ -80,7 +80,7 @@ const config: HardhatUserConfig = {
       accounts: accounts('mainnet'),
       gasPrice: 'auto',
       gas: 'auto',
-      gasMultiplier: 1.5
+      gasMultiplier: 1.5,
     },
     rinkeby: {
       url: node_url('rinkeby'),
@@ -117,7 +117,7 @@ const config: HardhatUserConfig = {
       accounts: accounts('opera'),
       gasPrice: 'auto',
       gas: 'auto',
-      timeout:30000
+      timeout: 30000,
     },
     sokol: {
       url: node_url('sokol'),

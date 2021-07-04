@@ -1,23 +1,20 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "../interfaces/IERC20WrappedERC1155.sol";
 import "./WrappedTokenLib.sol";
 
 /**
-* @dev Wrap a single ERC1155 token hash into an ERC20 token.
-*/
+ * @dev Wrap a single ERC1155 token hash into an ERC20 token.
+ */
 contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
-    using SafeMath for uint256;
     using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
 
     WrappedTokenLib.WrappedTokenData internal tokenData;
@@ -61,11 +58,20 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
     function _wrap(uint256 quantity) internal {
         require(quantity != 0, "ZERO_QUANTITY");
         require(
-            IERC1155(tokenData.erc1155token).balanceOf(msg.sender, tokenData.index) >= quantity,
+            IERC1155(tokenData.erc1155token).balanceOf(
+                msg.sender,
+                tokenData.index
+            ) >= quantity,
             "INSUFFICIENT_ERC1155_BALANCE"
         );
-        IERC1155(tokenData.erc1155token).safeTransferFrom(msg.sender, address(this), tokenData.index, quantity, "");
-        _mint(msg.sender, quantity.mul(tokenData.rate * 10**decimals()));
+        IERC1155(tokenData.erc1155token).safeTransferFrom(
+            msg.sender,
+            address(this),
+            tokenData.index,
+            quantity,
+            ""
+        );
+        _mint(msg.sender, quantity * (tokenData.rate * 10**decimals()));
     }
 
     /**
@@ -81,12 +87,25 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
     function _unwrap(uint256 quantity) internal {
         require(quantity != 0, "ZERO_QUANTITY");
         require(
-            IERC1155(tokenData.erc1155token).balanceOf(address(this), tokenData.index) >= quantity,
+            IERC1155(tokenData.erc1155token).balanceOf(
+                address(this),
+                tokenData.index
+            ) >= quantity,
             "INSUFFICIENT_RESERVES"
         );
-        require(balanceOf(msg.sender) >= quantity.mul(tokenData.rate * 10**decimals()), "INSUFFICIENT_ERC20_BALANCE");
-        _burn(msg.sender, quantity.mul(tokenData.rate * 10**decimals()));
-        IERC1155(tokenData.erc1155token).safeTransferFrom(address(this), msg.sender, tokenData.index, quantity, "");
+        require(
+            balanceOf(msg.sender) >=
+                quantity * (tokenData.rate * 10**decimals()),
+            "INSUFFICIENT_ERC20_BALANCE"
+        );
+        _burn(msg.sender, quantity * (tokenData.rate * 10**decimals()));
+        IERC1155(tokenData.erc1155token).safeTransferFrom(
+            address(this),
+            msg.sender,
+            tokenData.index,
+            quantity,
+            ""
+        );
     }
 
     /**
@@ -100,7 +119,11 @@ contract ERC20WrappedERC1155 is ERC20, ERC1155Holder, IERC20WrappedERC1155 {
      * @dev get reserves held in wrapper
      */
     function getReserves() external view override returns (uint256) {
-        return IERC1155(tokenData.erc1155token).balanceOf(address(this), tokenData.index);
+        return
+            IERC1155(tokenData.erc1155token).balanceOf(
+                address(this),
+                tokenData.index
+            );
     }
 
     /**

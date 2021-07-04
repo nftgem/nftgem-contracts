@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
@@ -17,13 +17,15 @@ library GovernanceLib {
         string memory title
     ) public pure returns (address govAddress) {
         govAddress = address(
-            uint256(
-                keccak256(
-                    abi.encodePacked(
-                        hex"ff",
-                        factory,
-                        keccak256(abi.encodePacked(submitter, title)),
-                        hex"74f827a6bb3b7ed4cd86bd3c09b189a9496bc40d83635649e1e4df1c4e836ebf" // init code hash
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            hex"ff",
+                            factory,
+                            keccak256(abi.encodePacked(submitter, title)),
+                            hex"74f827a6bb3b7ed4cd86bd3c09b189a9496bc40d83635649e1e4df1c4e836ebf" // init code hash
+                        )
                     )
                 )
             )
@@ -33,19 +35,41 @@ library GovernanceLib {
     /**
      * @dev create vote tokens to vote on given proposal
      */
-    function createProposalVoteTokens(address multitoken, uint256 proposalHash) external {
-        for (uint256 i = 0; i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0); i++) {
-            address holder = INFTGemMultiToken(multitoken).allTokenHolders(0, i);
-            INFTGemMultiToken(multitoken).mint(holder, proposalHash, IERC1155(multitoken).balanceOf(holder, 0));
+    function createProposalVoteTokens(address multitoken, uint256 proposalHash)
+        external
+    {
+        for (
+            uint256 i = 0;
+            i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0);
+            i++
+        ) {
+            address holder = INFTGemMultiToken(multitoken).allTokenHolders(
+                0,
+                i
+            );
+            INFTGemMultiToken(multitoken).mint(
+                holder,
+                proposalHash,
+                IERC1155(multitoken).balanceOf(holder, 0)
+            );
         }
     }
 
     /**
      * @dev destroy the vote tokens for the given proposal
      */
-    function destroyProposalVoteTokens(address multitoken, uint256 proposalHash) external {
-        for (uint256 i = 0; i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0); i++) {
-            address holder = INFTGemMultiToken(multitoken).allTokenHolders(0, i);
+    function destroyProposalVoteTokens(address multitoken, uint256 proposalHash)
+        external
+    {
+        for (
+            uint256 i = 0;
+            i < INFTGemMultiToken(multitoken).allTokenHoldersLength(0);
+            i++
+        ) {
+            address holder = INFTGemMultiToken(multitoken).allTokenHolders(
+                0,
+                i
+            );
             INFTGemMultiToken(multitoken).burn(
                 holder,
                 proposalHash,
@@ -57,7 +81,10 @@ library GovernanceLib {
     /**
      * @dev execute craete pool proposal
      */
-    function execute(address factory, address proposalAddress) public returns (address newPool) {
+    function execute(address factory, address proposalAddress)
+        public
+        returns (address newPool)
+    {
         // get the data for the new pool from the proposal
         address proposalData = IProposal(proposalAddress).proposalData();
 
@@ -73,7 +100,17 @@ library GovernanceLib {
         ) = ICreatePoolProposalData(proposalData).data();
 
         // create the new pool
-        newPool = createPool(factory, symbol, name, ethPrice, minTime, maxTime, diffStep, maxClaims, allowedToken);
+        newPool = createPool(
+            factory,
+            symbol,
+            name,
+            ethPrice,
+            minTime,
+            maxTime,
+            diffStep,
+            maxClaims,
+            allowedToken
+        );
     }
 
     /**

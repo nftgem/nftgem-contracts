@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "../interfaces/IControllable.sol";
 
@@ -17,13 +17,25 @@ import "../governance/UpdateAllowlistProposalData.sol";
 
 import "./GovernanceLib.sol";
 
-
 library ProposalsLib {
     event GovernanceTokenIssued(address indexed receiver, uint256 amount);
     event FuelTokenIssued(address indexed receiver, uint256 amount);
-    event FeeUpdated(address indexed proposal, address indexed token, uint256 newFee);
-    event AllowList(address indexed proposal, address indexed pool, address indexed token, bool isBanned);
-    event ProjectFunded(address indexed proposal, address indexed receiver, uint256 received);
+    event FeeUpdated(
+        address indexed proposal,
+        address indexed token,
+        uint256 newFee
+    );
+    event AllowList(
+        address indexed proposal,
+        address indexed pool,
+        address indexed token,
+        bool isBanned
+    );
+    event ProjectFunded(
+        address indexed proposal,
+        address indexed receiver,
+        uint256 received
+    );
 
     // create a proposal and associate it with passed-in proposal data
     function associateProposal(
@@ -35,7 +47,12 @@ library ProposalsLib {
         string memory title,
         address data
     ) internal returns (address p) {
-        p = IProposalFactory(proposalFactory).createProposal(submitter, title, data, propType);
+        p = IProposalFactory(proposalFactory).createProposal(
+            submitter,
+            title,
+            data,
+            propType
+        );
         IProposal(p).setMultiToken(multitoken);
         IProposal(p).setGovernor(governor);
         IControllable(multitoken).addController(p);
@@ -57,7 +74,10 @@ library ProposalsLib {
         string memory descriptionUrl,
         uint256 ethAmount
     ) public returns (address) {
-        return address(new FundProjectProposalData(receiver, descriptionUrl, ethAmount));
+        return
+            address(
+                new FundProjectProposalData(receiver, descriptionUrl, ethAmount)
+            );
     }
 
     // create an allowlist modify proposal
@@ -72,38 +92,68 @@ library ProposalsLib {
     /**
      * @dev execute this proposal if it is in the right state. Anyone can execute a proposal
      */
-    function executeProposal(
-        address feeTracker,
-        address proposalAddress
-    ) external {
-
+    function executeProposal(address feeTracker, address proposalAddress)
+        external
+    {
         require(proposalAddress != address(0), "INVALID_PROPOSAL");
-        require(IProposal(proposalAddress).status() == IProposal.ProposalStatus.PASSED, "PROPOSAL_NOT_PASSED");
+        require(
+            IProposal(proposalAddress).status() ==
+                IProposal.ProposalStatus.PASSED,
+            "PROPOSAL_NOT_PASSED"
+        );
         address prop = IProposal(proposalAddress).proposalData();
         require(prop != address(0), "INVALID_PROPOSAL_DATA");
 
         // fund a project
-        if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.FUND_PROJECT) {
-            (address receiver, , uint256 amount) = IFundProjectProposalData(prop).data();
-            INFTGemFeeManager(feeTracker).transferEth(payable(receiver), amount);
-            emit ProjectFunded(address(proposalAddress), address(receiver), amount);
+        if (
+            IProposal(proposalAddress).proposalType() ==
+            IProposal.ProposalType.FUND_PROJECT
+        ) {
+            (address receiver, , uint256 amount) = IFundProjectProposalData(
+                prop
+            ).data();
+            INFTGemFeeManager(feeTracker).transferEth(
+                payable(receiver),
+                amount
+            );
+            emit ProjectFunded(
+                address(proposalAddress),
+                address(receiver),
+                amount
+            );
         }
         // change a fee
-        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.CHANGE_FEE) {
+        else if (
+            IProposal(proposalAddress).proposalType() ==
+            IProposal.ProposalType.CHANGE_FEE
+        ) {
             require(prop != address(0), "INVALID_PROPOSAL_DATA");
             address proposalData = IProposal(proposalAddress).proposalData();
-            (address token, address pool, uint256 feeDiv) = IChangeFeeProposalData(proposalData).data();
+            (
+                address token,
+                address pool,
+                uint256 feeDiv
+            ) = IChangeFeeProposalData(proposalData).data();
             require(feeDiv != 0, "INVALID_FEE");
-            if (token != address(0)) INFTGemFeeManager(feeTracker).setFeeDivisor(token, feeDiv);
-            if (pool != address(0)) INFTGemFeeManager(feeTracker).setFeeDivisor(pool, feeDiv);
+            if (token != address(0))
+                INFTGemFeeManager(feeTracker).setFeeDivisor(token, feeDiv);
+            if (pool != address(0))
+                INFTGemFeeManager(feeTracker).setFeeDivisor(pool, feeDiv);
             if (token == address(0) && pool == address(0)) {
                 INFTGemFeeManager(feeTracker).setDefaultFeeDivisor(feeDiv);
             }
         }
         // modify the allowlist
-        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.UPDATE_ALLOWLIST) {
+        else if (
+            IProposal(proposalAddress).proposalType() ==
+            IProposal.ProposalType.UPDATE_ALLOWLIST
+        ) {
             address proposalData = IProposal(proposalAddress).proposalData();
-            (address token, address pool, bool isAllowed) = IUpdateAllowlistProposalData(proposalData).data();
+            (
+                address token,
+                address pool,
+                bool isAllowed
+            ) = IUpdateAllowlistProposalData(proposalData).data();
             require(token != address(0), "INVALID_TOKEN");
             if (isAllowed) {
                 INFTComplexGemPoolData(pool).addAllowedToken(token);
@@ -112,6 +162,5 @@ library ProposalsLib {
                 INFTComplexGemPoolData(pool).removeAllowedToken(token);
             }
         }
-
     }
 }

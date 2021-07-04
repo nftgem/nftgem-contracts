@@ -27,7 +27,8 @@
     "@nomiclabs/hardhat-ganache": "^2.0.0",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@openzeppelin/contracts": "^3.4.1",
+    "@openzeppelin/contracts": "^4.2.0",
+    "@pancakeswap-libs/pancake-swap-core": "^0.1.0",
     "@typechain/ethers-v5": "^5.0.0",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
@@ -56,8 +57,8 @@
     "hardhat-watcher": "^2.0.0",
     "jshint": "^2.12.0",
     "mocha": "^8.1.1",
-    "prettier": "^2.0.5",
-    "prettier-plugin-solidity": "^1.0.0-alpha.57",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.1",
     "solhint-plugin-prettier": "^0.0.5",
     "terminal-kit": "^1.44.3",
@@ -100,7 +101,6 @@
     "mainnet:run": "cross-env HARDHAT_NETWORK=mainnet ts-node --files"
   },
   "dependencies": {
-    "@pancakeswap-libs/pancake-swap-core": "^0.1.0",
     "@pangolindex/exchange-contracts": "^1.0.1",
     "@uniswap/sdk": "^3.0.3",
     "pancakeswap-peripheral": "^1.1.0-beta.0"

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @dev Interface for a Bitgem staking pool
@@ -25,8 +25,8 @@ interface INFTGemPoolFactory {
      * @dev emitted when a new gem pool has been added to the system
      */
     event CustomNFTGemPoolCreated(
-        address indexed gemPoolAdress, 
-        string gemSymbol, 
+        address indexed gemPoolAdress,
+        string gemSymbol,
         string gemName
     );
 

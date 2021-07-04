@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "../interfaces/IControllable.sol";
 
@@ -28,14 +28,23 @@ abstract contract Controllable is IControllable {
     /**
      * @dev Add an address allowed to control this contract
      */
-    function addController(address _controller) external override onlyController {
+    function addController(address _controller)
+        external
+        override
+        onlyController
+    {
         _controllers[_controller] = true;
     }
 
     /**
      * @dev Check if this address is a controller
      */
-    function isController(address _address) external view override returns (bool allowed) {
+    function isController(address _address)
+        external
+        view
+        override
+        returns (bool allowed)
+    {
         allowed = _controllers[_address];
     }
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "./PangolinLib.sol";
 import "../../interfaces/ISwapQueryHelper.sol";
@@ -12,8 +12,10 @@ import "../../access/Controllable.sol";
 contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
     address private _routerAddress;
 
-    address public constant PANGOLIN_ROUTER_ADDRESS = 0xefa94DE7a4656D787667C749f7E1223D71E9FD88;
-    address public constant FUJI_PANGOLIN_ROUTER_ADDRESS = 0xE4A575550C2b460d2307b82dCd7aFe84AD1484dd;
+    address public constant PANGOLIN_ROUTER_ADDRESS =
+        0xefa94DE7a4656D787667C749f7E1223D71E9FD88;
+    address public constant FUJI_PANGOLIN_ROUTER_ADDRESS =
+        0xE4A575550C2b460d2307b82dCd7aFe84AD1484dd;
 
     constructor() {
         _routerAddress = PANGOLIN_ROUTER_ADDRESS;
@@ -59,7 +61,12 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
     /**
      * @dev looks for a pool vs weth
      */
-    function getPair(address tokenA, address tokenB) external view override returns (address pair) {
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        override
+        returns (address pair)
+    {
         address _factory = PangolinLib.factory();
         pair = PangolinLib.getPair(_factory, tokenA, tokenB);
     }
@@ -67,14 +74,24 @@ contract PangolinQueryHelper is ISwapQueryHelper, Controllable {
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(address pair) external view override returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair)
+        external
+        view
+        override
+        returns (uint256 reserveA, uint256 reserveB)
+    {
         (reserveA, reserveB) = PangolinLib.getReserves(pair);
     }
 
     /**
      * @dev Get a path for ethereum to the given token
      */
-    function getPathForCoinToToken(address token) external pure override returns (address[] memory) {
+    function getPathForCoinToToken(address token)
+        external
+        pure
+        override
+        returns (address[] memory)
+    {
         return PangolinLib.getPathForAVAXoToken(token);
     }
 

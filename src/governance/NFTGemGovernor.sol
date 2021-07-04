@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import "../access/Controllable.sol";
@@ -17,10 +16,7 @@ import "../interfaces/IProposalData.sol";
 import "../governance/GovernanceLib.sol";
 import "../governance/ProposalsLib.sol";
 
-
 contract NFTGemGovernor is Controllable, INFTGemGovernor {
-    using SafeMath for uint256;
-
     address private multitoken;
     address private factory;
     address private feeTracker;
@@ -105,21 +101,33 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     /**
      * @dev create proposal vote tokens
      */
-    function createProposalVoteTokens(uint256 proposalHash) external override onlyController {
+    function createProposalVoteTokens(uint256 proposalHash)
+        external
+        override
+        onlyController
+    {
         GovernanceLib.createProposalVoteTokens(multitoken, proposalHash);
     }
 
     /**
      * @dev destroy proposal vote tokens
      */
-    function destroyProposalVoteTokens(uint256 proposalHash) external override onlyController {
+    function destroyProposalVoteTokens(uint256 proposalHash)
+        external
+        override
+        onlyController
+    {
         GovernanceLib.destroyProposalVoteTokens(multitoken, proposalHash);
     }
 
     /**
      * @dev execute proposal
      */
-    function executeProposal(address propAddress) external override onlyController {
+    function executeProposal(address propAddress)
+        external
+        override
+        onlyController
+    {
         ProposalsLib.executeProposal(feeTracker, propAddress);
     }
 
@@ -128,7 +136,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
      */
     function issueInitialGovernanceTokens(address receiver) external override {
         require(!governanceIssued, "ALREADY_ISSUED");
-        INFTGemMultiToken(multitoken).mint(receiver, GOVERNANCE, GOV_TOKEN_INITIAL);
+        INFTGemMultiToken(multitoken).mint(
+            receiver,
+            GOVERNANCE,
+            GOV_TOKEN_INITIAL
+        );
         governanceIssued = true;
         emit GovernanceTokenIssued(receiver, GOV_TOKEN_INITIAL);
     }
@@ -204,7 +216,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
             allowedToken
         );
         // associate the pool with its relations
-        associatePool(IProposal(pool).creator(), IProposal(pool).funder(), pool);
+        associatePool(
+            IProposal(pool).creator(),
+            IProposal(pool).funder(),
+            pool
+        );
     }
 
     /**
@@ -217,7 +233,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         address pool,
         uint256 feeDivisor
     ) external override returns (address proposal) {
-        proposal = ProposalsLib.createChangeFeeProposal(token, pool, feeDivisor);
+        proposal = ProposalsLib.createChangeFeeProposal(
+            token,
+            pool,
+            feeDivisor
+        );
         ProposalsLib.associateProposal(
             address(this),
             multitoken,
@@ -239,7 +259,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         string memory descriptionUrl,
         uint256 ethAmount
     ) external override returns (address proposal) {
-        proposal = ProposalsLib.createFundProjectProposal(receiver, descriptionUrl, ethAmount);
+        proposal = ProposalsLib.createFundProjectProposal(
+            receiver,
+            descriptionUrl,
+            ethAmount
+        );
         ProposalsLib.associateProposal(
             address(this),
             multitoken,
@@ -261,7 +285,11 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         address pool,
         bool newStatus
     ) external override returns (address proposal) {
-        proposal = ProposalsLib.createUpdateAllowlistProposal(token, pool, newStatus);
+        proposal = ProposalsLib.createUpdateAllowlistProposal(
+            token,
+            pool,
+            newStatus
+        );
         ProposalsLib.associateProposal(
             address(this),
             multitoken,

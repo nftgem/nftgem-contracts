@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-pragma solidity >=0.7.0;
-
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "./ERC20Constructorless.sol";
 
@@ -19,18 +16,22 @@ import "../interfaces/INFTGemFeeManager.sol";
 import "./WrappedTokenLib.sol";
 
 /**
-* @dev Wraps a gem (erc1155 'gem' type issued by an NFTGemPool) into erc1155
-*/
-contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGem, Initializable {
-    using SafeMath for uint256;
+ * @dev Wraps a gem (erc1155 'gem' type issued by an NFTGemPool) into erc1155
+ */
+contract ERC20WrappedGem is
+    ERC20Constructorless,
+    ERC1155Holder,
+    IERC20WrappedGem,
+    Initializable
+{
     using WrappedTokenLib for WrappedTokenLib.WrappedTokenData;
     address internal _feeManager;
 
     WrappedTokenLib.WrappedTokenData internal tokenData;
 
     /**
-    * @dev initialize contract state
-    */
+     * @dev initialize contract state
+     */
     function initialize(
         string memory name,
         string memory symbol,
@@ -65,15 +66,15 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
             ) >= quantity,
             "INSUFFICIENT_QUANTITY"
         );
-        uint256 tq = quantity.mul(tokenData.rate * 10**decimals());
+        uint256 tq = quantity * (tokenData.rate * 10**decimals());
         uint256 fd = INFTGemFeeManager(_feeManager).feeDivisor(address(this));
-        uint256 fee = fd != 0 ? tq.div(fd) : 0;
-        uint256 userQty = tq.sub(fee);
+        uint256 fee = fd != 0 ? tq / fd : 0;
+        uint256 userQty = tq - fee;
 
         tokenData.transferPoolTypesFrom(msg.sender, address(this), quantity);
         _mint(msg.sender, userQty);
         _mint(_feeManager, fee);
-        tokenData.wrappedBalance = tokenData.wrappedBalance.add(quantity);
+        tokenData.wrappedBalance = tokenData.wrappedBalance + quantity;
 
         emit Wrap(msg.sender, quantity);
     }
@@ -83,11 +84,14 @@ contract ERC20WrappedGem is ERC20Constructorless, ERC1155Holder, IERC20WrappedGe
      */
     function unwrap(uint256 quantity) external override {
         require(quantity != 0, "ZERO_QUANTITY");
-        require(balanceOf(msg.sender).mul(10**decimals()) >= quantity, "INSUFFICIENT_QUANTITY");
+        require(
+            balanceOf(msg.sender) * (10**decimals()) >= quantity,
+            "INSUFFICIENT_QUANTITY"
+        );
 
         tokenData.transferPoolTypesFrom(address(this), msg.sender, quantity);
-        _burn(msg.sender, quantity.mul(10**decimals()));
-        tokenData.wrappedBalance = tokenData.wrappedBalance.sub(quantity);
+        _burn(msg.sender, quantity * (10**decimals()));
+        tokenData.wrappedBalance = tokenData.wrappedBalance - (quantity);
 
         emit Unwrap(msg.sender, quantity);
     }

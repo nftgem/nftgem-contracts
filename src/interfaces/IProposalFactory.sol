@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
-
+pragma solidity >=0.8.0;
 
 import "./IProposal.sol";
 
@@ -12,9 +11,17 @@ interface IProposalFactory {
     /**
      * @dev emitted when a new gem pool proposal has been added to the system
      */
-    event ProposalCreated(address creator, uint256 proposalType, address proposal);
+    event ProposalCreated(
+        address creator,
+        uint256 proposalType,
+        address proposal
+    );
 
-    event ProposalFunded(uint256 indexed proposalHash, address indexed funder, uint256 expDate);
+    event ProposalFunded(
+        uint256 indexed proposalHash,
+        address indexed funder,
+        uint256 expDate
+    );
 
     event ProposalExecuted(uint256 indexed proposalHash, address pool);
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 
@@ -22,7 +22,12 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
     /**
      * @dev get the quantized token for this
      */
-    function getNFTGemPool(uint256 _symbolHash) external view override returns (address gemPool) {
+    function getNFTGemPool(uint256 _symbolHash)
+        external
+        view
+        override
+        returns (address gemPool)
+    {
         gemPool = _getNFTGemPool[_symbolHash];
     }
 
@@ -36,7 +41,12 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
     /**
      * @dev get the quantized token for this
      */
-    function allNFTGemPools(uint256 idx) external view override returns (address gemPool) {
+    function allNFTGemPools(uint256 idx)
+        external
+        view
+        override
+        returns (address gemPool)
+    {
         gemPool = _allNFTGemPools[idx];
     }
 
@@ -136,7 +146,17 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         _allNFTGemPools.push(gemPool);
 
         // emit an event about the new pool being created
-        emit NFTGemPoolCreated(gemPool, gemSymbol, gemName, ethPrice, minTime, maxTime, diffstep, maxMint, allowedToken);
+        emit NFTGemPoolCreated(
+            gemPool,
+            gemSymbol,
+            gemName,
+            ethPrice,
+            minTime,
+            maxTime,
+            diffstep,
+            maxMint,
+            allowedToken
+        );
     }
 
     /**
@@ -150,7 +170,8 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
                 if (_allNFTGemPools.length == 1) {
                     delete _allNFTGemPools;
                 } else {
-                    _allNFTGemPools[i] == _allNFTGemPools[_allNFTGemPools.length - 1];
+                    _allNFTGemPools[i] ==
+                        _allNFTGemPools[_allNFTGemPools.length - 1];
                     delete _allNFTGemPools[_allNFTGemPools.length - 1];
                 }
             }

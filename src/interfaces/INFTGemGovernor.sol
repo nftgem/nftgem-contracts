@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
 interface INFTGemGovernor {
     event GovernanceTokenIssued(address indexed receiver, uint256 amount);
-    event FeeUpdated(address indexed proposal, address indexed token, uint256 newFee);
-    event AllowList(address indexed proposal, address indexed token, bool isBanned);
-    event ProjectFunded(address indexed proposal, address indexed receiver, uint256 received);
+    event FeeUpdated(
+        address indexed proposal,
+        address indexed token,
+        uint256 newFee
+    );
+    event AllowList(
+        address indexed proposal,
+        address indexed token,
+        bool isBanned
+    );
+    event ProjectFunded(
+        address indexed proposal,
+        address indexed receiver,
+        uint256 received
+    );
     event StakingPoolCreated(
         address indexed proposal,
         address indexed pool,

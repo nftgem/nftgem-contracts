@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
@@ -10,7 +10,8 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
  * @dev Uniswap helpers
  */
 library SushiSwapLib {
-    address public constant UNISWAP_ROUTER_ADDRESS = 0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506;
+    address public constant UNISWAP_ROUTER_ADDRESS =
+        0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506;
 
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
@@ -24,7 +25,9 @@ library SushiSwapLib {
             uint256 ethReserve
         )
     {
-        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);
+        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(
+            UNISWAP_ROUTER_ADDRESS
+        );
         address _factory = uniswapRouter.factory();
         address _WETH = uniswapRouter.WETH();
         address _pair = IUniswapV2Factory(_factory).getPair(token, _WETH);
@@ -50,7 +53,9 @@ library SushiSwapLib {
      * @dev does a Uniswap pool exist for this token?
      */
     function hasPool(address token) external view returns (bool) {
-        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);
+        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(
+            UNISWAP_ROUTER_ADDRESS
+        );
         address _factory = uniswapRouter.factory();
         address _WETH = uniswapRouter.WETH();
         address _pair = IUniswapV2Factory(_factory).getPair(token, _WETH);
@@ -73,7 +78,11 @@ library SushiSwapLib {
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(address pair) external view returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair)
+        external
+        view
+        returns (uint256 reserveA, uint256 reserveB)
+    {
         (reserveA, reserveB, ) = IUniswapV2Pair(pair).getReserves();
     }
 
@@ -87,13 +96,15 @@ library SushiSwapLib {
     ) external pure returns (address pair) {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
         pair = address(
-            uint256(
-                keccak256(
-                    abi.encodePacked(
-                        hex"ff",
-                        _factory,
-                        keccak256(abi.encodePacked(token0, token1)),
-                        hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            hex"ff",
+                            _factory,
+                            keccak256(abi.encodePacked(token0, token1)),
+                            hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
+                        )
                     )
                 )
             )
@@ -103,8 +114,14 @@ library SushiSwapLib {
     /**
      * @dev Get a path for ethereum to the given token
      */
-    function getPathForETHToToken(address token) external pure returns (address[] memory) {
-        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);
+    function getPathForETHToToken(address token)
+        external
+        pure
+        returns (address[] memory)
+    {
+        IUniswapV2Router02 uniswapRouter = IUniswapV2Router02(
+            UNISWAP_ROUTER_ADDRESS
+        );
         address[] memory path = new address[](2);
         path[0] = token;
         path[1] = uniswapRouter.WETH();
@@ -127,9 +144,15 @@ library SushiSwapLib {
     /**
      * @dev returns sorted token addresses, used to handle return values from pairs sorted in this order
      */
-    function sortTokens(address tokenA, address tokenB) internal pure returns (address token0, address token1) {
+    function sortTokens(address tokenA, address tokenB)
+        internal
+        pure
+        returns (address token0, address token1)
+    {
         require(tokenA != tokenB, "Price: IDENTICAL_ADDRESSES");
-        (token0, token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+        (token0, token1) = tokenA < tokenB
+            ? (tokenA, tokenB)
+            : (tokenB, tokenA);
         require(token0 != address(0), "Price: ZERO_ADDRESS");
     }
 }

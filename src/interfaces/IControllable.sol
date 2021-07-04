@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 interface IControllable {
-    event ControllerAdded(address indexed contractAddress, address indexed controllerAddress);
-    event ControllerRemoved(address indexed contractAddress, address indexed controllerAddress);
+    event ControllerAdded(
+        address indexed contractAddress,
+        address indexed controllerAddress
+    );
+    event ControllerRemoved(
+        address indexed contractAddress,
+        address indexed controllerAddress
+    );
 
     function addController(address controller) external;
 

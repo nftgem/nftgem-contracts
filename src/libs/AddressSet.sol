@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @notice Key sets with enumeration and delete. Uses mappings for random
@@ -23,7 +23,10 @@ library AddressSet {
      * @param key value to insert.
      */
     function insert(Set storage self, address key) internal {
-        require(!exists(self, key), "AddressSet: key already exists in the set.");
+        require(
+            !exists(self, key),
+            "AddressSet: key already exists in the set."
+        );
         self.keyList.push(key);
         self.keyPointers[key] = self.keyList.length - 1;
     }
@@ -35,7 +38,10 @@ library AddressSet {
      * @param key value to remove.
      */
     function remove(Set storage self, address key) internal {
-        require(exists(self, key), "AddressSet: key does not exist in the set.");
+        require(
+            exists(self, key),
+            "AddressSet: key does not exist in the set."
+        );
         uint256 last = count(self) - 1;
         uint256 rowToReplace = self.keyPointers[key];
         if (rowToReplace != last) {
@@ -61,7 +67,11 @@ library AddressSet {
      * @param key value to check.
      * @return bool true: Set member, false: not a Set member.
      */
-    function exists(Set storage self, address key) internal view returns (bool) {
+    function exists(Set storage self, address key)
+        internal
+        view
+        returns (bool)
+    {
         if (self.keyList.length == 0) return false;
         return self.keyList[self.keyPointers[key]] == key;
     }
@@ -71,7 +81,11 @@ library AddressSet {
      * @param self storage pointer to a Set.
      * @param index row to enumerate. Must be < count() - 1.
      */
-    function keyAtIndex(Set storage self, uint256 index) internal view returns (address) {
+    function keyAtIndex(Set storage self, uint256 index)
+        internal
+        view
+        returns (address)
+    {
         return self.keyList[index];
     }
 }

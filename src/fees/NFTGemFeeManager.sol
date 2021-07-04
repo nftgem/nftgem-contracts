@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../access/Controllable.sol";
 import "../interfaces/INFTGemFeeManager.sol";
-
 
 contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     address private operator;
@@ -45,7 +44,12 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     /**
      * @dev Get the default liquidity for the specified token
      */
-    function defaultLiquidity() external view override returns (uint256 multiplier) {
+    function defaultLiquidity()
+        external
+        view
+        override
+        returns (uint256 multiplier)
+    {
         return _defaultLiquidity;
     }
 
@@ -67,7 +71,12 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     /**
      * @dev Get the fee divisor for the specified token
      */
-    function feeDivisor(address token) external view override returns (uint256 divisor) {
+    function feeDivisor(address token)
+        external
+        view
+        override
+        returns (uint256 divisor)
+    {
         divisor = feeDivisors[token];
         divisor = divisor == 0 ? FEE_DIVISOR : divisor;
     }
@@ -75,14 +84,24 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     /**
      * @dev Get the default fee divisor for the specified token
      */
-    function defaultFeeDivisor() external view override returns (uint256 multiplier) {
+    function defaultFeeDivisor()
+        external
+        view
+        override
+        returns (uint256 multiplier)
+    {
         return _defaultFeeDivisor;
     }
 
     /**
      * @dev Set the default fee divisor for the specified token
      */
-    function setDefaultFeeDivisor(uint256 _feeDivisor) external override onlyController returns (uint256 oldDivisor) {
+    function setDefaultFeeDivisor(uint256 _feeDivisor)
+        external
+        override
+        onlyController
+        returns (uint256 oldDivisor)
+    {
         require(_feeDivisor != 0, "DIVISIONBYZERO");
         oldDivisor = _defaultFeeDivisor;
         _defaultFeeDivisor = _feeDivisor;
@@ -121,7 +140,11 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     /**
      * @dev transfer ETH from this contract to the to given recipient
      */
-    function transferEth(address payable recipient, uint256 amount) external override onlyController {
+    function transferEth(address payable recipient, uint256 amount)
+        external
+        override
+        onlyController
+    {
         require(address(this).balance >= amount, "INSUFFICIENT_BALANCE");
         recipient.transfer(amount);
     }
@@ -134,7 +157,10 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
         address recipient,
         uint256 amount
     ) external override onlyController {
-        require(IERC20(token).balanceOf(address(this)) >= amount, "INSUFFICIENT_BALANCE");
+        require(
+            IERC20(token).balanceOf(address(this)) >= amount,
+            "INSUFFICIENT_BALANCE"
+        );
         IERC20(token).transfer(recipient, amount);
     }
 }

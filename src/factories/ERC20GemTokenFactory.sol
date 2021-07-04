@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -25,7 +25,12 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
     /**
      * @dev get the quantized token for this
      */
-    function getItem(uint256 _symbolHash) external view override returns (address gemPool) {
+    function getItem(uint256 _symbolHash)
+        external
+        view
+        override
+        returns (address gemPool)
+    {
         gemPool = _getItem[_symbolHash];
     }
 
@@ -39,7 +44,12 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
     /**
      * @dev get the quantized token for this
      */
-    function allItems(uint256 idx) external view override returns (address gemPool) {
+    function allItems(uint256 idx)
+        external
+        view
+        override
+        returns (address gemPool)
+    {
         gemPool = _allItems[idx];
     }
 
@@ -73,13 +83,25 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
         gemToken = payable(Create2.deploy(0, salt, bytecode));
 
         // initialize the erc20 contract with the relevant addresses which it proxies
-        IERC20WrappedGem(gemToken).initialize(tokenName, tokenSymbol, poolAddress, tokenAddress, decimals, feeManager);
+        IERC20WrappedGem(gemToken).initialize(
+            tokenName,
+            tokenSymbol,
+            poolAddress,
+            tokenAddress,
+            decimals,
+            feeManager
+        );
 
         // insert the erc20 contract address into lists - one that maps source to quantized,
         _getItem[uint256(salt)] = gemToken;
         _allItems.push(gemToken);
 
         // emit an event about the new pool being created
-        emit ERC20GemTokenCreated(gemToken, poolAddress, tokenSymbol, ERC20(gemToken).symbol());
+        emit ERC20GemTokenCreated(
+            gemToken,
+            poolAddress,
+            tokenSymbol,
+            ERC20(gemToken).symbol()
+        );
     }
 }

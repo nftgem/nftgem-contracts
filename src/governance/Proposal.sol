@@ -1,23 +1,17 @@
 // SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-pragma solidity >=0.7.0;
-
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "@openzeppelin/contracts/proxy/Initializable.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IProposalFactory.sol";
 
-
 contract Proposal is Initializable, ERC1155Holder, IProposal {
-    using SafeMath for uint256;
-
     uint256 private constant MONTH = 2592000;
     uint256 private constant PROPOSAL_COST = 1 ether;
 
@@ -82,17 +76,30 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
         } else if (_closed) {
             curCtatus = ProposalStatus.CLOSED;
         } else {
-            uint256 totalVotesSupply = INFTGemMultiToken(_multitoken).totalBalances(uint256(address(this)));
-            uint256 totalVotesInFavor = IERC1155(_multitoken).balanceOf(address(this), uint256(address(this)));
-            uint256 votesToPass = totalVotesSupply.div(2).add(1);
-            curCtatus = totalVotesInFavor >= votesToPass ? ProposalStatus.PASSED : ProposalStatus.ACTIVE;
+            uint256 totalVotesSupply = INFTGemMultiToken(_multitoken)
+            .totalBalances(uint256(uint160(address(this))));
+            uint256 totalVotesInFavor = IERC1155(_multitoken).balanceOf(
+                address(this),
+                uint256(uint160(address(this)))
+            );
+            uint256 votesToPass = totalVotesSupply / (2) + (1);
+            curCtatus = totalVotesInFavor >= votesToPass
+                ? ProposalStatus.PASSED
+                : ProposalStatus.ACTIVE;
             if (block.timestamp > _expiration) {
-                curCtatus = totalVotesInFavor >= votesToPass ? ProposalStatus.PASSED : ProposalStatus.FAILED;
+                curCtatus = totalVotesInFavor >= votesToPass
+                    ? ProposalStatus.PASSED
+                    : ProposalStatus.FAILED;
             }
         }
     }
 
-    function status() external view override returns (ProposalStatus curCtatus) {
+    function status()
+        external
+        view
+        override
+        returns (ProposalStatus curCtatus)
+    {
         curCtatus = _status();
     }
 
@@ -117,12 +124,16 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
         _funder = msg.sender;
 
         // create the vote tokens that will be used to vote on the proposal.
-        INFTGemGovernor(_governor).createProposalVoteTokens(uint256(address(this)));
+        INFTGemGovernor(_governor).createProposalVoteTokens(
+            uint256(uint160(address(this)))
+        );
 
         // check for overpayment and if found then return remainder to user
-        uint256 overpayAmount = msg.value.sub(PROPOSAL_COST);
+        uint256 overpayAmount = msg.value - (PROPOSAL_COST);
         if (overpayAmount > 0) {
-            (bool success, ) = payable(msg.sender).call{value: overpayAmount}("");
+            (bool success, ) = payable(msg.sender).call{value: overpayAmount}(
+                ""
+            );
             require(success, "REFUND_FAILED");
         }
     }
@@ -141,7 +152,9 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
         _executed = true;
 
         // dewstroy the now-useless vote tokens used to vote for this proposal
-        INFTGemGovernor(_governor).destroyProposalVoteTokens(uint256(address(this)));
+        INFTGemGovernor(_governor).destroyProposalVoteTokens(
+            uint256(uint160(address(this)))
+        );
 
         // refurn the filing fee to the funder of the proposal
         (bool success, ) = _funder.call{value: PROPOSAL_COST}("");
@@ -160,7 +173,9 @@ contract Proposal is Initializable, ERC1155Holder, IProposal {
         _closed = true;
 
         // destroy the now-useless vote tokens used to vote for this proposal
-        INFTGemGovernor(_governor).destroyProposalVoteTokens(uint256(address(this)));
+        INFTGemGovernor(_governor).destroyProposalVoteTokens(
+            uint256(uint160(address(this)))
+        );
 
         // send the proposal funder their filing fee back
         (bool success, ) = _funder.call{value: PROPOSAL_COST}("");

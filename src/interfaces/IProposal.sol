@@ -1,14 +1,26 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @dev Interface for a Bitgem staking pool
  */
 interface IProposal {
-    enum ProposalType {CREATE_POOL, FUND_PROJECT, CHANGE_FEE, UPDATE_ALLOWLIST}
+    enum ProposalType {
+        CREATE_POOL,
+        FUND_PROJECT,
+        CHANGE_FEE,
+        UPDATE_ALLOWLIST
+    }
 
-    enum ProposalStatus {NOT_FUNDED, ACTIVE, PASSED, FAILED, EXECUTED, CLOSED}
+    enum ProposalStatus {
+        NOT_FUNDED,
+        ACTIVE,
+        PASSED,
+        FAILED,
+        EXECUTED,
+        CLOSED
+    }
 
     event ProposalCreated(address creator, address pool, uint256 proposalHash);
 

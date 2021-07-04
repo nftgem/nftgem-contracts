@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Pausable.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Pausable.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "../libs/Strings.sol";
 import "../libs/AddressSet.sol";
@@ -15,20 +13,22 @@ import "../access/Controllable.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 
 /**
-* @dev ProxyContract placeholder - the proxy delegate
-*/
-contract OwnableDelegateProxy {}
+ * @dev ProxyContract placeholder - the proxy delegate
+ */
+contract OwnableDelegateProxy {
+
+}
 
 /**
-* @dev a registry of proxies
-*/
+ * @dev a registry of proxies
+ */
 contract ProxyRegistry {
     mapping(address => OwnableDelegateProxy) public proxies;
 }
 
 /**
-* @dev a mock object for testing
-*/
+ * @dev a mock object for testing
+ */
 contract MockProxyRegistry {
     function proxies(address input) external pure returns (address) {
         return input;
@@ -36,13 +36,17 @@ contract MockProxyRegistry {
 }
 
 /**
-* @dev the primary multitoken contract
-*/
-contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, Controllable {
+ * @dev the primary multitoken contract
+ */
+contract NFTGemMultiToken is
+    ERC1155Pausable,
+    ERC1155Holder,
+    INFTGemMultiToken,
+    Controllable
+{
     using AddressSet for AddressSet.Set;
     using UInt256Set for UInt256Set.Set;
 
-    using SafeMath for uint256;
     using Strings for string;
 
     // proxy registries for exchanges to enable no-fee trading
@@ -72,6 +76,22 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     }
 
     /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC1155, ERC1155Receiver)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC1155).interfaceId ||
+            interfaceId == type(IERC1155MetadataURI).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
+
+    /**
      * @dev timelock the tokens from moving until the given time
      */
     function lock(uint256 token, uint256 timestamp) external override {
@@ -82,74 +102,131 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev unlock time for token / id
      */
-    function unlockTime(address account, uint256 token) external view override returns (uint256 theTime) {
+    function unlockTime(address account, uint256 token)
+        external
+        view
+        override
+        returns (uint256 theTime)
+    {
         theTime = _tokenLocks[account][token];
     }
 
     /**
      * @dev Returns the metadata URI for this token type
      */
-    function uri(uint256 _id) public view override(ERC1155) returns (string memory) {
+    function uri(uint256 _id)
+        public
+        view
+        override(ERC1155)
+        returns (string memory)
+    {
         // the URI override is here to support IPFS addresses - we need to do the
         // id concat here because IPFS can't do it. This makes this call take a little
         // longer but the advantage is that the call returns an already-formed URI
-        require(_totalBalances[_id] != 0, "NFTGemMultiToken#uri: NONEXISTENT_TOKEN");
-        return Strings.strConcat(ERC1155Pausable(this).uri(_id), Strings.uint2str(_id));
+        require(
+            _totalBalances[_id] != 0,
+            "NFTGemMultiToken#uri: NONEXISTENT_TOKEN"
+        );
+        return
+            Strings.strConcat(
+                ERC1155Pausable(this).uri(_id),
+                Strings.uint2str(_id)
+            );
     }
 
     /**
      * @dev returns an array of held tokens for the token holder
      */
-    function heldTokens(address holder) external view override returns (uint256[] memory) {
+    function heldTokens(address holder)
+        external
+        view
+        override
+        returns (uint256[] memory)
+    {
         return _heldTokens[holder].keyList;
     }
 
     /**
      * @dev held token at index for token holder
      */
-    function allHeldTokens(address holder, uint256 _idx) external view override returns (uint256) {
+    function allHeldTokens(address holder, uint256 _idx)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _heldTokens[holder].keyList[_idx];
     }
 
     /**
      * @dev Returns the count of held tokens for the token holder
      */
-    function allHeldTokensLength(address holder) external view override returns (uint256) {
+    function allHeldTokensLength(address holder)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _heldTokens[holder].keyList.length;
     }
 
     /**
      * @dev Returns an array of token holders for the given token id
      */
-    function tokenHolders(uint256 _token) external view override returns (address[] memory) {
+    function tokenHolders(uint256 _token)
+        external
+        view
+        override
+        returns (address[] memory)
+    {
         return _tokenHolders[_token].keyList;
     }
 
     /**
      * @dev  token holder at index for token id
      */
-    function allTokenHolders(uint256 _token, uint256 _idx) external view override returns (address) {
+    function allTokenHolders(uint256 _token, uint256 _idx)
+        external
+        view
+        override
+        returns (address)
+    {
         return _tokenHolders[_token].keyList[_idx];
     }
 
     /**
      * @dev Returns the count of token holders for the held token
      */
-    function allTokenHoldersLength(uint256 _token) external view override returns (uint256) {
+    function allTokenHoldersLength(uint256 _token)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _tokenHolders[_token].keyList.length;
     }
 
     /**
      * @dev Returns the total balance minted of this type
      */
-    function totalBalances(uint256 _id) external view override returns (uint256) {
+    function totalBalances(uint256 _id)
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _totalBalances[_id];
     }
 
     /**
      * @dev Returns proxy registry at index
      */
-    function allProxyRegistries(uint256 _idx) external view override returns (address) {
+    function allProxyRegistries(uint256 _idx)
+        external
+        view
+        override
+        returns (address)
+    {
         return proxyRegistries.keyList[_idx];
     }
 
@@ -172,7 +249,12 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev a count of proxy registries
      */
-    function allProxyRegistriesLength() external view override returns (uint256) {
+    function allProxyRegistriesLength()
+        external
+        view
+        override
+        returns (uint256)
+    {
         return proxyRegistries.keyList.length;
     }
 
@@ -180,7 +262,10 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev add a proxy registry to the list
      */
     function addProxyRegistry(address registry) external override {
-        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
+        require(
+            msg.sender == registryManager || _controllers[msg.sender] == true,
+            "UNAUTHORIZED"
+        );
         proxyRegistries.insert(registry);
     }
 
@@ -188,7 +273,10 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
      * @dev remove the proxy registry from the list at index
      */
     function removeProxyRegistryAt(uint256 index) external override {
-        require(msg.sender == registryManager || _controllers[msg.sender] == true, "UNAUTHORIZED");
+        require(
+            msg.sender == registryManager || _controllers[msg.sender] == true,
+            "UNAUTHORIZED"
+        );
         require(index < proxyRegistries.keyList.length, "INVALID_INDEX");
         proxyRegistries.remove(proxyRegistries.keyList[index]);
     }
@@ -196,11 +284,20 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev override base functionality to check proxy registries for approvers
      */
-    function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
+    function isApprovedForAll(address _owner, address _operator)
+        public
+        view
+        override
+        returns (bool isOperator)
+    {
         // Whitelist OpenSea proxy contract for easy trading.
         for (uint256 i = 0; i < proxyRegistries.keyList.length; i++) {
-            ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistries.keyList[i]);
-            try proxyRegistry.proxies(_owner) returns (OwnableDelegateProxy thePr) {
+            ProxyRegistry proxyRegistry = ProxyRegistry(
+                proxyRegistries.keyList[i]
+            );
+            try proxyRegistry.proxies(_owner) returns (
+                OwnableDelegateProxy thePr
+            ) {
                 if (address(thePr) == _operator) {
                     return true;
                 }
@@ -228,7 +325,7 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         address to,
         uint256[] memory ids,
         uint256[] memory amounts
-    )  external override onlyController {
+    ) external override onlyController {
         _mintBatch(to, ids, amounts, "0x0");
     }
 
@@ -258,7 +355,12 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
     /**
      * @dev get the token data for this token tokenhash
      */
-    function getTokenData(uint256 tokenHash) external view override returns (INFTGemMultiToken.TokenType tokenType, address tokenPool) {
+    function getTokenData(uint256 tokenHash)
+        external
+        view
+        override
+        returns (INFTGemMultiToken.TokenType tokenType, address tokenPool)
+    {
         tokenType = _tokenTypes[tokenHash];
         tokenPool = _tokenPools[tokenHash];
     }
@@ -336,7 +438,10 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
         for (uint256 i = 0; i < ids.length; i++) {
             // prevent send if tokens are locked
             if (from != address(0)) {
-                require(_tokenLocks[from][ids[i]] <= block.timestamp, "TOKEN_LOCKED");
+                require(
+                    _tokenLocks[from][ids[i]] <= block.timestamp,
+                    "TOKEN_LOCKED"
+                );
             }
 
             // if this is not a mint then remove the held token id from lists if
@@ -357,10 +462,14 @@ contract NFTGemMultiToken is ERC1155Pausable, ERC1155Holder, INFTGemMultiToken, 
 
             // inc and dec balances for each token type
             if (from == address(0)) {
-                _totalBalances[uint256(ids[i])] = _totalBalances[uint256(ids[i])].add(amounts[i]);
+                _totalBalances[uint256(ids[i])] =
+                    _totalBalances[uint256(ids[i])] +
+                    (amounts[i]);
             }
             if (to == address(0)) {
-                _totalBalances[uint256(ids[i])] = _totalBalances[uint256(ids[i])].sub(amounts[i]);
+                _totalBalances[uint256(ids[i])] =
+                    _totalBalances[uint256(ids[i])] -
+                    (amounts[i]);
             }
         }
     }
