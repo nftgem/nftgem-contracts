@@ -2,14 +2,18 @@
 
 pragma solidity >=0.7.0;
 
-import "../utils/Initializable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
+import "@openzeppelin/contracts/proxy/Initializable.sol";
+
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemGovernor.sol";
-import "../interfaces/IERC1155.sol";
 import "../interfaces/IProposal.sol";
 import "../interfaces/IProposalFactory.sol";
-import "../tokens/ERC1155Holder.sol";
-import "../libs/SafeMath.sol";
+
 
 contract Proposal is Initializable, ERC1155Holder, IProposal {
     using SafeMath for uint256;

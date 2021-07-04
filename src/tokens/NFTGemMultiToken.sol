@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
+import "@openzeppelin/contracts/token/ERC1155/ERC1155Pausable.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+
+import "../libs/Strings.sol";
 import "../libs/AddressSet.sol";
 import "../libs/UInt256Set.sol";
-import "../libs/Strings.sol";
-import "../libs/SafeMath.sol";
-import "./ERC1155Pausable.sol";
-import "./ERC1155Holder.sol";
+
 import "../access/Controllable.sol";
+
 import "../interfaces/INFTGemMultiToken.sol";
 
 /**

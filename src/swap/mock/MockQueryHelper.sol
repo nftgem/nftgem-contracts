@@ -2,8 +2,9 @@
 
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
 import "../../interfaces/ISwapQueryHelper.sol";
-import "../../libs/SafeMath.sol";
 
 /**
  * @dev Mock helper for local network

@@ -2,18 +2,21 @@
 pragma solidity >=0.7.0;
 
 import "../interfaces/IControllable.sol";
+
 import "../interfaces/IProposalFactory.sol";
 import "../interfaces/IProposal.sol";
+
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
+
 import "../governance/ChangeFeeProposalData.sol";
-import "../governance/CreatePoolProposalData.sol";
 import "../governance/FundProjectProposalData.sol";
 import "../governance/UpdateAllowlistProposalData.sol";
 
 import "./GovernanceLib.sol";
+
 
 library ProposalsLib {
     event GovernanceTokenIssued(address indexed receiver, uint256 amount);
@@ -37,23 +40,6 @@ library ProposalsLib {
         IProposal(p).setGovernor(governor);
         IControllable(multitoken).addController(p);
         IControllable(governor).addController(p);
-    }
-
-    // create a new pool proposal
-    function createNewPoolProposal(
-        string memory symbol,
-        string memory name,
-        uint256 ethPrice,
-        uint256 minTime,
-        uint256 maxTime,
-        uint256 diffStep,
-        uint256 maxClaims,
-        address allowedToken
-    ) public returns (address) {
-        return
-            address(
-                new CreatePoolProposalData(symbol, name, ethPrice, minTime, maxTime, diffStep, maxClaims, allowedToken)
-            );
     }
 
     // create a fee change proposal
@@ -87,34 +73,17 @@ library ProposalsLib {
      * @dev execute this proposal if it is in the right state. Anyone can execute a proposal
      */
     function executeProposal(
-        address multitoken,
-        address factory,
-        address governor,
         address feeTracker,
-        address swapHelper,
         address proposalAddress
     ) external {
+
         require(proposalAddress != address(0), "INVALID_PROPOSAL");
         require(IProposal(proposalAddress).status() == IProposal.ProposalStatus.PASSED, "PROPOSAL_NOT_PASSED");
         address prop = IProposal(proposalAddress).proposalData();
         require(prop != address(0), "INVALID_PROPOSAL_DATA");
 
-        // craete a new NFT mining pool
-        if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.CREATE_POOL) {
-            address pool = GovernanceLib.execute(factory, proposalAddress);
-            IControllable(multitoken).addController(pool);
-            IControllable(governor).addController(pool);
-            INFTComplexGemPool(pool).setMultiToken(multitoken);
-            INFTComplexGemPool(pool).setSwapHelper(swapHelper);
-            INFTComplexGemPool(pool).setGovernor(address(this));
-            INFTComplexGemPool(pool).setFeeTracker(feeTracker);
-            INFTComplexGemPool(pool).mintGenesisGems(
-                IProposal(proposalAddress).creator(),
-                IProposal(proposalAddress).funder()
-            );
-        }
         // fund a project
-        else if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.FUND_PROJECT) {
+        if (IProposal(proposalAddress).proposalType() == IProposal.ProposalType.FUND_PROJECT) {
             (address receiver, , uint256 amount) = IFundProjectProposalData(prop).data();
             INFTGemFeeManager(feeTracker).transferEth(payable(receiver), amount);
             emit ProjectFunded(address(proposalAddress), address(receiver), amount);
@@ -143,5 +112,6 @@ library ProposalsLib {
                 INFTComplexGemPoolData(pool).removeAllowedToken(token);
             }
         }
+
     }
 }

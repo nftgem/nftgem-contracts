@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/utils/Create2.sol";
+
 import "../access/Controllable.sol";
 import "../pool/NFTComplexGemPool.sol";
 import "../pool/ComplexPoolLib.sol";
-import "../libs/Create2.sol";
+
 import "../interfaces/INFTGemPoolFactory.sol";
 
 contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {

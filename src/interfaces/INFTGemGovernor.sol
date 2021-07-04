@@ -7,7 +7,6 @@ pragma solidity >=0.7.0;
  */
 interface INFTGemGovernor {
     event GovernanceTokenIssued(address indexed receiver, uint256 amount);
-    event FuelTokenIssued(address indexed receiver, uint256 amount);
     event FeeUpdated(address indexed proposal, address indexed token, uint256 newFee);
     event AllowList(address indexed proposal, address indexed token, bool isBanned);
     event ProjectFunded(address indexed proposal, address indexed receiver, uint256 received);
@@ -62,19 +61,6 @@ interface INFTGemGovernor {
         uint256 diffstep,
         uint256 maxClaims,
         address allowedToken
-    ) external returns (address);
-
-    function createNewPoolProposal(
-        address,
-        string memory,
-        string memory,
-        string memory,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        address
     ) external returns (address);
 
     function createChangeFeeProposal(

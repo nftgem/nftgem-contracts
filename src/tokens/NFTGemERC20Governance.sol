@@ -2,8 +2,10 @@
 
 pragma solidity >=0.7.0;
 
-import "../libs/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
 import "../interfaces/INFTGemFeeManager.sol";
+
 import "./ERC20WrappedERC1155.sol";
 
 /**

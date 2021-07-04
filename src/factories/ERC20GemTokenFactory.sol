@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Create2.sol";
+
 import "../access/Controllable.sol";
-import "../libs/Create2.sol";
-import "../tokens/ERC20.sol";
+
 import "../tokens/ERC20WrappedGem.sol";
-import "../interfaces/IERC20.sol";
+
 import "../interfaces/IERC20GemTokenFactory.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 

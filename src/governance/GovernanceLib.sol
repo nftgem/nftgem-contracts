@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
-import "../interfaces/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemPoolFactory.sol";
 import "../interfaces/IControllable.sol";

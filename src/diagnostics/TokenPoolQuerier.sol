@@ -2,10 +2,12 @@
 
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
 import "../interfaces/ITokenPoolQuerier.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/INFTGemMultiToken.sol";
-import "../interfaces/IERC1155.sol";
+
 contract TokenPoolQuerier is ITokenPoolQuerier {
 
     function getOwnedTokens(address gemPool, address multitoken, address account, uint256 page, uint256 count) external override view returns (uint256[] memory claims, uint256[] memory gems) {

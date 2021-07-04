@@ -2,9 +2,13 @@
 
 pragma solidity >=0.7.0;
 
-import "../utils/Context.sol";
-import "../interfaces/IERC20.sol";
-import "../libs/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
+import "@openzeppelin/contracts/utils/Context.sol";
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+
 
 /**
  * @dev Implementation of the {IERC20} interface.

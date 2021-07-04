@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0;
 
-import "./ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
     /**
      * @dev a test token for whatever. mints 1m tokens to caller

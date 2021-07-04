@@ -2,18 +2,19 @@
 
 pragma solidity >=0.7.0;
 
-import "../interfaces/IERC20.sol";
-import "../interfaces/IERC1155.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/ISwapQueryHelper.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemFeeManager.sol";
-import "../libs/AddressSet.sol";
-import "../libs/SafeMath.sol";
 
-import "hardhat/console.sol";
+import "../libs/AddressSet.sol";
 
 library ComplexPoolLib {
     using SafeMath for uint256;

@@ -2,15 +2,14 @@
 
 pragma solidity >=0.7.0;
 
-import "../libs/SafeMath.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
-import "../interfaces/IERC1155.sol";
-import "../interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "../interfaces/IERC20WrappedGem.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
-
-import "hardhat/console.sol";
 
 /**
 * @dev wrapped token library

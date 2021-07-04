@@ -2,19 +2,19 @@
 
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
+
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTGemFeeManager.sol";
-import "../interfaces/IERC20.sol";
-import "../interfaces/IERC1155.sol";
 import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/ISwapQueryHelper.sol";
 
-import "../utils/Initializable.sol";
-import "../tokens/ERC1155Holder.sol";
-
 import "../libs/AddressSet.sol";
-import "../libs/SafeMath.sol";
 
 import "./NFTComplexGemPoolData.sol";
 

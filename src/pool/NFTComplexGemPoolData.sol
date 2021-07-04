@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "../libs/AddressSet.sol";
-import "../libs/SafeMath.sol";
 
 import "./ComplexPoolLib.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/INFTGemPoolData.sol";
-import "../interfaces/IERC20.sol";
-import "../interfaces/IERC1155.sol";
-
-import "hardhat/console.sol";
 
 contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     using SafeMath for uint256;

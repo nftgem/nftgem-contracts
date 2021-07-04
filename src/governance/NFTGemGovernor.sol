@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
 import "../access/Controllable.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/IProposalFactory.sol";
 import "../interfaces/IProposal.sol";
-import "../interfaces/IERC1155.sol";
 import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/IProposalData.sol";
 
-import "../libs/SafeMath.sol";
 import "../governance/GovernanceLib.sol";
 import "../governance/ProposalsLib.sol";
 
-import "hardhat/console.sol";
 
 contract NFTGemGovernor is Controllable, INFTGemGovernor {
     using SafeMath for uint256;
@@ -120,7 +120,7 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
      * @dev execute proposal
      */
     function executeProposal(address propAddress) external override onlyController {
-        ProposalsLib.executeProposal(multitoken, factory, address(this), feeTracker, swapHelper, propAddress);
+        ProposalsLib.executeProposal(feeTracker, propAddress);
     }
 
     /**
@@ -205,42 +205,6 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         );
         // associate the pool with its relations
         associatePool(IProposal(pool).creator(), IProposal(pool).funder(), pool);
-    }
-
-    /**
-     * @dev create a proposal to create a new pool
-     */
-    function createNewPoolProposal(
-        address submitter,
-        string memory title,
-        string memory symbol,
-        string memory name,
-        uint256 ethPrice,
-        uint256 minTIme,
-        uint256 maxTime,
-        uint256 diffStep,
-        uint256 maxClaims,
-        address allowedToken
-    ) external override returns (address proposal) {
-        proposal = ProposalsLib.createNewPoolProposal(
-            symbol,
-            name,
-            ethPrice,
-            minTIme,
-            maxTime,
-            diffStep,
-            maxClaims,
-            allowedToken
-        );
-        ProposalsLib.associateProposal(
-            address(this),
-            multitoken,
-            proposalFactory,
-            submitter,
-            IProposal.ProposalType.CREATE_POOL,
-            title,
-            proposal
-        );
     }
 
     /**

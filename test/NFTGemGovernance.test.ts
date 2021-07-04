@@ -12,12 +12,13 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 describe('NFTGemGovernance contract', function () {
   let sender: SignerWithAddress;
-  let ProposalData = {
+  const salt = ~~(Math.random() * 65536 * 4096)
+  const ProposalData = {
     ProposalSubmitter: '',
-    ProposalTitle: 'Proposal Title',
+    ProposalTitle: 'Proposal Title ' + salt,
     ProposalType: 0,
-    ProposalSymbol: 'TST',
-    ProposalName: 'Test Gem',
+    ProposalSymbol: 'TST' + salt,
+    ProposalName: 'Test Gem ' + salt,
     ProposalPrice: utils.parseEther('1'),
     ProposalMinTime: 86400,
     ProposalMaxTime: 864000,
@@ -80,29 +81,6 @@ describe('NFTGemGovernance contract', function () {
     await expect(
       NFTGemGovernor.issueInitialGovernanceTokens(owner.address)
     ).to.be.revertedWith('ALREADY_ISSUED');
-  });
-  it('Should issue fuel tokens', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      owner,
-    } = await setupNftGemGovernor();
-    await NFTGemGovernor.issueFuelToken(owner.address, 10);
-    const ownerBalance = await NFTGemMultiToken.balanceOf(owner.address, 1);
-    expect(ownerBalance.toNumber()).to.equal(10);
-  });
-  it('Maybe issue governance tokens', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      owner,
-    } = await setupNftGemGovernor();
-    await NFTGemGovernor.maybeIssueGovernanceToken(owner.address);
-    const ownerBalance = await NFTGemMultiToken.balanceOf(owner.address, 0);
-    expect(ownerBalance.toNumber()).to.equal(1);
-    await expect(NFTGemGovernor.maybeIssueGovernanceToken(owner.address))
-      .to.emit(NFTGemGovernor, 'GovernanceTokenIssued')
-      .withArgs(owner.address, 1);
   });
   it('Should create and associate system pool', async function () {
     const {

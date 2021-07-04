@@ -1,16 +1,16 @@
 import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
-import {Signer} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
 import {Contract} from '@ethersproject/contracts';
 import {createERC20Token} from './fixtures/ERC20Token.fixture';
 
 const {utils} = ethers;
 
 describe('NFTGemFeeManager contract', function () {
-  let owner: Signer;
-  let sender: Signer;
-  let tokenAddress: Signer;
-  let payableAddress: Signer;
+  let owner: SignerWithAddress;
+  let sender: SignerWithAddress;
+  let tokenAddress: SignerWithAddress;
+  let payableAddress: SignerWithAddress;
   let NFTGemFeeManager: Contract;
 
   beforeEach(async () => {
