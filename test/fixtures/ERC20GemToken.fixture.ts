@@ -2,37 +2,9 @@ import {deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
 import {setupNftGemGovernor} from './Governance.fixture';
 
-export const setupERC20GemToken = deployments.createFixture(
-  async ({ethers}) => {
-    const {
-      NFTGemGovernor,
-      ProposalFactory,
-      NFTGemMultiToken,
-      NFTGemPoolFactory,
-      NFTGemFeeManager,
-      owner,
-    } = await setupNftGemGovernor();
-    const WrappedTokenLib = await (
-      await ethers.getContractFactory('WrappedTokenLib')
-    ).deploy();
-    const ERC20GemTokenFactory = await (
-      await ethers.getContractFactory('ERC20GemTokenFactory', {
-        signer: owner,
-        libraries: {
-          WrappedTokenLib: WrappedTokenLib.address,
-        },
-      })
-    ).deploy();
-    return {
-      NFTGemGovernor,
-      ERC20GemTokenFactory,
-      ProposalFactory,
-      NFTGemPoolFactory,
-      NFTGemMultiToken,
-      NFTGemFeeManager,
-    };
-  }
-);
+export const setupERC20GemToken = deployments.createFixture(async () => {
+  return await setupNftGemGovernor();
+});
 
 export const createERC20Token = deployments.createFixture(
   async ({ethers}, data: any) => {
@@ -58,7 +30,7 @@ export const createERC20Token = deployments.createFixture(
     );
     const salt = keccak256(['bytes'], [pack(['string'], [poolData.symbol])]);
     const poolAddress = await NFTGemPoolFactory.getNFTGemPool(salt);
-    
+
     await ERC20GemTokenFactory.createItem(
       tokenData.symbol,
       tokenData.name,
@@ -71,7 +43,7 @@ export const createERC20Token = deployments.createFixture(
       ERC20GemTokenFactory,
       NFTGemMultiToken,
       NFTGemFeeManager,
-      poolAddress
+      poolAddress,
     };
   }
 );

@@ -1,6 +1,9 @@
-import {deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {FactoryOptions} from 'hardhat-deploy-ethers/dist/src/helpers';
+import hre from 'hardhat';
+
+const {deployments} = hre;
+
+import publisher from '../../lib/publishLib';
 
 export const setupNftGemGovernor = deployments.createFixture(
   async ({ethers}) => {
@@ -9,76 +12,22 @@ export const setupNftGemGovernor = deployments.createFixture(
     const [owner, sender] = await ethers.getSigners();
 
     // Deploy libraries
-    const GovernanceLib = await (
-      await ethers.getContractFactory('GovernanceLib')
-    ).deploy();
-    const ProposalsLib = await (
-      await ethers.getContractFactory('ProposalsLib', {
-        libraries: {GovernanceLib: GovernanceLib.address},
-      })
-    ).deploy();
-    const ComplexPoolLib = await (
-      await ethers.getContractFactory('ComplexPoolLib')
-    ).deploy();
-
-    const factoryOptions: FactoryOptions = {
-      libraries: {
-        GovernanceLib: GovernanceLib.address,
-        ProposalsLib: ProposalsLib.address,
-      },
-    };
-    const factoryOptions1: FactoryOptions = {
-      libraries: {
-        ComplexPoolLib: ComplexPoolLib.address,
-      },
-    };
-
-    // deploy contracts
-    const NFTGemGovernor = await (
-      await ethers.getContractFactory('NFTGemGovernor', factoryOptions)
-    ).deploy();
-    const NFTGemMultiToken = await (
-      await ethers.getContractFactory('NFTGemMultiToken', owner)
-    ).deploy();
-    const NFTGemPoolFactory = await (
-      await ethers.getContractFactory('NFTGemPoolFactory', factoryOptions1)
-    ).deploy();
-    const NFTGemFeeManager = await (
-      await ethers.getContractFactory('NFTGemFeeManager',  owner)
-    ).deploy();
-    const ProposalFactory = await (
-      await ethers.getContractFactory('ProposalFactory',  owner)
-    ).deploy();
-    const SwapHelper = await (
-      await ethers.getContractFactory('MockQueryHelper',  owner)
-    ).deploy();
-
-    await NFTGemGovernor.deployed();
-    await NFTGemMultiToken.deployed();
-    await NFTGemPoolFactory.deployed();
-    await NFTGemFeeManager.deployed();
-    await ProposalFactory.deployed();
-    await SwapHelper.deployed();
-
-    // initialize NFTGemGovernance contract
-    await NFTGemGovernor.initialize(
-      NFTGemMultiToken.address,
-      NFTGemPoolFactory.address,
-      NFTGemFeeManager.address,
-      ProposalFactory.address,
-      SwapHelper.address
-    );
-    await NFTGemMultiToken.addController(NFTGemGovernor.address);
-    await ProposalFactory.addController(NFTGemGovernor.address);
-    await NFTGemPoolFactory.addController(NFTGemGovernor.address);
-    await NFTGemFeeManager.addController(NFTGemGovernor.address);
-
+    const {deployedContracts} = await publisher(hre, false);
+    const {
+      NFTGemGovernor,
+      NFTGemMultiToken,
+      NFTGemPoolFactory,
+      ProposalFactory,
+      NFTGemFeeManager,
+      ERC20GemTokenFactory,
+    } = deployedContracts;
     return {
       NFTGemGovernor,
       NFTGemMultiToken,
       NFTGemPoolFactory,
       ProposalFactory,
       NFTGemFeeManager,
+      ERC20GemTokenFactory,
       owner,
       sender,
     };
@@ -87,14 +36,17 @@ export const setupNftGemGovernor = deployments.createFixture(
 
 export const createProposal = deployments.createFixture(
   async ({ethers}, ProposalData: any) => {
+    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+    const {deployedContracts} = await publisher(hre, false);
     const {
       NFTGemGovernor,
-      ProposalFactory,
       NFTGemMultiToken,
       NFTGemPoolFactory,
-      owner,
-      sender,
-    } = await setupNftGemGovernor();
+      ProposalFactory,
+    } = deployedContracts;
+
+    const [owner, sender] = await ethers.getSigners();
 
     const {
       ProposalType,
@@ -103,33 +55,27 @@ export const createProposal = deployments.createFixture(
       FeeProposalTitle = 'Change Fee Title',
       FundProposalTitle = 'Fund Project Proposal',
       ListProposalTitle = 'Update allow list Proposal',
-      ProposalSymbol,
-      ProposalName,
       ProposalPrice,
-      ProposalMinTime,
-      ProposalMaxTime,
-      ProposalDiffStep,
-      ProposalMaxClaims,
       ProposalAllowedToken,
       ProposalFeeDivisor = 10,
-      ProposalDescriptionUrl = 'http://dummy/url'
+      ProposalDescriptionUrl = 'http://dummy/url',
     } = ProposalData;
     let title = ProposalTitle;
 
-    await NFTGemGovernor.issueInitialGovernanceTokens(owner.address);
-    await NFTGemGovernor.createNewPoolProposal(
-      ProposalSubmitter,
-      ProposalTitle,
-      ProposalSymbol,
-      ProposalName,
-      ProposalPrice,
-      ProposalMinTime,
-      ProposalMaxTime,
-      ProposalDiffStep,
-      ProposalMaxClaims,
-      ProposalAllowedToken
-    );
-    const poolAddress = await ProposalFactory.allProposals(0);
+    let poolIndex = await NFTGemPoolFactory.allNFTGemPoolsLength();
+    if (poolIndex.eq(0)) {
+      await NFTGemGovernor.createSystemPool(
+        'TST',
+        'Test Gem',
+        ethers.utils.parseEther('1'),
+        30,
+        30,
+        65536,
+        0,
+        ZERO_ADDRESS
+      );
+    } else poolIndex = (await NFTGemPoolFactory.allNFTGemPoolsLength()).sub(1);
+    const poolAddress = await NFTGemPoolFactory.allNFTGemPools(poolIndex);
 
     switch (ProposalType) {
       case 1:
@@ -150,7 +96,7 @@ export const createProposal = deployments.createFixture(
           poolAddress,
           ProposalFeeDivisor
         );
-        title = FeeProposalTitle
+        title = FeeProposalTitle;
         break;
       case 3:
         await NFTGemGovernor.createUpdateAllowlistProposal(
@@ -160,7 +106,7 @@ export const createProposal = deployments.createFixture(
           poolAddress,
           true
         );
-        title = ListProposalTitle
+        title = ListProposalTitle;
         break;
     }
 
@@ -171,8 +117,7 @@ export const createProposal = deployments.createFixture(
     const proposalAddress = await ProposalFactory.getProposal(salt);
     const ProposalContract = await ethers.getContractAt(
       'Proposal',
-      proposalAddress,
-      ProposalSubmitter
+      proposalAddress
     );
     return {
       ProposalContract,
@@ -188,12 +133,8 @@ export const createProposal = deployments.createFixture(
 
 export const executeProposal = deployments.createFixture(
   async ({ethers}, ProposalData: any) => {
-    const {
-      ProposalContract,
-      NFTGemMultiToken,
-      NFTGemPoolFactory,
-      owner,
-    } = await createProposal(ProposalData);
+    const {ProposalContract, NFTGemMultiToken, NFTGemPoolFactory, owner} =
+      await createProposal(ProposalData);
     await ProposalContract.fund({
       from: ProposalData.ProposalSubmitter.address,
       value: ethers.utils.parseEther('1'),
@@ -207,7 +148,8 @@ export const executeProposal = deployments.createFixture(
       ProposalContract.address,
       ethers.BigNumber.from(ProposalContract.address),
       oldTokenBalance,
-      0
+      0,
+      owner
     );
     await ProposalContract.execute();
     const newTokenBalance = await NFTGemMultiToken.balanceOf(

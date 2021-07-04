@@ -1,18 +1,13 @@
 import {expect} from './chai-setup';
-import hre, {ethers, deployments} from 'hardhat';
+import {ethers} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {setupNftGemGovernor} from './fixtures/Governance.fixture';
 
 describe('ProposalFactory contract', function () {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-  let sender: SignerWithAddress;
-  beforeEach(async () => {
-    await deployments.fixture();
-  });
 
   it('Should create a new proposal', async function () {
-    [sender] = await hre.ethers.getSigners();
-    const ProposalFactory = await ethers.getContract('ProposalFactory');
+    const {ProposalFactory, sender} = await setupNftGemGovernor();
     await ProposalFactory.createProposal(
       sender.address,
       'New Proposal',
@@ -40,8 +35,8 @@ describe('ProposalFactory contract', function () {
   });
 
   it('Revert if the proposal already exists', async function () {
-    [sender] = await hre.ethers.getSigners();
-    const ProposalFactory = await ethers.getContract('ProposalFactory');
+    const {ProposalFactory, sender} = await setupNftGemGovernor();
+
     await ProposalFactory.createProposal(
       sender.address,
       'New Proposal',

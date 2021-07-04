@@ -1,24 +1,22 @@
 import {expect} from './chai-setup';
-import {ethers} from 'hardhat';
+import {ethers, deployments} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
 import {
   setupNftGemGovernor,
   createProposal,
   executeProposal,
 } from './fixtures/Governance.fixture';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+
 const {utils} = ethers;
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-describe('NFTGemGovernance contract', function () {
-  let sender: SignerWithAddress;
-  const salt = ~~(Math.random() * 65536 * 4096)
+describe('NFTGemGovernance contract', async function () {
   const ProposalData = {
     ProposalSubmitter: '',
-    ProposalTitle: 'Proposal Title ' + salt,
+    ProposalTitle: 'Proposal Title',
     ProposalType: 0,
-    ProposalSymbol: 'TST' + salt,
-    ProposalName: 'Test Gem ' + salt,
+    ProposalSymbol: 'TST',
+    ProposalName: 'Test Gem',
     ProposalPrice: utils.parseEther('1'),
     ProposalMinTime: 86400,
     ProposalMaxTime: 864000,
@@ -26,18 +24,22 @@ describe('NFTGemGovernance contract', function () {
     ProposalMaxClaims: 0,
     ProposalAllowedToken: ZERO_ADDRESS,
   };
+  let NFTGemGovernor: any,
+    NFTGemMultiToken: any,
+    NFTGemPoolFactory: any,
+    owner: any,
+    sender: any;
   beforeEach(async function () {
-    [sender] = await ethers.getSigners();
+    const signers = await ethers.getSigners();
+    owner = signers[0];
+    sender = signers[0];
+    const setupNftGemGovernorResult = await setupNftGemGovernor();
+    NFTGemGovernor = setupNftGemGovernorResult.NFTGemGovernor;
+    NFTGemMultiToken = setupNftGemGovernorResult.NFTGemMultiToken;
+    NFTGemPoolFactory = setupNftGemGovernorResult.NFTGemPoolFactory;
     ProposalData.ProposalSubmitter = sender.address;
   });
   it('Should create Proposal Vote tokens ', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      owner,
-    } = await setupNftGemGovernor();
-    // issue initial supply
-    await NFTGemGovernor.issueInitialGovernanceTokens(owner.address);
     const tokensBeforeCreating = (
       await NFTGemMultiToken.balanceOf(owner.address, 0)
     ).toNumber();
@@ -49,15 +51,8 @@ describe('NFTGemGovernance contract', function () {
     expect(tokensAfterCreating).to.equal(tokensBeforeCreating * 2);
   });
   it('Should destroy Proposal Vote tokens ', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      owner,
-    } = await setupNftGemGovernor();
     // issue initial supply and create some proposal tokens
-    await NFTGemGovernor.issueInitialGovernanceTokens(owner.address);
     await NFTGemGovernor.createProposalVoteTokens(0);
-
     // Burn tokens
     await NFTGemGovernor.destroyProposalVoteTokens(0);
     const tokensAfterBurning = (
@@ -66,29 +61,15 @@ describe('NFTGemGovernance contract', function () {
     expect(tokensAfterBurning).to.equal(0);
   });
   it('Should issue initial governance tokens', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      owner,
-    } = await setupNftGemGovernor();
-    await NFTGemGovernor.issueInitialGovernanceTokens(owner.address);
     const ownerBalance = await NFTGemMultiToken.balanceOf(owner.address, 0);
     expect(ownerBalance.toNumber()).to.equal(500000);
   });
   it('Should revert issuing initial governance tokens if already issued', async function () {
-    const {NFTGemGovernor, owner} = await setupNftGemGovernor();
-    await NFTGemGovernor.issueInitialGovernanceTokens(owner.address);
     await expect(
       NFTGemGovernor.issueInitialGovernanceTokens(owner.address)
     ).to.be.revertedWith('ALREADY_ISSUED');
   });
   it('Should create and associate system pool', async function () {
-    const {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      NFTGemPoolFactory,
-      owner,
-    } = await setupNftGemGovernor();
     await NFTGemGovernor.createSystemPool(
       'TST',
       'TEST Pool Name',
@@ -118,67 +99,71 @@ describe('NFTGemGovernance contract', function () {
       (await NFTGemMultiToken.balanceOf(owner.address, gemHash1)).toNumber()
     ).to.equal(1);
   });
-  describe('Proposal Test Suite', function () {
-    describe('Create Proposal', function () {
-      it('Should create new pool proposal ', async function () {
-        const {ProposalContract, ProposalFactory} = await createProposal(
-          ProposalData
-        );
-        expect(
-          (await ProposalFactory.allProposalsLength()).toNumber()
-        ).to.equal(1);
-        expect(await ProposalContract.title()).to.equal(
-          ProposalData.ProposalTitle
-        );
-        expect(await ProposalContract.status()).to.equal(0);
-        expect(await ProposalContract.proposalType()).to.equal(0);
-        expect(await ProposalContract.creator()).to.equal(sender.address);
-        expect(await ProposalContract.funder()).to.equal(sender.address);
-      });
+  describe('Proposal Test Suite', async function () {
+    let ProposalContract: any, ProposalFactory: any, owner: any, sender: any;
+    beforeEach(async function () {
+      const signers = await ethers.getSigners();
+      owner = signers[0];
+      sender = signers[0];
+      ProposalData.ProposalSubmitter = sender.address;
+    });
+
+    describe('Create Proposal', async function () {
       it('Should create Fund Project proposal', async function () {
-        const {ProposalContract, ProposalFactory} = await createProposal({
+        const createProposalResult = await createProposal({
           ...ProposalData,
           ProposalType: 1,
         });
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         const noOfPools = (
           await ProposalFactory.allProposalsLength()
         ).toNumber();
-        expect(noOfPools).to.equal(2);
+        expect(noOfPools).to.equal(1);
         expect(await ProposalContract.title()).to.equal(
           'Fund Project Proposal'
         );
         expect(await ProposalContract.status()).to.equal(0);
       });
+
       it('Should create Change Fee proposal', async function () {
-        const {ProposalContract, ProposalFactory} = await createProposal({
+        const createProposalResult = await createProposal({
           ...ProposalData,
           ProposalType: 2,
         });
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         const noOfPools = (
           await ProposalFactory.allProposalsLength()
         ).toNumber();
-        expect(noOfPools).to.equal(2);
+        expect(noOfPools).to.equal(1);
         expect(await ProposalContract.title()).to.equal('Change Fee Title');
         expect(await ProposalContract.status()).to.equal(0);
       });
+
       it('Should create update allow list proposal', async function () {
-        const {ProposalContract, ProposalFactory} = await createProposal({
+        const createProposalResult = await createProposal({
           ...ProposalData,
           ProposalType: 3,
         });
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         const noOfPools = (
           await ProposalFactory.allProposalsLength()
         ).toNumber();
-        expect(noOfPools).to.equal(2);
+        expect(noOfPools).to.equal(1);
         expect(await ProposalContract.title()).to.equal(
           'Update allow list Proposal'
         );
         expect(await ProposalContract.status()).to.equal(0);
       });
     });
+
     describe('Fund Proposal', function () {
       it('should revert if the proposal is already funded', async function () {
-        const {ProposalContract} = await createProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         await ProposalContract.fund({
           from: sender.address,
           value: utils.parseEther('1'),
@@ -190,8 +175,11 @@ describe('NFTGemGovernance contract', function () {
           })
         ).to.be.revertedWith('ALREADY_FUNDED');
       });
+
       it('should revert if fee is less than the proposal cost', async function () {
-        const {ProposalContract} = await createProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         await expect(
           ProposalContract.fund({
             from: sender.address,
@@ -199,12 +187,11 @@ describe('NFTGemGovernance contract', function () {
           })
         ).to.be.revertedWith('MISSING_FEE');
       });
+
       it('should fund a proposal', async function () {
-        const {
-          ProposalContract,
-          NFTGemMultiToken,
-          owner,
-        } = await createProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         await ProposalContract.fund({
           from: sender.address,
           value: utils.parseEther('1'),
@@ -216,8 +203,11 @@ describe('NFTGemGovernance contract', function () {
         expect(tokenBalance).to.equal(500000);
         expect(await ProposalContract.funder()).to.equal(sender.address);
       });
+
       it('Should return the excess amount back to funder', async function () {
-        const {ProposalContract} = await createProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
+        ProposalFactory = createProposalResult.ProposalFactory;
         const senderBalanceBefore = parseInt(
           utils.formatEther(await sender.getBalance())
         );
@@ -231,15 +221,20 @@ describe('NFTGemGovernance contract', function () {
         expect(senderBalanceBefore - senderBalanceAfter).to.equal(1);
       });
     });
+
     describe('Execute Proposal', function () {
       it('Should revert execution if proposal is not funded', async function () {
-        const {ProposalContract} = await createProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
         await expect(ProposalContract.execute()).to.be.revertedWith(
           'NOT_FUNDED'
         );
       });
+
       it('Should revert execution if proposal is not passed', async function () {
-        const {ProposalContract} = await createProposal(ProposalData);
+        const [sender] = await ethers.getSigners();
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
         await ProposalContract.fund({
           from: sender.address,
           value: utils.parseEther('1'),
@@ -249,17 +244,16 @@ describe('NFTGemGovernance contract', function () {
         );
       });
       it('Should revert execution if proposal is already executed', async function () {
-        const {ProposalContract} = await executeProposal(ProposalData);
+        const createProposalResult = await createProposal(ProposalData);
+        ProposalContract = createProposalResult.ProposalContract;
         await expect(ProposalContract.execute()).to.be.revertedWith(
           'IS_EXECUTED'
         );
       });
       it('Should execute pool proposal ', async function () {
-        const {
-          ProposalContract,
-          NFTGemMultiToken,
-          NFTGemPoolFactory,
-        } = await executeProposal(ProposalData);
+        const [sender] = await ethers.getSigners();
+        const {ProposalContract, NFTGemMultiToken, NFTGemPoolFactory} =
+          await executeProposal(ProposalData);
         expect(await ProposalContract.status()).to.equal(4);
         // Check whether 2 genesis gems are minted or not.
         expect(
@@ -290,6 +284,7 @@ describe('NFTGemGovernance contract', function () {
         expect(newTokenBalance.toNumber()).to.equal(0);
       });
       it('Should return the filing fees to funder after execution', async function () {
+        const [sender] = await ethers.getSigners();
         const funderBalanceBefore = parseInt(
           utils.formatEther(await sender.getBalance())
         );
@@ -312,6 +307,7 @@ describe('NFTGemGovernance contract', function () {
         );
       });
       it('Should revert close operation if proposal is active', async function () {
+        const [sender] = await ethers.getSigners();
         const {ProposalContract} = await createProposal(ProposalData);
         await ProposalContract.fund({
           from: sender.address,
@@ -320,11 +316,9 @@ describe('NFTGemGovernance contract', function () {
         await expect(ProposalContract.close()).to.be.revertedWith('IS_ACTIVE');
       });
       it('Should revert close operation if proposal is already passed', async function () {
-        const {
-          ProposalContract,
-          NFTGemMultiToken,
-          owner,
-        } = await createProposal(ProposalData);
+        const [sender] = await ethers.getSigners();
+        const {ProposalContract, NFTGemMultiToken, owner} =
+          await createProposal(ProposalData);
         await ProposalContract.fund({
           from: sender.address,
           value: utils.parseEther('1'),
@@ -345,6 +339,7 @@ describe('NFTGemGovernance contract', function () {
         await expect(ProposalContract.close()).to.be.revertedWith('IS_PASSED');
       });
       it('Should close the proposal', async function () {
+        const [sender] = await ethers.getSigners();
         const {ProposalContract} = await createProposal(ProposalData);
         await ProposalContract.fund({
           from: sender.address,
@@ -356,6 +351,7 @@ describe('NFTGemGovernance contract', function () {
         expect(await ProposalContract.status()).to.equal(5);
       });
       it('Should revert close operation if the proposal is already closed', async function () {
+        const [sender] = await ethers.getSigners();
         const {ProposalContract} = await createProposal(ProposalData);
         await ProposalContract.fund({
           from: sender.address,

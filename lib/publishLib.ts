@@ -52,7 +52,6 @@ export default async function publisher(
       from: sender.address,
       log: true,
     };
-    console.log('deploying libraries...');
 
     const [govLib, addressSet] = [
       await deploy('GovernanceLib', libDeployParams),
@@ -102,17 +101,7 @@ export default async function publisher(
       },
     };
 
-    const [
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      NFTGemPoolFactory,
-      NFTGemFeeManager,
-      ProposalFactory,
-      MockProxyRegistry,
-      ERC20GemTokenFactory,
-      TokenPoolQuerier,
-      BulkTokenMinter,
-    ] = await Promise.all([
+    await Promise.all([
       deploy('NFTGemGovernor', deployParams),
       deploy('NFTGemMultiToken', deployParams),
       deploy('NFTGemPoolFactory', deployParams),
@@ -124,13 +113,39 @@ export default async function publisher(
       deploy('BulkTokenMinter', deployParams),
     ]);
 
-    console.log('initializing governor...');
+    let SwapHelper = undefined;
+    if (parseInt(networkId) === 1) {
+      SwapHelper = 'UniSwap';
+    } else if (parseInt(networkId) === 250) {
+      SwapHelper = 'SushiSwap';
+    } else if (parseInt(networkId) === 56) {
+      SwapHelper = 'PancakeSwap';
+    } else if (parseInt(networkId) === 43114) {
+      SwapHelper = 'Pangolin';
+    }
+    if (!SwapHelper) {
+      // mock helper for testing - returns 10x input
+      SwapHelper = await deploy('MockQueryHelper', deployParams);
+    } else {
+      // deploy the appropriate helper given network
+      const deployParams: any = {
+        from: sender.address,
+        log: true,
+        libraries: {},
+      };
+      deployParams.libraries[`${SwapHelper}Lib`] = (
+        await deploy(`${SwapHelper}Lib`, libDeployParams)
+      ).address;
+      SwapHelper = await deploy(`${SwapHelper}QueryHelper`, deployParams);
+    }
 
     dc = await getDeployedContracts();
 
     const inited = await dc.NFTGemGovernor.initialized();
 
     if (!inited) {
+      console.log('initializing governor...');
+
       let tx = await dc.NFTGemGovernor.initialize(
         dc.NFTGemMultiToken.address,
         dc.NFTGemPoolFactory.address,
@@ -198,19 +213,11 @@ export default async function publisher(
         {from: sender.address}
       );
       await waitForMined(tx.hash);
+    } else {
+      console.log('contracts already deployed and initialized.');
     }
 
-    return {
-      NFTGemGovernor,
-      NFTGemMultiToken,
-      NFTGemPoolFactory,
-      NFTGemFeeManager,
-      ProposalFactory,
-      MockProxyRegistry,
-      ERC20GemTokenFactory,
-      TokenPoolQuerier,
-      BulkTokenMinter,
-    };
+    return dc;
   };
 
   const getDeployedContracts = async () => {
@@ -266,10 +273,6 @@ export default async function publisher(
       ),
     };
 
-    /**
-     * @dev Load the network-specific DEX-adapters - Uniswap for ETH and FTM,
-     * PancakeSwap for BNB, Pangolin for AVAX, or a Mock helper for testing
-     */
     if (parseInt(networkId) === 1) {
       ret.SwapHelper = await getContractAt(
         'UniswapQueryHelper',
@@ -314,7 +317,9 @@ export default async function publisher(
     return ret;
   };
 
-  let dc = deployAll ? await deployContracts() : await getDeployedContracts();
+  let dc: any = deployAll
+    ? await deployContracts()
+    : await getDeployedContracts();
 
   const getGemPoolAddress = async (sym: string) => {
     return await dc.NFTGemPoolFactory.getNFTGemPool(

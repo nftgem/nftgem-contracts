@@ -1,6 +1,6 @@
 import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
 import {Contract} from '@ethersproject/contracts';
 import {createERC20Token} from './fixtures/ERC20Token.fixture';
 
@@ -64,10 +64,10 @@ describe('NFTGemFeeManager contract', function () {
     });
 
     it('Should return fee divisor', async function () {
-        expect(
-          (await NFTGemFeeManager.feeDivisor(tokenAddress.address)).toNumber()
-        ).to.equal(2000);
-      });
+      expect(
+        (await NFTGemFeeManager.feeDivisor(tokenAddress.address)).toNumber()
+      ).to.equal(2000);
+    });
   });
 
   describe('Fee Divisor for a token', function () {
