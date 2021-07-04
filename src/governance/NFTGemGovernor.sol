@@ -29,7 +29,6 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
     uint256 private constant GOV_TOKEN_INITIAL = 500000;
 
     bool private governanceIssued;
-    bool private fuelIssued;
 
     /**
      * @dev contract controller

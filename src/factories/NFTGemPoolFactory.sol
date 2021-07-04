@@ -3,21 +3,14 @@ pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 
-import "../access/Controllable.sol";
 import "../pool/NFTComplexGemPool.sol";
 import "../pool/ComplexPoolLib.sol";
 
 import "../interfaces/INFTGemPoolFactory.sol";
 
-contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
-    address private operator;
-
+contract NFTGemPoolFactory is INFTGemPoolFactory {
     mapping(uint256 => address) private _getNFTGemPool;
     address[] private _allNFTGemPools;
-
-    constructor() {
-        _addController(msg.sender);
-    }
 
     /**
      * @dev get the quantized token for this
@@ -64,7 +57,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         bytes memory bytecode,
         string memory gemSymbol,
         string memory gemName
-    ) external override onlyController returns (address payable gemPool) {
+    ) external override returns (address payable gemPool) {
         bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
         require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
 
@@ -86,7 +79,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         address poolAddress,
         string memory gemSymbol,
         string memory gemName
-    ) external override onlyController returns (address payable gemPool) {
+    ) external override returns (address payable gemPool) {
         bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
         require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
 
@@ -113,7 +106,7 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
         uint256 diffstep,
         uint256 maxMint,
         address allowedToken
-    ) external override onlyController returns (address payable gemPool) {
+    ) external override returns (address payable gemPool) {
         bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
         require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
 
@@ -157,37 +150,5 @@ contract NFTGemPoolFactory is Controllable, INFTGemPoolFactory {
             maxMint,
             allowedToken
         );
-    }
-
-    /**
-     * @dev remove a gem pool from the list using its symbol hash
-     */
-    function removeGemPool(uint256 poolHash) external override onlyController {
-        address oldPool = _getNFTGemPool[poolHash];
-        delete _getNFTGemPool[poolHash];
-        for (uint256 i = 0; i < _allNFTGemPools.length; i++) {
-            if (_allNFTGemPools[i] == oldPool) {
-                if (_allNFTGemPools.length == 1) {
-                    delete _allNFTGemPools;
-                } else {
-                    _allNFTGemPools[i] ==
-                        _allNFTGemPools[_allNFTGemPools.length - 1];
-                    delete _allNFTGemPools[_allNFTGemPools.length - 1];
-                }
-            }
-        }
-    }
-
-    /**
-     * @dev remove a gem pool from the list using its index into pools array
-     */
-    function removeGemPoolAt(uint256 ndx) external override onlyController {
-        require(_allNFTGemPools.length > ndx, "INDEX_OUT_OF_RANGE");
-        if (_allNFTGemPools.length == 1) {
-            delete _allNFTGemPools;
-        } else {
-            _allNFTGemPools[ndx] == _allNFTGemPools[_allNFTGemPools.length - 1];
-            delete _allNFTGemPools[_allNFTGemPools.length - 1];
-        }
     }
 }

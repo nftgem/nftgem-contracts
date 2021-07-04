@@ -5,22 +5,16 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
-import "../access/Controllable.sol";
-
 import "../tokens/ERC20WrappedGem.sol";
 
 import "../interfaces/IERC20GemTokenFactory.sol";
 import "../interfaces/IERC20WrappedGem.sol";
 
-contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
+contract ERC20GemTokenFactory is IERC20GemTokenFactory {
     address private operator;
 
     mapping(uint256 => address) private _getItem;
     address[] private _allItems;
-
-    constructor() {
-        _addController(msg.sender);
-    }
 
     /**
      * @dev get the quantized token for this
@@ -70,7 +64,7 @@ contract ERC20GemTokenFactory is Controllable, IERC20GemTokenFactory {
         address tokenAddress,
         uint8 decimals,
         address feeManager
-    ) external override onlyController returns (address payable gemToken) {
+    ) external override returns (address payable gemToken) {
         bytes32 salt = keccak256(abi.encodePacked(tokenSymbol));
         require(_getItem[uint256(salt)] == address(0), "GEMTOKEN_EXISTS"); // single check is sufficient
         require(poolAddress != address(0), "INVALID_POOL");

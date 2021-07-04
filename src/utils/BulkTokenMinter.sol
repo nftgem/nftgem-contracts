@@ -28,24 +28,18 @@ contract BulkTokenMinter is IBulkTokenMinter {
     }
 
     /**
-     * @dev Mint governance and fuel tokens to recipients
+     * @dev Mint governance to recipients
      */
-    function bulkMintGovFuel(
+    function bulkMintGov(
         address multitoken,
         address[] memory recipients,
-        uint256[] memory gquantities,
-        uint256[] memory fquantities
+        uint256[] memory gquantities
     ) external override {
         for (uint256 i = 0; i < recipients.length; i++) {
             INFTGemMultiToken(multitoken).mint(
                 recipients[i],
                 0,
                 gquantities[i]
-            );
-            INFTGemMultiToken(multitoken).mint(
-                recipients[i],
-                1,
-                fquantities[i]
             );
         }
     }

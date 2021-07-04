@@ -3,23 +3,15 @@ pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 
-import "../access/Controllable.sol";
-
 import "../interfaces/IProposal.sol";
 import "../interfaces/IProposalFactory.sol";
 
 import "../governance/GovernanceLib.sol";
 import "../governance/Proposal.sol";
 
-contract ProposalFactory is Controllable, IProposalFactory {
-    address private operator;
-
+contract ProposalFactory is IProposalFactory {
     mapping(uint256 => address) private _getProposal;
     address[] private _allProposals;
-
-    constructor() {
-        _addController(msg.sender);
-    }
 
     /**
      * @dev get the proposal for this
@@ -65,7 +57,7 @@ contract ProposalFactory is Controllable, IProposalFactory {
         string memory title,
         address proposalData,
         IProposal.ProposalType proposalType
-    ) external override onlyController returns (address payable proposal) {
+    ) external override returns (address payable proposal) {
         // make sure this proposal doesnt already exist
         bytes32 salt = keccak256(abi.encodePacked(submitter, title));
         require(_getProposal[uint256(salt)] == address(0), "PROPOSAL_EXISTS"); // single check is sufficient

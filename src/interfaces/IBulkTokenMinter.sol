@@ -2,11 +2,10 @@
 pragma solidity >=0.8.0;
 
 interface IBulkTokenMinter {
-    function bulkMintGovFuel(
+    function bulkMintGov(
         address multitoken,
         address[] memory recipients,
-        uint256[] memory gquantities,
-        uint256[] memory fquantities
+        uint256[] memory gquantities
     ) external;
 
     function bulkMintToken(

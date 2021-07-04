@@ -60,8 +60,4 @@ interface INFTGemPoolFactory {
         string memory gemSymbol,
         string memory gemName
     ) external returns (address payable);
-
-    function removeGemPool(uint256 poolHash) external;
-
-    function removeGemPoolAt(uint256 ndx) external;
 }
