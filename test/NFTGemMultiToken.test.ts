@@ -2,7 +2,7 @@ import {expect} from './chai-setup';
 import {ethers, deployments} from 'hardhat';
 import {Contract} from '@ethersproject/contracts';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signers';
+import {SignerWithAddress} from 'hardhat-deploy-ethers/dist/src/signer-with-address';
 
 const {getContractFactory} = ethers;
 
