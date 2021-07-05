@@ -322,17 +322,12 @@ describe('NFTGemGovernance contract', async function () {
       });
 
       it('Should return the filing fees to funder after execution', async function () {
-        const [sender] = await ethers.getSigners();
-        const funderBalanceBefore = parseInt(
-          utils.formatEther(await sender.getBalance())
-        );
-        console.log('bal before', funderBalanceBefore);
-        await executeProposal(ProposalData);
+        const {owner} = await executeProposal(ProposalData);
         const funderBalanceAfter = parseInt(
-          utils.formatEther(await sender.getBalance())
+          utils.formatEther(await owner.getBalance())
         );
-        console.log('bal after', funderBalanceAfter);
-        expect(funderBalanceBefore).to.equal(funderBalanceAfter);
+        // 1 ETH used for funding the proposal.
+        expect(funderBalanceAfter).to.equal(9998);
       });
     });
 
