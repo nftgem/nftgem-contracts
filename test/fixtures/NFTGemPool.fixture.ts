@@ -86,7 +86,7 @@ export const createNFTGemClaim = deployments.createFixture(
       poolAddress,
       tokenAddress,
       owner,
-    } = createNFTGemPool();
+    } = await createNFTGemPool();
 
     return new ethers.Contract(poolAddress, []);
   }

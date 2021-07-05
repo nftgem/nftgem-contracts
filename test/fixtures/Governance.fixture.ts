@@ -37,13 +37,14 @@ export const setupNftGemGovernor = deployments.createFixture(
 export const createProposal = deployments.createFixture(
   async ({ethers}, ProposalData: any) => {
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-
+    // Deploy libraries
     const {deployedContracts} = await publisher(hre, false);
+
     const {
       NFTGemGovernor,
+      ProposalFactory,
       NFTGemMultiToken,
       NFTGemPoolFactory,
-      ProposalFactory,
       NFTGemFeeManager,
     } = deployedContracts;
 
