@@ -23,6 +23,7 @@ import '@nomiclabs/hardhat-etherscan';
 import {node_url, accounts} from './utils/network';
 import {BigNumber} from 'ethers';
 
+import publisher from './lib/publishLib';
 import migrator from './lib/migrateLib';
 
 task('check-fees', 'Check the fee manager balance').setAction(
@@ -385,6 +386,123 @@ task('send-token-to', 'Send the given claim or gem to the given address')
       console.log(tx);
     }
   );
+
+task(
+  'publish-test-items',
+  'Publish test suite items. Publishes a set of gem pools designed to test through all Bitgem functionality'
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+  // get all gempool contracts
+  const {createPool, deployedContracts} = await publisher(hre, false);
+
+  // publish a minion - can be minted with no input requirements
+  const minionAddress = createPool(
+    'TEST1',
+    'Test Minion',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  // publish an underboss - must have a minion to mint
+  const underBossAddress = createPool(
+    'TEST2',
+    'Test Underboss',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        minionAddress,
+        3,
+        0,
+        1,
+        true,
+        false,
+      ],
+    ]
+  );
+
+  // publish a level boss - must have a minion and underboss to mint
+  const levelBossAddress = createPool(
+    'TEST3',
+    'Test Level Boss',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        minionAddress,
+        3,
+        0,
+        1,
+        true,
+        false,
+      ],
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        underBossAddress,
+        3,
+        0,
+        1,
+        true,
+        false,
+      ],
+    ]
+  );
+
+  // publish a big boss - requires minion, underboss
+  // and level boss and keeps all of them
+  createPool(
+    'TEST4',
+    'Test Big Boss',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        minionAddress,
+        3,
+        0,
+        1,
+        true,
+        true,
+      ],
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        underBossAddress,
+        3,
+        0,
+        1,
+        true,
+        true,
+      ],
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        levelBossAddress,
+        3,
+        0,
+        1,
+        true,
+        true,
+      ],
+    ]
+  );
+});
 
 const config: HardhatUserConfig = {
   solidity: {
