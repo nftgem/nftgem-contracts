@@ -395,7 +395,7 @@ task(
   const {createPool, deployedContracts} = await publisher(hre, false);
 
   // publish a minion - can be minted with no input requirements
-  const minionAddress = createPool(
+  const minionAddress = await createPool(
     'TEST1',
     'Test Minion',
     hre.ethers.utils.parseEther('1'),
@@ -407,7 +407,7 @@ task(
   );
 
   // publish an underboss - must have a minion to mint
-  const underBossAddress = createPool(
+  const underBossAddress = await createPool(
     'TEST2',
     'Test Underboss',
     hre.ethers.utils.parseEther('1'),
@@ -430,7 +430,7 @@ task(
   );
 
   // publish a level boss - must have a minion and underboss to mint
-  const levelBossAddress = createPool(
+  const levelBossAddress = await createPool(
     'TEST3',
     'Test Level Boss',
     hre.ethers.utils.parseEther('1'),
@@ -463,7 +463,7 @@ task(
 
   // publish a big boss - requires minion, underboss
   // and level boss and keeps all of them
-  createPool(
+  await createPool(
     'TEST4',
     'Test Big Boss',
     hre.ethers.utils.parseEther('1'),

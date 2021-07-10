@@ -3,6 +3,23 @@ import {pack, keccak256} from '@ethersproject/solidity';
 import {formatEther} from 'ethers/lib/utils';
 import {BigNumberish} from '@ethersproject/bignumber';
 
+async function pub(
+  hre: HardhatRuntimeEnvironment,
+  deployAll: boolean
+): Promise<any> {
+  const networkId = await hre.getChainId();
+  const sender = await hre.ethers.getSigners();
+  class Publisher {
+    ethers = hre.ethers;
+    deployments = hre.deployments;
+    getContractAt = hre.ethers.getContractAt;
+    get = hre.deployments.get;
+    deploy = hre.deployments.deploy;
+    networkId = networkId;
+    sender = sender;
+  }
+}
+
 export default async function publisher(
   hre: HardhatRuntimeEnvironment,
   deployAll: boolean
@@ -19,35 +36,9 @@ export default async function publisher(
   );
 
   /**
-   * @dev wait for the tx to be mined
-   */
-  const waitForMined = async (transactionHash: string) => {
-    const _checkReceipt = async () => {
-      const txReceipt = await hre.ethers.provider.getTransactionReceipt(
-        transactionHash
-      );
-      return txReceipt && txReceipt.blockNumber ? txReceipt : null;
-    };
-    return new Promise((resolve) => {
-      const interval = setInterval(() => {
-        _checkReceipt().then(async (r) => {
-          if (r) {
-            clearInterval(interval);
-            const txReceipt = await hre.ethers.provider.getTransactionReceipt(
-              transactionHash
-            );
-            console.log(txReceipt.transactionHash);
-            resolve(true);
-          }
-        });
-      }, 500);
-    });
-  };
-
-  /**
    * @dev Deploy all libraries and contracts for the platform
    */
-  const deployContracts = async () => {
+  this.deployContracts = async () => {
     const libDeployParams = {
       from: sender.address,
       log: true,
@@ -153,19 +144,19 @@ export default async function publisher(
         dc.ProposalFactory.address,
         dc.SwapHelper.address
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       console.log('propagating multitoken controller...');
       tx = await dc.NFTGemMultiToken.addController(dc.NFTGemGovernor.address, {
         gasLimit: 500000,
       });
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       console.log('propagating fee manager controller...');
       tx = await dc.NFTGemFeeManager.addController(dc.NFTGemGovernor.address, {
         gasLimit: 500000,
       });
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       console.log('minting initial governance tokens...');
       tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(
@@ -174,7 +165,7 @@ export default async function publisher(
           gasLimit: 5000000,
         }
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       // deploy the governance token wrapper
       console.log('deploying wrapped governance token...');
@@ -203,7 +194,7 @@ export default async function publisher(
         0,
         dc.NFTGemFeeManager.address
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       // approve the wrappedgem contract
       console.log('approving wrapped governance token as operator...');
@@ -212,13 +203,15 @@ export default async function publisher(
         true,
         {from: sender.address}
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
     } else {
       console.log('contracts already deployed and initialized.');
     }
 
     return dc;
   };
+
+  deployContracts.bind(self);
 
   const getDeployedContracts = async () => {
     const ret: any = {
@@ -397,7 +390,7 @@ export default async function publisher(
         allowedToken,
         {gasLimit: 5000000}
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       nonce = BigNumber.from(tx.nonce).add(1);
       poolAddr = await getGemPoolAddress(symbol);
       console.log(`address: ${poolAddr}`);
@@ -413,7 +406,7 @@ export default async function publisher(
         dc.NFTGemFeeManager.address,
         {gasLimit: 5000000, nonce}
       );
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       nonce = nonce.add(1);
       const gtAddr = await getGemTokenAddress(`W${symbol}`);
       console.log(`address: ${gtAddr}`);
@@ -454,14 +447,13 @@ export default async function publisher(
             });
           }
         }
-        await waitForMined(tx.hash);
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       }
     }
     return await getGemPoolAddress(symbol);
   };
 
   return {
-    waitForMined,
     deployContracts,
     deployedContracts: dc,
     getGemPoolAddress,
