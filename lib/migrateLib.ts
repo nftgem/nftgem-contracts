@@ -1,12 +1,13 @@
 import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {pack, keccak256} from '@ethersproject/solidity';
 import publisher from './publishLib';
-import {BigNumber} from 'ethers';
+import {BigNumber, Contract} from 'ethers';
 
 export default async function migrator(
   hre: HardhatRuntimeEnvironment,
   factoryAddress: string,
-  tokenAddress: string
+  tokenAddress: string,
+  accountAddress?: string
 ): Promise<any> {
   const {ethers} = hre;
   const {getContractAt} = ethers;
@@ -42,81 +43,164 @@ export default async function migrator(
   const tx = await newToken.addController(dc.BulkTokenMinter.address);
   await waitForMined(tx.hash);
 
-  // go through each published gem pool in old gem pool factory
-  const gpLen = await oldFactory.allNFTGemPoolsLength();
-  for (let gp = 0; gp < gpLen.toNumber(); gp++) {
-    const gpAddr = await oldFactory.allNFTGemPools(gp);
-    const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
-    const sym = await oldData.symbol();
-    // these are ded
-    if (sym === 'AMAST' || sym === 'MCU') {
-      continue;
+  // if an account address was given then migrate the accounts gems
+  if (accountAddress) {
+    // get all nft gem pool addresses
+    const gemPoolsLen = await oldFactory.allNFTGemPoolsLength();
+    let gemPools = [];
+    for (let i = 0; i < gemPoolsLen.toNumber(); i++) {
+      gemPools.push(oldFactory.allNFTGemPools(i));
     }
-
-    // create the new gem pool using the old pools
-    // current settings
-    console.log(`processing pool symbol ${sym}`);
-    let newGpAddr = await newFactory.getNFTGemPool(
-      keccak256(['bytes'], [pack(['string'], [sym])])
-    );
-    if (BigNumber.from(newGpAddr).eq(0)) {
-      newGpAddr = await createPool(
-        sym,
-        await oldData.name(),
-        await oldData.ethPrice(),
-        await oldData.minTime(),
-        await oldData.maxTime(),
-        await oldData.difficultyStep(),
-        await oldData.maxClaims(),
-        '0x0000000000000000000000000000000000000000'
+    gemPools = await Promise.all(gemPools);
+    (
+      await Promise.all(
+        gemPools.map(async (gp: string) =>
+          hre.ethers.getContractAt('NFTComplexGemPoolData', gp)
+        )
+      )
+    ).forEach(async (poolContract: any) => {
+      const symbol = await poolContract.symbol();
+      const poolHash = keccak256(['bytes'], [pack(['string'], [symbol])]);
+      const newPoolAddress = await newFactory.getNFTGemPool(poolHash);
+      if (newPoolAddress.eq(0)) {
+        console.log(`Could not find NFTGemPool for ${symbol}`);
+        return;
+      }
+      const newPoolContract = await hre.ethers.getContractAt(
+        'NFTComplexGemPoolData',
+        newPoolAddress
       );
+
+      // get all token hashes for pool
+      const tokenHashesLen = await poolContract.allTokenHashesLength();
+      let allTokenHashes: any = [];
+      for (let i = 0; i < tokenHashesLen.toNumber(); i++) {
+        allTokenHashes.push(poolContract.allTokenHashes(i));
+      }
+      allTokenHashes = await Promise.all(allTokenHashes);
+      // get balance for given owner address fpr all tokens
+      const tokenBalances = await Promise.all(
+        allTokenHashes.map((th: BigNumber) =>
+          oldToken.balanceOf(accountAddress, th)
+        )
+      );
+
+      // get the token types for only non-zero balances
+      let tokenTypes: any = [];
+      const balances: any = [];
+      let recipientTokens: any = [];
+      tokenBalances.forEach((bal: any, i) => {
+        if (!bal.eq(0)) {
+          recipientTokens.push(allTokenHashes[i]);
+          tokenTypes.push(poolContract.tokenType(allTokenHashes[i]));
+          balances.push(bal);
+        }
+      });
+      if (recipientTokens.length === 0) return;
+      tokenTypes = await Promise.all(tokenTypes);
+
+      recipientTokens = recipientTokens
+        .filter((rt: any, j: any) => tokenTypes[j] === 2)
+        .forEach(async (hash: any) => {
+          const tx = await newPoolContract.importLegacyGem(
+            poolContract.address,
+            alegacyToken,
+            hash,
+            accountAddress
+          );
+          console.log(tx);
+        });
+    });
+  } else {
+    // go through each published gem pool in old gem pool factory
+    const gpLen = await oldFactory.allNFTGemPoolsLength();
+    for (let gp = 0; gp < gpLen.toNumber(); gp++) {
+      const gpAddr = await oldFactory.allNFTGemPools(gp);
+      const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
+      const sym = await oldData.symbol();
+      // these are ded
+      if (sym === 'AMAST' || sym === 'MCU') {
+        continue;
+      }
+
+      // create the new gem pool using the old pools
+      // current settings
+      console.log(`processing pool symbol ${sym}`);
+      let newGpAddr = await newFactory.getNFTGemPool(
+        keccak256(['bytes'], [pack(['string'], [sym])])
+      );
+      if (BigNumber.from(newGpAddr).eq(0)) {
+        newGpAddr = await createPool(
+          sym,
+          await oldData.name(),
+          await oldData.ethPrice(),
+          await oldData.minTime(),
+          await oldData.maxTime(),
+          await oldData.difficultyStep(),
+          await oldData.maxClaims(),
+          '0x0000000000000000000000000000000000000000'
+        );
+      }
+      if (BigNumber.from(newGpAddr).eq(0)) {
+        console.log(`cant create pool symbol ${sym}`);
+        continue;
+      }
+
+      const pc = await getPoolContract(newGpAddr);
+      const nextGemId = await oldData.mintedCount();
+      const nextClaimId = await oldData.claimedCount();
+
+      // set the next-ids (claim, gem) to set pools current
+      let tx = await pc.setNextIds(nextClaimId, nextGemId);
+      await waitForMined(tx.hash);
+      console.log(
+        `${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`
+      );
+
+      // add the legacy token as an allowed token source
+      tx = await pc.addAllowedTokenSource(alegacyToken);
+      await waitForMined(tx.hash);
+      console.log(`${sym} added token source ${alegacyToken.toString()}`);
+
+      // set the categpry to the address of the new
+      tx = await pc.setCategory(oldToken);
+      await waitForMined(tx.hash);
+
+      console.log(`${sym} set category -${oldToken}`);
     }
-    if (BigNumber.from(newGpAddr).eq(0)) {
-      console.log(`cant create pool symbol ${sym}`);
-      continue;
+
+    // get the length of old gov token hodlers
+    const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
+    console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+
+    let holders = [],
+      govQuantities = [];
+
+    // process each gov token hodler
+    for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+      const thAddr = await oldToken.allTokenHolders(0, i);
+      const th0Bal = await oldToken.balanceOf(thAddr, 0);
+
+      holders.push(thAddr);
+      govQuantities.push(th0Bal);
+      console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
+
+      // mint governance tokens in batches of ten
+      if (i % 10 === 0 && holders.length > 1) {
+        const tx = await dc.BulkTokenMinter.bulkMintGov(
+          newToken.address,
+          holders,
+          govQuantities,
+          {gasLimit: 5000000}
+        );
+        await waitForMined(tx.hash);
+        holders = [];
+        govQuantities = [];
+      }
     }
 
-    const pc = await getPoolContract(newGpAddr);
-    const nextGemId = await oldData.mintedCount();
-    const nextClaimId = await oldData.claimedCount();
-
-    // set the next-ids (claim, gem) to set pools current
-    let tx = await pc.setNextIds(nextClaimId, nextGemId);
-    await waitForMined(tx.hash);
-    console.log(
-      `${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`
-    );
-
-    // add the legacy token as an allowed token source
-    tx = await pc.addAllowedTokenSource(alegacyToken);
-    await waitForMined(tx.hash);
-    console.log(`${sym} added token source ${alegacyToken.toString()}`);
-
-    // set the categpry to the address of the new
-    tx = await pc.setCategory(oldToken);
-    await waitForMined(tx.hash);
-
-    console.log(`${sym} set category -${oldToken}`);
-  }
-
-  // get the length of old gov token hodlers
-  const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
-  console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
-
-  let holders = [],
-    govQuantities = [];
-
-  // process each gov token hodler
-  for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
-    const thAddr = await oldToken.allTokenHolders(0, i);
-    const th0Bal = await oldToken.balanceOf(thAddr, 0);
-
-    holders.push(thAddr);
-    govQuantities.push(th0Bal);
-    console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
-
-    // mint governance tokens in batches of ten
-    if (i % 10 === 0 && holders.length > 1) {
+    // mint any tokens not processed above
+    if (holders.length > 0) {
       const tx = await dc.BulkTokenMinter.bulkMintGov(
         newToken.address,
         holders,
@@ -124,22 +208,8 @@ export default async function migrator(
         {gasLimit: 5000000}
       );
       await waitForMined(tx.hash);
-      holders = [];
-      govQuantities = [];
     }
   }
-
-  // mint any tokens not processed above
-  if (holders.length > 0) {
-    const tx = await dc.BulkTokenMinter.bulkMintGov(
-      newToken.address,
-      holders,
-      govQuantities,
-      {gasLimit: 5000000}
-    );
-    await waitForMined(tx.hash);
-  }
-
   // we are done!
   console.log('Migration complete\n');
 

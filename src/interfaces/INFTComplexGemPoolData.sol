@@ -99,7 +99,7 @@ interface INFTComplexGemPoolData {
             uint256 claimClaimUnlockTime,
             uint256 claimClaimTokenAmount,
             address claimStakedToken,
-            uint256 claimNNextClaimId
+            uint256 claimNextClaimId
         );
 
     function token(uint256 tokenHash)
