@@ -55,10 +55,10 @@ describe('NFTGemMultiToken contract', function () {
     });
 
     it('Should not add proxy registry', async function () {
-      const [manager, proxyRegistry] = await ethers.getSigners();
+      const [address1, address2] = await ethers.getSigners();
       await expect(
-        NFTGemMultiToken.connect(manager).addProxyRegistry(
-          proxyRegistry.address
+        NFTGemMultiToken.connect(address2).addProxyRegistry(
+          address1.address
         )
       ).to.be.revertedWith('UNAUTHORIZED');
     });
@@ -76,9 +76,9 @@ describe('NFTGemMultiToken contract', function () {
     });
 
     it('Should not remove proxy registry', async function () {
-      const [manager] = await ethers.getSigners();
+      const [_, address2] = await ethers.getSigners();
       await expect(
-        NFTGemMultiToken.connect(manager).removeProxyRegistryAt(0)
+        NFTGemMultiToken.connect(address2).removeProxyRegistryAt(0)
       ).to.be.revertedWith('UNAUTHORIZED');
       await expect(
         NFTGemMultiToken.removeProxyRegistryAt(2)
