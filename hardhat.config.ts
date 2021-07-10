@@ -23,7 +23,7 @@ import '@nomiclabs/hardhat-etherscan';
 import {node_url, accounts} from './utils/network';
 import {BigNumber} from 'ethers';
 
-import publisher from './lib/publishLib';
+import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
 
 task('check-fees', 'Check the fee manager balance').setAction(
@@ -31,9 +31,7 @@ task('check-fees', 'Check the fee manager balance').setAction(
     // get the fee manager contract
     const bitgemFeeManager = await hre.ethers.getContractAt(
       'NFTGemFeeManager',
-      (
-        await hre.deployments.get('NFTGemFeeManager')
-      ).address
+      (await hre.deployments.get('NFTGemFeeManager')).address
     );
     const bg = await bitgemFeeManager.ethBalanceOf();
     console.log(
@@ -49,9 +47,7 @@ task('held-tokens', 'Get a list of held tokens for the given address')
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     const allTokens = await multitoken.heldTokens(address);
     for (let i = 0; i < allTokens.length; i++) {
@@ -70,9 +66,7 @@ task(
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     const allHodlers = await multitoken.tokenHolders(hash);
     for (let i = 0; i < allHodlers.length; i++) {
@@ -87,9 +81,7 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     // get the gem pool factory
     const gemPoolFactory = await hre.ethers.getContractAt(
       'NFTGemPoolFactory',
-      (
-        await hre.deployments.get('NFTGemPoolFactory')
-      ).address
+      (await hre.deployments.get('NFTGemPoolFactory')).address
     );
     // get all gem pool addresses
     const gemPools = await gemPoolFactory.nftGemPools();
@@ -136,9 +128,7 @@ task('pool-tokens-for', 'show pool tokens for given pool held by given address')
     // get all gempool contracts
     const multitoken: any = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     // get the token symbol
     const symbol = await poolContract.symbol();
@@ -367,9 +357,7 @@ task('send-token-to', 'Send the given claim or gem to the given address')
       // get the multitoken contract
       const multitoken: any = await hre.ethers.getContractAt(
         'NFTGemMultiToken',
-        (
-          await hre.deployments.get('NFTGemMultiToken')
-        ).address
+        (await hre.deployments.get('NFTGemMultiToken')).address
       );
       // get the signer
       const signer = await hre.ethers.provider.getSigner();
@@ -392,7 +380,7 @@ task(
   'Publish test suite items. Publishes a set of gem pools designed to test through all Bitgem functionality'
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   // get all gempool contracts
-  const {createPool, deployedContracts} = await publisher(hre, false);
+  const {createPool, deployedContracts} = await publish(hre, false);
 
   // publish a minion - can be minted with no input requirements
   const minionAddress = await createPool(
