@@ -160,6 +160,8 @@ export default async function migrator(
       // add the legacy token as an allowed token source
       tx = await pc.addAllowedTokenSource(alegacyToken);
       await waitForMined(tx.hash);
+      tx = await oldToken.addController(newGpAddr);
+      await waitForMined(tx.hash);
       console.log(`${sym} added token source ${alegacyToken.toString()}`);
 
       // set the categpry to the address of the new

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
+import "../interfaces/IControllable.sol";
 
 import "../pool/NFTComplexGemPool.sol";
 import "../pool/ComplexPoolLib.sol";
@@ -63,6 +64,7 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
 
         // use create2 to deploy the quantized erc20 contract
         gemPool = payable(Create2.deploy(0, salt, bytecode));
+        IControllable(gemPool).addController(msg.sender);
 
         // insert the erc20 contract address into lists - one that maps source to quantized,
         _getNFTGemPool[uint256(salt)] = gemPool;
@@ -89,6 +91,7 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
 
         // return the address that was passed in
         gemPool = payable(poolAddress);
+        IControllable(gemPool).addController(msg.sender);
 
         // emit an event about the new pool being created
         emit CustomNFTGemPoolCreated(gemPool, gemSymbol, gemName);
@@ -121,6 +124,7 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
 
         // use create2 to deploy the quantized erc20 contract
         gemPool = payable(Create2.deploy(0, salt, bytecode));
+        IControllable(gemPool).addController(msg.sender);
 
         // initialize the erc20 contract with the relevant addresses which it proxies
         NFTComplexGemPool(gemPool).initialize(

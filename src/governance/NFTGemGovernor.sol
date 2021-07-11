@@ -181,8 +181,10 @@ contract NFTGemGovernor is Controllable, INFTGemGovernor {
         address pool
     ) internal {
         IControllable(multitoken).addController(pool);
-        INFTGemMultiToken(multitoken).addProxyRegistry(pool);
         IControllable(this).addController(pool);
+        INFTGemMultiToken(multitoken).addProxyRegistry(pool);
+        IControllable(pool).addController(creator);
+
         INFTComplexGemPool(pool).setMultiToken(multitoken);
         INFTComplexGemPool(pool).setSwapHelper(swapHelper);
         INFTComplexGemPool(pool).setGovernor(address(this));

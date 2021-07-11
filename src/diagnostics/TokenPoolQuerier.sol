@@ -21,11 +21,9 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
         override
         returns (uint256[] memory claims, uint256[] memory gems)
     {
-        require(
-            (page + 1) * count <
-                INFTComplexGemPoolData(gemPool).allTokenHashesLength(),
-            "OUT_OF_RANGE"
-        );
+        uint256 allTokenHashesLength = INFTComplexGemPoolData(gemPool)
+        .allTokenHashesLength();
+        require((page * count) <= allTokenHashesLength, "OUT_OF_RANGE");
 
         uint256 claimLen = 0;
         uint256 gemLen = 0;
@@ -34,6 +32,9 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
         gems = new uint256[](count);
 
         for (uint256 i = page * count; i < (page * count) + count; i++) {
+            if (i >= allTokenHashesLength) {
+                break;
+            }
             uint256 claimHash = INFTComplexGemPoolData(gemPool).allTokenHashes(
                 i
             );

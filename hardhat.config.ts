@@ -31,7 +31,9 @@ task('check-fees', 'Check the fee manager balance').setAction(
     // get the fee manager contract
     const bitgemFeeManager = await hre.ethers.getContractAt(
       'NFTGemFeeManager',
-      (await hre.deployments.get('NFTGemFeeManager')).address
+      (
+        await hre.deployments.get('NFTGemFeeManager')
+      ).address
     );
     const bg = await bitgemFeeManager.ethBalanceOf();
     console.log(
@@ -47,7 +49,9 @@ task('held-tokens', 'Get a list of held tokens for the given address')
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     const allTokens = await multitoken.heldTokens(address);
     for (let i = 0; i < allTokens.length; i++) {
@@ -66,7 +70,9 @@ task(
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     const allHodlers = await multitoken.tokenHolders(hash);
     for (let i = 0; i < allHodlers.length; i++) {
@@ -81,7 +87,9 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     // get the gem pool factory
     const gemPoolFactory = await hre.ethers.getContractAt(
       'NFTGemPoolFactory',
-      (await hre.deployments.get('NFTGemPoolFactory')).address
+      (
+        await hre.deployments.get('NFTGemPoolFactory')
+      ).address
     );
     // get all gem pool addresses
     const gemPools = await gemPoolFactory.nftGemPools();
@@ -128,7 +136,9 @@ task('pool-tokens-for', 'show pool tokens for given pool held by given address')
     // get all gempool contracts
     const multitoken: any = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     // get the token symbol
     const symbol = await poolContract.symbol();
@@ -357,7 +367,9 @@ task('send-token-to', 'Send the given claim or gem to the given address')
       // get the multitoken contract
       const multitoken: any = await hre.ethers.getContractAt(
         'NFTGemMultiToken',
-        (await hre.deployments.get('NFTGemMultiToken')).address
+        (
+          await hre.deployments.get('NFTGemMultiToken')
+        ).address
       );
       // get the signer
       const signer = await hre.ethers.provider.getSigner();
@@ -380,10 +392,11 @@ task(
   'Publish test suite items. Publishes a set of gem pools designed to test through all Bitgem functionality'
 ).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
   // get all gempool contracts
-  const {createPool, deployedContracts} = await publish(hre, false);
+  const publisher = await publish(hre, false);
+  const deployedContracts = await publisher.getDeployedContracts();
 
   // publish a minion - can be minted with no input requirements
-  const minionAddress = await createPool(
+  const minionAddress = await publisher.createPool(
     'TEST1',
     'Test Minion',
     hre.ethers.utils.parseEther('1'),
@@ -395,7 +408,7 @@ task(
   );
 
   // publish an underboss - must have a minion to mint
-  const underBossAddress = await createPool(
+  const underBossAddress = await publisher.createPool(
     'TEST2',
     'Test Underboss',
     hre.ethers.utils.parseEther('1'),
@@ -418,7 +431,7 @@ task(
   );
 
   // publish a level boss - must have a minion and underboss to mint
-  const levelBossAddress = await createPool(
+  const levelBossAddress = await publisher.createPool(
     'TEST3',
     'Test Level Boss',
     hre.ethers.utils.parseEther('1'),
@@ -451,7 +464,7 @@ task(
 
   // publish a big boss - requires minion, underboss
   // and level boss and keeps all of them
-  await createPool(
+  await publisher.createPool(
     'TEST4',
     'Test Big Boss',
     hre.ethers.utils.parseEther('1'),

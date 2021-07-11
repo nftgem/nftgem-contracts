@@ -20,6 +20,7 @@ export default async function publish(
     d = hre.deployments.deploy;
     networkId = networkId;
     deployedContracts: any;
+    gemPoolFactory: any;
 
     constructor() {
       this.deployContracts = this.deployContracts.bind(this);
@@ -48,26 +49,26 @@ export default async function publish(
         wrappedTokenLib,
         proposalsLib,
         complexPoolLib,
-      ] = await Promise.all([
-        this.d('Strings', libDeployParams),
-        this.d('UInt256Set', libDeployParams),
-        this.d('Create2', libDeployParams),
-        this.d('WrappedTokenLib', libDeployParams),
-        this.d('ProposalsLib', {
+      ] = [
+        await this.d('Strings', libDeployParams),
+        await this.d('UInt256Set', libDeployParams),
+        await this.d('Create2', libDeployParams),
+        await this.d('WrappedTokenLib', libDeployParams),
+        await this.d('ProposalsLib', {
           from: sender.address,
           log: true,
           libraries: {
             GovernanceLib: govLib.address,
           },
         }),
-        this.d('ComplexPoolLib', {
+        await this.d('ComplexPoolLib', {
           from: sender.address,
           log: true,
           libraries: {
             AddressSet: addressSet.address,
           },
         }),
-      ]);
+      ];
 
       const deployParams: any = {
         from: sender.address,
@@ -84,17 +85,17 @@ export default async function publish(
         },
       };
 
-      await Promise.all([
-        this.d('NFTGemGovernor', deployParams),
-        this.d('NFTGemMultiToken', deployParams),
-        this.d('NFTGemPoolFactory', deployParams),
-        this.d('NFTGemFeeManager', deployParams),
-        this.d('ProposalFactory', deployParams),
-        this.d('MockProxyRegistry', deployParams),
-        this.d('ERC20GemTokenFactory', deployParams),
-        this.d('TokenPoolQuerier', deployParams),
-        this.d('BulkTokenMinter', deployParams),
-      ]);
+      [
+        await this.d('NFTGemGovernor', deployParams),
+        await this.d('NFTGemMultiToken', deployParams),
+        await this.d('NFTGemPoolFactory', deployParams),
+        await this.d('NFTGemFeeManager', deployParams),
+        await this.d('ProposalFactory', deployParams),
+        await this.d('MockProxyRegistry', deployParams),
+        await this.d('ERC20GemTokenFactory', deployParams),
+        await this.d('TokenPoolQuerier', deployParams),
+        await this.d('BulkTokenMinter', deployParams),
+      ];
 
       let SwapHelper = undefined;
       if (parseInt(networkId) === 1) {
@@ -179,7 +180,9 @@ export default async function publish(
         console.log('intializing wrapped governance token...');
         dc.NFTGemWrappedERC20Governance = await this.getContractAt(
           'NFTGemWrappedERC20Governance',
-          (await this.get('NFTGemWrappedERC20Governance')).address,
+          (
+            await this.get('NFTGemWrappedERC20Governance')
+          ).address,
           sender
         );
         tx = await dc.NFTGemWrappedERC20Governance.initialize(
@@ -214,37 +217,51 @@ export default async function publish(
       this.deployedContracts = {
         NFTGemGovernor: await this.getContractAt(
           'NFTGemGovernor',
-          (await this.get('NFTGemGovernor')).address,
+          (
+            await this.get('NFTGemGovernor')
+          ).address,
           sender
         ),
         NFTGemMultiToken: await this.getContractAt(
           'NFTGemMultiToken',
-          (await this.get('NFTGemMultiToken')).address,
+          (
+            await this.get('NFTGemMultiToken')
+          ).address,
           sender
         ),
         NFTGemPoolFactory: await this.getContractAt(
           'NFTGemPoolFactory',
-          (await this.get('NFTGemPoolFactory')).address,
+          (
+            await this.get('NFTGemPoolFactory')
+          ).address,
           sender
         ),
         NFTGemFeeManager: await this.getContractAt(
           'NFTGemFeeManager',
-          (await this.get('NFTGemFeeManager')).address,
+          (
+            await this.get('NFTGemFeeManager')
+          ).address,
           sender
         ),
         ProposalFactory: await this.getContractAt(
           'ProposalFactory',
-          (await this.get('ProposalFactory')).address,
+          (
+            await this.get('ProposalFactory')
+          ).address,
           sender
         ),
         ERC20GemTokenFactory: await this.getContractAt(
           'ERC20GemTokenFactory',
-          (await this.get('ERC20GemTokenFactory')).address,
+          (
+            await this.get('ERC20GemTokenFactory')
+          ).address,
           sender
         ),
         MockProxyRegistry: await this.getContractAt(
           'MockProxyRegistry',
-          (await this.get('MockProxyRegistry')).address,
+          (
+            await this.get('MockProxyRegistry')
+          ).address,
           sender
         ),
       };
@@ -252,31 +269,41 @@ export default async function publish(
       if (parseInt(networkId) === 1) {
         this.deployedContracts.SwapHelper = await this.getContractAt(
           'UniswapQueryHelper',
-          (await this.get('UniswapQueryHelper')).address,
+          (
+            await this.get('UniswapQueryHelper')
+          ).address,
           sender
         );
       } else if (parseInt(networkId) === 250) {
         this.deployedContracts.SwapHelper = await this.getContractAt(
           'SushiSwapQueryHelper',
-          (await this.get('SushiSwapQueryHelper')).address,
+          (
+            await this.get('SushiSwapQueryHelper')
+          ).address,
           sender
         );
       } else if (parseInt(networkId) === 43114) {
         this.deployedContracts.SwapHelper = await this.getContractAt(
           'PangolinQueryHelper',
-          (await this.get('PangolinQueryHelper')).address,
+          (
+            await this.get('PangolinQueryHelper')
+          ).address,
           sender
         );
       } else if (parseInt(networkId) === 56) {
         this.deployedContracts.SwapHelper = await this.getContractAt(
           'PancakeSwapQueryHelper',
-          (await this.get('PancakeSwapQueryHelper')).address,
+          (
+            await this.get('PancakeSwapQueryHelper')
+          ).address,
           sender
         );
       } else {
         this.deployedContracts.SwapHelper = await this.getContractAt(
           'MockQueryHelper',
-          (await this.get('MockQueryHelper')).address,
+          (
+            await this.get('MockQueryHelper')
+          ).address,
           sender
         );
       }
@@ -284,25 +311,29 @@ export default async function publish(
     }
 
     async getGemPoolAddress(sym: string) {
-      return await (
-        await this.getDeployedContracts()
-      ).NFTGemPoolFactory.getNFTGemPool(
+      return await this.deployedContracts.NFTGemPoolFactory.getNFTGemPool(
         keccak256(['bytes'], [pack(['string'], [sym])])
       );
     }
 
     async getGemTokenAddress(sym: string) {
-      return await (
-        await this.getDeployedContracts()
-      ).ERC20GemTokenFactory.getItem(
+      return await this.deployedContracts.ERC20GemTokenFactory.getItem(
         keccak256(['bytes'], [pack(['string'], [sym])])
       );
     }
 
     async getPoolContract(addr: string) {
-      return await (await this.getDeployedContracts()).NFTComplexGemPool.attach(
-        addr
-      );
+      if (!this.gemPoolFactory)
+        this.gemPoolFactory = await this.ethers.getContractFactory(
+          'NFTComplexGemPoolData',
+          {
+            signer: sender,
+            libraries: {
+              ComplexPoolLib: (await this.get('ComplexPoolLib')).address,
+            },
+          }
+        );
+      return await this.gemPoolFactory.attach(addr);
     }
 
     async createPool(
@@ -318,8 +349,7 @@ export default async function publish(
     ): Promise<any> {
       const dc = await this.getDeployedContracts();
       let tx,
-        created = false,
-        nonce = this.BigNumber.from(0);
+        created = false;
       let poolAddr = await this.getGemPoolAddress(symbol);
       if (this.BigNumber.from(poolAddr).eq(0)) {
         // create the gem pool
@@ -336,7 +366,7 @@ export default async function publish(
           {gasLimit: 5000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        nonce = this.BigNumber.from(tx.nonce).add(1);
+
         poolAddr = await this.getGemPoolAddress(symbol);
         console.log(`address: ${poolAddr}`);
 
@@ -349,10 +379,10 @@ export default async function publish(
           dc.NFTGemMultiToken.address,
           18,
           dc.NFTGemFeeManager.address,
-          {gasLimit: 5000000, nonce}
+          {gasLimit: 5000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        nonce = nonce.add(1);
+
         const gtAddr = await this.getGemTokenAddress(`W${symbol}`);
         console.log(`address: ${gtAddr}`);
 
@@ -366,38 +396,16 @@ export default async function publish(
         inputRequirements.length > 0 &&
         inputRequirements.length > reqlen
       ) {
-        for (
-          let ii = 0;
-          ii < inputRequirements.length;
-          ii++, nonce = nonce.add(1)
-        ) {
+        for (let ii = 0; ii < inputRequirements.length; ii++) {
           if (ii < reqlen) {
             console.log(`updating complex requirements to ${name} (${symbol})`);
-            if (nonce.eq(0)) {
-              tx = await pc.updateInputRequirement(
-                ii,
-                ...inputRequirements[ii]
-              );
-              nonce = this.BigNumber.from(tx.nonce);
-            } else {
-              tx = await pc.updateInputRequirement(
-                ii,
-                ...inputRequirements[ii],
-                {
-                  nonce,
-                }
-              );
-            }
+            tx = await pc.updateInputRequirement(ii, ...inputRequirements[ii]);
           } else {
-            console.log(`adding complex requirements to ${name} (${symbol})`);
-            if (nonce.eq(0)) {
-              tx = await pc.addInputRequirement(...inputRequirements[ii]);
-              nonce = this.BigNumber.from(tx.nonce);
-            } else {
-              tx = await pc.addInputRequirement(...inputRequirements[ii], {
-                nonce,
-              });
-            }
+            console.log(
+              `adding complex requirements to ${name} (${symbol}): ` +
+                JSON.stringify(inputRequirements[ii])
+            );
+            tx = await pc.addInputRequirement(...inputRequirements[ii]);
           }
           await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         }

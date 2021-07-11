@@ -12,6 +12,19 @@ interface INFTComplexGemPoolData {
     }
 
     /**
+     * @dev a requirement of erc20, erc1155, or nft gem
+     */
+    struct InputRequirement {
+        address token;
+        address pool;
+        INFTComplexGemPool.RequirementType inputType; // 1 = erc20, 2 = erc1155, 3 = pool
+        uint256 tokenId; // if erc20 slot 0 contains required amount
+        uint256 minVal;
+        bool takeCustody;
+        bool burn;
+    }
+
+    /**
      * @dev Event generated when an NFT claim is imported from a legacy contract
      */
     event NFTGemImported(

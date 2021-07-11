@@ -69,19 +69,6 @@ library ComplexPoolLib {
     );
 
     /**
-     * @dev a requirement of erc20, erc1155, or nft gem
-     */
-    struct InputRequirement {
-        address token;
-        address pool;
-        INFTComplexGemPool.RequirementType inputType; // 1 = erc20, 2 = erc1155, 3 = pool
-        uint256 tokenId; // if erc20 slot 0 contains required amount
-        uint256 minVal;
-        bool takeCustody;
-        bool burn;
-    }
-
-    /**
      * @dev Event generated when a gem is created
      */
     event NFTGemCreated(
@@ -142,7 +129,7 @@ library ComplexPoolLib {
         mapping(uint256 => uint256[]) claimQuantities;
         mapping(address => bool) controllers;
         mapping(address => uint256) claimsMade;
-        InputRequirement[] inputRequirements;
+        INFTComplexGemPoolData.InputRequirement[] inputRequirements;
         AddressSet.Set allowedTokens;
     }
 
@@ -401,7 +388,7 @@ library ComplexPoolLib {
         require(minAmount != 0, "ZERO_AMOUNT");
         require(!(!takeCustody && burn), "INVALID_TOKENSTATE");
         self.inputRequirements.push(
-            InputRequirement(
+            INFTComplexGemPoolData.InputRequirement(
                 token,
                 pool,
                 inputType,
@@ -457,7 +444,8 @@ library ComplexPoolLib {
         );
         require(_minAmount != 0, "ZERO_AMOUNT");
         require(!(!_takeCustody && _burn), "INVALID_TOKENSTATE");
-        self.inputRequirements[_index] = InputRequirement(
+        self.inputRequirements[_index] = INFTComplexGemPoolData
+        .InputRequirement(
             _tokenAddress,
             _poolAddress,
             _inputRequirementType,
@@ -496,7 +484,8 @@ library ComplexPoolLib {
         )
     {
         require(_index < self.inputRequirements.length, "OUT_OF_RANGE");
-        InputRequirement memory req = self.inputRequirements[_index];
+        INFTComplexGemPoolData.InputRequirement memory req = self
+        .inputRequirements[_index];
         return (
             req.token,
             req.pool,
