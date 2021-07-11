@@ -37,30 +37,13 @@ export default async function publish(
         log: true,
       };
 
-      const [govLib, addressSet] = [
-        await this.d('GovernanceLib', libDeployParams),
-        await this.d('AddressSet', libDeployParams),
-      ];
+      const [addressSet] = [await this.d('AddressSet', libDeployParams)];
 
-      const [
-        strings,
-        uint256Set,
-        create2,
-        wrappedTokenLib,
-        proposalsLib,
-        complexPoolLib,
-      ] = [
+      const [strings, uint256Set, create2, wrappedTokenLib, complexPoolLib] = [
         await this.d('Strings', libDeployParams),
         await this.d('UInt256Set', libDeployParams),
         await this.d('Create2', libDeployParams),
         await this.d('WrappedTokenLib', libDeployParams),
-        await this.d('ProposalsLib', {
-          from: sender.address,
-          log: true,
-          libraries: {
-            GovernanceLib: govLib.address,
-          },
-        }),
         await this.d('ComplexPoolLib', {
           from: sender.address,
           log: true,
@@ -74,14 +57,12 @@ export default async function publish(
         from: sender.address,
         log: true,
         libraries: {
-          GovernanceLib: govLib.address,
           Strings: strings.address,
           AddressSet: addressSet.address,
           UInt256Set: uint256Set.address,
           Create2: create2.address,
-          ProposalsLib: proposalsLib.address,
-          ComplexPoolLib: complexPoolLib.address,
           WrappedTokenLib: wrappedTokenLib.address,
+          ComplexPoolLib: complexPoolLib.address,
         },
       };
 
@@ -90,7 +71,6 @@ export default async function publish(
         await this.d('NFTGemMultiToken', deployParams),
         await this.d('NFTGemPoolFactory', deployParams),
         await this.d('NFTGemFeeManager', deployParams),
-        await this.d('ProposalFactory', deployParams),
         await this.d('MockProxyRegistry', deployParams),
         await this.d('ERC20GemTokenFactory', deployParams),
         await this.d('TokenPoolQuerier', deployParams),
@@ -130,15 +110,16 @@ export default async function publish(
       if (!inited) {
         console.log('initializing governor...');
 
+        // initialize governor - link it with the other contracts it works with
         let tx = await dc.NFTGemGovernor.initialize(
           dc.NFTGemMultiToken.address,
           dc.NFTGemPoolFactory.address,
           dc.NFTGemFeeManager.address,
-          dc.ProposalFactory.address,
           dc.SwapHelper.address
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
+        // add governor as controller of the multitoken so that it is privileged
         console.log('propagating multitoken controller...');
         tx = await dc.NFTGemMultiToken.addController(
           dc.NFTGemGovernor.address,
@@ -148,59 +129,13 @@ export default async function publish(
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
+        // add governer as controller of the fee manager so that it is privileged
         console.log('propagating fee manager controller...');
         tx = await dc.NFTGemFeeManager.addController(
           dc.NFTGemGovernor.address,
           {
             gasLimit: 500000,
           }
-        );
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        console.log('minting initial governance tokens...');
-        tx = await dc.NFTGemGovernor.issueInitialGovernanceTokens(
-          sender.address,
-          {
-            gasLimit: 5000000,
-          }
-        );
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        // deploy the governance token wrapper
-        console.log('deploying wrapped governance token...');
-        deployParams.args = [
-          'NFTGem Governance',
-          'NFTGG',
-          dc.NFTGemMultiToken.address,
-          dc.NFTGemFeeManager.address,
-        ];
-        await this.d('NFTGemWrappedERC20Governance', deployParams);
-
-        // init governance token wrapper
-        console.log('intializing wrapped governance token...');
-        dc.NFTGemWrappedERC20Governance = await this.getContractAt(
-          'NFTGemWrappedERC20Governance',
-          (
-            await this.get('NFTGemWrappedERC20Governance')
-          ).address,
-          sender
-        );
-        tx = await dc.NFTGemWrappedERC20Governance.initialize(
-          '',
-          '',
-          '0x0000000000000000000000000000000000000000',
-          '0x0000000000000000000000000000000000000000',
-          0,
-          dc.NFTGemFeeManager.address
-        );
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        // approve the wrappedgem contract
-        console.log('approving wrapped governance token as operator...');
-        tx = await dc.NFTGemMultiToken.setApprovalForAll(
-          dc.NFTGemWrappedERC20Governance.address,
-          true,
-          {from: sender.address}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       } else {
@@ -240,13 +175,6 @@ export default async function publish(
           'NFTGemFeeManager',
           (
             await this.get('NFTGemFeeManager')
-          ).address,
-          sender
-        ),
-        ProposalFactory: await this.getContractAt(
-          'ProposalFactory',
-          (
-            await this.get('ProposalFactory')
           ).address,
           sender
         ),

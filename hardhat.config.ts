@@ -421,7 +421,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         minionAddress,
-        3,
+        2,
         0,
         1,
         true,
@@ -444,7 +444,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         minionAddress,
-        3,
+        2,
         0,
         1,
         true,
@@ -453,7 +453,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         underBossAddress,
-        3,
+        2,
         0,
         1,
         true,
@@ -477,7 +477,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         minionAddress,
-        3,
+        2,
         0,
         1,
         true,
@@ -486,7 +486,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         underBossAddress,
-        3,
+        2,
         0,
         1,
         true,
@@ -495,7 +495,7 @@ task(
       [
         deployedContracts.NFTGemMultiToken.address,
         levelBossAddress,
-        3,
+        2,
         0,
         1,
         true,

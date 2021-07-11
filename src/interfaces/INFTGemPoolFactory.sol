@@ -38,13 +38,8 @@ interface INFTGemPoolFactory {
 
     function allNFTGemPoolsLength() external view returns (uint256);
 
-    function createCustomNFTGemPool(
-        bytes memory bytecode,
-        string memory gemSymbol,
-        string memory gemName
-    ) external returns (address payable);
-
     function createNFTGemPool(
+        address owner,
         string memory gemSymbol,
         string memory gemName,
         uint256 ethPrice,
@@ -53,11 +48,5 @@ interface INFTGemPoolFactory {
         uint256 diffstep,
         uint256 maxMint,
         address allowedToken
-    ) external returns (address payable);
-
-    function addCustomNFTGemPool(
-        address poolAddress,
-        string memory gemSymbol,
-        string memory gemName
     ) external returns (address payable);
 }

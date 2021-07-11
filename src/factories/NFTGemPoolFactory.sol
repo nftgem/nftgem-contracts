@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
-import "../interfaces/IControllable.sol";
 
+import "../interfaces/IControllable.sol";
 import "../pool/NFTComplexGemPool.sol";
 import "../pool/ComplexPoolLib.sol";
 
@@ -54,53 +54,8 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
     /**
      * @dev deploy a new erc20 token using create2
      */
-    function createCustomNFTGemPool(
-        bytes memory bytecode,
-        string memory gemSymbol,
-        string memory gemName
-    ) external override returns (address payable gemPool) {
-        bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
-        require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
-
-        // use create2 to deploy the quantized erc20 contract
-        gemPool = payable(Create2.deploy(0, salt, bytecode));
-        IControllable(gemPool).addController(msg.sender);
-
-        // insert the erc20 contract address into lists - one that maps source to quantized,
-        _getNFTGemPool[uint256(salt)] = gemPool;
-        _allNFTGemPools.push(gemPool);
-
-        // emit an event about the new pool being created
-        emit CustomNFTGemPoolCreated(gemPool, gemSymbol, gemName);
-    }
-
-    /**
-     * @dev add an existing gem pool to factory (for migrations)
-     */
-    function addCustomNFTGemPool(
-        address poolAddress,
-        string memory gemSymbol,
-        string memory gemName
-    ) external override returns (address payable gemPool) {
-        bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
-        require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
-
-        // insert the erc20 contract address into lists - one that maps source to quantized,
-        _getNFTGemPool[uint256(salt)] = poolAddress;
-        _allNFTGemPools.push(poolAddress);
-
-        // return the address that was passed in
-        gemPool = payable(poolAddress);
-        IControllable(gemPool).addController(msg.sender);
-
-        // emit an event about the new pool being created
-        emit CustomNFTGemPoolCreated(gemPool, gemSymbol, gemName);
-    }
-
-    /**
-     * @dev deploy a new erc20 token using create2
-     */
     function createNFTGemPool(
+        address owner,
         string memory gemSymbol,
         string memory gemName,
         uint256 ethPrice,
@@ -110,6 +65,8 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
         uint256 maxMint,
         address allowedToken
     ) external override returns (address payable gemPool) {
+        // create the lookup hash for the given symbol
+        // and check if it already exists
         bytes32 salt = keccak256(abi.encodePacked(gemSymbol));
         require(_getNFTGemPool[uint256(salt)] == address(0), "GEMPOOL_EXISTS"); // single check is sufficient
 
@@ -118,13 +75,15 @@ contract NFTGemPoolFactory is INFTGemPoolFactory {
         require(minTime != 0, "INVALID_MIN_TIME");
         require(diffstep != 0, "INVALID_DIFFICULTY_STEP");
 
-        // create the quantized erc20 token using create2, which lets us determine the
-        // quantized erc20 address of a token without interacting with the contract itself
+        // create the gem pool using create2, which lets us determine the
+        // address of a gem pool without interacting with the contract itself
         bytes memory bytecode = type(NFTComplexGemPool).creationCode;
 
-        // use create2 to deploy the quantized erc20 contract
+        // use create2 to deploy the gem pool contract
         gemPool = payable(Create2.deploy(0, salt, bytecode));
-        IControllable(gemPool).addController(msg.sender);
+
+        // set the controller of the gem pool
+        IControllable(gemPool).addController(owner);
 
         // initialize the erc20 contract with the relevant addresses which it proxies
         NFTComplexGemPool(gemPool).initialize(
