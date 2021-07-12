@@ -527,7 +527,7 @@ const config: HardhatUserConfig = {
         },
       },
       {
-        version: '0.5.3',
+        version: '0.5.16',
         settings: {
           optimizer: {
             enabled: true,

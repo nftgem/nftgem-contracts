@@ -103,12 +103,24 @@ export default async function publish(
         SwapHelper = await this.d(`${SwapHelper}QueryHelper`, deployParams);
       }
 
+      // one day in seconds
+      const secondsInADay = 60 * 60 * 24;
+
+      deployParams.args = [sender.address, secondsInADay * 7];
+      const Timelock = await this.d('Timelock', deployParams);
+
+      deployParams.args = [sender.address];
+      const GovToken = await this.d('GovernanceToken', deployParams);
+
+      deployParams.args = [Timelock.address, GovToken.address, sender.address];
+      await this.d('GovernorAlpha', deployParams);
+
       const dc = await this.getDeployedContracts();
 
       const inited = await dc.NFTGemGovernor.initialized();
 
       if (!inited) {
-        console.log('initializing governor...');
+        console.log('initializing nftgem governor...');
 
         // initialize governor - link it with the other contracts it works with
         let tx = await dc.NFTGemGovernor.initialize(
@@ -189,6 +201,27 @@ export default async function publish(
           'MockProxyRegistry',
           (
             await this.get('MockProxyRegistry')
+          ).address,
+          sender
+        ),
+        Timelock: await this.getContractAt(
+          'Timelock',
+          (
+            await this.get('Timelock')
+          ).address,
+          sender
+        ),
+        GovernorAlpha: await this.getContractAt(
+          'GovernorAlpha',
+          (
+            await this.get('GovernorAlpha')
+          ).address,
+          sender
+        ),
+        GovernanceToken: await this.getContractAt(
+          'GovernanceToken',
+          (
+            await this.get('GovernanceToken')
           ).address,
           sender
         ),
