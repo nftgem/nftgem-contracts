@@ -11,6 +11,7 @@ import "../interfaces/INFTGemFeeManager.sol";
 import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/ISwapQueryHelper.sol";
+import "../interfaces/IERC3156FlashLender.sol";
 
 import "../libs/AddressSet.sol";
 
@@ -19,6 +20,7 @@ import "./NFTComplexGemPoolData.sol";
 contract NFTComplexGemPool is
     NFTComplexGemPoolData,
     INFTComplexGemPool,
+    IERC3156FlashLender,
     ERC1155Holder
 {
     using AddressSet for AddressSet.Set;
@@ -209,5 +211,57 @@ contract NFTComplexGemPool is
         override
     {
         poolData.collectClaim(_claimHash, _requireMature);
+    }
+
+    /**
+     * @dev The maximum flash loan amount - 90% of available funds
+     */
+    function maxFlashLoan(address) external view override returns (uint256) {
+        return address(this).balance - (address(this).balance / 10);
+    }
+
+    /**
+     * @dev The flash loan fee - 0.1% of borrowed funds
+     */
+    function flashFee(address, uint256 amount)
+        public
+        pure
+        override
+        returns (uint256)
+    {
+        uint256 fee = 1000; // 0.1 %.
+        return (amount * fee) / 10000;
+    }
+
+    /**
+     * @dev Perform a flash loan (borrow tokens from the controller and return them after a certain time)
+     */
+    function flashLoan(
+        IERC3156FlashBorrower receiver,
+        address token,
+        uint256 amount,
+        bytes calldata data
+    ) external override returns (bool) {
+        uint256 fee = flashFee(token, amount);
+        address receiverAddress = address(receiver);
+        payable(receiverAddress).transfer(amount);
+        uint256 remainBalance = address(this).balance;
+
+        bytes32 CALLBACK_SUCCESS = keccak256(
+            "ERC3156FlashBorrower.onFlashLoan"
+        );
+        require(
+            receiver.onFlashLoan(msg.sender, token, amount, fee, data) ==
+                CALLBACK_SUCCESS,
+            "FlashMinter: Callback failed"
+        );
+
+        uint256 updatedBalance = address(this).balance;
+        require(
+            updatedBalance >= remainBalance * (amount + fee),
+            "FlashMinter: Repay not approved"
+        );
+
+        return true;
     }
 }
