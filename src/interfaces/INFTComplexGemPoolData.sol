@@ -22,6 +22,7 @@ interface INFTComplexGemPoolData {
         uint256 minVal;
         bool takeCustody;
         bool burn;
+        bool exactAmount;
     }
 
     /**
@@ -43,7 +44,8 @@ interface INFTComplexGemPoolData {
         uint256 theTokenId,
         uint256 minAmount,
         bool takeCustody,
-        bool burn
+        bool burn,
+        bool exactAmount
     ) external;
 
     function updateInputRequirement(
@@ -54,7 +56,8 @@ interface INFTComplexGemPoolData {
         uint256 tid,
         uint256 minAmount,
         bool takeCustody,
-        bool burn
+        bool burn,
+        bool exactAmount
     ) external;
 
     function allInputRequirementsLength() external returns (uint256);
@@ -68,6 +71,7 @@ interface INFTComplexGemPoolData {
             INFTComplexGemPool.RequirementType,
             uint256,
             uint256,
+            bool,
             bool,
             bool
         );

@@ -140,15 +140,18 @@ library ComplexPoolLib {
         uint256 _quantity
     ) internal view returns (address) {
         address gemtoken;
-        uint256 required = self.inputRequirements[_inputIndex].minVal *
-            (_quantity);
-        uint256 hashCount = INFTGemMultiToken(
+        int256 required = int256(
+            self.inputRequirements[_inputIndex].minVal * _quantity
+        );
+        uint256[] memory hashes = INFTGemMultiToken(
             self.inputRequirements[_inputIndex].token
-        ).allHeldTokensLength(_holderAddress);
-        for (uint256 _hashIndex = 0; _hashIndex < hashCount; _hashIndex += 1) {
-            uint256 hashAt = INFTGemMultiToken(
-                self.inputRequirements[_inputIndex].token
-            ).allHeldTokens(_holderAddress, _hashIndex);
+        ).heldTokens(_holderAddress);
+        for (
+            uint256 _hashIndex = 0;
+            _hashIndex < hashes.length;
+            _hashIndex += 1
+        ) {
+            uint256 hashAt = hashes[_hashIndex];
             if (
                 INFTComplexGemPoolData(self.inputRequirements[_inputIndex].pool)
                 .tokenType(hashAt) == INFTGemMultiToken.TokenType.GEM
@@ -157,16 +160,22 @@ library ComplexPoolLib {
                 uint256 balance = IERC1155(
                     self.inputRequirements[_inputIndex].token
                 ).balanceOf(_holderAddress, hashAt);
-                if (balance > required) {
-                    balance = required;
+                if (balance > uint256(required)) {
+                    balance = uint256(required);
                 }
                 if (balance == 0) {
                     continue;
                 }
-                required = required - balance;
+                required = required - int256(balance);
             }
-            if (required == 0) {
+            if (
+                required == 0 &&
+                self.inputRequirements[_inputIndex].exactAmount == false
+            ) {
                 break;
+            }
+            if (required < 0) {
+                require(required == 0, "EXACT_AMOUNT_REQUIRED");
             }
         }
         require(required == 0, "UNMET_GEM_REQUIREMENT");
@@ -362,7 +371,8 @@ library ComplexPoolLib {
         uint256 tokenId,
         uint256 minAmount,
         bool takeCustody,
-        bool burn
+        bool burn,
+        bool exactAmount
     ) public {
         require(token != address(0), "INVALID_TOKEN");
         require(
@@ -395,7 +405,8 @@ library ComplexPoolLib {
                 tokenId,
                 minAmount,
                 takeCustody,
-                burn
+                burn,
+                exactAmount
             )
         );
     }
@@ -412,7 +423,8 @@ library ComplexPoolLib {
         uint256 _tokenId,
         uint256 _minAmount,
         bool _takeCustody,
-        bool _burn
+        bool _burn,
+        bool _exactAmount
     ) public {
         require(_index < self.inputRequirements.length, "OUT_OF_RANGE");
         require(_tokenAddress != address(0), "INVALID_TOKEN");
@@ -452,7 +464,8 @@ library ComplexPoolLib {
             _tokenId,
             _minAmount,
             _takeCustody,
-            _burn
+            _burn,
+            _exactAmount
         );
     }
 
@@ -480,6 +493,7 @@ library ComplexPoolLib {
             uint256,
             uint256,
             bool,
+            bool,
             bool
         )
     {
@@ -493,7 +507,8 @@ library ComplexPoolLib {
             req.tokenId,
             req.minVal,
             req.takeCustody,
-            req.burn
+            req.burn,
+            req.exactAmount
         );
     }
 

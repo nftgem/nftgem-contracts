@@ -22,15 +22,6 @@ export default async function publish(
     deployedContracts: any;
     gemPoolFactory: any;
 
-    constructor() {
-      this.deployContracts = this.deployContracts.bind(this);
-      this.getDeployedContracts = this.getDeployedContracts.bind(this);
-      this.getGemPoolAddress = this.getGemPoolAddress.bind(this);
-      this.getGemTokenAddress = this.getGemTokenAddress.bind(this);
-      this.getPoolContract = this.getPoolContract.bind(this);
-      this.deploy = this.deploy.bind(this);
-    }
-
     async deployContracts(): Promise<any> {
       const libDeployParams = {
         from: await sender.getAddress(),
@@ -75,6 +66,7 @@ export default async function publish(
         await this.d('ERC20GemTokenFactory', deployParams),
         await this.d('TokenPoolQuerier', deployParams),
         await this.d('BulkTokenMinter', deployParams),
+        await this.d('BulkTokenSender', deployParams),
       ];
 
       let SwapHelper = undefined;
@@ -225,6 +217,20 @@ export default async function publish(
           ).address,
           sender
         ),
+        BulkTokenMinter: await this.getContractAt(
+          'BulkTokenMinter',
+          (
+            await this.get('BulkTokenMinter')
+          ).address,
+          sender
+        ),
+        BulkTokenSender: await this.getContractAt(
+          'BulkTokenSender',
+          (
+            await this.get('BulkTokenSender')
+          ).address,
+          sender
+        ),
       };
 
       if (parseInt(networkId) === 1) {
@@ -311,6 +317,8 @@ export default async function publish(
       const dc = await this.getDeployedContracts();
       let tx,
         created = false;
+
+      // create the pool if it does not exist
       let poolAddr = await this.getGemPoolAddress(symbol);
       if (this.BigNumber.from(poolAddr).eq(0)) {
         // create the gem pool
@@ -327,10 +335,18 @@ export default async function publish(
           {gasLimit: 5000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
+        // set created flag
+        created = true;
+        // get the address
         poolAddr = await this.getGemPoolAddress(symbol);
         console.log(`address: ${poolAddr}`);
+      } else {
+        console.log(`Exists. address: ${poolAddr}`);
+      }
 
+      // create the gem token if it does not exist
+      let gtAddr = await this.getGemTokenAddress(`W${symbol}`);
+      if (this.BigNumber.from(gtAddr).eq(0)) {
         // create the wrapped erc20 gem contract
         console.log(`Creating wrapped ${name} (${symbol}) token...`);
         tx = await dc.ERC20GemTokenFactory.createItem(
@@ -343,12 +359,14 @@ export default async function publish(
           {gasLimit: 5000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        const gtAddr = await this.getGemTokenAddress(`W${symbol}`);
+        // get the address
+        gtAddr = await this.getGemTokenAddress(`W${symbol}`);
         console.log(`address: ${gtAddr}`);
-
-        created = true;
+      } else {
+        console.log(`Exists. address: ${gtAddr}`);
       }
+
+      // add or update input requirement if they do not exist
       const pc = await this.getPoolContract(poolAddr);
       const reqlen = created ? 0 : await pc.allInputRequirementsLength();
       if (

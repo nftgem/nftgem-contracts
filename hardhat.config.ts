@@ -341,9 +341,15 @@ task(
 )
   .addParam('factory', 'The legacy gem pool factory address')
   .addParam('multitoken', 'The legacy gem multitoken address')
-  .setAction(async ({factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
-    await migrator(hre, factory, multitoken);
-  });
+  .addParam('governance', 'true or 1 to also migrate governance tokens')
+  .setAction(
+    async (
+      {factory, multitoken, migrateGovernance},
+      hre: HardhatRuntimeEnvironment
+    ) => {
+      await migrator(hre, factory, multitoken, migrateGovernance);
+    }
+  );
 
 task(
   'migrate-gems',
@@ -426,6 +432,7 @@ task(
         1,
         true,
         false,
+        false,
       ],
     ]
   );
@@ -449,6 +456,7 @@ task(
         1,
         true,
         false,
+        false,
       ],
       [
         deployedContracts.NFTGemMultiToken.address,
@@ -457,6 +465,7 @@ task(
         0,
         1,
         true,
+        false,
         false,
       ],
     ]
@@ -482,6 +491,7 @@ task(
         1,
         true,
         true,
+        false,
       ],
       [
         deployedContracts.NFTGemMultiToken.address,
@@ -491,6 +501,7 @@ task(
         1,
         true,
         true,
+        false,
       ],
       [
         deployedContracts.NFTGemMultiToken.address,
@@ -500,6 +511,7 @@ task(
         1,
         true,
         true,
+        false,
       ],
     ]
   );

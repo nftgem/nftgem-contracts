@@ -7,7 +7,8 @@ export default async function migrator(
   hre: HardhatRuntimeEnvironment,
   factoryAddress: string,
   tokenAddress: string,
-  accountAddress?: string
+  accountAddress?: string,
+  migrateGovernance?: boolean
 ): Promise<any> {
   const {ethers} = hre;
   const {getContractAt} = ethers;
@@ -17,8 +18,7 @@ export default async function migrator(
 
   // get published artifacts
   const publishItems = await publisher(hre, false);
-  const {deployedContracts, waitForMined, createPool, getPoolContract} =
-      publishItems,
+  const {deployedContracts} = publishItems,
     dc = deployedContracts;
 
   // factory and token addresses
@@ -41,7 +41,7 @@ export default async function migrator(
 
   // add the bulk token minter as a minter
   const tx = await newToken.addController(dc.BulkTokenMinter.address);
-  await waitForMined(tx.hash);
+  await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
   // if an account address was given then migrate the accounts gems
   if (accountAddress) {
@@ -130,7 +130,7 @@ export default async function migrator(
         keccak256(['bytes'], [pack(['string'], [sym])])
       );
       if (BigNumber.from(newGpAddr).eq(0)) {
-        newGpAddr = await createPool(
+        newGpAddr = await publishItems.createPool(
           sym,
           await oldData.name(),
           await oldData.ethPrice(),
@@ -146,70 +146,72 @@ export default async function migrator(
         continue;
       }
 
-      const pc = await getPoolContract(newGpAddr);
+      const pc = await publishItems.getPoolContract(newGpAddr);
       const nextGemId = await oldData.mintedCount();
       const nextClaimId = await oldData.claimedCount();
 
       // set the next-ids (claim, gem) to set pools current
       let tx = await pc.setNextIds(nextClaimId, nextGemId);
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       console.log(
         `${sym} next claim ${nextClaimId.toString()} next gem ${nextGemId.toString()}`
       );
 
       // add the legacy token as an allowed token source
       tx = await pc.addAllowedTokenSource(alegacyToken);
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       tx = await oldToken.addController(newGpAddr);
-      await waitForMined(tx.hash);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       console.log(`${sym} added token source ${alegacyToken.toString()}`);
 
       // set the categpry to the address of the new
-      tx = await pc.setCategory(oldToken);
-      await waitForMined(tx.hash);
+      tx = await pc.setCategory(oldToken.address);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
-      console.log(`${sym} set category -${oldToken}`);
+      console.log(`${sym} set category -${oldToken.address}`);
     }
 
-    // get the length of old gov token hodlers
-    const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
-    console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+    if (migrateGovernance) {
+      // get the length of old gov token hodlers
+      const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
+      console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
 
-    let holders = [],
-      govQuantities = [];
+      let holders = [],
+        govQuantities = [];
 
-    // process each gov token hodler
-    for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
-      const thAddr = await oldToken.allTokenHolders(0, i);
-      const th0Bal = await oldToken.balanceOf(thAddr, 0);
+      // process each gov token hodler
+      for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+        const thAddr = await oldToken.allTokenHolders(0, i);
+        const th0Bal = await oldToken.balanceOf(thAddr, 0);
 
-      holders.push(thAddr);
-      govQuantities.push(th0Bal);
-      console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
+        holders.push(thAddr);
+        govQuantities.push(th0Bal);
+        console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
 
-      // mint governance tokens in batches of ten
-      if (i % 10 === 0 && holders.length > 1) {
+        // mint governance tokens in batches of ten
+        if (i % 10 === 0 && holders.length > 1) {
+          const tx = await dc.BulkTokenMinter.bulkMintGov(
+            newToken.address,
+            holders,
+            govQuantities,
+            {gasLimit: 5000000}
+          );
+          await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+          holders = [];
+          govQuantities = [];
+        }
+      }
+
+      // mint any tokens not processed above
+      if (holders.length > 0) {
         const tx = await dc.BulkTokenMinter.bulkMintGov(
           newToken.address,
           holders,
           govQuantities,
           {gasLimit: 5000000}
         );
-        await waitForMined(tx.hash);
-        holders = [];
-        govQuantities = [];
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       }
-    }
-
-    // mint any tokens not processed above
-    if (holders.length > 0) {
-      const tx = await dc.BulkTokenMinter.bulkMintGov(
-        newToken.address,
-        holders,
-        govQuantities,
-        {gasLimit: 5000000}
-      );
-      await waitForMined(tx.hash);
     }
   }
   // we are done!
