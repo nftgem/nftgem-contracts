@@ -216,21 +216,47 @@ contract NFTComplexGemPool is
     /**
      * @dev The maximum flash loan amount - 90% of available funds
      */
-    function maxFlashLoan(address) external view override returns (uint256) {
-        return address(this).balance - (address(this).balance / 10);
+    function maxFlashLoan(address tokenAddress)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        // if the token address is zero then get the FTM balance
+        // other wise get the token balance of the given token address
+        return
+            tokenAddress == address(0)
+                ? address(this).balance
+                : IERC20(tokenAddress).balanceOf(address(this));
     }
 
     /**
      * @dev The flash loan fee - 0.1% of borrowed funds
      */
-    function flashFee(address, uint256 amount)
+    function flashFee(address token, uint256 amount)
         public
-        pure
+        view
         override
         returns (uint256)
     {
-        uint256 fee = 1000; // 0.1 %.
-        return (amount * fee) / 10000;
+        // get hash of flash fee key using token address
+        uint256 flashFeeHash = uint256(
+            keccak256(abi.encodePacked("flash_loan", address(token)))
+        );
+        // get the flash fee from the storage
+        uint256 feeDiv = INFTGemFeeManager(poolData.feeTracker).fee(
+            flashFeeHash
+        );
+        // if the flash fee is not set, get the default fee
+        if (feeDiv == 0) {
+            flashFeeHash = uint256(keccak256(abi.encodePacked("flash_loan")));
+            feeDiv = INFTGemFeeManager(poolData.feeTracker).fee(flashFeeHash);
+        }
+        // if no default fee, set the fee to 10000 (0.01%)
+        if (feeDiv == 0) {
+            feeDiv = 10000;
+        }
+        return amount / feeDiv;
     }
 
     /**
@@ -242,23 +268,57 @@ contract NFTComplexGemPool is
         uint256 amount,
         bytes calldata data
     ) external override returns (bool) {
+        // get the fee of the flash loan
         uint256 fee = flashFee(token, amount);
-        address receiverAddress = address(receiver);
-        payable(receiverAddress).transfer(amount);
-        uint256 remainBalance = address(this).balance;
 
-        bytes32 CALLBACK_SUCCESS = keccak256(
-            "ERC3156FlashBorrower.onFlashLoan"
-        );
+        // get the receiver's address
+        address receiverAddress = address(receiver);
+
+        // no token address means we are sending FTM
+        if (token == address(0)) {
+            payable(receiverAddress).transfer(amount);
+        } else {
+            // else we are sending erc20 tokens
+            IERC20(token).transfer(receiverAddress, amount);
+        }
+
+        // get the balance of the lender - base token if address is 0
+        // or erc20 token if address is not 0
+        uint256 initialBalance = token == address(0)
+            ? address(this).balance
+            : IERC20(token).balanceOf(address(this));
+        // create success callback hash
+        bytes32 callbackSuccess = keccak256("ERC3156FlashBorrower.onFlashLoan");
+        // call the flash loan callback
         require(
             receiver.onFlashLoan(msg.sender, token, amount, fee, data) ==
-                CALLBACK_SUCCESS,
+                callbackSuccess,
             "FlashMinter: Callback failed"
         );
 
-        uint256 updatedBalance = address(this).balance;
+        // check if the flash loan is finished
+        // first we get the balance of the lender
+        uint256 _allowance = address(this).balance;
+        if (token != address(0)) {
+            // if the token is erc20 we need
+            // to get the allowance of the token
+            _allowance = IERC20(token).allowance(
+                address(receiver),
+                address(this)
+            );
+        } else {
+            // if the token is FTM we check if the
+            // initia balance is greater than the
+            // allowance. If it is we set _allowance
+            // to zero to dissallow the loan. Other
+            if (initialBalance > _allowance) _allowance = 0;
+            else _allowance = _allowance - initialBalance;
+        }
+
+        // if the allowance is greater than the loan amount plus
+        // the fee then we can finish the flash loan
         require(
-            updatedBalance >= remainBalance * (amount + fee),
+            _allowance >= (amount + fee),
             "FlashMinter: Repay not approved"
         );
 

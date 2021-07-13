@@ -53,6 +53,25 @@ contract ERC20WrappedGem is
     }
 
     /**
+     * @dev get fee to wrap tokens
+     */
+    function getWrapFee(uint256 totalQuantity)
+        internal
+        view
+        returns (uint256 fd)
+    {
+        uint256 thisWrapFeeHash = uint256(
+            keccak256(abi.encodePacked("wrap_gem", address(this)))
+        );
+        fd = INFTGemFeeManager(_feeManager).fee(thisWrapFeeHash);
+        if (fd == 0) {
+            thisWrapFeeHash = uint256(keccak256(abi.encodePacked("wrap_gem")));
+            fd = INFTGemFeeManager(_feeManager).fee(thisWrapFeeHash);
+        }
+        return fd != 0 ? totalQuantity / fd : 0;
+    }
+
+    /**
      * @dev wrap gems to erc20
      */
     function wrap(uint256 quantity) external override {
@@ -67,13 +86,14 @@ contract ERC20WrappedGem is
             "INSUFFICIENT_QUANTITY"
         );
         uint256 tq = quantity * (tokenData.rate * 10**decimals());
-        uint256 fd = INFTGemFeeManager(_feeManager).feeDivisor(address(this));
-        uint256 fee = fd != 0 ? tq / fd : 0;
+
+        uint256 fee = getWrapFee(tq);
         uint256 userQty = tq - fee;
 
         tokenData.transferPoolTypesFrom(msg.sender, address(this), quantity);
         _mint(msg.sender, userQty);
         _mint(_feeManager, fee);
+
         tokenData.wrappedBalance = tokenData.wrappedBalance + quantity;
 
         emit Wrap(msg.sender, quantity);

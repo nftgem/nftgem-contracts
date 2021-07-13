@@ -70,7 +70,8 @@ contract NFTGemGovernor is Controllable, Initializable, INFTGemGovernor {
     ) internal {
         IControllable(multitoken).addController(pool);
         IControllable(this).addController(pool);
-        INFTGemMultiToken(multitoken).addProxyRegistry(pool);
+
+        //INFTGemMultiToken(multitoken).addProxyRegistry(pool);
 
         INFTComplexGemPool(pool).setMultiToken(multitoken);
         INFTComplexGemPool(pool).setSwapHelper(swapHelper);

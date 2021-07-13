@@ -1,5 +1,5 @@
 {
-  "address": "0x8f01B92dD7979908A0CD1E64a39626C3193Fb665",
+  "address": "0xDB2534B4943E2960A45d61019fEA8054f09599b8",
   "abi": [
     {
       "inputs": [],
@@ -54,9 +54,9 @@
           "type": "address"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "uint256",
-          "name": "oldValue",
+          "name": "feeHash",
           "type": "uint256"
         },
         {
@@ -66,89 +66,60 @@
           "type": "uint256"
         }
       ],
-      "name": "DefaultFeeDivisorChanged",
+      "name": "FeeChanged",
       "type": "event"
     },
     {
-      "anonymous": false,
-      "inputs": [
+      "inputs": [],
+      "name": "FLASH_LOAN_HASH",
+      "outputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "manager",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "sender",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256",
-          "name": "value",
+          "name": "",
           "type": "uint256"
         }
       ],
-      "name": "ETHReceived",
-      "type": "event"
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "anonymous": false,
-      "inputs": [
+      "inputs": [],
+      "name": "MINIMUM_LIQUIDITY_HASH",
+      "outputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "operator",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256",
-          "name": "oldValue",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
+          "name": "",
           "type": "uint256"
         }
       ],
-      "name": "FeeDivisorChanged",
-      "type": "event"
+      "stateMutability": "view",
+      "type": "function"
     },
     {
-      "anonymous": false,
-      "inputs": [
+      "inputs": [],
+      "name": "POOL_FEE_HASH",
+      "outputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "manager",
-          "type": "address"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256",
-          "name": "oldValue",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "value",
+          "name": "",
           "type": "uint256"
         }
       ],
-      "name": "LiquidityChanged",
-      "type": "event"
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "WRAP_GEM_HASH",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "inputs": [
@@ -183,57 +154,18 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "defaultFeeDivisor",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "multiplier",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "defaultLiquidity",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "multiplier",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "ethBalanceOf",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "feeHash",
+          "type": "uint256"
         }
       ],
-      "name": "feeDivisor",
+      "name": "fee",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "divisor",
+          "name": "feeRet",
           "type": "uint256"
         }
       ],
@@ -260,25 +192,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "liquidity",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "relinquishControl",
       "outputs": [],
@@ -289,61 +202,17 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_feeDivisor",
+          "name": "feeHash",
           "type": "uint256"
-        }
-      ],
-      "name": "setDefaultFeeDivisor",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "oldDivisor",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_liquidityMult",
-          "type": "uint256"
-        }
-      ],
-      "name": "setDefaultLiquidity",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "oldLiquidity",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
         },
         {
           "internalType": "uint256",
-          "name": "_feeDivisor",
+          "name": "_fee",
           "type": "uint256"
         }
       ],
-      "name": "setFeeDivisor",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "oldDivisor",
-          "type": "uint256"
-        }
-      ],
+      "name": "setFee",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -393,36 +262,34 @@
       "type": "receive"
     }
   ],
-  "transactionHash": "0x1afdec7886bed4093b103d937df54301cc38703e9bd18b5121755fdb1ebd4eb6",
+  "transactionHash": "0x2f77dfc4f77aba2cab26a378d93f310b1aa9c94a9531af78613dc96779acf6f1",
   "receipt": {
     "to": null,
     "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
-    "contractAddress": "0x8f01B92dD7979908A0CD1E64a39626C3193Fb665",
-    "transactionIndex": 0,
-    "gasUsed": "747784",
+    "contractAddress": "0xDB2534B4943E2960A45d61019fEA8054f09599b8",
+    "transactionIndex": 3,
+    "gasUsed": "666996",
     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    "blockHash": "0x0000510d00001b46867a4587f011a685b05d772469731b380f77e4095b0e3e96",
-    "transactionHash": "0x1afdec7886bed4093b103d937df54301cc38703e9bd18b5121755fdb1ebd4eb6",
+    "blockHash": "0x0000528400000efebebbcbcbc819693cc0e912a0f26e031fa90d4057f3522b12",
+    "transactionHash": "0x2f77dfc4f77aba2cab26a378d93f310b1aa9c94a9531af78613dc96779acf6f1",
     "logs": [],
-    "blockNumber": 11798179,
-    "cumulativeGasUsed": "747784",
+    "blockNumber": 11985517,
+    "cumulativeGasUsed": "1829633",
     "status": 1,
     "byzantium": true
   },
   "args": [],
-  "solcInputHash": "b06c540bf558ebe1763f6f5fe903171f",
-  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"DefaultFeeDivisorChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"ETHReceived\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"FeeDivisorChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"manager\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldValue\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"LiquidityChanged\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_controller\",\"type\":\"address\"}],\"name\":\"addController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"multiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"defaultLiquidity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"multiplier\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ethBalanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"feeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"divisor\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"isController\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"liquidity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relinquishControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_feeDivisor\",\"type\":\"uint256\"}],\"name\":\"setDefaultFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldDivisor\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_liquidityMult\",\"type\":\"uint256\"}],\"name\":\"setDefaultLiquidity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldLiquidity\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_feeDivisor\",\"type\":\"uint256\"}],\"name\":\"setFeeDivisor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"oldDivisor\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferEth\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addController(address)\":{\"details\":\"Add an address allowed to control this contract\"},\"balanceOf(address)\":{\"details\":\"get the token balance of this fee manager\"},\"constructor\":{\"details\":\"constructor\"},\"defaultFeeDivisor()\":{\"details\":\"Get the default fee divisor for the specified token\"},\"defaultLiquidity()\":{\"details\":\"Get the default liquidity for the specified token\"},\"ethBalanceOf()\":{\"details\":\"get the ETH balance of this fee manager\"},\"feeDivisor(address)\":{\"details\":\"Get the fee divisor for the specified token\"},\"isController(address)\":{\"details\":\"Check if this address is a controller\"},\"liquidity(address)\":{\"details\":\"Get the liquidity for the specified token\"},\"relinquishControl()\":{\"details\":\"Remove the sender address from the list of controllers\"},\"setDefaultFeeDivisor(uint256)\":{\"details\":\"Set the default fee divisor for the specified token\"},\"setDefaultLiquidity(uint256)\":{\"details\":\"Set the default liquidity for the specified token\"},\"setFeeDivisor(address,uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"transferEth(address,uint256)\":{\"details\":\"transfer ETH from this contract to the to given recipient\"},\"transferToken(address,address,uint256)\":{\"details\":\"transfer tokens from this contract to the to given recipient\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/fees/NFTGemFeeManager.sol\":\"NFTGemFeeManager\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2000},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `recipient`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address recipient, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `sender` to `recipient` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address sender,\\n        address recipient,\\n        uint256 amount\\n    ) external returns (bool);\\n\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n}\\n\",\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/fees/NFTGemFeeManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"@openzeppelin/contracts/token/ERC20/IERC20.sol\\\";\\n\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"../interfaces/INFTGemFeeManager.sol\\\";\\n\\ncontract NFTGemFeeManager is Controllable, INFTGemFeeManager {\\n    address private operator;\\n\\n    uint256 private constant MINIMUM_LIQUIDITY = 50;\\n    uint256 private constant FEE_DIVISOR = 2000;\\n\\n    mapping(address => uint256) private feeDivisors;\\n    uint256 private _defaultFeeDivisor;\\n\\n    mapping(address => uint256) private _liquidity;\\n    uint256 private _defaultLiquidity;\\n\\n    /**\\n     * @dev constructor\\n     */\\n    constructor() {\\n        _addController(msg.sender);\\n        _defaultFeeDivisor = FEE_DIVISOR;\\n        _defaultLiquidity = MINIMUM_LIQUIDITY;\\n    }\\n\\n    /**\\n     * @dev receive funds\\n     */\\n    receive() external payable {\\n        //\\n    }\\n\\n    /**\\n     * @dev Get the liquidity for the specified token\\n     */\\n    function liquidity(address token) external view override returns (uint256) {\\n        return _liquidity[token] != 0 ? _liquidity[token] : _defaultLiquidity;\\n    }\\n\\n    /**\\n     * @dev Get the default liquidity for the specified token\\n     */\\n    function defaultLiquidity()\\n        external\\n        view\\n        override\\n        returns (uint256 multiplier)\\n    {\\n        return _defaultLiquidity;\\n    }\\n\\n    /**\\n     * @dev Set the default liquidity for the specified token\\n     */\\n    function setDefaultLiquidity(uint256 _liquidityMult)\\n        external\\n        override\\n        onlyController\\n        returns (uint256 oldLiquidity)\\n    {\\n        require(_liquidityMult != 0, \\\"INVALID\\\");\\n        oldLiquidity = _defaultLiquidity;\\n        _defaultLiquidity = _liquidityMult;\\n        emit LiquidityChanged(operator, oldLiquidity, _defaultLiquidity);\\n    }\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function feeDivisor(address token)\\n        external\\n        view\\n        override\\n        returns (uint256 divisor)\\n    {\\n        divisor = feeDivisors[token];\\n        divisor = divisor == 0 ? FEE_DIVISOR : divisor;\\n    }\\n\\n    /**\\n     * @dev Get the default fee divisor for the specified token\\n     */\\n    function defaultFeeDivisor()\\n        external\\n        view\\n        override\\n        returns (uint256 multiplier)\\n    {\\n        return _defaultFeeDivisor;\\n    }\\n\\n    /**\\n     * @dev Set the default fee divisor for the specified token\\n     */\\n    function setDefaultFeeDivisor(uint256 _feeDivisor)\\n        external\\n        override\\n        onlyController\\n        returns (uint256 oldDivisor)\\n    {\\n        require(_feeDivisor != 0, \\\"DIVISIONBYZERO\\\");\\n        oldDivisor = _defaultFeeDivisor;\\n        _defaultFeeDivisor = _feeDivisor;\\n        emit DefaultFeeDivisorChanged(operator, oldDivisor, _defaultFeeDivisor);\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setFeeDivisor(address token, uint256 _feeDivisor)\\n        external\\n        override\\n        onlyController\\n        returns (uint256 oldDivisor)\\n    {\\n        require(_feeDivisor != 0, \\\"DIVISIONBYZERO\\\");\\n        oldDivisor = feeDivisors[token];\\n        feeDivisors[token] = _feeDivisor;\\n        emit FeeDivisorChanged(operator, token, oldDivisor, _feeDivisor);\\n    }\\n\\n    /**\\n     * @dev get the ETH balance of this fee manager\\n     */\\n    function ethBalanceOf() external view override returns (uint256) {\\n        return address(this).balance;\\n    }\\n\\n    /**\\n     * @dev get the token balance of this fee manager\\n     */\\n    function balanceOf(address token) external view override returns (uint256) {\\n        return IERC20(token).balanceOf(address(this));\\n    }\\n\\n    /**\\n     * @dev transfer ETH from this contract to the to given recipient\\n     */\\n    function transferEth(address payable recipient, uint256 amount)\\n        external\\n        override\\n        onlyController\\n    {\\n        require(address(this).balance >= amount, \\\"INSUFFICIENT_BALANCE\\\");\\n        recipient.transfer(amount);\\n    }\\n\\n    /**\\n     * @dev transfer tokens from this contract to the to given recipient\\n     */\\n    function transferToken(\\n        address token,\\n        address recipient,\\n        uint256 amount\\n    ) external override onlyController {\\n        require(\\n            IERC20(token).balanceOf(address(this)) >= amount,\\n            \\\"INSUFFICIENT_BALANCE\\\"\\n        );\\n        IERC20(token).transfer(recipient, amount);\\n    }\\n}\\n\",\"keccak256\":\"0xcc4d65d969902571745e2a2330e683f53882c7ee4297455f032fd935d4ebec3d\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/INFTGemFeeManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface INFTGemFeeManager {\\n    event DefaultFeeDivisorChanged(\\n        address indexed operator,\\n        uint256 oldValue,\\n        uint256 value\\n    );\\n    event FeeDivisorChanged(\\n        address indexed operator,\\n        address indexed token,\\n        uint256 oldValue,\\n        uint256 value\\n    );\\n    event ETHReceived(address indexed manager, address sender, uint256 value);\\n    event LiquidityChanged(\\n        address indexed manager,\\n        uint256 oldValue,\\n        uint256 value\\n    );\\n\\n    function liquidity(address token) external view returns (uint256);\\n\\n    function defaultLiquidity() external view returns (uint256);\\n\\n    function setDefaultLiquidity(uint256 _liquidityMult)\\n        external\\n        returns (uint256);\\n\\n    function feeDivisor(address token) external view returns (uint256);\\n\\n    function defaultFeeDivisor() external view returns (uint256);\\n\\n    function setFeeDivisor(address token, uint256 _feeDivisor)\\n        external\\n        returns (uint256);\\n\\n    function setDefaultFeeDivisor(uint256 _feeDivisor)\\n        external\\n        returns (uint256);\\n\\n    function ethBalanceOf() external view returns (uint256);\\n\\n    function balanceOf(address token) external view returns (uint256);\\n\\n    function transferEth(address payable recipient, uint256 amount) external;\\n\\n    function transferToken(\\n        address token,\\n        address recipient,\\n        uint256 amount\\n    ) external;\\n}\\n\",\"keccak256\":\"0x8ea1f501e09a68d5723eacd4a7d8baa87f6f35d8577449ab41347b4de14b3877\",\"license\":\"MIT\"}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5061001a3361002a565b6107d0600355603260055561004e565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b610b7a8061005d6000396000f3fe6080604052600436106100e15760003560e01c8063b429afeb1161007f578063e1c28bef11610059578063e1c28bef14610231578063e9bb84c214610246578063eee1ad8014610266578063f5537ede14610286576100e8565b8063b429afeb146101cf578063b8c876b1146101fc578063c52111541461021c576100e8565b80638afe4280116100bb5780638afe428014610158578063a51834ff14610178578063a7fc7a0714610198578063b2ae17a5146101ba576100e8565b80630415c9f4146100ed5780636b4be0b91461012357806370a0823114610138576100e8565b366100e857005b600080fd5b3480156100f957600080fd5b5061010d6101083660046109ab565b6102a6565b60405161011a9190610b15565b60405180910390f35b34801561012f57600080fd5b5061010d610361565b34801561014457600080fd5b5061010d6101533660046108eb565b610365565b34801561016457600080fd5b5061010d6101733660046109ab565b610403565b34801561018457600080fd5b5061010d610193366004610979565b6104a8565b3480156101a457600080fd5b506101b86101b33660046108eb565b61056e565b005b3480156101c657600080fd5b5061010d6105d0565b3480156101db57600080fd5b506101ef6101ea3660046108eb565b6105d6565b60405161011a9190610a08565b34801561020857600080fd5b5061010d6102173660046108eb565b6105f4565b34801561022857600080fd5b5061010d610635565b34801561023d57600080fd5b506101b861063b565b34801561025257600080fd5b506101b861026136600461090e565b610692565b34801561027257600080fd5b5061010d6102813660046108eb565b61072b565b34801561029257600080fd5b506101b86102a1366004610939565b610759565b3360009081526020819052604081205460ff161515600114806102c857503033145b6102ed5760405162461bcd60e51b81526004016102e490610ab8565b60405180910390fd5b8161030a5760405162461bcd60e51b81526004016102e490610a4a565b5060038054908290556001546040516001600160a01b03909116907f50d2fd3a15ffe0a5547c68d91dc96339c386f8a7d180a1f8cb782d39cfed38af906103549084908690610b1e565b60405180910390a2919050565b4790565b6040517f70a082310000000000000000000000000000000000000000000000000000000081526000906001600160a01b038316906370a08231906103ad9030906004016109db565b60206040518083038186803b1580156103c557600080fd5b505afa1580156103d9573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103fd91906109c3565b92915050565b3360009081526020819052604081205460ff1615156001148061042557503033145b6104415760405162461bcd60e51b81526004016102e490610ab8565b8161045e5760405162461bcd60e51b81526004016102e490610a13565b5060058054908290556001546040516001600160a01b03909116907f1b175f1f323705c599a7bebc2915765ab0d8de5f922b0b68d08dd1dbe2d97fc4906103549084908690610b1e565b3360009081526020819052604081205460ff161515600114806104ca57503033145b6104e65760405162461bcd60e51b81526004016102e490610ab8565b816105035760405162461bcd60e51b81526004016102e490610a4a565b506001600160a01b03808316600081815260026020526040908190208054908590556001549151909391909116907f8f604bc5c2d1916032a90c8f4d7cdc0dff78f1ba11119344f3fe46ddea179544906105609085908790610b1e565b60405180910390a392915050565b3360009081526020819052604090205460ff1615156001148061059057503033145b6105ac5760405162461bcd60e51b81526004016102e490610ab8565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b60055490565b6001600160a01b031660009081526020819052604090205460ff1690565b6001600160a01b038116600090815260046020526040812054610619576005546103fd565b506001600160a01b031660009081526004602052604090205490565b60035490565b3360009081526020819052604090205460ff1615156001148061065d57503033145b6106795760405162461bcd60e51b81526004016102e490610ab8565b336000908152602081905260409020805460ff19169055565b3360009081526020819052604090205460ff161515600114806106b457503033145b6106d05760405162461bcd60e51b81526004016102e490610ab8565b804710156106f05760405162461bcd60e51b81526004016102e490610a81565b6040516001600160a01b0383169082156108fc029083906000818181858888f19350505050158015610726573d6000803e3d6000fd5b505050565b6001600160a01b038116600090815260026020526040902054801561075057806103fd565b6107d092915050565b3360009081526020819052604090205460ff1615156001148061077b57503033145b6107975760405162461bcd60e51b81526004016102e490610ab8565b6040517f70a0823100000000000000000000000000000000000000000000000000000000815281906001600160a01b038516906370a08231906107de9030906004016109db565b60206040518083038186803b1580156107f657600080fd5b505afa15801561080a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061082e91906109c3565b101561084c5760405162461bcd60e51b81526004016102e490610a81565b6040517fa9059cbb0000000000000000000000000000000000000000000000000000000081526001600160a01b0384169063a9059cbb9061089390859085906004016109ef565b602060405180830381600087803b1580156108ad57600080fd5b505af11580156108c1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108e5919061098b565b50505050565b6000602082840312156108fc578081fd5b813561090781610b2c565b9392505050565b60008060408385031215610920578081fd5b823561092b81610b2c565b946020939093013593505050565b60008060006060848603121561094d578081fd5b833561095881610b2c565b9250602084013561096881610b2c565b929592945050506040919091013590565b60008060408385031215610920578182fd5b60006020828403121561099c578081fd5b81518015158114610907578182fd5b6000602082840312156109bc578081fd5b5035919050565b6000602082840312156109d4578081fd5b5051919050565b6001600160a01b0391909116815260200190565b6001600160a01b03929092168252602082015260400190565b901515815260200190565b60208082526007908201527f494e56414c494400000000000000000000000000000000000000000000000000604082015260600190565b6020808252600e908201527f4449564953494f4e42595a45524f000000000000000000000000000000000000604082015260600190565b60208082526014908201527f494e53554646494349454e545f42414c414e4345000000000000000000000000604082015260600190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b918252602082015260400190565b6001600160a01b0381168114610b4157600080fd5b5056fea264697066735822122079da82411b58527e95ee355fa3ef25cb54c95cb5443529bf6cd8cf8d0a94f54c64736f6c63430008000033",
-  "deployedBytecode": "0x6080604052600436106100e15760003560e01c8063b429afeb1161007f578063e1c28bef11610059578063e1c28bef14610231578063e9bb84c214610246578063eee1ad8014610266578063f5537ede14610286576100e8565b8063b429afeb146101cf578063b8c876b1146101fc578063c52111541461021c576100e8565b80638afe4280116100bb5780638afe428014610158578063a51834ff14610178578063a7fc7a0714610198578063b2ae17a5146101ba576100e8565b80630415c9f4146100ed5780636b4be0b91461012357806370a0823114610138576100e8565b366100e857005b600080fd5b3480156100f957600080fd5b5061010d6101083660046109ab565b6102a6565b60405161011a9190610b15565b60405180910390f35b34801561012f57600080fd5b5061010d610361565b34801561014457600080fd5b5061010d6101533660046108eb565b610365565b34801561016457600080fd5b5061010d6101733660046109ab565b610403565b34801561018457600080fd5b5061010d610193366004610979565b6104a8565b3480156101a457600080fd5b506101b86101b33660046108eb565b61056e565b005b3480156101c657600080fd5b5061010d6105d0565b3480156101db57600080fd5b506101ef6101ea3660046108eb565b6105d6565b60405161011a9190610a08565b34801561020857600080fd5b5061010d6102173660046108eb565b6105f4565b34801561022857600080fd5b5061010d610635565b34801561023d57600080fd5b506101b861063b565b34801561025257600080fd5b506101b861026136600461090e565b610692565b34801561027257600080fd5b5061010d6102813660046108eb565b61072b565b34801561029257600080fd5b506101b86102a1366004610939565b610759565b3360009081526020819052604081205460ff161515600114806102c857503033145b6102ed5760405162461bcd60e51b81526004016102e490610ab8565b60405180910390fd5b8161030a5760405162461bcd60e51b81526004016102e490610a4a565b5060038054908290556001546040516001600160a01b03909116907f50d2fd3a15ffe0a5547c68d91dc96339c386f8a7d180a1f8cb782d39cfed38af906103549084908690610b1e565b60405180910390a2919050565b4790565b6040517f70a082310000000000000000000000000000000000000000000000000000000081526000906001600160a01b038316906370a08231906103ad9030906004016109db565b60206040518083038186803b1580156103c557600080fd5b505afa1580156103d9573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103fd91906109c3565b92915050565b3360009081526020819052604081205460ff1615156001148061042557503033145b6104415760405162461bcd60e51b81526004016102e490610ab8565b8161045e5760405162461bcd60e51b81526004016102e490610a13565b5060058054908290556001546040516001600160a01b03909116907f1b175f1f323705c599a7bebc2915765ab0d8de5f922b0b68d08dd1dbe2d97fc4906103549084908690610b1e565b3360009081526020819052604081205460ff161515600114806104ca57503033145b6104e65760405162461bcd60e51b81526004016102e490610ab8565b816105035760405162461bcd60e51b81526004016102e490610a4a565b506001600160a01b03808316600081815260026020526040908190208054908590556001549151909391909116907f8f604bc5c2d1916032a90c8f4d7cdc0dff78f1ba11119344f3fe46ddea179544906105609085908790610b1e565b60405180910390a392915050565b3360009081526020819052604090205460ff1615156001148061059057503033145b6105ac5760405162461bcd60e51b81526004016102e490610ab8565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b60055490565b6001600160a01b031660009081526020819052604090205460ff1690565b6001600160a01b038116600090815260046020526040812054610619576005546103fd565b506001600160a01b031660009081526004602052604090205490565b60035490565b3360009081526020819052604090205460ff1615156001148061065d57503033145b6106795760405162461bcd60e51b81526004016102e490610ab8565b336000908152602081905260409020805460ff19169055565b3360009081526020819052604090205460ff161515600114806106b457503033145b6106d05760405162461bcd60e51b81526004016102e490610ab8565b804710156106f05760405162461bcd60e51b81526004016102e490610a81565b6040516001600160a01b0383169082156108fc029083906000818181858888f19350505050158015610726573d6000803e3d6000fd5b505050565b6001600160a01b038116600090815260026020526040902054801561075057806103fd565b6107d092915050565b3360009081526020819052604090205460ff1615156001148061077b57503033145b6107975760405162461bcd60e51b81526004016102e490610ab8565b6040517f70a0823100000000000000000000000000000000000000000000000000000000815281906001600160a01b038516906370a08231906107de9030906004016109db565b60206040518083038186803b1580156107f657600080fd5b505afa15801561080a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061082e91906109c3565b101561084c5760405162461bcd60e51b81526004016102e490610a81565b6040517fa9059cbb0000000000000000000000000000000000000000000000000000000081526001600160a01b0384169063a9059cbb9061089390859085906004016109ef565b602060405180830381600087803b1580156108ad57600080fd5b505af11580156108c1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108e5919061098b565b50505050565b6000602082840312156108fc578081fd5b813561090781610b2c565b9392505050565b60008060408385031215610920578081fd5b823561092b81610b2c565b946020939093013593505050565b60008060006060848603121561094d578081fd5b833561095881610b2c565b9250602084013561096881610b2c565b929592945050506040919091013590565b60008060408385031215610920578182fd5b60006020828403121561099c578081fd5b81518015158114610907578182fd5b6000602082840312156109bc578081fd5b5035919050565b6000602082840312156109d4578081fd5b5051919050565b6001600160a01b0391909116815260200190565b6001600160a01b03929092168252602082015260400190565b901515815260200190565b60208082526007908201527f494e56414c494400000000000000000000000000000000000000000000000000604082015260600190565b6020808252600e908201527f4449564953494f4e42595a45524f000000000000000000000000000000000000604082015260600190565b60208082526014908201527f494e53554646494349454e545f42414c414e4345000000000000000000000000604082015260600190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b918252602082015260400190565b6001600160a01b0381168114610b4157600080fd5b5056fea264697066735822122079da82411b58527e95ee355fa3ef25cb54c95cb5443529bf6cd8cf8d0a94f54c64736f6c63430008000033",
+  "solcInputHash": "baf74e8f3f8b4044f9fe5636bda94596",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"feeHash\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"FeeChanged\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"FLASH_LOAN_HASH\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MINIMUM_LIQUIDITY_HASH\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"POOL_FEE_HASH\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"WRAP_GEM_HASH\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_controller\",\"type\":\"address\"}],\"name\":\"addController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"feeHash\",\"type\":\"uint256\"}],\"name\":\"fee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"feeRet\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"isController\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relinquishControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"feeHash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setFee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address payable\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferEth\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addController(address)\":{\"details\":\"Add an address allowed to control this contract\"},\"balanceOf(address)\":{\"details\":\"get the balance of this fee manager. Pass a zero address in for FTM balance\"},\"constructor\":{\"details\":\"constructor\"},\"fee(uint256)\":{\"details\":\"Get the fee divisor for the specified token\"},\"isController(address)\":{\"details\":\"Check if this address is a controller\"},\"relinquishControl()\":{\"details\":\"Remove the sender address from the list of controllers\"},\"setFee(uint256,uint256)\":{\"details\":\"Set the fee divisor for the specified token\"},\"transferEth(address,uint256)\":{\"details\":\"transfer ETH from this contract to the to given recipient\"},\"transferToken(address,address,uint256)\":{\"details\":\"transfer tokens from this contract to the to given recipient\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/fees/NFTGemFeeManager.sol\":\"NFTGemFeeManager\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `recipient`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address recipient, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `sender` to `recipient` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address sender,\\n        address recipient,\\n        uint256 amount\\n    ) external returns (bool);\\n\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n}\\n\",\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/fees/NFTGemFeeManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"@openzeppelin/contracts/token/ERC20/IERC20.sol\\\";\\n\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"../interfaces/INFTGemFeeManager.sol\\\";\\n\\ncontract NFTGemFeeManager is Controllable, INFTGemFeeManager {\\n    address private operator;\\n\\n    uint256 public constant MINIMUM_LIQUIDITY_HASH =\\n        uint256(keccak256(\\\"min_liquidity\\\"));\\n    uint256 public constant POOL_FEE_HASH =\\n        uint256(keccak256(abi.encodePacked(\\\"pool_fee\\\")));\\n    uint256 public constant WRAP_GEM_HASH =\\n        uint256(keccak256(abi.encodePacked(\\\"wrap_gem\\\")));\\n    uint256 public constant FLASH_LOAN_HASH =\\n        uint256(keccak256(abi.encodePacked(\\\"flash_loan\\\")));\\n\\n    uint256 private constant MINIMUM_LIQUIDITY = 50;\\n    uint256 private constant POOL_FEE = 2000;\\n    uint256 private constant WRAP_GEM = 2000;\\n    uint256 private constant FLASH_LOAN = 10000;\\n\\n    mapping(uint256 => uint256) private fees;\\n\\n    /**\\n     * @dev constructor\\n     */\\n    constructor() {\\n        _addController(msg.sender);\\n        fees[MINIMUM_LIQUIDITY_HASH] = MINIMUM_LIQUIDITY;\\n        fees[POOL_FEE_HASH] = POOL_FEE;\\n        fees[WRAP_GEM_HASH] = WRAP_GEM;\\n        fees[FLASH_LOAN_HASH] = FLASH_LOAN;\\n    }\\n\\n    /**\\n     * @dev receive funds\\n     */\\n    receive() external payable {\\n        //\\n    }\\n\\n    /**\\n     * @dev Get the fee divisor for the specified token\\n     */\\n    function fee(uint256 feeHash)\\n        external\\n        view\\n        override\\n        returns (uint256 feeRet)\\n    {\\n        feeRet = fees[feeHash];\\n    }\\n\\n    /**\\n     * @dev Set the fee divisor for the specified token\\n     */\\n    function setFee(uint256 feeHash, uint256 _fee)\\n        external\\n        override\\n        onlyController\\n    {\\n        fees[feeHash] = _fee;\\n        emit FeeChanged(operator, feeHash, _fee);\\n    }\\n\\n    /**\\n     * @dev get the balance of this fee manager. Pass a zero address in for FTM balance\\n     */\\n    function balanceOf(address token) external view override returns (uint256) {\\n        return\\n            token == address(0)\\n                ? address(this).balance\\n                : IERC20(token).balanceOf(address(this));\\n    }\\n\\n    /**\\n     * @dev transfer ETH from this contract to the to given recipient\\n     */\\n    function transferEth(address payable recipient, uint256 amount)\\n        external\\n        override\\n        onlyController\\n    {\\n        recipient.transfer(amount);\\n    }\\n\\n    /**\\n     * @dev transfer tokens from this contract to the to given recipient\\n     */\\n    function transferToken(\\n        address token,\\n        address recipient,\\n        uint256 amount\\n    ) external override onlyController {\\n        IERC20(token).transfer(recipient, amount);\\n    }\\n}\\n\",\"keccak256\":\"0xd63442bca1ffede1150506666c9ec47bdf284071869892541204d410ffe59178\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/INFTGemFeeManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface INFTGemFeeManager {\\n    event FeeChanged(\\n        address indexed operator,\\n        uint256 indexed feeHash,\\n        uint256 value\\n    );\\n\\n    function fee(uint256 feeTypeHash) external view returns (uint256);\\n\\n    function setFee(uint256 feeTypeHash, uint256 _fee) external;\\n\\n    function balanceOf(address token) external view returns (uint256);\\n\\n    function transferEth(address payable recipient, uint256 amount) external;\\n\\n    function transferToken(\\n        address token,\\n        address recipient,\\n        uint256 amount\\n    ) external;\\n}\\n\",\"keccak256\":\"0x073089b45be4de1e2feecfa65d36ea9cb3ec18cec7e3c1e9de18ea8923c016c2\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061001a3361012a565b7f0ec00ae29f2aafdb279bec8e892846e2ce37e27acd3eba6c98ed18e29aedb88a60009081526002602081815260327fc5f3cf42c593b9bf57769b99bec2bf71e94324b20cb50593e531a062e020c741556040516107d0939161007d9101610178565b6040516020818303038152906040528051906020012060001c8152602001908152602001600020819055506107d0600260006040516020016100be90610164565b6040516020818303038152906040528051906020012060001c815260200190815260200160002081905550612710600260006040516020016100ff9061014e565b60408051601f198184030181529181528151602092830120835290820192909252016000205561018c565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b69333630b9b42fb637b0b760b11b8152600a0190565b67777261705f67656d60c01b815260080190565b67706f6f6c5f66656560c01b815260080190565b6109308061019b6000396000f3fe6080604052600436106100cb5760003560e01c8063a7fc7a0711610074578063e1c28bef1161004e578063e1c28bef146101f0578063e9bb84c214610205578063f5537ede14610225576100d2565b8063a7fc7a071461018e578063b429afeb146101ae578063ba4fd3e9146101db576100d2565b806370a08231116100a557806370a08231146101445780638546403c14610164578063a5d3e48314610179576100d2565b806339b37ab0146100d757806341039fd21461010d57806352f7c98814610122576100d2565b366100d257005b600080fd5b3480156100e357600080fd5b506100f76100f2366004610751565b610245565b60405161010491906108cc565b60405180910390f35b34801561011957600080fd5b506100f7610257565b34801561012e57600080fd5b5061014261013d366004610781565b61027b565b005b34801561015057600080fd5b506100f761015f3660046106a3565b61032c565b34801561017057600080fd5b506100f76103f9565b34801561018557600080fd5b506100f7610424565b34801561019a57600080fd5b506101426101a93660046106a3565b610433565b3480156101ba57600080fd5b506101ce6101c93660046106a3565b6104a2565b6040516101049190610864565b3480156101e757600080fd5b506100f76104cd565b3480156101fc57600080fd5b506101426104dc565b34801561021157600080fd5b506101426102203660046106c6565b610533565b34801561023157600080fd5b506101426102403660046106f1565b6105b9565b60009081526002602052604090205490565b7f0ec00ae29f2aafdb279bec8e892846e2ce37e27acd3eba6c98ed18e29aedb88a81565b3360009081526020819052604090205460ff1615156001148061029d57503033145b6102c25760405162461bcd60e51b81526004016102b99061086f565b60405180910390fd5b600082815260026020526040908190208290556001549051839173ffffffffffffffffffffffffffffffffffffffff16907ff98c81ad0a5eb3551c3561de8dc9d1512e8680fb77425ea138ebfe9a9c0065ff906103209085906108cc565b60405180910390a35050565b600073ffffffffffffffffffffffffffffffffffffffff8216156103f1576040517f70a0823100000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8316906370a082319061039c90309060040161081d565b60206040518083038186803b1580156103b457600080fd5b505afa1580156103c8573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103ec9190610769565b6103f3565b475b92915050565b604051602001610408906107cb565b6040516020818303038152906040528051906020012060001c81565b604051602001610408906107f4565b3360009081526020819052604090205460ff1615156001148061045557503033145b6104715760405162461bcd60e51b81526004016102b99061086f565b73ffffffffffffffffffffffffffffffffffffffff166000908152602081905260409020805460ff19166001179055565b73ffffffffffffffffffffffffffffffffffffffff1660009081526020819052604090205460ff1690565b604051602001610408906107a2565b3360009081526020819052604090205460ff161515600114806104fe57503033145b61051a5760405162461bcd60e51b81526004016102b99061086f565b336000908152602081905260409020805460ff19169055565b3360009081526020819052604090205460ff1615156001148061055557503033145b6105715760405162461bcd60e51b81526004016102b99061086f565b60405173ffffffffffffffffffffffffffffffffffffffff83169082156108fc029083906000818181858888f193505050501580156105b4573d6000803e3d6000fd5b505050565b3360009081526020819052604090205460ff161515600114806105db57503033145b6105f75760405162461bcd60e51b81526004016102b99061086f565b6040517fa9059cbb00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff84169063a9059cbb9061064b908590859060040161083e565b602060405180830381600087803b15801561066557600080fd5b505af1158015610679573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069d9190610731565b50505050565b6000602082840312156106b4578081fd5b81356106bf816108d5565b9392505050565b600080604083850312156106d8578081fd5b82356106e3816108d5565b946020939093013593505050565b600080600060608486031215610705578081fd5b8335610710816108d5565b92506020840135610720816108d5565b929592945050506040919091013590565b600060208284031215610742578081fd5b815180151581146106bf578182fd5b600060208284031215610762578081fd5b5035919050565b60006020828403121561077a578081fd5b5051919050565b60008060408385031215610793578182fd5b50508035926020909101359150565b7f666c6173685f6c6f616e000000000000000000000000000000000000000000008152600a0190565b7f777261705f67656d000000000000000000000000000000000000000000000000815260080190565b7f706f6f6c5f666565000000000000000000000000000000000000000000000000815260080190565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b73ffffffffffffffffffffffffffffffffffffffff929092168252602082015260400190565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff811681146108f757600080fd5b5056fea2646970667358221220dbd2e7dc8cb2525a0b8effaaa856dab473c51dd6dcfc2fd4be317d4d92e27a4364736f6c63430008000033",
+  "deployedBytecode": "0x6080604052600436106100cb5760003560e01c8063a7fc7a0711610074578063e1c28bef1161004e578063e1c28bef146101f0578063e9bb84c214610205578063f5537ede14610225576100d2565b8063a7fc7a071461018e578063b429afeb146101ae578063ba4fd3e9146101db576100d2565b806370a08231116100a557806370a08231146101445780638546403c14610164578063a5d3e48314610179576100d2565b806339b37ab0146100d757806341039fd21461010d57806352f7c98814610122576100d2565b366100d257005b600080fd5b3480156100e357600080fd5b506100f76100f2366004610751565b610245565b60405161010491906108cc565b60405180910390f35b34801561011957600080fd5b506100f7610257565b34801561012e57600080fd5b5061014261013d366004610781565b61027b565b005b34801561015057600080fd5b506100f761015f3660046106a3565b61032c565b34801561017057600080fd5b506100f76103f9565b34801561018557600080fd5b506100f7610424565b34801561019a57600080fd5b506101426101a93660046106a3565b610433565b3480156101ba57600080fd5b506101ce6101c93660046106a3565b6104a2565b6040516101049190610864565b3480156101e757600080fd5b506100f76104cd565b3480156101fc57600080fd5b506101426104dc565b34801561021157600080fd5b506101426102203660046106c6565b610533565b34801561023157600080fd5b506101426102403660046106f1565b6105b9565b60009081526002602052604090205490565b7f0ec00ae29f2aafdb279bec8e892846e2ce37e27acd3eba6c98ed18e29aedb88a81565b3360009081526020819052604090205460ff1615156001148061029d57503033145b6102c25760405162461bcd60e51b81526004016102b99061086f565b60405180910390fd5b600082815260026020526040908190208290556001549051839173ffffffffffffffffffffffffffffffffffffffff16907ff98c81ad0a5eb3551c3561de8dc9d1512e8680fb77425ea138ebfe9a9c0065ff906103209085906108cc565b60405180910390a35050565b600073ffffffffffffffffffffffffffffffffffffffff8216156103f1576040517f70a0823100000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff8316906370a082319061039c90309060040161081d565b60206040518083038186803b1580156103b457600080fd5b505afa1580156103c8573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103ec9190610769565b6103f3565b475b92915050565b604051602001610408906107cb565b6040516020818303038152906040528051906020012060001c81565b604051602001610408906107f4565b3360009081526020819052604090205460ff1615156001148061045557503033145b6104715760405162461bcd60e51b81526004016102b99061086f565b73ffffffffffffffffffffffffffffffffffffffff166000908152602081905260409020805460ff19166001179055565b73ffffffffffffffffffffffffffffffffffffffff1660009081526020819052604090205460ff1690565b604051602001610408906107a2565b3360009081526020819052604090205460ff161515600114806104fe57503033145b61051a5760405162461bcd60e51b81526004016102b99061086f565b336000908152602081905260409020805460ff19169055565b3360009081526020819052604090205460ff1615156001148061055557503033145b6105715760405162461bcd60e51b81526004016102b99061086f565b60405173ffffffffffffffffffffffffffffffffffffffff83169082156108fc029083906000818181858888f193505050501580156105b4573d6000803e3d6000fd5b505050565b3360009081526020819052604090205460ff161515600114806105db57503033145b6105f75760405162461bcd60e51b81526004016102b99061086f565b6040517fa9059cbb00000000000000000000000000000000000000000000000000000000815273ffffffffffffffffffffffffffffffffffffffff84169063a9059cbb9061064b908590859060040161083e565b602060405180830381600087803b15801561066557600080fd5b505af1158015610679573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069d9190610731565b50505050565b6000602082840312156106b4578081fd5b81356106bf816108d5565b9392505050565b600080604083850312156106d8578081fd5b82356106e3816108d5565b946020939093013593505050565b600080600060608486031215610705578081fd5b8335610710816108d5565b92506020840135610720816108d5565b929592945050506040919091013590565b600060208284031215610742578081fd5b815180151581146106bf578182fd5b600060208284031215610762578081fd5b5035919050565b60006020828403121561077a578081fd5b5051919050565b60008060408385031215610793578182fd5b50508035926020909101359150565b7f666c6173685f6c6f616e000000000000000000000000000000000000000000008152600a0190565b7f777261705f67656d000000000000000000000000000000000000000000000000815260080190565b7f706f6f6c5f666565000000000000000000000000000000000000000000000000815260080190565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b73ffffffffffffffffffffffffffffffffffffffff929092168252602082015260400190565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b73ffffffffffffffffffffffffffffffffffffffff811681146108f757600080fd5b5056fea2646970667358221220dbd2e7dc8cb2525a0b8effaaa856dab473c51dd6dcfc2fd4be317d4d92e27a4364736f6c63430008000033",
   "libraries": {
-    "GovernanceLib": "0xaeb86F3860AD5B29aE141c56709835130ecbE0D9",
-    "Strings": "0xAaCc702df0e464b2f2896aEe801241eEA6DBdba1",
-    "AddressSet": "0x2521688f2bdf04bd785D477C05d5240634E63708",
-    "UInt256Set": "0xE519B631E93BE6Df760b3872dE88344Dd969370a",
-    "Create2": "0xe83DEBccfFF96a5113Bd485967a643D60C4487fd",
-    "ProposalsLib": "0xd98B1717903B2Ff81b08F680372887a8c35174c2",
-    "ComplexPoolLib": "0x9aCda89A5C672c5f74bf71C723D9fAad285167C2",
-    "WrappedTokenLib": "0x9c2C592C7C6D3f7A58aD74ddCf31D0dE2f8807a5"
+    "Strings": "0xd45eC25dF301d3E0FCfb2579cC5d983808fe0819",
+    "AddressSet": "0x16898Ec08bab43BCF1Ae0A2fa90E25D61F5AaB4f",
+    "UInt256Set": "0x5A1295EA06d05ace6B3E2a3f0Bc0769E0D914eBA",
+    "Create2": "0xF0c0e1CfC1b73a20Dde07BEA2B640096e581E58A",
+    "WrappedTokenLib": "0x233D640e29a53D63cF6434a074a4aA61390Ed3FF",
+    "ComplexPoolLib": "0x7D9831a6684eAfC37c0e29b2c8465df7eFcFe3A1"
   },
   "devdoc": {
     "kind": "dev",
@@ -431,39 +298,21 @@
         "details": "Add an address allowed to control this contract"
       },
       "balanceOf(address)": {
-        "details": "get the token balance of this fee manager"
+        "details": "get the balance of this fee manager. Pass a zero address in for FTM balance"
       },
       "constructor": {
         "details": "constructor"
       },
-      "defaultFeeDivisor()": {
-        "details": "Get the default fee divisor for the specified token"
-      },
-      "defaultLiquidity()": {
-        "details": "Get the default liquidity for the specified token"
-      },
-      "ethBalanceOf()": {
-        "details": "get the ETH balance of this fee manager"
-      },
-      "feeDivisor(address)": {
+      "fee(uint256)": {
         "details": "Get the fee divisor for the specified token"
       },
       "isController(address)": {
         "details": "Check if this address is a controller"
       },
-      "liquidity(address)": {
-        "details": "Get the liquidity for the specified token"
-      },
       "relinquishControl()": {
         "details": "Remove the sender address from the list of controllers"
       },
-      "setDefaultFeeDivisor(uint256)": {
-        "details": "Set the default fee divisor for the specified token"
-      },
-      "setDefaultLiquidity(uint256)": {
-        "details": "Set the default liquidity for the specified token"
-      },
-      "setFeeDivisor(address,uint256)": {
+      "setFee(uint256,uint256)": {
         "details": "Set the fee divisor for the specified token"
       },
       "transferEth(address,uint256)": {
@@ -491,7 +340,7 @@
         "type": "t_mapping(t_address,t_bool)"
       },
       {
-        "astId": 5689,
+        "astId": 5407,
         "contract": "src/fees/NFTGemFeeManager.sol:NFTGemFeeManager",
         "label": "operator",
         "offset": 0,
@@ -499,36 +348,12 @@
         "type": "t_address"
       },
       {
-        "astId": 5699,
+        "astId": 5464,
         "contract": "src/fees/NFTGemFeeManager.sol:NFTGemFeeManager",
-        "label": "feeDivisors",
+        "label": "fees",
         "offset": 0,
         "slot": "2",
-        "type": "t_mapping(t_address,t_uint256)"
-      },
-      {
-        "astId": 5701,
-        "contract": "src/fees/NFTGemFeeManager.sol:NFTGemFeeManager",
-        "label": "_defaultFeeDivisor",
-        "offset": 0,
-        "slot": "3",
-        "type": "t_uint256"
-      },
-      {
-        "astId": 5705,
-        "contract": "src/fees/NFTGemFeeManager.sol:NFTGemFeeManager",
-        "label": "_liquidity",
-        "offset": 0,
-        "slot": "4",
-        "type": "t_mapping(t_address,t_uint256)"
-      },
-      {
-        "astId": 5707,
-        "contract": "src/fees/NFTGemFeeManager.sol:NFTGemFeeManager",
-        "label": "_defaultLiquidity",
-        "offset": 0,
-        "slot": "5",
-        "type": "t_uint256"
+        "type": "t_mapping(t_uint256,t_uint256)"
       }
     ],
     "types": {
@@ -549,10 +374,10 @@
         "numberOfBytes": "32",
         "value": "t_bool"
       },
-      "t_mapping(t_address,t_uint256)": {
+      "t_mapping(t_uint256,t_uint256)": {
         "encoding": "mapping",
-        "key": "t_address",
-        "label": "mapping(address => uint256)",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => uint256)",
         "numberOfBytes": "32",
         "value": "t_uint256"
       },

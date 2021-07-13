@@ -332,7 +332,7 @@ export default async function publish(
           diff,
           maxClaims,
           allowedToken,
-          {gasLimit: 5000000}
+          {gasLimit: 8000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // set created flag

@@ -39,10 +39,6 @@ export default async function migrator(
   );
   const newFactory = dc.NFTGemPoolFactory;
 
-  // add the bulk token minter as a minter
-  const tx = await newToken.addController(dc.BulkTokenMinter.address);
-  await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
   // if an account address was given then migrate the accounts gems
   if (accountAddress) {
     // get all nft gem pool addresses
@@ -138,7 +134,8 @@ export default async function migrator(
           await oldData.maxTime(),
           await oldData.difficultyStep(),
           await oldData.maxClaims(),
-          '0x0000000000000000000000000000000000000000'
+          '0x0000000000000000000000000000000000000000',
+          {gasLimit: 8000000}
         );
       }
       if (BigNumber.from(newGpAddr).eq(0)) {
@@ -160,6 +157,8 @@ export default async function migrator(
       // add the legacy token as an allowed token source
       tx = await pc.addAllowedTokenSource(alegacyToken);
       await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+      // add the new gem pool as a controller of old
+      // token so that it can burn imported gems
       tx = await oldToken.addController(newGpAddr);
       await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       console.log(`${sym} added token source ${alegacyToken.toString()}`);
@@ -168,7 +167,7 @@ export default async function migrator(
       tx = await pc.setCategory(oldToken.address);
       await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
-      console.log(`${sym} set category -${oldToken.address}`);
+      console.log(`${sym} set category: ${oldToken.address}`);
     }
 
     if (migrateGovernance) {
@@ -188,9 +187,9 @@ export default async function migrator(
         govQuantities.push(th0Bal);
         console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
 
-        // mint governance tokens in batches of ten
+        // send governance tokens in batches of ten
         if (i % 10 === 0 && holders.length > 1) {
-          const tx = await dc.BulkTokenMinter.bulkMintGov(
+          const tx = await dc.BulkTokenMinter.bulkSend(
             newToken.address,
             holders,
             govQuantities,

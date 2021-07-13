@@ -9,22 +9,31 @@ import "../interfaces/INFTGemFeeManager.sol";
 contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     address private operator;
 
+    uint256 public constant MINIMUM_LIQUIDITY_HASH =
+        uint256(keccak256("min_liquidity"));
+    uint256 public constant POOL_FEE_HASH =
+        uint256(keccak256(abi.encodePacked("pool_fee")));
+    uint256 public constant WRAP_GEM_HASH =
+        uint256(keccak256(abi.encodePacked("wrap_gem")));
+    uint256 public constant FLASH_LOAN_HASH =
+        uint256(keccak256(abi.encodePacked("flash_loan")));
+
     uint256 private constant MINIMUM_LIQUIDITY = 50;
-    uint256 private constant FEE_DIVISOR = 2000;
+    uint256 private constant POOL_FEE = 2000;
+    uint256 private constant WRAP_GEM = 2000;
+    uint256 private constant FLASH_LOAN = 10000;
 
-    mapping(address => uint256) private feeDivisors;
-    uint256 private _defaultFeeDivisor;
-
-    mapping(address => uint256) private _liquidity;
-    uint256 private _defaultLiquidity;
+    mapping(uint256 => uint256) private fees;
 
     /**
      * @dev constructor
      */
     constructor() {
         _addController(msg.sender);
-        _defaultFeeDivisor = FEE_DIVISOR;
-        _defaultLiquidity = MINIMUM_LIQUIDITY;
+        fees[MINIMUM_LIQUIDITY_HASH] = MINIMUM_LIQUIDITY;
+        fees[POOL_FEE_HASH] = POOL_FEE;
+        fees[WRAP_GEM_HASH] = WRAP_GEM;
+        fees[FLASH_LOAN_HASH] = FLASH_LOAN;
     }
 
     /**
@@ -35,106 +44,37 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     }
 
     /**
-     * @dev Get the liquidity for the specified token
-     */
-    function liquidity(address token) external view override returns (uint256) {
-        return _liquidity[token] != 0 ? _liquidity[token] : _defaultLiquidity;
-    }
-
-    /**
-     * @dev Get the default liquidity for the specified token
-     */
-    function defaultLiquidity()
-        external
-        view
-        override
-        returns (uint256 multiplier)
-    {
-        return _defaultLiquidity;
-    }
-
-    /**
-     * @dev Set the default liquidity for the specified token
-     */
-    function setDefaultLiquidity(uint256 _liquidityMult)
-        external
-        override
-        onlyController
-        returns (uint256 oldLiquidity)
-    {
-        require(_liquidityMult != 0, "INVALID");
-        oldLiquidity = _defaultLiquidity;
-        _defaultLiquidity = _liquidityMult;
-        emit LiquidityChanged(operator, oldLiquidity, _defaultLiquidity);
-    }
-
-    /**
      * @dev Get the fee divisor for the specified token
      */
-    function feeDivisor(address token)
+    function fee(uint256 feeHash)
         external
         view
         override
-        returns (uint256 divisor)
+        returns (uint256 feeRet)
     {
-        divisor = feeDivisors[token];
-        divisor = divisor == 0 ? FEE_DIVISOR : divisor;
-    }
-
-    /**
-     * @dev Get the default fee divisor for the specified token
-     */
-    function defaultFeeDivisor()
-        external
-        view
-        override
-        returns (uint256 multiplier)
-    {
-        return _defaultFeeDivisor;
-    }
-
-    /**
-     * @dev Set the default fee divisor for the specified token
-     */
-    function setDefaultFeeDivisor(uint256 _feeDivisor)
-        external
-        override
-        onlyController
-        returns (uint256 oldDivisor)
-    {
-        require(_feeDivisor != 0, "DIVISIONBYZERO");
-        oldDivisor = _defaultFeeDivisor;
-        _defaultFeeDivisor = _feeDivisor;
-        emit DefaultFeeDivisorChanged(operator, oldDivisor, _defaultFeeDivisor);
+        feeRet = fees[feeHash];
     }
 
     /**
      * @dev Set the fee divisor for the specified token
      */
-    function setFeeDivisor(address token, uint256 _feeDivisor)
+    function setFee(uint256 feeHash, uint256 _fee)
         external
         override
         onlyController
-        returns (uint256 oldDivisor)
     {
-        require(_feeDivisor != 0, "DIVISIONBYZERO");
-        oldDivisor = feeDivisors[token];
-        feeDivisors[token] = _feeDivisor;
-        emit FeeDivisorChanged(operator, token, oldDivisor, _feeDivisor);
+        fees[feeHash] = _fee;
+        emit FeeChanged(operator, feeHash, _fee);
     }
 
     /**
-     * @dev get the ETH balance of this fee manager
-     */
-    function ethBalanceOf() external view override returns (uint256) {
-        return address(this).balance;
-    }
-
-    /**
-     * @dev get the token balance of this fee manager
+     * @dev get the balance of this fee manager. Pass a zero address in for FTM balance
      */
     function balanceOf(address token) external view override returns (uint256) {
-        return IERC20(token).balanceOf(address(this));
+        return
+            token == address(0)
+                ? address(this).balance
+                : IERC20(token).balanceOf(address(this));
     }
 
     /**
@@ -145,7 +85,6 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
         override
         onlyController
     {
-        require(address(this).balance >= amount, "INSUFFICIENT_BALANCE");
         recipient.transfer(amount);
     }
 
@@ -157,10 +96,6 @@ contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
         address recipient,
         uint256 amount
     ) external override onlyController {
-        require(
-            IERC20(token).balanceOf(address(this)) >= amount,
-            "INSUFFICIENT_BALANCE"
-        );
         IERC20(token).transfer(recipient, amount);
     }
 }

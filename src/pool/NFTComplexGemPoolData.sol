@@ -449,40 +449,15 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         bool _burn,
         bool _exactAmount
     ) external override {
-        require(_tokenAddress != address(0), "INVALID_TOKEN");
-        require(
-            _inputType == INFTComplexGemPool.RequirementType.ERC20 ||
-                _inputType == INFTComplexGemPool.RequirementType.ERC1155 ||
-                _inputType == INFTComplexGemPool.RequirementType.POOL,
-            "INVALID_INPUTTYPE"
-        );
-        require(
-            (_inputType == INFTComplexGemPool.RequirementType.POOL &&
-                _poolAddress != address(0)) ||
-                _inputType != INFTComplexGemPool.RequirementType.POOL,
-            "INVALID_POOL"
-        );
-        require(
-            (_inputType == INFTComplexGemPool.RequirementType.ERC20 &&
-                _tokenId == 0) ||
-                _inputType == INFTComplexGemPool.RequirementType.ERC1155 ||
-                (_inputType == INFTComplexGemPool.RequirementType.POOL &&
-                    _tokenId == 0),
-            "INVALID_TOKENID"
-        );
-        require(_minAmount != 0, "ZERO_AMOUNT");
-        require(!(!_takeCustody && _burn), "INVALID_TOKENSTATE");
-        poolData.inputRequirements.push(
-            INFTComplexGemPoolData.InputRequirement(
-                _tokenAddress,
-                _poolAddress,
-                _inputType,
-                _tokenId,
-                _minAmount,
-                _takeCustody,
-                _burn,
-                _exactAmount
-            )
+        poolData.addInputRequirement(
+            _tokenAddress,
+            _poolAddress,
+            _inputType,
+            _tokenId,
+            _minAmount,
+            _takeCustody,
+            _burn,
+            _exactAmount
         );
     }
 

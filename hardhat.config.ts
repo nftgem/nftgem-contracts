@@ -352,6 +352,34 @@ task(
   );
 
 task(
+  'publish-gempool',
+  'Publish a new gem pool with the given parameters'
+)
+  .addParam('symbol', 'The gem pool symbol')
+  .addParam('name', 'The gem pool name')
+  .addParam('price', 'The gem pool starting price')
+  .addParam('min', 'The gem pool minimum maturity time in seconds')
+  .addParam('max', 'The gem pool maximum maturity time in seconds')
+  .addParam('diff', 'The gem pool difficulty divisor')
+  .addParam('maxClaims', 'The gem pool max number of claims')
+  .addParam('allowedToken', 'An optional allowed token')
+  .setAction(
+    async ({symbol, name, price, min, max, diff, maxClaims, allowedToken}, hre: HardhatRuntimeEnvironment) => {
+      const publisher = await publish(hre, false);
+      const minionAddress = await publisher.createPool(
+        symbol,
+        name,
+        hre.ethers.utils.parseEther(price),
+        min,
+        max,
+        diff,
+        maxClaims,
+        allowedToken
+      );
+    }
+  );
+
+task(
   'migrate-gems',
   'Migrate the given gem holder from legacy gem pool factory and multitoken. Creates new gems for token holder from legacy token contents.'
 )
@@ -525,7 +553,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2000,
+            runs: 2200,
           },
         },
       },
@@ -534,7 +562,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1000,
+            runs: 2200,
           },
         },
       },
@@ -543,7 +571,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1000,
+            runs: 2200,
           },
         },
       },

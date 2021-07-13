@@ -602,6 +602,79 @@ library ComplexPoolLib {
         }
     }
 
+    function getPoolFee(ComplexPoolData storage self, address tokenUsed)
+        internal
+        view
+        returns (uint256)
+    {
+        // get the fee for this pool if it exists
+        uint256 poolDivFeeHash = uint256(
+            keccak256(abi.encodePacked("pool_fee", address(self.pool)))
+        );
+        uint256 poolFee = INFTGemFeeManager(self.feeTracker).fee(
+            poolDivFeeHash
+        );
+        // get the pool fee for this token if it exists
+        uint256 poolTokenFeeHash = uint256(
+            keccak256(abi.encodePacked("pool_fee", address(tokenUsed)))
+        );
+        uint256 poolTokenFee = INFTGemFeeManager(self.feeTracker).fee(
+            poolTokenFeeHash
+        );
+        // get the default fee amoutn for this token
+        uint256 defaultFeeHash = uint256(
+            keccak256(abi.encodePacked("pool_fee"))
+        );
+        uint256 defaultFee = INFTGemFeeManager(self.feeTracker).fee(
+            defaultFeeHash
+        );
+        defaultFee = defaultFee == 0 ? 2000 : defaultFee;
+
+        // get the fee, preferring the token fee if available
+        uint256 feeNum = poolFee != poolTokenFee
+            ? (poolTokenFee != 0 ? poolTokenFee : poolFee)
+            : poolFee;
+
+        // set the fee to default if it is 0
+        return feeNum == 0 ? defaultFee : feeNum;
+    }
+
+    function getMinimumLiquidity(
+        ComplexPoolData storage self,
+        address tokenUsed
+    ) internal view returns (uint256) {
+        // get the fee for this pool if it exists
+        uint256 poolDivFeeHash = uint256(
+            keccak256(abi.encodePacked("min_liquidity", address(self.pool)))
+        );
+        uint256 poolFee = INFTGemFeeManager(self.feeTracker).fee(
+            poolDivFeeHash
+        );
+        // get the pool fee for this token if it exists
+        uint256 poolTokenFeeHash = uint256(
+            keccak256(abi.encodePacked("min_liquidity", address(tokenUsed)))
+        );
+        uint256 poolTokenFee = INFTGemFeeManager(self.feeTracker).fee(
+            poolTokenFeeHash
+        );
+        // get the default fee amoutn for this token
+        uint256 defaultFeeHash = uint256(
+            keccak256(abi.encodePacked("min_liquidity"))
+        );
+        uint256 defaultFee = INFTGemFeeManager(self.feeTracker).fee(
+            defaultFeeHash
+        );
+        defaultFee = defaultFee == 0 ? 50 : defaultFee;
+
+        // get the fee, preferring the token fee if available
+        uint256 feeNum = poolFee != poolTokenFee
+            ? (poolTokenFee != 0 ? poolTokenFee : poolFee)
+            : poolFee;
+
+        // set the fee to default if it is 0
+        return feeNum == 0 ? defaultFee : feeNum;
+    }
+
     /**
      * @dev crate multiple gem claim using an erc20 token. this token must be tradeable in Uniswap or this call will fail
      */
@@ -663,16 +736,18 @@ library ComplexPoolLib {
             tokenAmount / (count)
         );
 
+        // TODO: update liquidity multiple from fee manager
         if (self.validateerc20 == true) {
+            uint256 minLiquidity = getMinimumLiquidity(self, erc20token);
             // make sure the convertible amount is has reserves > 100x the token
             require(
-                ethReserve >= ethereum * (100) * (count),
+                ethReserve >= ethereum * minLiquidity * (count),
                 "INSUFFICIENT_ETH_LIQUIDITY"
             );
 
             // make sure the convertible amount is has reserves > 100x the token
             require(
-                tokenReserve >= tokenAmount * (100) * (count),
+                tokenReserve >= tokenAmount * minLiquidity * (count),
                 "INSUFFICIENT_TOKEN_LIQUIDITY"
             );
         }
@@ -784,14 +859,7 @@ library ComplexPoolLib {
             // calculate fee portion using fee tracker
             uint256 feePortion = 0;
             if (isMature == true) {
-                uint256 poolDiv = INFTGemFeeManager(self.feeTracker).feeDivisor(
-                    address(self.pool)
-                );
-                uint256 divisor = INFTGemFeeManager(self.feeTracker).feeDivisor(
-                    tokenUsed
-                );
-                uint256 feeNum = poolDiv != divisor ? divisor : poolDiv;
-                feePortion = unlockTokenPaid / (feeNum);
+                feePortion = unlockTokenPaid / getPoolFee(self, tokenUsed);
             }
             // assess a fee for minting the NFT. Fee is collectec in fee tracker
             IERC20(tokenUsed).transferFrom(
@@ -821,13 +889,11 @@ library ComplexPoolLib {
             // calculate fee portion using fee tracker
             uint256 feePortion = 0;
             if (isMature == true) {
-                uint256 divisor = INFTGemFeeManager(self.feeTracker).feeDivisor(
-                    address(0)
-                );
-                feePortion = unlockPaid / (divisor);
+                feePortion = unlockPaid / getPoolFee(self, address(0));
             }
             // transfer the ETH fee to fee tracker
             payable(self.feeTracker).transfer(feePortion);
+
             // transfer the ETH back to user
             payable(msg.sender).transfer(unlockPaid - (feePortion));
 
