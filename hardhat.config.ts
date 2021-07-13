@@ -22,6 +22,7 @@ import '@nomiclabs/hardhat-etherscan';
 
 import {node_url, accounts} from './utils/network';
 import {BigNumber} from 'ethers';
+import {pack, keccak256} from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
@@ -173,6 +174,125 @@ task('pool-tokens-for', 'show pool tokens for given pool held by given address')
       }))
     );
   });
+
+task(
+  'legacy-tokens-for',
+  'show all legacy tokens for given pool symbol of given factory and multitoken held by given address'
+)
+  .addParam('owner', 'The owner address')
+  .addParam('factory', 'The legacy factory address')
+  .addParam('symbol', 'The legacy gem pool symbol')
+  .addParam('multitoken', 'The legacy multitoken address')
+  .setAction(
+    async (
+      {owner, factory, multitoken, symbol},
+      hre: HardhatRuntimeEnvironment
+    ) => {
+      // get all gempool contracts
+      const factoryContract: any = await hre.ethers.getContractAt(
+        'NFTGemPoolFactory',
+        factory
+      );
+      // get all gempool contracts
+      const multitokenContract: any = await hre.ethers.getContractAt(
+        'NFTGemMultiToken',
+        multitoken
+      );
+
+      const salt = keccak256(['bytes'], [pack(['string'], [symbol])]);
+      const poolAddress = await factoryContract.getNFTGemPool(salt);
+
+      if (BigNumber.from(poolAddress).eq(0)) {
+        console.log(`No pool found for ${symbol}`);
+        return;
+      }
+
+      const poolContract = await hre.ethers.getContractAt(
+        'NFTComplexGemPoolData',
+        poolAddress
+      );
+
+      // get all token hashes for pool
+      const tokenHashLen = await poolContract.allTokenHashesLength();
+      for (let j = 0; j < tokenHashLen.toNumber(); j++) {
+        const tokenHash = await poolContract.allTokenHashes(j);
+        const tokenBalance = await multitokenContract.balanceOf(
+          owner,
+          tokenHash
+        );
+        if (!tokenBalance.eq(0)) {
+          const tokenType = await poolContract.tokenType(tokenHash);
+          console.log(symbol, {
+            hash: tokenHash,
+            type: tokenType,
+            balance: tokenBalance.toString(),
+          });
+        }
+      }
+    }
+  );
+
+task(
+  'all-legacy-tokens-for',
+  'show all legacy tokens for all pools of given factory and multitoken held by given address'
+)
+  .addParam('owner', 'The owner address')
+  .addParam('factory', 'The legacy factory address')
+  .addParam('multitoken', 'The legacy multitoken address')
+  .setAction(
+    async ({owner, factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
+      // get all gempool contracts
+      const factoryContract: any = await hre.ethers.getContractAt(
+        'NFTGemPoolFactory',
+        factory
+      );
+      // get all gempool contracts
+      const multitokenContract: any = await hre.ethers.getContractAt(
+        'NFTGemMultiToken',
+        multitoken
+      );
+
+      // get length of all gempools, load gempool calls into array
+      // use Promise.all to load all the addresses at once
+      let poolsArray: any = [];
+      const poolcount = await factoryContract.allNFTGemPoolsLength();
+      for (let i = 0; i < poolcount.toNumber(); i++) {
+        poolsArray.push(factoryContract.allNFTGemPools(i));
+      }
+      // get all gem pool data contracts
+      poolsArray = await Promise.all(poolsArray);
+      poolsArray = poolsArray.map((pa: string) =>
+        hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
+      );
+      // load all gem pool addresses at once
+      poolsArray = await Promise.all(poolsArray);
+
+      // iterate through all gempools
+      for (let i = 0; i < poolsArray.length; i++) {
+        const poolContract: any = poolsArray[i];
+        // get the token symbol
+        const symbol = await poolContract.symbol();
+        // get all token hashes for pool
+        const tokenHashLen = await poolContract.allTokenHashesLength();
+        for (let j = 0; j < tokenHashLen.toNumber(); j++) {
+          const tokenHash = await poolContract.allTokenHashes(j);
+          const tokenBalance = await multitokenContract.balanceOf(
+            owner,
+            tokenHash
+          );
+          if (!tokenBalance.eq(0)) {
+            const tokenType = await poolContract.tokenType(tokenHash);
+            console.log(symbol, {
+              hash: tokenHash,
+              type: tokenType,
+              balance: tokenBalance.toString(),
+            });
+          }
+        }
+        // print to the console
+      }
+    }
+  );
 
 task('pool-settings', 'show pool settings for given pool address')
   .addParam('address', 'The pool address')
@@ -351,10 +471,7 @@ task(
     }
   );
 
-task(
-  'publish-gempool',
-  'Publish a new gem pool with the given parameters'
-)
+task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('symbol', 'The gem pool symbol')
   .addParam('name', 'The gem pool name')
   .addParam('price', 'The gem pool starting price')
@@ -364,7 +481,10 @@ task(
   .addParam('maxClaims', 'The gem pool max number of claims')
   .addParam('allowedToken', 'An optional allowed token')
   .setAction(
-    async ({symbol, name, price, min, max, diff, maxClaims, allowedToken}, hre: HardhatRuntimeEnvironment) => {
+    async (
+      {symbol, name, price, min, max, diff, maxClaims, allowedToken},
+      hre: HardhatRuntimeEnvironment
+    ) => {
       const publisher = await publish(hre, false);
       const minionAddress = await publisher.createPool(
         symbol,
