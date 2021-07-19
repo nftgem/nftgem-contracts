@@ -123,8 +123,35 @@ export default async function publish(
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
+        // add governer as controller of the fee manager so that it is privileged
+        console.log('adding GovernorAlpha as nftgem governor controller...');
+        tx = await dc.NFTGemGovernor.addController(dc.NFTGemGovernor.address, {
+          gasLimit: 500000,
+        });
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add governer as controller of the fee manager so that it is privileged
+        console.log('adding GovernorAlpha as fee manager controller...');
+        tx = await dc.NFTGemFeeManager.addController(
+          dc.NFTGemGovernor.address,
+          {
+            gasLimit: 500000,
+          }
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add governer as controller of the multitoken so that it is privileged
+        console.log('adding GovernorAlpha as multitoken controller...');
+        tx = await dc.NFTGemMultiToken.addController(
+          dc.NFTGemGovernor.address,
+          {
+            gasLimit: 500000,
+          }
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
         // add governor as controller of the multitoken so that it is privileged
-        console.log('propagating multitoken controller...');
+        console.log('adding nftgem governor as multitoken controller...');
         tx = await dc.NFTGemMultiToken.addController(
           dc.NFTGemGovernor.address,
           {
@@ -134,7 +161,7 @@ export default async function publish(
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governer as controller of the fee manager so that it is privileged
-        console.log('propagating fee manager controller...');
+        console.log('adding nftgem governor as fee manager controller...');
         tx = await dc.NFTGemFeeManager.addController(
           dc.NFTGemGovernor.address,
           {

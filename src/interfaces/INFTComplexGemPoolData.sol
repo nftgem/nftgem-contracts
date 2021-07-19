@@ -115,7 +115,6 @@ interface INFTComplexGemPoolData {
             uint256 claimClaimQuantity,
             uint256 claimClaimUnlockTime,
             uint256 claimClaimTokenAmount,
-            uint256 claimClaimTokenSource,
             address claimStakedToken,
             uint256 claimNextClaimId
         );
