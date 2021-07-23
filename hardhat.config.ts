@@ -26,6 +26,7 @@ import {pack, keccak256} from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
+import {formatEther, parseEther} from '@ethersproject/units';
 
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
@@ -342,24 +343,24 @@ task('pool-stats', 'show pool stats for given pool address')
     const symbol = await poolContract.symbol();
     const stats = await poolContract.stats();
     const [
-      visible,
-      claimedCount,
-      mintedCount,
-      totalStakedEth,
-      nextClaimHash,
-      nextGemHash,
-      nextClaimIdVal,
-      nextGemIdVal,
+      statsVisible,
+      statsClaimedCount,
+      statsMintedCount,
+      statsTotalStakedEth,
+      statsNextClaimHash,
+      statsNextGemHash,
+      statsNextClaimId,
+      statsNextGemId,
     ] = stats;
     console.log(symbol, {
-      visible,
-      claimedCount,
-      mintedCount,
-      totalStakedEth,
-      nextClaimHash,
-      nextGemHash,
-      nextClaimIdVal,
-      nextGemIdVal,
+      statsVisible,
+      statsClaimedCount,
+      statsMintedCount,
+      statsTotalStakedEth,
+      statsNextClaimHash,
+      statsNextGemHash,
+      statsNextClaimId,
+      statsNextGemId,
     });
   });
 
@@ -471,6 +472,83 @@ task(
     }
   );
 
+task('migrate-governance', 'Migrate the legacy governance token to erc20')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .setAction(async ({multitoken}, hre: HardhatRuntimeEnvironment) => {
+    // get the signers
+    const [sender] = await hre.ethers.getSigners();
+    // get the old token
+    const oldToken = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken,
+      sender
+    );
+    const governanceTokenAddress = (
+      await hre.deployments.get('GovernanceToken')
+    ).address;
+    // get the gov token minter
+    const tokenMinter: any = await hre.ethers.getContractAt(
+      'BulkGovernanceTokenMinter',
+      (
+        await hre.deployments.get('BulkGovernanceTokenMinter')
+      ).address
+    );
+    // get the length of old gov token hodlers
+    const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
+    console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+    const allHodlers = [];
+    let holders = [],
+      govQuantities = [],
+      accum = BigNumber.from('0');
+    // process each gov token hodler
+    for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+      const thAddr = await oldToken.allTokenHolders(0, i);
+      let th0Bal = await oldToken.balanceOf(thAddr, 0);
+      if (i === 0) {
+        th0Bal = th0Bal.sub(500000);
+      }
+      accum = accum.add(th0Bal);
+      holders.push(thAddr);
+      allHodlers.push(thAddr);
+      govQuantities.push(parseEther(th0Bal.toString()).toString());
+      console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
+
+      // send governance tokens in batches of ten
+      if (i % 10 === 0 && holders.length > 1) {
+        const tx = await tokenMinter.bulkMint(
+          governanceTokenAddress,
+          holders,
+          govQuantities,
+          {gasLimit: 5000000}
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        holders = [];
+        govQuantities = [];
+        console.log(`${i} minted ${formatEther(accum)}`);
+        accum = BigNumber.from('0');
+      }
+    }
+
+    // mint any tokens not processed above
+    if (holders.length > 0) {
+      const tx = await tokenMinter.bulkMint(
+        governanceTokenAddress,
+        holders,
+        govQuantities,
+        {gasLimit: 5000000}
+      );
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+    }
+
+    for (let jj = 0; jj < allHodlers.length; jj++) {
+      const thAddr = await oldToken.allTokenHolders(0, jj);
+      const th0Bal = await oldToken.balanceOf(thAddr, 0);
+      const tx = await oldToken.burn(thAddr, 0, th0Bal);
+      console.log(`${jj} burn ${th0Bal.toString()}`);
+      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+    }
+  });
+
 task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('symbol', 'The gem pool symbol')
   .addParam('name', 'The gem pool name')
@@ -496,6 +574,18 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
         maxClaims,
         allowedToken
       );
+    }
+  );
+
+task(
+  'migrate-all-gems',
+  'Migrate all the gem holdera from legacy gem pool factory and multitoken. Creates new gems for token holder from legacy token contents.'
+)
+  .addParam('factory', 'The legacy gem pool factory address')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .setAction(
+    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
+      await migrator(hre, factory, multitoken, account);
     }
   );
 
@@ -673,7 +763,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2200,
+            runs: 2222,
           },
         },
       },
@@ -682,7 +772,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2200,
+            runs: 2222,
           },
         },
       },
@@ -755,8 +845,6 @@ const config: HardhatUserConfig = {
     opera: {
       url: node_url('opera'),
       accounts: accounts('opera'),
-      gasPrice: 'auto',
-      gas: 'auto',
       timeout: 30000,
     },
     sokol: {

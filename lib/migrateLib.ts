@@ -2,13 +2,15 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 import {pack, keccak256} from '@ethersproject/solidity';
 import publisher from './publishLib';
 import {BigNumber, Contract} from 'ethers';
+import {formatEther} from '@ethersproject/units';
 
 export default async function migrator(
   hre: HardhatRuntimeEnvironment,
   factoryAddress: string,
   tokenAddress: string,
-  accountAddress?: string,
-  migrateGovernance?: boolean
+  accountAddress?: string | boolean,
+  migrateGovernance?: boolean,
+  migrateGems?: boolean
 ): Promise<any> {
   const {ethers} = hre;
   const {getContractAt} = ethers;
@@ -41,72 +43,77 @@ export default async function migrator(
 
   // if an account address was given then migrate the accounts gems
   if (accountAddress) {
-    // get all nft gem pool addresses
-    const gemPoolsLen = await oldFactory.allNFTGemPoolsLength();
-    let gemPools = [];
-    for (let i = 0; i < gemPoolsLen.toNumber(); i++) {
-      gemPools.push(oldFactory.allNFTGemPools(i));
-    }
-    gemPools = await Promise.all(gemPools);
-    (
-      await Promise.all(
-        gemPools.map(async (gp: string) =>
-          hre.ethers.getContractAt('NFTComplexGemPoolData', gp)
-        )
-      )
-    ).forEach(async (poolContract: any) => {
-      const symbol = await poolContract.symbol();
-      const poolHash = keccak256(['bytes'], [pack(['string'], [symbol])]);
-      const newPoolAddress = await newFactory.getNFTGemPool(poolHash);
-      if (newPoolAddress.eq(0)) {
-        console.log(`Could not find NFTGemPool for ${symbol}`);
-        return;
+    const migrateOne = async (accountAddress: string) => {
+      // get all nft gem pool addresses
+      const gemPoolsLen = await oldFactory.allNFTGemPoolsLength();
+      let gemPools = [];
+      for (let i = 0; i < gemPoolsLen.toNumber(); i++) {
+        gemPools.push(oldFactory.allNFTGemPools(i));
       }
-      const newPoolContract = await hre.ethers.getContractAt(
-        'NFTComplexGemPoolData',
-        newPoolAddress
-      );
-
-      // get all token hashes for pool
-      const tokenHashesLen = await poolContract.allTokenHashesLength();
-      let allTokenHashes: any = [];
-      for (let i = 0; i < tokenHashesLen.toNumber(); i++) {
-        allTokenHashes.push(poolContract.allTokenHashes(i));
-      }
-      allTokenHashes = await Promise.all(allTokenHashes);
-      // get balance for given owner address fpr all tokens
-      const tokenBalances = await Promise.all(
-        allTokenHashes.map((th: BigNumber) =>
-          oldToken.balanceOf(accountAddress, th)
+      gemPools = await Promise.all(gemPools);
+      (
+        await Promise.all(
+          gemPools.map(async (gp: string) =>
+            hre.ethers.getContractAt('NFTComplexGemPoolData', gp)
+          )
         )
-      );
-
-      // get the token types for only non-zero balances
-      let tokenTypes: any = [];
-      const balances: any = [];
-      let recipientTokens: any = [];
-      tokenBalances.forEach((bal: any, i) => {
-        if (!bal.eq(0)) {
-          recipientTokens.push(allTokenHashes[i]);
-          tokenTypes.push(poolContract.tokenType(allTokenHashes[i]));
-          balances.push(bal);
+      ).forEach(async (poolContract: any) => {
+        const symbol = await poolContract.symbol();
+        const poolHash = keccak256(['bytes'], [pack(['string'], [symbol])]);
+        const newPoolAddress = await newFactory.getNFTGemPool(poolHash);
+        if (newPoolAddress.eq(0)) {
+          console.log(`Could not find NFTGemPool for ${symbol}`);
+          return;
         }
-      });
-      if (recipientTokens.length === 0) return;
-      tokenTypes = await Promise.all(tokenTypes);
+        const newPoolContract = await hre.ethers.getContractAt(
+          'NFTComplexGemPoolData',
+          newPoolAddress
+        );
 
-      recipientTokens = recipientTokens
-        .filter((rt: any, j: any) => tokenTypes[j] === 2)
-        .forEach(async (hash: any) => {
-          const tx = await newPoolContract.importLegacyGem(
-            poolContract.address,
-            alegacyToken,
-            hash,
-            accountAddress
-          );
-          console.log(tx);
+        // get all token hashes for pool
+        const tokenHashesLen = await poolContract.allTokenHashesLength();
+        let allTokenHashes: any = [];
+        for (let i = 0; i < tokenHashesLen.toNumber(); i++) {
+          allTokenHashes.push(poolContract.allTokenHashes(i));
+        }
+        allTokenHashes = await Promise.all(allTokenHashes);
+        // get balance for given owner address fpr all tokens
+        const tokenBalances = await Promise.all(
+          allTokenHashes.map((th: BigNumber) =>
+            oldToken.balanceOf(accountAddress, th)
+          )
+        );
+
+        // get the token types for only non-zero balances
+        let tokenTypes: any = [];
+        const balances: any = [];
+        let recipientTokens: any = [];
+        tokenBalances.forEach((bal: any, i) => {
+          if (!bal.eq(0)) {
+            recipientTokens.push(allTokenHashes[i]);
+            tokenTypes.push(poolContract.tokenType(allTokenHashes[i]));
+            balances.push(bal);
+          }
         });
-    });
+        if (recipientTokens.length === 0) return;
+        tokenTypes = await Promise.all(tokenTypes);
+
+        recipientTokens = recipientTokens
+          .filter((rt: any, j: any) => tokenTypes[j] === 2)
+          .forEach(async (hash: any) => {
+            const tx = await newPoolContract.importLegacyGem(
+              poolContract.address,
+              alegacyToken,
+              hash,
+              accountAddress
+            );
+            console.log(tx);
+          });
+      });
+    };
+    if (typeof accountAddress === 'string') {
+      await migrateOne(accountAddress);
+    }
   } else {
     // go through each published gem pool in old gem pool factory
     const gpLen = await oldFactory.allNFTGemPoolsLength();
@@ -115,7 +122,12 @@ export default async function migrator(
       const oldData = await getContractAt('INFTGemPoolData', gpAddr, sender);
       const sym = await oldData.symbol();
       // these are ded
-      if (sym === 'AMAST' || sym === 'MCU') {
+      if (
+        sym === 'AMAST' ||
+        sym === 'MCU' ||
+        sym === 'STIK' ||
+        sym === 'ROCK'
+      ) {
         continue;
       }
 
@@ -168,6 +180,67 @@ export default async function migrator(
       await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
       console.log(`${sym} set category: ${oldToken.address}`);
+
+      if (migrateGems) {
+        // get all token hashes for pool
+        console.log(`get all token hashes`);
+        const tokenHashesLen = await oldData.allTokenHashesLength();
+        let allTokenHashes: any = [];
+        for (let i = 0; i < tokenHashesLen.toNumber(); i++) {
+          allTokenHashes.push(oldData.allTokenHashes(i));
+        }
+        allTokenHashes = await Promise.all(allTokenHashes);
+
+        // now get the token types for those token hashes
+        console.log(`get all token types`);
+        let allTokenTypes: any = [];
+        for (let i = 0; i < allTokenHashes.length; i++) {
+          allTokenTypes.push(oldData.tokenType(allTokenHashes[i]));
+        }
+        allTokenTypes = await Promise.all(allTokenTypes);
+
+        // get just the gems for the pool
+        console.log(`keep just the gems`);
+        const allGems: any = [];
+        allTokenTypes.forEach((type: any, i: any) => {
+          if (type === 2) {
+            allGems.push(allTokenHashes[i]);
+          }
+        });
+
+        // iterate through all gems and import them
+        console.log(`go through each gem`);
+        for (let jj = 0; jj < allGems.length; jj++) {
+          const hash = allGems[jj];
+          console.log(`gem ${hash}`);
+
+          // get the token hodlers for the gem
+          console.log(`gem ${hash} get all toekn hodlers`);
+          const tokenHoldersLen = await oldToken.allTokenHoldersLength(hash);
+          let allTokenHolders: any = [];
+          for (let i = 0; i < tokenHoldersLen.toNumber(); i++) {
+            allTokenHolders.push(oldToken.allTokenHolders(hash, i));
+          }
+          allTokenHolders = (await Promise.all(allTokenHolders)).reduce(
+            (acc: any, cur: any) => acc.concat(cur),
+            []
+          );
+          console.log(`gem ${hash} for each hodler`);
+          for (let kk = 0; kk < allTokenHolders.length; kk++) {
+            const holder = allTokenHolders[kk];
+            console.log(`gem ${hash} hodler ${holder}`);
+            const tx = await pc.importLegacyGem(
+              pc.address,
+              alegacyToken,
+              hash,
+              holder,
+              false,
+              {gasLimit: 5000000}
+            );
+            await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+          }
+        }
+      }
     }
 
     if (migrateGovernance) {
@@ -189,7 +262,7 @@ export default async function migrator(
 
         // send governance tokens in batches of ten
         if (i % 10 === 0 && holders.length > 1) {
-          const tx = await dc.BulkTokenMinter.bulkSend(
+          const tx = await dc.BulkGovernanceTokenMinter.bulkMint(
             newToken.address,
             holders,
             govQuantities,
@@ -203,10 +276,23 @@ export default async function migrator(
 
       // mint any tokens not processed above
       if (holders.length > 0) {
-        const tx = await dc.BulkTokenMinter.bulkMintGov(
+        const tx = await dc.BulkGovernanceTokenMinter.bulkMint(
           newToken.address,
           holders,
           govQuantities,
+          {gasLimit: 5000000}
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        
+      }
+
+      for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+        const thAddr = await oldToken.allTokenHolders(0, i);
+        const th0Bal = await oldToken.balanceOf(thAddr, 0);
+        const tx = await oldToken.burn(
+          thAddr,
+          0,
+          th0Bal,
           {gasLimit: 5000000}
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);

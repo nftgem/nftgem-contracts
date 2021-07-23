@@ -677,7 +677,8 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         address _poolAddress,
         address _legacyToken,
         uint256 _tokenHash,
-        address _recipient
+        address _recipient,
+        bool _burnOld
     ) external override {
         // this method is callable by anyone - this is used to import historical
         // gems into the new contracts. A gem can only be imported in once
@@ -690,71 +691,86 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
             poolData.allowedTokenSources.exists(_legacyToken) == true,
             "INVALID_TOKENSOURCE"
         );
+        // get legacy token quantity
+        uint256 quantity = IERC1155(_legacyToken).balanceOf(
+            _recipient,
+            _tokenHash
+        );
+        // require some amount to import
+        require(quantity > 0, "NOTHING_TO_IMPORT");
+        // if we are to burn old tokens do it now
+        if (_burnOld == true) {
+            INFTGemMultiToken(_legacyToken).burn(
+                _recipient,
+                _tokenHash,
+                quantity
+            );
+            // and exit if we have already imported them. this logic
+            // lets us import without burning the old tokens first,
+            // and then burn them afterwards
+            if (
+                poolData.importedLegacyToken[_tokenHash][_recipient] >= quantity
+            ) {
+                return;
+            }
+        }
+        // require that the token is not already imported
         require(
-            poolData.importedLegacyToken[_tokenHash] == false,
+            poolData.importedLegacyToken[_tokenHash][_recipient] < quantity,
             "ALREADY_IMPORTED"
         );
 
+        // rebuild the poolhash to make sure its correct
         bytes32 importedSymHash = keccak256(
             abi.encodePacked(INFTGemPoolData(_poolAddress).symbol())
         );
         bytes32 poolSymHash = keccak256(abi.encodePacked(poolData.symbol));
         require(importedSymHash == poolSymHash, "INVALID_POOLHASH");
 
-        INFTGemMultiToken.TokenType importTokenType = INFTGemPoolData(
-            _poolAddress
-        ).tokenType(_tokenHash);
-        require(
-            importTokenType == INFTGemMultiToken.TokenType.GEM,
-            "INVALID_TOKENTYPE"
-        );
-
-        uint256 quantity = IERC1155(_legacyToken).balanceOf(
-            _recipient,
-            _tokenHash
-        );
+        // get the token type from the legacy token
         uint256 importTokenId = INFTGemPoolData(_poolAddress).tokenId(
             _tokenHash
         );
 
-        if (quantity > 0) {
-            INFTGemMultiToken(poolData.multitoken).mint(
-                _recipient,
-                _tokenHash,
-                quantity
-            );
-            INFTGemMultiToken(poolData.multitoken).setTokenData(
-                _tokenHash,
-                INFTGemMultiToken.TokenType.GEM,
-                address(this)
-            );
+        // store import data
+        poolData.tokenTypes[_tokenHash] = INFTGemMultiToken.TokenType.GEM;
+        poolData.tokenIds[_tokenHash] = importTokenId;
+        poolData.tokenSources[_tokenHash] = _legacyToken;
+        poolData.importedLegacyToken[_tokenHash][_recipient] = quantity;
 
-            poolData.tokenTypes[_tokenHash] = INFTGemMultiToken.TokenType.GEM;
-            poolData.tokenIds[_tokenHash] = importTokenId;
-            poolData.tokenSources[_tokenHash] = _legacyToken;
-            poolData.importedLegacyToken[_tokenHash] = true;
+        // mint the token hash on the new token
+        INFTGemMultiToken(poolData.multitoken).mint(
+            _recipient,
+            _tokenHash,
+            quantity
+        );
+        // set the token data
+        INFTGemMultiToken(poolData.multitoken).setTokenData(
+            _tokenHash,
+            INFTGemMultiToken.TokenType.GEM,
+            address(this)
+        );
 
-            emit NFTGemImported(
-                msg.sender,
-                address(this),
-                _poolAddress,
-                _legacyToken,
-                _tokenHash,
-                quantity
-            );
-        }
+        emit NFTGemImported(
+            msg.sender,
+            address(this),
+            _poolAddress,
+            _legacyToken,
+            _tokenHash,
+            quantity
+        );
     }
 
     /**
      * @dev returns if legacy gem with given hash is imported
      */
-    function isLegacyGemImported(uint256 _tokenhash)
+    function isLegacyGemImported(address _account, uint256 _tokenhash)
         external
         view
         override
         returns (bool)
     {
-        return poolData.importedLegacyToken[_tokenhash];
+        return poolData.importedLegacyToken[_tokenhash][_account] > 0;
     }
 
     /**
