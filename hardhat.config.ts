@@ -2,6 +2,8 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {task} from 'hardhat/config';
 
+import fs from 'fs';
+
 import 'dotenv/config';
 import {HardhatUserConfig} from 'hardhat/types';
 
@@ -483,23 +485,16 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
       multitoken,
       sender
     );
-    const governanceTokenAddress = (
-      await hre.deployments.get('GovernanceToken')
-    ).address;
     // get the gov token minter
-    const tokenMinter: any = await hre.ethers.getContractAt(
-      'BulkGovernanceTokenMinter',
+    const govToken: any = await hre.ethers.getContractAt(
+      'GovernanceToken',
       (
-        await hre.deployments.get('BulkGovernanceTokenMinter')
+        await hre.deployments.get('GovernanceToken')
       ).address
     );
     // get the length of old gov token hodlers
     const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
     console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
-    const allHodlers = [];
-    let holders = [],
-      govQuantities = [],
-      accum = BigNumber.from('0');
     // process each gov token hodler
     for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
       const thAddr = await oldToken.allTokenHolders(0, i);
@@ -507,45 +502,20 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
       if (i === 0) {
         th0Bal = th0Bal.sub(500000);
       }
-      accum = accum.add(th0Bal);
-      holders.push(thAddr);
-      allHodlers.push(thAddr);
-      govQuantities.push(parseEther(th0Bal.toString()).toString());
-      console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
-
-      // send governance tokens in batches of ten
-      if (i % 10 === 0 && holders.length > 1) {
-        const tx = await tokenMinter.bulkMint(
-          governanceTokenAddress,
-          holders,
-          govQuantities,
-          {gasLimit: 5000000}
+      const bo = await govToken.balanceOf(thAddr);
+      if (bo.lt(parseEther(th0Bal.toString()).mul(30))) {
+        let tx = await govToken.mint(
+          thAddr,
+          parseEther(th0Bal.mul(30).toString()),
+          {
+            gasLimit: 5000000,
+          }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        holders = [];
-        govQuantities = [];
-        console.log(`${i} minted ${formatEther(accum)}`);
-        accum = BigNumber.from('0');
+        tx = await oldToken.burn(thAddr, 0, th0Bal, {gasLimit: 5000000});
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
       }
-    }
-
-    // mint any tokens not processed above
-    if (holders.length > 0) {
-      const tx = await tokenMinter.bulkMint(
-        governanceTokenAddress,
-        holders,
-        govQuantities,
-        {gasLimit: 5000000}
-      );
-      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-    }
-
-    for (let jj = 0; jj < allHodlers.length; jj++) {
-      const thAddr = await oldToken.allTokenHolders(0, jj);
-      const th0Bal = await oldToken.balanceOf(thAddr, 0);
-      const tx = await oldToken.burn(thAddr, 0, th0Bal);
-      console.log(`${jj} burn ${th0Bal.toString()}`);
-      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
     }
   });
 
@@ -576,6 +546,76 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
       );
     }
   );
+
+task(
+  'mint-governance',
+  'Mint governance tokens. Driven with a file input containing an array of address, quantity pairs'
+)
+  .addParam('file', 'The legacy gem pool factory address')
+  .setAction(async ({file}, hre: HardhatRuntimeEnvironment) => {
+    const data = JSON.parse(fs.readFileSync(file).toString());
+    // get the multitoken contract
+    const signer = await hre.ethers.provider.getSigner();
+    const govToken: any = await hre.ethers.getContractAt(
+      'GovernanceToken',
+      (
+        await hre.deployments.get('GovernanceToken')
+      ).address,
+      signer
+    );
+    // get the signer
+
+    for (let i = 0; i < data.length; i++) {
+      const line: any = data[i];
+      const k = line[0];
+      const v = parseInt(line[1]) * 30;
+      const b = await govToken.balanceOf(k);
+      if (parseInt(formatEther(b)) !== v) {
+        await govToken.mint(k, parseEther(v + ''));
+        console.log(`${k} ${v}`);
+      }
+    }
+  });
+
+task(
+  'withdraw-fees',
+  'Withdraw fees from fee manager. Pushes a governance proposal through for a transfer to the specific individualThe.'
+)
+  .addParam('account', 'The legacy gem multitoken address')
+  .setAction(
+    async ({account}, hre: HardhatRuntimeEnvironment) => {
+      // get the signer
+      const signer = await hre.ethers.provider.getSigner();
+
+      // load the proposal factory contract
+      const proposalFactory = await hre.ethers.getContractAt(
+        'ProposalFactory',
+        (
+          await hre.deployments.get('ProposalFactory')
+        ).address,
+        signer
+      );
+
+      // load the nft gem governor contract
+      const nftGemGovernor = await hre.ethers.getContractAt(
+        'NFTGemGovernor',
+        (
+          await hre.deployments.get('NFTGemGovernor')
+        ).address,
+        signer
+      );
+
+      // create a new proposal that will transfer fees to the address
+      // specified by the user
+
+      // fund the proposal with 1 fantom
+
+      // send vote tokens to the proposal address
+
+      // execute the proposal
+    }
+  );
+
 
 task(
   'migrate-all-gems',
