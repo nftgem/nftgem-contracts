@@ -5,8 +5,18 @@ pragma solidity >=0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import "../interfaces/ITokenPoolQuerier.sol";
-import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/INFTGemMultiToken.sol";
+
+interface IGemPoolData {
+    function allTokenHashesLength() external view returns (uint256);
+
+    function allTokenHashes(uint256 ndx) external view returns (uint256);
+
+    function tokenType(uint256 tokenHash)
+        external
+        view
+        returns (INFTGemMultiToken.TokenType);
+}
 
 contract TokenPoolQuerier is ITokenPoolQuerier {
     function getOwnedTokens(
@@ -21,7 +31,7 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
         override
         returns (uint256[] memory claims, uint256[] memory gems)
     {
-        uint256 allTokenHashesLength = INFTComplexGemPoolData(gemPool)
+        uint256 allTokenHashesLength = IGemPoolData(gemPool)
         .allTokenHashesLength();
         require((page * count) <= allTokenHashesLength, "OUT_OF_RANGE");
 
@@ -35,12 +45,9 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
             if (i >= allTokenHashesLength) {
                 break;
             }
-            uint256 claimHash = INFTComplexGemPoolData(gemPool).allTokenHashes(
-                i
-            );
-            INFTGemMultiToken.TokenType tokenType = INFTComplexGemPoolData(
-                gemPool
-            ).tokenType(claimHash);
+            uint256 claimHash = IGemPoolData(gemPool).allTokenHashes(i);
+            INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)
+            .tokenType(claimHash);
             uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);
             if (bal == 0 || claimHash == 0 || claimHash == 1) continue;
             else if (tokenType == INFTGemMultiToken.TokenType.CLAIM)

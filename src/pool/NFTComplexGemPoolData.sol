@@ -11,6 +11,7 @@ import "./ComplexPoolLib.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/INFTGemPoolData.sol";
+import "../interfaces/IWrappedFtm.sol";
 
 contract NFTComplexGemPoolData is INFTComplexGemPoolData {
     using AddressSet for AddressSet.Set;
@@ -728,12 +729,22 @@ contract NFTComplexGemPoolData is INFTComplexGemPoolData {
         require(importedSymHash == poolSymHash, "INVALID_POOLHASH");
 
         // get the token type from the legacy token
+        INFTGemMultiToken.TokenType importTokenTYpe = INFTGemPoolData(
+            _poolAddress
+        ).tokenType(_tokenHash);
+
+        // only import tokens that are gems
+        require(
+            importTokenTYpe == INFTGemMultiToken.TokenType.GEM,
+            "NOT_A_GEM"
+        );
+        // get the token id from the legacy token
         uint256 importTokenId = INFTGemPoolData(_poolAddress).tokenId(
             _tokenHash
         );
 
         // store import data
-        poolData.tokenTypes[_tokenHash] = INFTGemMultiToken.TokenType.GEM;
+        poolData.tokenTypes[_tokenHash] = importTokenTYpe;
         poolData.tokenIds[_tokenHash] = importTokenId;
         poolData.tokenSources[_tokenHash] = _legacyToken;
         poolData.importedLegacyToken[_tokenHash][_recipient] = quantity;

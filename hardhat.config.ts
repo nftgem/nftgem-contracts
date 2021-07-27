@@ -496,7 +496,7 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
     const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
     console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
     // process each gov token hodler
-    for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+    for (let i = 1347; i < allGovTokenHolders.toNumber(); i++) {
       const thAddr = await oldToken.allTokenHolders(0, i);
       let th0Bal = await oldToken.balanceOf(thAddr, 0);
       if (i === 0) {
@@ -506,13 +506,10 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
       if (bo.lt(parseEther(th0Bal.toString()).mul(30))) {
         let tx = await govToken.mint(
           thAddr,
-          parseEther(th0Bal.mul(30).toString()),
-          {
-            gasLimit: 5000000,
-          }
+          parseEther(th0Bal.mul(30).toString())
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        tx = await oldToken.burn(thAddr, 0, th0Bal, {gasLimit: 5000000});
+        tx = await oldToken.burn(thAddr, 0, th0Bal);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
       }
@@ -582,40 +579,37 @@ task(
   'Withdraw fees from fee manager. Pushes a governance proposal through for a transfer to the specific individualThe.'
 )
   .addParam('account', 'The legacy gem multitoken address')
-  .setAction(
-    async ({account}, hre: HardhatRuntimeEnvironment) => {
-      // get the signer
-      const signer = await hre.ethers.provider.getSigner();
+  .setAction(async ({account}, hre: HardhatRuntimeEnvironment) => {
+    // get the signer
+    const signer = await hre.ethers.provider.getSigner();
 
-      // load the proposal factory contract
-      const proposalFactory = await hre.ethers.getContractAt(
-        'ProposalFactory',
-        (
-          await hre.deployments.get('ProposalFactory')
-        ).address,
-        signer
-      );
+    // load the proposal factory contract
+    const proposalFactory = await hre.ethers.getContractAt(
+      'ProposalFactory',
+      (
+        await hre.deployments.get('ProposalFactory')
+      ).address,
+      signer
+    );
 
-      // load the nft gem governor contract
-      const nftGemGovernor = await hre.ethers.getContractAt(
-        'NFTGemGovernor',
-        (
-          await hre.deployments.get('NFTGemGovernor')
-        ).address,
-        signer
-      );
+    // load the nft gem governor contract
+    const nftGemGovernor = await hre.ethers.getContractAt(
+      'NFTGemGovernor',
+      (
+        await hre.deployments.get('NFTGemGovernor')
+      ).address,
+      signer
+    );
 
-      // create a new proposal that will transfer fees to the address
-      // specified by the user
+    // create a new proposal that will transfer fees to the address
+    // specified by the user
 
-      // fund the proposal with 1 fantom
+    // fund the proposal with 1 fantom
 
-      // send vote tokens to the proposal address
+    // send vote tokens to the proposal address
 
-      // execute the proposal
-    }
-  );
-
+    // execute the proposal
+  });
 
 task(
   'migrate-all-gems',

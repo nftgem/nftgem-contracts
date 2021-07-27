@@ -16,7 +16,7 @@ import "../libs/AddressSet.sol";
 
 library ComplexPoolLib {
     using AddressSet for AddressSet.Set;
-
+    address private constant WFTM = 0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83;
     /**
      * @dev Event generated when an NFT claim is created using base currency
      */
@@ -1180,7 +1180,7 @@ library ComplexPoolLib {
     function addAllowedToken(ComplexPoolData storage self, address token)
         public
     {
-        if (!self.allowedTokens.exists(token)) {
+        if (!self.allowedTokens.exists(token) && token != WFTM) {
             self.allowedTokens.insert(token);
         }
     }

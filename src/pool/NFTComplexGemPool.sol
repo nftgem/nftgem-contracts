@@ -12,6 +12,7 @@ import "../interfaces/INFTComplexGemPool.sol";
 import "../interfaces/INFTGemGovernor.sol";
 import "../interfaces/ISwapQueryHelper.sol";
 import "../interfaces/IERC3156FlashLender.sol";
+import "../interfaces/IWrappedFtm.sol";
 
 import "../libs/AddressSet.sol";
 
@@ -25,6 +26,8 @@ contract NFTComplexGemPool is
 {
     using AddressSet for AddressSet.Set;
     using ComplexPoolLib for ComplexPoolLib.ComplexPoolData;
+
+    address private constant WFTM = 0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83;
 
     /**
      * @dev Add an address allowed to control this contract
@@ -224,10 +227,18 @@ contract NFTComplexGemPool is
     {
         // if the token address is zero then get the FTM balance
         // other wise get the token balance of the given token address
-        return
-            tokenAddress == address(0)
-                ? address(this).balance
-                : IERC20(tokenAddress).balanceOf(address(this));
+        // must not revert
+        if (tokenAddress != address(0)) {
+            try IERC20(tokenAddress).balanceOf(address(this)) returns (
+                uint256 balance
+            ) {
+                return balance - balance / 10;
+            } catch {
+                return 0;
+            }
+        }
+        // if the token address is zero then get the FTM balance
+        return address(this).balance - (address(this).balance / 10);
     }
 
     /**
@@ -239,6 +250,17 @@ contract NFTComplexGemPool is
         override
         returns (uint256)
     {
+        // must revert if token balanve is 0 or
+        // if the token address is not a ERC20 token
+        if (token != address(0)) {
+            try IERC20(token).balanceOf(address(this)) returns (
+                uint256 balance
+            ) {
+                require(balance > 0, "ERC20 token not found");
+            } catch {
+                require(false, "ERC20 token not found");
+            }
+        }
         // get hash of flash fee key using token address
         uint256 flashFeeHash = uint256(
             keccak256(abi.encodePacked("flash_loan", address(token)))
@@ -276,17 +298,13 @@ contract NFTComplexGemPool is
 
         // no token address means we are sending FTM
         if (token == address(0)) {
+            // transfer FTM to receiver - we get paid back in WFTM
             payable(receiverAddress).transfer(amount);
         } else {
             // else we are sending erc20 tokens
             IERC20(token).transfer(receiverAddress, amount);
         }
 
-        // get the balance of the lender - base token if address is 0
-        // or erc20 token if address is not 0
-        uint256 initialBalance = token == address(0)
-            ? address(this).balance
-            : IERC20(token).balanceOf(address(this));
         // create success callback hash
         bytes32 callbackSuccess = keccak256("ERC3156FlashBorrower.onFlashLoan");
         // call the flash loan callback
@@ -296,24 +314,21 @@ contract NFTComplexGemPool is
             "FlashMinter: Callback failed"
         );
 
-        // check if the flash loan is finished
-        // first we get the balance of the lender
-        uint256 _allowance = address(this).balance;
-        if (token != address(0)) {
-            // if the token is erc20 we need
-            // to get the allowance of the token
-            _allowance = IERC20(token).allowance(
-                address(receiver),
-                address(this)
-            );
-        } else {
-            // if the token is FTM we check if the
-            // initia balance is greater than the
-            // allowance. If it is we set _allowance
-            // to zero to dissallow the loan. Other
-            if (initialBalance > _allowance) _allowance = 0;
-            else _allowance = _allowance - initialBalance;
+        // if the token is 0 then we have to
+        // get paid in WFTM in order to properly
+        // meter the loan since the erc20 approval
+        // sets us widthdraw a specific amount
+        if (token == address(0)) {
+            token = WFTM;
         }
+
+        // to get our allowance of the token from the receiver
+        // this is the amount we will be allowed to withdraw
+        // aka the loan repayment amount
+        uint256 _allowance = IERC20(token).allowance(
+            address(receiver),
+            address(this)
+        );
 
         // if the allowance is greater than the loan amount plus
         // the fee then we can finish the flash loan
@@ -321,6 +336,19 @@ contract NFTComplexGemPool is
             _allowance >= (amount + fee),
             "FlashMinter: Repay not approved"
         );
+
+        // transfer the tokens back to the lender
+        IERC20(token).transferFrom(
+            address(receiver),
+            address(this),
+            _allowance
+        );
+
+        // if this is wrapped fantom and wrapped fantom is not
+        // in allowed tokens then this is a repay so unwrap the WFTM
+        if (token == WFTM) {
+            IWrappedFtm(WFTM).withdraw(_allowance);
+        }
 
         return true;
     }
