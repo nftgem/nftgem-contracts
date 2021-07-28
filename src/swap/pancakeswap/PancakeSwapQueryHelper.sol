@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "./PancakeSwapLib.sol";
 import "../../interfaces/ISwapQueryHelper.sol";
@@ -9,7 +9,6 @@ import "../../interfaces/ISwapQueryHelper.sol";
  * @dev Uniswap helpers
  */
 contract PancakeSwapQueryHelper is ISwapQueryHelper {
-
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
      */
@@ -23,7 +22,7 @@ contract PancakeSwapQueryHelper is ISwapQueryHelper {
             uint256 ethReserve
         )
     {
-       return PancakeSwapLib.coinQuote(token, tokenAmount);
+        return PancakeSwapLib.coinQuote(token, tokenAmount);
     }
 
     /**
@@ -50,7 +49,12 @@ contract PancakeSwapQueryHelper is ISwapQueryHelper {
     /**
      * @dev looks for a pool vs weth
      */
-    function getPair(address tokenA, address tokenB) external view override returns (address pair) {
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        override
+        returns (address pair)
+    {
         address _factory = PancakeSwapLib.factory();
         pair = PancakeSwapLib.getPair(_factory, tokenA, tokenB);
     }
@@ -58,28 +62,29 @@ contract PancakeSwapQueryHelper is ISwapQueryHelper {
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(
-        address pair
-    ) external view override returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair)
+        external
+        view
+        override
+        returns (uint256 reserveA, uint256 reserveB)
+    {
         (reserveA, reserveB) = PancakeSwapLib.getReserves(pair);
-    }
-
-    /**
-     * @dev calculate pair address
-     */
-    function pairFor(
-        address tokenA,
-        address tokenB
-    ) external pure override returns (address pair) {
-        address _factory = PancakeSwapLib.factory();
-        pair = PancakeSwapLib.pairFor(_factory, tokenA, tokenB);
     }
 
     /**
      * @dev Get a path for ethereum to the given token
      */
-    function getPathForCoinToToken(address token) external pure override returns (address[] memory) {
+    function getPathForCoinToToken(address token)
+        external
+        pure
+        override
+        returns (address[] memory)
+    {
         return PancakeSwapLib.getPathForCoinToToken(token);
     }
 
+    /**
+     * @dev set factory
+     */
+    function setFactory(address) external override {}
 }

@@ -1,15 +1,16 @@
-
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "./UniswapLib.sol";
 import "../../interfaces/ISwapQueryHelper.sol";
+import "../../access/Controllable.sol";
 
 /**
  * @dev Uniswap helpers
  */
-contract UniswapQueryHelper is ISwapQueryHelper {
+contract UniswapQueryHelper is ISwapQueryHelper, Controllable {
+    address private customFactory;
 
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
@@ -24,14 +25,20 @@ contract UniswapQueryHelper is ISwapQueryHelper {
             uint256 ethReserve
         )
     {
-       return UniswapLib.ethQuote(token, tokenAmount);
+        return UniswapLib.ethQuote(token, tokenAmount);
+    }
+
+    function __factory() internal view returns (address fac) {
+        fac = customFactory != address(0)
+            ? customFactory
+            : UniswapLib.factory();
     }
 
     /**
      * @dev does a Uniswap pool exist for this token?
      */
-    function factory() external pure override returns (address fac) {
-        fac = UniswapLib.factory();
+    function factory() external view override returns (address fac) {
+        fac = __factory();
     }
 
     /**
@@ -41,33 +48,28 @@ contract UniswapQueryHelper is ISwapQueryHelper {
         weth = UniswapLib.WETH();
     }
 
-
     /**
      * @dev looks for a pool vs weth
      */
-    function getPair(address tokenA, address tokenB) external view override returns (address pair) {
-        address _factory = UniswapLib.factory();
-        pair = UniswapLib.getPair(_factory, tokenA, tokenB);
+    function getPair(address tokenA, address tokenB)
+        external
+        view
+        override
+        returns (address pair)
+    {
+        pair = UniswapLib.getPair(__factory(), tokenA, tokenB);
     }
 
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(
-        address pair
-    ) external view override returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address pair)
+        external
+        view
+        override
+        returns (uint256 reserveA, uint256 reserveB)
+    {
         (reserveA, reserveB) = UniswapLib.getReserves(pair);
-    }
-
-    /**
-     * @dev calculate pair address
-     */
-    function pairFor(
-        address tokenA,
-        address tokenB
-    ) external pure override returns (address pair) {
-        address _factory = UniswapLib.factory();
-        pair = UniswapLib.pairFor(_factory, tokenA, tokenB);
     }
 
     /**
@@ -80,8 +82,19 @@ contract UniswapQueryHelper is ISwapQueryHelper {
     /**
      * @dev Get a path for ethereum to the given token
      */
-    function getPathForCoinToToken(address token) external pure override returns (address[] memory) {
+    function getPathForCoinToToken(address token)
+        external
+        pure
+        override
+        returns (address[] memory)
+    {
         return UniswapLib.getPathForETHToToken(token);
     }
 
+    /**
+     * @dev set factory
+     */
+    function setFactory(address f) external override onlyController {
+        customFactory = f;
+    }
 }

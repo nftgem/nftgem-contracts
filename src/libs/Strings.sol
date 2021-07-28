@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 library Strings {
     function strConcat(
@@ -14,7 +14,9 @@ library Strings {
         bytes memory _bc = bytes(_c);
         bytes memory _bd = bytes(_d);
         bytes memory _be = bytes(_e);
-        string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
+        string memory abcde = new string(
+            _ba.length + _bb.length + _bc.length + _bd.length + _be.length
+        );
         bytes memory babcde = bytes(abcde);
         uint256 k = 0;
         for (uint256 i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
@@ -42,11 +44,19 @@ library Strings {
         return strConcat(_a, _b, _c, "", "");
     }
 
-    function strConcat(string memory _a, string memory _b) internal pure returns (string memory) {
+    function strConcat(string memory _a, string memory _b)
+        internal
+        pure
+        returns (string memory)
+    {
         return strConcat(_a, _b, "", "", "");
     }
 
-    function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
+    function uint2str(uint256 _i)
+        internal
+        pure
+        returns (string memory _uintAsString)
+    {
         if (_i == 0) {
             return "0";
         }

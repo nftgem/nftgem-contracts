@@ -1,126 +1,90 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import "../access/Controllable.sol";
 import "../interfaces/INFTGemFeeManager.sol";
-import "../interfaces/IERC20.sol";
 
-contract NFTGemFeeManager is INFTGemFeeManager {
+contract NFTGemFeeManager is Controllable, INFTGemFeeManager {
     address private operator;
 
-    uint256 private constant MINIMUM_LIQUIDITY = 100;
-    uint256 private constant FEE_DIVISOR = 1000;
+    uint256 public constant MINIMUM_LIQUIDITY_HASH =
+        uint256(keccak256("min_liquidity"));
+    uint256 public constant POOL_FEE_HASH =
+        uint256(keccak256(abi.encodePacked("pool_fee")));
+    uint256 public constant WRAP_GEM_HASH =
+        uint256(keccak256(abi.encodePacked("wrap_gem")));
+    uint256 public constant FLASH_LOAN_HASH =
+        uint256(keccak256(abi.encodePacked("flash_loan")));
 
-    mapping(address => uint256) private feeDivisors;
-    uint256 private _defaultFeeDivisor;
+    uint256 private constant MINIMUM_LIQUIDITY = 50;
+    uint256 private constant POOL_FEE = 2000;
+    uint256 private constant WRAP_GEM = 2000;
+    uint256 private constant FLASH_LOAN = 10000;
 
-    mapping(address => uint256) private _liquidity;
-    uint256 private _defaultLiquidity;
+    mapping(uint256 => uint256) private fees;
 
     /**
      * @dev constructor
      */
     constructor() {
-        _defaultFeeDivisor = FEE_DIVISOR;
-        _defaultLiquidity = MINIMUM_LIQUIDITY;
+        _addController(msg.sender);
+        fees[MINIMUM_LIQUIDITY_HASH] = MINIMUM_LIQUIDITY;
+        fees[POOL_FEE_HASH] = POOL_FEE;
+        fees[WRAP_GEM_HASH] = WRAP_GEM;
+        fees[FLASH_LOAN_HASH] = FLASH_LOAN;
     }
 
     /**
-     * @dev Set the address allowed to mint and burn
+     * @dev receive funds
      */
     receive() external payable {
         //
     }
 
     /**
-     * @dev Set the address allowed to mint and burn
-     */
-    function setOperator(address _operator) external {
-        require(operator == address(0), "IMMUTABLE");
-        operator = _operator;
-    }
-
-    /**
      * @dev Get the fee divisor for the specified token
      */
-    function liquidity(address token) external view override returns (uint256) {
-        return _liquidity[token] != 0 ? _liquidity[token] : _defaultLiquidity;
-    }
-
-    /**
-     * @dev Get the fee divisor for the specified token
-     */
-    function defaultLiquidity() external view override returns (uint256 multiplier) {
-        return _defaultLiquidity;
+    function fee(uint256 feeHash)
+        external
+        view
+        override
+        returns (uint256 feeRet)
+    {
+        feeRet = fees[feeHash];
     }
 
     /**
      * @dev Set the fee divisor for the specified token
      */
-    function setDefaultLiquidity(uint256 _liquidityMult) external override returns (uint256 oldLiquidity) {
-        require(operator == msg.sender, "UNAUTHORIZED");
-        require(_liquidityMult != 0, "INVALID");
-        oldLiquidity = _defaultLiquidity;
-        _defaultLiquidity = _liquidityMult;
-        emit LiquidityChanged(operator, oldLiquidity, _defaultLiquidity);
+    function setFee(uint256 feeHash, uint256 _fee)
+        external
+        override
+        onlyController
+    {
+        fees[feeHash] = _fee;
+        emit FeeChanged(operator, feeHash, _fee);
     }
 
     /**
-     * @dev Get the fee divisor for the specified token
+     * @dev get the balance of this fee manager. Pass a zero address in for FTM balance
      */
-    function feeDivisor(address token) external view override returns (uint256 divisor) {
-        divisor = feeDivisors[token];
-        divisor = divisor == 0 ? FEE_DIVISOR : divisor;
-    }
-
-    /**
-     * @dev Get the fee divisor for the specified token
-     */
-    function defaultFeeDivisor() external view override returns (uint256 multiplier) {
-        return _defaultFeeDivisor;
-    }
-
-    /**
-     * @dev Set the fee divisor for the specified token
-     */
-    function setDefaultFeeDivisor(uint256 _feeDivisor) external override returns (uint256 oldDivisor) {
-        require(operator == msg.sender, "UNAUTHORIZED");
-        require(_feeDivisor != 0, "DIVISIONBYZERO");
-        oldDivisor = _defaultFeeDivisor;
-        _defaultFeeDivisor = _feeDivisor;
-        emit DefaultFeeDivisorChanged(operator, oldDivisor, _defaultFeeDivisor);
-    }
-
-    /**
-     * @dev Set the fee divisor for the specified token
-     */
-    function setFeeDivisor(address token, uint256 _feeDivisor) external override returns (uint256 oldDivisor) {
-        require(operator == msg.sender, "UNAUTHORIZED");
-        require(_feeDivisor != 0, "DIVISIONBYZERO");
-        oldDivisor = feeDivisors[token];
-        feeDivisors[token] = _feeDivisor;
-        emit FeeDivisorChanged(operator, token, oldDivisor, _feeDivisor);
-    }
-
-    /**
-     * @dev get the ETH balance of this fee manager
-     */
-    function ethBalanceOf() external view override returns (uint256) {
-        return address(this).balance;
-    }
-
-    /**
-     * @dev get the token balance of this fee manager
-     */
-    function balanceOF(address token) external view override returns (uint256) {
-        return IERC20(token).balanceOf(address(this));
+    function balanceOf(address token) external view override returns (uint256) {
+        return
+            token == address(0)
+                ? address(this).balance
+                : IERC20(token).balanceOf(address(this));
     }
 
     /**
      * @dev transfer ETH from this contract to the to given recipient
      */
-    function transferEth(address payable recipient, uint256 amount) external override {
-        require(operator == msg.sender, "UNAUTHORIZED");
-        require(address(this).balance >= amount, "INSUFFICIENT_BALANCE");
+    function transferEth(address payable recipient, uint256 amount)
+        external
+        override
+        onlyController
+    {
         recipient.transfer(amount);
     }
 
@@ -131,9 +95,7 @@ contract NFTGemFeeManager is INFTGemFeeManager {
         address token,
         address recipient,
         uint256 amount
-    ) external override {
-        require(operator == msg.sender, "UNAUTHORIZED");
-        require(IERC20(token).balanceOf(address(this)) >= amount, "INSUFFICIENT_BALANCE");
+    ) external override onlyController {
         IERC20(token).transfer(recipient, amount);
     }
 }

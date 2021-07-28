@@ -1,0 +1,108 @@
+{
+  "address": "0x505eAB258e22a2aa2Bf4Cad89e9563b8DADFAEEd",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "recipients",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "gquantities",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "fquantities",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "bulkMintGovFuel",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "recipients",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "quantities",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "bulkMintToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x733d5ba3f2f8ca792fb45453e7a24582031c541700ed43e75af911c38959df23",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0x505eAB258e22a2aa2Bf4Cad89e9563b8DADFAEEd",
+    "transactionIndex": 257,
+    "gasUsed": "356122",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xe9b327053191e44708b7caa3b7139c3153739908a6ddc7107500040297fd975c",
+    "transactionHash": "0x733d5ba3f2f8ca792fb45453e7a24582031c541700ed43e75af911c38959df23",
+    "logs": [],
+    "blockNumber": 7881122,
+    "cumulativeGasUsed": "18692636",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "8dfe14931da0b3c7be6207c10ae7e818",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"recipients\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"gquantities\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"fquantities\",\"type\":\"uint256[]\"}],\"name\":\"bulkMintGovFuel\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"recipients\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"tokenHash\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"quantities\",\"type\":\"uint256[]\"}],\"name\":\"bulkMintToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/utils/BulkTokenMinter.sol\":\"BulkTokenMinter\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":1000},\"remappings\":[]},\"sources\":{\"src/interfaces/IBulkTokenMinter.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.7.0;\\n\\ninterface IBulkTokenMinter {\\n    function bulkMintGovFuel(address multitoken, address[] memory recipients, uint256[] memory gquantities, uint256[] memory fquantities) external;\\n    function bulkMintToken(address multitoken, address[] memory recipients, uint256 tokenHash, uint256[] memory quantities) external;\\n}\\n\",\"keccak256\":\"0x8f45d092a47a3298ec523adab0b14f7b90e8bdef461e7569bcc0ab02b42bbe98\",\"license\":\"MIT\"},\"src/interfaces/INFTGemMultiToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.7.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface INFTGemMultiToken {\\n\\n    enum TokenType { GOVERNANCE, CLAIM, GEM }\\n\\n    // called by controller to mint a claim or a gem\\n    function mint(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    // called by controller to mint a claim or a gem\\n    function mintBatch(\\n        address to,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    function burnBatch(\\n        address account,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    // called by controller to burn a claim\\n    function burn(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    function heldTokens(address holder) external view returns (uint256[] memory);\\n\\n    function allHeldTokens(address holder, uint256 _idx) external view returns (uint256);\\n\\n    function allHeldTokensLength(address holder) external view returns (uint256);\\n\\n    function tokenHolders(uint256 _token) external view returns (address[] memory);\\n\\n    function allTokenHolders(uint256 _token, uint256 _idx) external view returns (address);\\n\\n    function allTokenHoldersLength(uint256 _token) external view returns (uint256);\\n\\n    function totalBalances(uint256 _id) external view returns (uint256);\\n\\n    function allProxyRegistries(uint256 _idx) external view returns (address);\\n\\n    function allProxyRegistriesLength() external view returns (uint256);\\n\\n    function addProxyRegistry(address registry) external;\\n\\n    function removeProxyRegistryAt(uint256 index) external;\\n\\n    function getRegistryManager() external view returns (address);\\n\\n    function setRegistryManager(address newManager) external;\\n\\n    function lock(uint256 token, uint256 timeframe) external;\\n\\n    function unlockTime(address account, uint256 token) external view returns (uint256);\\n\\n    function setTokenData(\\n        uint256 tokenHash,\\n        TokenType tokenType,\\n        address tokenPool\\n    ) external;\\n\\n    function getTokenData(uint256 tokenHash) external view returns (TokenType, address);\\n}\\n\",\"keccak256\":\"0x13975709a5986ed495dd9842c488e738de3e19fa5258fb48949b38e8b22559f1\",\"license\":\"MIT\"},\"src/utils/BulkTokenMinter.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.7.0;\\n\\nimport \\\"../interfaces/INFTGemMultiToken.sol\\\";\\nimport \\\"../interfaces/IBulkTokenMinter.sol\\\";\\n\\n\\ncontract BulkTokenMinter is IBulkTokenMinter {\\n    function bulkMintToken(address multitoken, address[] memory recipients, uint256 tokenHash, uint256[] memory quantities) external override {\\n        for(uint256 i = 0; i < recipients.length; i++) {\\n            INFTGemMultiToken(multitoken).mint(recipients[i], tokenHash, quantities[i]);\\n        }\\n    }\\n    function bulkMintGovFuel(address multitoken, address[] memory recipients, uint256[] memory gquantities, uint256[] memory fquantities) external override {\\n        for(uint256 i = 0; i < recipients.length; i++) {\\n            INFTGemMultiToken(multitoken).mint(recipients[i], 0, gquantities[i]);\\n            INFTGemMultiToken(multitoken).mint(recipients[i], 1, fquantities[i]);\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x66ae59aaf6e67dd5d3510b958b803eb980bff59af6a779829ae5e33421e1bc9e\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061057d806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80635120555b1461003b578063f06efa59146101f8575b600080fd5b6101f66004803603608081101561005157600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007c57600080fd5b82018360208201111561008e57600080fd5b803590602001918460208302840111640100000000831117156100b057600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929594936020810193503591505064010000000081111561010057600080fd5b82018360208201111561011257600080fd5b8035906020019184602083028401116401000000008311171561013457600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929594936020810193503591505064010000000081111561018457600080fd5b82018360208201111561019657600080fd5b803590602001918460208302840111640100000000831117156101b857600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610337945050505050565b005b6101f66004803603608081101561020e57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561023957600080fd5b82018360208201111561024b57600080fd5b8035906020019184602083028401116401000000008311171561026d57600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929584359590949093506040810192506020013590506401000000008111156102c557600080fd5b8201836020820111156102d757600080fd5b803590602001918460208302840111640100000000831117156102f957600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610492945050505050565b60005b835181101561048b57846001600160a01b031663156e29f685838151811061035e57fe5b6020026020010151600086858151811061037457fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b1580156103c957600080fd5b505af11580156103dd573d6000803e3d6000fd5b50505050846001600160a01b031663156e29f68583815181106103fc57fe5b6020026020010151600185858151811061041257fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b15801561046757600080fd5b505af115801561047b573d6000803e3d6000fd5b50506001909201915061033a9050565b5050505050565b60005b835181101561048b57846001600160a01b031663156e29f68583815181106104b957fe5b6020026020010151858585815181106104ce57fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b15801561052357600080fd5b505af1158015610537573d6000803e3d6000fd5b505060019092019150610495905056fea2646970667358221220ab8b45ca7ade5ee9c38009f5f3310c1a0f988128e346ba1af9aff2c1c6974e1964736f6c63430007030033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c80635120555b1461003b578063f06efa59146101f8575b600080fd5b6101f66004803603608081101561005157600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561007c57600080fd5b82018360208201111561008e57600080fd5b803590602001918460208302840111640100000000831117156100b057600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929594936020810193503591505064010000000081111561010057600080fd5b82018360208201111561011257600080fd5b8035906020019184602083028401116401000000008311171561013457600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929594936020810193503591505064010000000081111561018457600080fd5b82018360208201111561019657600080fd5b803590602001918460208302840111640100000000831117156101b857600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610337945050505050565b005b6101f66004803603608081101561020e57600080fd5b6001600160a01b03823516919081019060408101602082013564010000000081111561023957600080fd5b82018360208201111561024b57600080fd5b8035906020019184602083028401116401000000008311171561026d57600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929584359590949093506040810192506020013590506401000000008111156102c557600080fd5b8201836020820111156102d757600080fd5b803590602001918460208302840111640100000000831117156102f957600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610492945050505050565b60005b835181101561048b57846001600160a01b031663156e29f685838151811061035e57fe5b6020026020010151600086858151811061037457fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b1580156103c957600080fd5b505af11580156103dd573d6000803e3d6000fd5b50505050846001600160a01b031663156e29f68583815181106103fc57fe5b6020026020010151600185858151811061041257fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b15801561046757600080fd5b505af115801561047b573d6000803e3d6000fd5b50506001909201915061033a9050565b5050505050565b60005b835181101561048b57846001600160a01b031663156e29f68583815181106104b957fe5b6020026020010151858585815181106104ce57fe5b60200260200101516040518463ffffffff1660e01b815260040180846001600160a01b031681526020018381526020018281526020019350505050600060405180830381600087803b15801561052357600080fd5b505af1158015610537573d6000803e3d6000fd5b505060019092019150610495905056fea2646970667358221220ab8b45ca7ade5ee9c38009f5f3310c1a0f988128e346ba1af9aff2c1c6974e1964736f6c63430007030033",
+  "libraries": {
+    "GovernanceLib": "0xb91C2202c752dA64D22Cf41C0127Eb3A7355E0BB",
+    "Strings": "0x2ad5A3334C3aa057A6BCD21bdcb57bC5903afe06",
+    "SafeMath": "0x9Dde7f92Dc83363ceb0ECE7CFa2734F3345ea56F",
+    "AddressSet": "0x666df3C9710Eb253c79B3974Dd8612Ac67D73910",
+    "UInt256Set": "0xd01Fea6FDB1490aae498355A1b2e87aafAB969c0",
+    "Create2": "0x9C5781f99977c29DE10B42234fD4b5E8073cB774",
+    "ProposalsLib": "0xc39b39672d9f51f95aB47e831dfc1Df55Bf2C32a",
+    "ComplexPoolLib": "0xA7316b7b1dc94EdebC9C40253DD9Ea7f518E8064",
+    "WrappedTokenLib": "0x85F320003095a8eA58538C811cB3c0E65566c1fe",
+    "Unigem20Library": "0xC7F21B7977897CE95cD9B7E193e8750ee7D9943a"
+  },
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

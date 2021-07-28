@@ -1,0 +1,10 @@
+[submodule "nftgem-ui"]
+path = nftgem-ui
+url = git@github.com:nftgem/nftgem-ui.git
+
+[submodule "nftgem-subgraph"]
+	path = nftgem-subgraph
+	url = git@github.com:nftgem/nftgem-subgraph.git
+[submodule "bitgem-ui"]
+	path = bitgem-ui
+	url = git@github.com:nftgem/bitgem-ui.git

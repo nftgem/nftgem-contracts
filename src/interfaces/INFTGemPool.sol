@@ -1,16 +1,22 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 /**
  * @dev Interface for a Bitgem staking pool
  */
 interface INFTGemPool {
-
     /**
      * @dev Event generated when an NFT claim is created using ETH
      */
-    event NFTGemClaimCreated(address account, address pool, uint256 claimHash, uint256 length, uint256 quantity, uint256 amountPaid);
+    event NFTGemClaimCreated(
+        address account,
+        address pool,
+        uint256 claimHash,
+        uint256 length,
+        uint256 quantity,
+        uint256 amountPaid
+    );
 
     /**
      * @dev Event generated when an NFT claim is created using ERC20 tokens
@@ -52,7 +58,13 @@ interface INFTGemPool {
     /**
      * @dev Event generated when a gem is created
      */
-    event NFTGemCreated(address account, address pool, uint256 claimHash, uint256 gemHash, uint256 quantity);
+    event NFTGemCreated(
+        address account,
+        address pool,
+        uint256 claimHash,
+        uint256 gemHash,
+        uint256 quantity
+    );
 
     function setMultiToken(address token) external;
 
@@ -70,7 +82,11 @@ interface INFTGemPool {
 
     function createERC20Claim(address erc20token, uint256 tokenAmount) external;
 
-    function createERC20Claims(address erc20token, uint256 tokenAmount, uint256 count) external;
+    function createERC20Claims(
+        address erc20token,
+        uint256 tokenAmount,
+        uint256 count
+    ) external;
 
     function collectClaim(uint256 claimHash) external;
 

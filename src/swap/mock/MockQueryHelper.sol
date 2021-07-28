@@ -1,17 +1,13 @@
-
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.7.0;
+pragma solidity >=0.8.0;
 
 import "../../interfaces/ISwapQueryHelper.sol";
-import "../../libs/SafeMath.sol";
 
 /**
  * @dev Mock helper for local network
  */
 contract MockQueryHelper is ISwapQueryHelper {
-    using SafeMath for uint256;
-
     /**
      * @dev Get a quote in Ethereum for the given ERC20 token / token amount
      */
@@ -25,7 +21,7 @@ contract MockQueryHelper is ISwapQueryHelper {
             uint256 ethReserve
         )
     {
-       return ( tokenAmount.div(10), tokenAmount.mul(200), tokenAmount.mul(20));
+        return (tokenAmount / (10), tokenAmount * (200), tokenAmount * (20));
     }
 
     /**
@@ -45,27 +41,25 @@ contract MockQueryHelper is ISwapQueryHelper {
     /**
      * @dev looks for a pool vs weth
      */
-    function getPair(address, address) external pure override returns (address pair) {
+    function getPair(address, address)
+        external
+        pure
+        override
+        returns (address pair)
+    {
         pair = address(0);
     }
 
     /**
      * @dev Get the pair reserves given two erc20 tokens
      */
-    function getReserves(
-        address
-    ) external pure override returns (uint256 reserveA, uint256 reserveB) {
+    function getReserves(address)
+        external
+        pure
+        override
+        returns (uint256 reserveA, uint256 reserveB)
+    {
         (reserveA, reserveB) = (0, 0);
-    }
-
-    /**
-     * @dev calculate pair address
-     */
-    function pairFor(
-        address,
-        address
-    ) external pure override returns (address pair) {
-        pair = address(0);
     }
 
     /**
@@ -78,9 +72,18 @@ contract MockQueryHelper is ISwapQueryHelper {
     /**
      * @dev Get a path for ethereum to the given token
      */
-    function getPathForCoinToToken(address) external pure override returns (address[] memory) {
+    function getPathForCoinToToken(address)
+        external
+        pure
+        override
+        returns (address[] memory)
+    {
         address[] memory _mock;
         return _mock;
     }
 
+    /**
+     * @dev set factory
+     */
+    function setFactory(address) external override {}
 }
