@@ -46,9 +46,13 @@ export const setupGovernorAlpha = deployments.createFixture(
       await ethers.getContractFactory('TimelockHarness')
     ).deploy(owner.address, 3600 * 24 * 2);
 
-    const GovernanceToken = await (
+    const GovernanceToken = await(
       await ethers.getContractFactory('GovernanceToken', owner)
-    ).deploy(owner.address);
+    ).deploy(
+      owner.address,
+      ethers.utils.parseEther('30000000'),
+      ethers.utils.parseEther('30000000')
+    );
 
     const GovernorAlpha = await (
       await ethers.getContractFactory('GovernorAlpha', owner)
