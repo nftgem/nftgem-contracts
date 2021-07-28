@@ -2,6 +2,8 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {task} from 'hardhat/config';
 
+import fs from 'fs';
+
 import 'dotenv/config';
 import {HardhatUserConfig} from 'hardhat/types';
 
@@ -26,6 +28,7 @@ import {pack, keccak256} from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
+import {formatEther, parseEther} from '@ethersproject/units';
 
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
@@ -342,24 +345,24 @@ task('pool-stats', 'show pool stats for given pool address')
     const symbol = await poolContract.symbol();
     const stats = await poolContract.stats();
     const [
-      visible,
-      claimedCount,
-      mintedCount,
-      totalStakedEth,
-      nextClaimHash,
-      nextGemHash,
-      nextClaimIdVal,
-      nextGemIdVal,
+      statsVisible,
+      statsClaimedCount,
+      statsMintedCount,
+      statsTotalStakedEth,
+      statsNextClaimHash,
+      statsNextGemHash,
+      statsNextClaimId,
+      statsNextGemId,
     ] = stats;
     console.log(symbol, {
-      visible,
-      claimedCount,
-      mintedCount,
-      totalStakedEth,
-      nextClaimHash,
-      nextGemHash,
-      nextClaimIdVal,
-      nextGemIdVal,
+      statsVisible,
+      statsClaimedCount,
+      statsMintedCount,
+      statsTotalStakedEth,
+      statsNextClaimHash,
+      statsNextGemHash,
+      statsNextClaimId,
+      statsNextGemId,
     });
   });
 
@@ -471,6 +474,51 @@ task(
     }
   );
 
+task('migrate-governance', 'Migrate the legacy governance token to erc20')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .setAction(async ({multitoken}, hre: HardhatRuntimeEnvironment) => {
+    // get the signers
+    const [sender] = await hre.ethers.getSigners();
+    // get the old token
+    const oldToken = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken,
+      sender
+    );
+    // get the gov token minter
+    const govToken: any = await hre.ethers.getContractAt(
+      'GovernanceToken',
+      (
+        await hre.deployments.get('GovernanceToken')
+      ).address
+    );
+    // get the length of old gov token hodlers
+    const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
+    console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+    // process each gov token hodler
+    for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+      const thAddr = await oldToken.allTokenHolders(0, i);
+      let th0Bal = await oldToken.balanceOf(thAddr, 0);
+      if (i === 0) {
+        th0Bal = th0Bal.sub(500000);
+      }
+      const bo = await govToken.balanceOf(thAddr);
+      if (bo.lt(parseEther(th0Bal.toString()).mul(30))) {
+        let tx = await govToken.mint(
+          thAddr,
+          parseEther(th0Bal.mul(30).toString()),
+          {
+            gasLimit: 5000000,
+          }
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        tx = await oldToken.burn(thAddr, 0, th0Bal, {gasLimit: 5000000});
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
+      }
+    }
+  });
+
 task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('symbol', 'The gem pool symbol')
   .addParam('name', 'The gem pool name')
@@ -496,6 +544,88 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
         maxClaims,
         allowedToken
       );
+    }
+  );
+
+task(
+  'mint-governance',
+  'Mint governance tokens. Driven with a file input containing an array of address, quantity pairs'
+)
+  .addParam('file', 'The legacy gem pool factory address')
+  .setAction(async ({file}, hre: HardhatRuntimeEnvironment) => {
+    const data = JSON.parse(fs.readFileSync(file).toString());
+    // get the multitoken contract
+    const signer = await hre.ethers.provider.getSigner();
+    const govToken: any = await hre.ethers.getContractAt(
+      'GovernanceToken',
+      (
+        await hre.deployments.get('GovernanceToken')
+      ).address,
+      signer
+    );
+    // get the signer
+
+    for (let i = 0; i < data.length; i++) {
+      const line: any = data[i];
+      const k = line[0];
+      const v = parseInt(line[1]) * 30;
+      const b = await govToken.balanceOf(k);
+      if (parseInt(formatEther(b)) !== v) {
+        await govToken.mint(k, parseEther(v + ''));
+        console.log(`${k} ${v}`);
+      }
+    }
+  });
+
+task(
+  'withdraw-fees',
+  'Withdraw fees from fee manager. Pushes a governance proposal through for a transfer to the specific individualThe.'
+)
+  .addParam('account', 'The legacy gem multitoken address')
+  .setAction(
+    async ({account}, hre: HardhatRuntimeEnvironment) => {
+      // get the signer
+      const signer = await hre.ethers.provider.getSigner();
+
+      // load the proposal factory contract
+      const proposalFactory = await hre.ethers.getContractAt(
+        'ProposalFactory',
+        (
+          await hre.deployments.get('ProposalFactory')
+        ).address,
+        signer
+      );
+
+      // load the nft gem governor contract
+      const nftGemGovernor = await hre.ethers.getContractAt(
+        'NFTGemGovernor',
+        (
+          await hre.deployments.get('NFTGemGovernor')
+        ).address,
+        signer
+      );
+
+      // create a new proposal that will transfer fees to the address
+      // specified by the user
+
+      // fund the proposal with 1 fantom
+
+      // send vote tokens to the proposal address
+
+      // execute the proposal
+    }
+  );
+
+
+task(
+  'migrate-all-gems',
+  'Migrate all the gem holdera from legacy gem pool factory and multitoken. Creates new gems for token holder from legacy token contents.'
+)
+  .addParam('factory', 'The legacy gem pool factory address')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .setAction(
+    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
+      await migrator(hre, factory, multitoken, account);
     }
   );
 
@@ -673,7 +803,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2200,
+            runs: 2222,
           },
         },
       },
@@ -682,7 +812,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2200,
+            runs: 2222,
           },
         },
       },
@@ -755,8 +885,6 @@ const config: HardhatUserConfig = {
     opera: {
       url: node_url('opera'),
       accounts: accounts('opera'),
-      gasPrice: 'auto',
-      gas: 'auto',
       timeout: 30000,
     },
     sokol: {

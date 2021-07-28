@@ -4,6 +4,7 @@ import 'hardhat-deploy-ethers';
 
 import {pack, keccak256} from '@ethersproject/solidity';
 import {BigNumberish} from '@ethersproject/bignumber';
+import {parseEther} from '@ethersproject/units';
 
 export default async function publish(
   hre: HardhatRuntimeEnvironment,
@@ -65,8 +66,7 @@ export default async function publish(
         await this.d('MockProxyRegistry', deployParams),
         await this.d('ERC20GemTokenFactory', deployParams),
         await this.d('TokenPoolQuerier', deployParams),
-        await this.d('BulkTokenMinter', deployParams),
-        await this.d('BulkTokenSender', deployParams),
+        await this.d('BulkGovernanceTokenMinter', deployParams),
       ];
 
       let SwapHelper = undefined;
@@ -101,7 +101,7 @@ export default async function publish(
       deployParams.args = [sender.address, secondsInADay * 7];
       const Timelock = await this.d('Timelock', deployParams);
 
-      deployParams.args = [sender.address];
+      deployParams.args = [sender.address, 0, parseEther('30000000')];
       const GovToken = await this.d('GovernanceToken', deployParams);
 
       deployParams.args = [Timelock.address, GovToken.address, sender.address];
@@ -123,8 +123,35 @@ export default async function publish(
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
+        // add governer as controller of the fee manager so that it is privileged
+        console.log('adding GovernorAlpha as nftgem governor controller...');
+        tx = await dc.NFTGemGovernor.addController(dc.NFTGemGovernor.address, {
+          gasLimit: 500000,
+        });
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add governer as controller of the fee manager so that it is privileged
+        console.log('adding GovernorAlpha as fee manager controller...');
+        tx = await dc.NFTGemFeeManager.addController(
+          dc.NFTGemGovernor.address,
+          {
+            gasLimit: 500000,
+          }
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add governer as controller of the multitoken so that it is privileged
+        console.log('adding GovernorAlpha as multitoken controller...');
+        tx = await dc.NFTGemMultiToken.addController(
+          dc.NFTGemGovernor.address,
+          {
+            gasLimit: 500000,
+          }
+        );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
         // add governor as controller of the multitoken so that it is privileged
-        console.log('propagating multitoken controller...');
+        console.log('adding nftgem governor as multitoken controller...');
         tx = await dc.NFTGemMultiToken.addController(
           dc.NFTGemGovernor.address,
           {
@@ -134,7 +161,7 @@ export default async function publish(
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governer as controller of the fee manager so that it is privileged
-        console.log('propagating fee manager controller...');
+        console.log('adding nftgem governor as fee manager controller...');
         tx = await dc.NFTGemFeeManager.addController(
           dc.NFTGemGovernor.address,
           {
@@ -217,17 +244,10 @@ export default async function publish(
           ).address,
           sender
         ),
-        BulkTokenMinter: await this.getContractAt(
-          'BulkTokenMinter',
+        BulkGovernanceTokenMinter: await this.getContractAt(
+          'BulkGovernanceTokenMinter',
           (
-            await this.get('BulkTokenMinter')
-          ).address,
-          sender
-        ),
-        BulkTokenSender: await this.getContractAt(
-          'BulkTokenSender',
-          (
-            await this.get('BulkTokenSender')
+            await this.get('BulkGovernanceTokenMinter')
           ).address,
           sender
         ),

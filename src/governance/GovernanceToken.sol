@@ -3,7 +3,9 @@ pragma solidity ^0.8.0;
 
 pragma experimental ABIEncoderV2;
 
-contract GovernanceToken {
+import "../interfaces/IGovernanceMintable.sol";
+
+contract GovernanceToken is IGovernanceMintable {
     /// @notice EIP-20 token name for this token
     string public constant name = "Bitgem";
 
@@ -13,15 +15,18 @@ contract GovernanceToken {
     /// @notice EIP-20 token decimals for this token
     uint8 public constant decimals = 18;
 
-    /// @notice Total number of tokens in circulation
-    uint256 public constant totalSupply = 30000000e18; // 30 million Bgem
-
     mapping(address => mapping(address => uint96)) internal allowances;
 
     mapping(address => uint96) internal balances;
 
     /// @notice A record of each accounts delegate
     mapping(address => address) public delegates;
+
+    uint256 public availableSupply;
+
+    uint256 public totalSupply;
+
+    address public minter;
 
     /// @notice A checkpoint for marking number of votes from a given block
     struct Checkpoint {
@@ -76,9 +81,30 @@ contract GovernanceToken {
      * @notice Construct a new Comp token
      * @param account The initial account to grant all the tokens
      */
-    constructor(address account) {
-        balances[account] = uint96(totalSupply);
-        emit Transfer(address(0), account, totalSupply);
+    constructor(
+        address account,
+        uint256 _availableSupply,
+        uint256 _totalSupply
+    ) {
+        minter = account;
+        totalSupply = _totalSupply;
+        availableSupply = _availableSupply;
+        if (_availableSupply > 0) {
+            balances[account] = uint96(_availableSupply);
+            emit Transfer(address(0), account, _availableSupply);
+        }
+    }
+
+    /**
+     * @notice Mint the given amount of tokens to the given account
+     * @param account The address of the account holding the funds
+     * @param amount The address of the account spending the funds
+     */
+    function mint(address account, uint256 amount) external override {
+        require(msg.sender == minter, "sender is not minter");
+        require(availableSupply + amount <= totalSupply, "over total supply");
+        availableSupply += amount;
+        balances[account] += uint96(amount);
     }
 
     /**

@@ -138,10 +138,11 @@ interface INFTComplexGemPoolData {
         address pool,
         address legacyToken,
         uint256 tokenHash,
-        address recipient
+        address recipient,
+        bool burnOld
     ) external;
 
-    function isLegacyGemImported(uint256 tokenhash)
+    function isLegacyGemImported(address account, uint256 tokenhash)
         external
         view
         returns (bool);
