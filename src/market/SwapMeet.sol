@@ -15,7 +15,7 @@ import "../tokens/NFTGemMultiToken.sol";
 
 import "../libs/UInt256Set.sol";
 
-contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
+contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
     uint256 private feesBalance;
 
     uint256 private listingFee;
@@ -31,7 +31,9 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
         address[] pools;
         uint256[] gems;
         bool acceptCounterOffers;
+        uint256 listingFee;
         uint256 references;
+        bool missingTokenPenalty;
     }
 
     mapping(uint256 => Offer) private offers;
@@ -63,6 +65,19 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
             multitoken.balanceOf(msg.sender, _gem) == 1,
             "insufficient gem balance"
         );
+
+        // make sure the gem is of the specified pool
+        INFTGemMultiToken.TokenType tt = INFTComplexGemPoolData(_pool)
+            .tokenType(_gem);
+        // require that the gem be from this pool
+        require(tt == INFTGemMultiToken.TokenType.GEM, "invalid token type");
+
+        // require that the message sender have enough tokens
+        require(
+            multitoken.balanceOf(msg.sender, _gem) >= 1,
+            "insufficient gem balance"
+        );
+
         // create the offer
         Offer memory offer = Offer(
             msg.sender,
@@ -71,7 +86,9 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
             _pools,
             _gems,
             acceptCounterOffers,
-            references
+            listingFee,
+            references,
+            false
         );
 
         // add the offer to the offers mapping
@@ -101,14 +118,27 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
     {
         // ensure caller is the owner of the offer
         require(msg.sender == offers[_id].owner, "not owner");
+
         // ensure the offer is registered
         require(offerIds.exists(_id), "offer not registered");
+
+        // get the listing fee of the offer
+        uint256 listingFee = offers[_id].listingFee;
+
+        // find out if they are penalized for missing tokens
+        bool penalty = offers[_id].missingTokenPenalty;
 
         // remove offer from offers mapping
         offerIds.remove(_id);
         delete offers[_id];
 
-        // emit the event
+        // give them their fees back if they arent penalized
+        if (!penalty) {
+            // refund listing fee to the owner
+            payable(msg.sender).transfer(listingFee);
+        }
+
+        // emit the unregistered event
         emit OfferUnregistered(_id);
 
         return true;
@@ -198,6 +228,17 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
             gemQUantities[i] = 1;
         }
 
+        // check that the offer owner has the token to swap
+        // and penalize them if they do mot have it.
+        if (multitoken.balanceOf(offer.owner, offer.gem) == 0) {
+            // penalize the owner for not having the token
+            offer.missingTokenPenalty = true;
+            success = false;
+            // refund the accepter
+            msg.sender.transfer(acceptFee);
+            return success;
+        }
+
         // swap the gems
         multitoken.safeBatchTransferFrom(
             msg.sender,
@@ -234,5 +275,9 @@ contract SwapMeet is OwnableDelegateProxy, ISwapMeet, Controllable {
 
     function updateAcceptFee(uint256 _fee) external override onlyController {
         acceptFee = _fee;
+    }
+
+    function proxies(address input) external pure returns (address) {
+        return input;
     }
 }
