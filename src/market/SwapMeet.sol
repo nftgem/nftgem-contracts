@@ -11,17 +11,15 @@ import "../interfaces/INFTGemMultiToken.sol";
 
 import "../interfaces/INFTComplexGemPoolData.sol";
 
-import "../tokens/NFTGemMultiToken.sol";
-
 import "../libs/UInt256Set.sol";
 
-contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
+contract SwapMeet is ISwapMeet, Controllable {
     uint256 private feesBalance;
 
     uint256 private listingFee;
     uint256 private acceptFee;
 
-    NFTGemMultiToken private multitoken;
+    INFTGemMultiToken private multitoken;
     using UInt256Set for UInt256Set.Set;
 
     struct Offer {
@@ -41,7 +39,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
 
     constructor(address _multitoken) {
         _addController(msg.sender);
-        multitoken = NFTGemMultiToken(_multitoken);
+        multitoken = INFTGemMultiToken(_multitoken);
         listingFee = 1 ether;
         acceptFee = 1 ether;
     }
@@ -62,7 +60,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
         require(msg.value >= listingFee, "insufficient listing fee");
         // make sure they own the gem they wanna trade
         require(
-            multitoken.balanceOf(msg.sender, _gem) == 1,
+            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) == 1,
             "insufficient gem balance"
         );
 
@@ -74,7 +72,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
 
         // require that the message sender have enough tokens
         require(
-            multitoken.balanceOf(msg.sender, _gem) >= 1,
+            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) >= 1,
             "insufficient gem balance"
         );
 
@@ -123,7 +121,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
         require(offerIds.exists(_id), "offer not registered");
 
         // get the listing fee of the offer
-        uint256 listingFee = offers[_id].listingFee;
+        uint256 _listingFee = offers[_id].listingFee;
 
         // find out if they are penalized for missing tokens
         bool penalty = offers[_id].missingTokenPenalty;
@@ -135,7 +133,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
         // give them their fees back if they arent penalized
         if (!penalty) {
             // refund listing fee to the owner
-            payable(msg.sender).transfer(listingFee);
+            payable(msg.sender).transfer(_listingFee);
         }
 
         // emit the unregistered event
@@ -214,7 +212,7 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
             }
             // require sender owns the gem
             require(
-                multitoken.balanceOf(msg.sender, gem) >= 1,
+                IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >= 1,
                 "insufficient gem balance"
             );
             // get the token type of gem for pool
@@ -230,17 +228,19 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
 
         // check that the offer owner has the token to swap
         // and penalize them if they do mot have it.
-        if (multitoken.balanceOf(offer.owner, offer.gem) == 0) {
+        if (
+            IERC1155(address(multitoken)).balanceOf(offer.owner, offer.gem) == 0
+        ) {
             // penalize the owner for not having the token
             offer.missingTokenPenalty = true;
             success = false;
             // refund the accepter
-            msg.sender.transfer(acceptFee);
+            payable(msg.sender).transfer(acceptFee);
             return success;
         }
 
         // swap the gems
-        multitoken.safeBatchTransferFrom(
+        IERC1155(address(multitoken)).safeBatchTransferFrom(
             msg.sender,
             offer.owner,
             _gems,
@@ -249,7 +249,13 @@ contract SwapMeet is ProxyRegistry, ISwapMeet, Controllable {
         );
 
         // swap the gem
-        multitoken.safeTransferFrom(offer.owner, msg.sender, offer.gem, 1, "");
+        IERC1155(address(multitoken)).safeTransferFrom(
+            offer.owner,
+            msg.sender,
+            offer.gem,
+            1,
+            ""
+        );
 
         // remove the offer
         offerIds.remove(_id);
