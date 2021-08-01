@@ -58,16 +58,14 @@ export default async function publish(
         },
       };
 
-      [
-        await this.d('NFTGemGovernor', deployParams),
-        await this.d('NFTGemMultiToken', deployParams),
-        await this.d('NFTGemPoolFactory', deployParams),
-        await this.d('NFTGemFeeManager', deployParams),
-        await this.d('MockProxyRegistry', deployParams),
-        await this.d('ERC20GemTokenFactory', deployParams),
-        await this.d('TokenPoolQuerier', deployParams),
-        await this.d('BulkGovernanceTokenMinter', deployParams),
-      ];
+      await this.d('NFTGemGovernor', deployParams);
+      const multitokenDeploy = await this.d('NFTGemMultiToken', deployParams);
+      await this.d('NFTGemPoolFactory', deployParams);
+      await this.d('NFTGemFeeManager', deployParams);
+      await this.d('MockProxyRegistry', deployParams);
+      await this.d('ERC20GemTokenFactory', deployParams);
+      await this.d('TokenPoolQuerier', deployParams);
+      await this.d('BulkGovernanceTokenMinter', deployParams);
 
       let SwapHelper = undefined;
       if (parseInt(networkId) === 1) {
@@ -98,17 +96,26 @@ export default async function publish(
       // one day in seconds
       const secondsInADay = 60 * 60 * 24;
 
+      // deploy the timelock contract
       deployParams.args = [sender.address, secondsInADay * 7];
       const Timelock = await this.d('Timelock', deployParams);
 
+      // deploy the governance token contract
       deployParams.args = [sender.address, 0, parseEther('30000000')];
       const GovToken = await this.d('GovernanceToken', deployParams);
 
+      // deploy the governor alpha contract
       deployParams.args = [Timelock.address, GovToken.address, sender.address];
       await this.d('GovernorAlpha', deployParams);
 
+      // deploy the swap meet contract
+      deployParams.args = [multitokenDeploy.address];
+      await this.d('SwapMeet', deployParams);
+
+      // get all deployed contracts
       const dc = await this.getDeployedContracts();
 
+      // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
 
       if (!inited) {
@@ -148,6 +155,18 @@ export default async function publish(
             gasLimit: 500000,
           }
         );
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add governer as controller of the multitoken so that it is privileged
+        console.log('adding SwapMeet as multitoken controller...');
+        tx = await dc.NFTGemMultiToken.addController(dc.SwapMeet.address, {
+          gasLimit: 500000,
+        });
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+
+        // add swap meet as a proxy registry for the multitoken
+        console.log('adding SwapMeet as multitoken proxy registry...');
+        tx = await dc.NFTGemMultiToken.addProxyRegistry(dc.swapMeet.address);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governor as controller of the multitoken so that it is privileged
@@ -248,6 +267,13 @@ export default async function publish(
           'BulkGovernanceTokenMinter',
           (
             await this.get('BulkGovernanceTokenMinter')
+          ).address,
+          sender
+        ),
+        SwapMeet: await this.getContractAt(
+          'SwapMeet',
+          (
+            await this.get('SwapMeet')
           ).address,
           sender
         ),
