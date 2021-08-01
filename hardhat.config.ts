@@ -496,21 +496,23 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
     const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
     console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
     // process each gov token hodler
-    for (let i = 1347; i < allGovTokenHolders.toNumber(); i++) {
+    for (let i = 1; i < allGovTokenHolders.toNumber(); i++) {
+      if(i === 3 || i === 10) continue;
       const thAddr = await oldToken.allTokenHolders(0, i);
+      if (BigNumber.from(thAddr).eq(0)) continue;
       let th0Bal = await oldToken.balanceOf(thAddr, 0);
       if (i === 0) {
         th0Bal = th0Bal.sub(500000);
       }
       const bo = await govToken.balanceOf(thAddr);
-      if (bo.lt(parseEther(th0Bal.toString()).mul(30))) {
+      if (!bo.eq(0)) {
         let tx = await govToken.mint(
           thAddr,
           parseEther(th0Bal.mul(30).toString())
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        tx = await oldToken.burn(thAddr, 0, th0Bal);
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        // tx = await oldToken.burn(thAddr, 0, th0Bal);
+        // await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
       }
     }
@@ -673,10 +675,29 @@ task(
   const publisher = await publish(hre, false);
   const deployedContracts = await publisher.getDeployedContracts();
 
-  // publish a minion - can be minted with no input requirements
-  const minionAddress = await publisher.createPool(
-    'TEST1',
-    'Test Minion',
+  const metalAddress = await publisher.createPool(
+    'METAL',
+    'Metal',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  const woodAddress = await publisher.createPool(
+    'WOOD',
+    'Wood',
+    hre.ethers.utils.parseEther('1'),
+    30,
+    900,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+  const mana = await publisher.createPool(
+    'MANA',
+    'Mana',
     hre.ethers.utils.parseEther('1'),
     30,
     900,
@@ -685,10 +706,10 @@ task(
     '0x0000000000000000000000000000000000000000'
   );
 
-  // publish an underboss - must have a minion to mint
-  const underBossAddress = await publisher.createPool(
-    'TEST2',
-    'Test Underboss',
+  // publish a minion - can be minted with no input requirements
+  const blade = await publisher.createPool(
+    'BLADE',
+    'Metal Blade',
     hre.ethers.utils.parseEther('1'),
     30,
     900,
@@ -698,7 +719,7 @@ task(
     [
       [
         deployedContracts.NFTGemMultiToken.address,
-        minionAddress,
+        metalAddress,
         2,
         0,
         1,
@@ -709,10 +730,10 @@ task(
     ]
   );
 
-  // publish a level boss - must have a minion and underboss to mint
-  const levelBossAddress = await publisher.createPool(
-    'TEST3',
-    'Test Level Boss',
+  // publish a minion - can be minted with no input requirements
+  const hilt = await publisher.createPool(
+    'HILT',
+    'Wood Hilt',
     hre.ethers.utils.parseEther('1'),
     30,
     900,
@@ -722,17 +743,7 @@ task(
     [
       [
         deployedContracts.NFTGemMultiToken.address,
-        minionAddress,
-        2,
-        0,
-        1,
-        true,
-        false,
-        false,
-      ],
-      [
-        deployedContracts.NFTGemMultiToken.address,
-        underBossAddress,
+        woodAddress,
         2,
         0,
         1,
@@ -743,11 +754,10 @@ task(
     ]
   );
 
-  // publish a big boss - requires minion, underboss
-  // and level boss and keeps all of them
-  await publisher.createPool(
-    'TEST4',
-    'Test Big Boss',
+  // publish a minion - can be minted with no input requirements
+  const sword = await publisher.createPool(
+    'SWORD',
+    'Sword of Power',
     hre.ethers.utils.parseEther('1'),
     30,
     900,
@@ -757,32 +767,32 @@ task(
     [
       [
         deployedContracts.NFTGemMultiToken.address,
-        minionAddress,
+        blade,
         2,
         0,
         1,
         true,
-        true,
+        false,
         false,
       ],
       [
         deployedContracts.NFTGemMultiToken.address,
-        underBossAddress,
+        hilt,
         2,
         0,
         1,
         true,
-        true,
+        false,
         false,
       ],
       [
         deployedContracts.NFTGemMultiToken.address,
-        levelBossAddress,
+        mana,
         2,
         0,
         1,
         true,
-        true,
+        false,
         false,
       ],
     ]
