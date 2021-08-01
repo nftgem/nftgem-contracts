@@ -2,6 +2,17 @@
 pragma solidity ^0.8.0;
 
 interface ISwapMeet {
+    struct Offer {
+        address owner;
+        address pool;
+        uint256 gem;
+        address[] pools;
+        uint256[] gems;
+        uint256 listingFee;
+        uint256 references;
+        bool missingTokenPenalty;
+    }
+
     // an offer is registered with the swap
     event OfferRegistered(
         address _from,
@@ -27,7 +38,6 @@ interface ISwapMeet {
         // what you are willing to swap it for
         address[] memory _pools,
         uint256[] memory _gems,
-        bool acceptCounterOffers,
         uint256 _references
     ) external payable returns (uint256 _id);
 
@@ -40,6 +50,12 @@ interface ISwapMeet {
     // list all offers
     function listOffers() external view returns (uint256[] memory _ids);
 
+    // list all offers
+    function listOffersByOwner(address ownerAddress)
+        external
+        view
+        returns (Offer[] memory _ids);
+
     // get details of an offer
     function getOfferDetails(uint256 _id)
         external
@@ -49,7 +65,8 @@ interface ISwapMeet {
             address _pool,
             uint256 _gem,
             address[] memory _pools,
-            uint256[] memory _gems
+            uint256[] memory _gems,
+            uint256 _references
         );
 
     // accept an offer

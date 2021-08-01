@@ -22,19 +22,9 @@ contract SwapMeet is ISwapMeet, Controllable {
     INFTGemMultiToken private multitoken;
     using UInt256Set for UInt256Set.Set;
 
-    struct Offer {
-        address owner;
-        address pool;
-        uint256 gem;
-        address[] pools;
-        uint256[] gems;
-        bool acceptCounterOffers;
-        uint256 listingFee;
-        uint256 references;
-        bool missingTokenPenalty;
-    }
-
     mapping(uint256 => Offer) private offers;
+    mapping(address => Offer[]) private offersByOwner;
+
     UInt256Set.Set private offerIds;
 
     constructor(address _multitoken) {
@@ -52,7 +42,6 @@ contract SwapMeet is ISwapMeet, Controllable {
         // what you are willing to swap it for
         address[] memory _pools,
         uint256[] memory _gems,
-        bool acceptCounterOffers,
         uint256 references
     ) external payable override returns (uint256 _id) {
         require(!offerIds.exists(_gem), "gem already registered");
@@ -83,7 +72,6 @@ contract SwapMeet is ISwapMeet, Controllable {
             _gem,
             _pools,
             _gems,
-            acceptCounterOffers,
             listingFee,
             references,
             false
@@ -92,6 +80,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         // add the offer to the offers mapping
         offers[_gem] = offer;
         offerIds.insert(_gem);
+        offersByOwner[msg.sender].push(offer);
 
         // return offer id
         _id = _gem;
@@ -130,6 +119,20 @@ contract SwapMeet is ISwapMeet, Controllable {
         offerIds.remove(_id);
         delete offers[_id];
 
+        // remove offer from owner's offers mapping
+        for (
+            uint256 offerIndex = 0;
+            offerIndex < offersByOwner[msg.sender].length;
+            ++offerIndex
+        ) {
+            if (offersByOwner[msg.sender][offerIndex].gem == _id) {
+                offersByOwner[msg.sender][offerIndex] = offersByOwner[
+                    msg.sender
+                ][offersByOwner[msg.sender].length - 1];
+                offersByOwner[msg.sender].pop();
+            }
+        }
+
         // give them their fees back if they arent penalized
         if (!penalty) {
             // refund listing fee to the owner
@@ -162,6 +165,16 @@ contract SwapMeet is ISwapMeet, Controllable {
         _ids = offerIds.keyList;
     }
 
+    // list all offers
+    function listOffersByOwner(address ownerAddress)
+        external
+        view
+        override
+        returns (Offer[] memory _ids)
+    {
+        _ids = offersByOwner[ownerAddress];
+    }
+
     // get details of an offer
     function getOfferDetails(uint256 _id)
         external
@@ -172,7 +185,8 @@ contract SwapMeet is ISwapMeet, Controllable {
             address _pool,
             uint256 _gem,
             address[] memory _pools,
-            uint256[] memory _gems
+            uint256[] memory _gems,
+            uint256 _references
         )
     {
         require(offerIds.exists(_id), "offer not registered");
@@ -182,6 +196,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         _gem = offer.gem;
         _pools = offer.pools;
         _gems = offer.gems;
+        _references = offer.references;
     }
 
     // accept an offer

@@ -7,6 +7,7 @@ pragma solidity >=0.8.0;
  */
 interface INFTGemMultiToken {
     enum TokenType {
+        UNUSED,
         CLAIM,
         GEM
     }
