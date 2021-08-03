@@ -61,7 +61,7 @@ export default async function publish(
       await this.d('NFTGemGovernor', deployParams);
       const multitokenDeploy = await this.d('NFTGemMultiToken', deployParams);
       await this.d('NFTGemPoolFactory', deployParams);
-      await this.d('NFTGemFeeManager', deployParams);
+      const feeManagerDeploy = await this.d('NFTGemFeeManager', deployParams);
       await this.d('MockProxyRegistry', deployParams);
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
@@ -109,14 +109,31 @@ export default async function publish(
       await this.d('GovernorAlpha', deployParams);
 
       // deploy the swap meet contract
-      deployParams.args = [multitokenDeploy.address];
+      deployParams.args = [multitokenDeploy.address, feeManagerDeploy.address];
       await this.d('SwapMeet', deployParams);
 
       // get all deployed contracts
       const dc = await this.getDeployedContracts();
 
+      let proxyRegistryCount =
+        await dc.NFTGemMultiToken.allProxyRegistriesLength();
+      console.log('removing old registries...');
+      while (proxyRegistryCount.gt(0)) {
+        await dc.NFTGemMultiToken.removeProxyRegistryAt(
+          proxyRegistryCount.sub(1)
+        );
+        proxyRegistryCount = proxyRegistryCount.sub(1);
+      }
+
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
+
+      // add swap meet as a proxy registry for the multitoken
+      console.log('adding SwapMeet as multitoken proxy registry...');
+      const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
+        dc.SwapMeet.address
+      );
+      await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
 
       if (!inited) {
         console.log('initializing nftgem governor...');

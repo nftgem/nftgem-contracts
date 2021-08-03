@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 interface ISwapMeet {
+    // an offer to swap a gem for some number of other gems
     struct Offer {
         address owner;
         address pool;
@@ -30,54 +31,46 @@ interface ISwapMeet {
     // an offer is aacepted
     event OfferAccepted(uint256 _offerId, address _acceptor, uint256[] _gems);
 
+    // an offer is cancelled
+    event SwapMeetFeesWithdrawn(address _recipient, uint256 _feesAmount);
+
     // registe a new offer
     function registerOffer(
         // what to have to swap
         address _pool,
         uint256 _gem,
         // what you are willing to swap it for
-        address[] memory _pools,
-        uint256[] memory _gems,
+        address[] calldata _pools,
+        uint256[] calldata _gems,
         uint256 _references
-    ) external payable returns (uint256 _id);
+    ) external payable returns (Offer memory);
 
     // unregister an offer
-    function unregisterOffer(uint256 _id) external returns (bool success);
+    function unregisterOffer(uint256 _id) external returns (bool);
 
     // is an active offer
-    function isOffer(uint256 _id) external view returns (bool success);
+    function isOffer(uint256 _id) external view returns (bool);
 
     // list all offers
-    function listOffers() external view returns (uint256[] memory _ids);
+    function listOffers() external view returns (Offer[] memory);
+
+    // list all offer ids
+    function listOfferIds() external view returns (uint256[] memory);
 
     // list all offers
     function listOffersByOwner(address ownerAddress)
         external
         view
-        returns (Offer[] memory _ids);
+        returns (Offer[] memory);
 
     // get details of an offer
-    function getOfferDetails(uint256 _id)
-        external
-        view
-        returns (
-            address _owner,
-            address _pool,
-            uint256 _gem,
-            address[] memory _pools,
-            uint256[] memory _gems,
-            uint256 _references
-        );
+    function getOffer(uint256 _id) external view returns (Offer memory);
 
     // accept an offer
-    function acceptOffer(uint256 _id, uint256[] memory _gems)
+    function acceptOffer(uint256 _id, uint256[] memory)
         external
         payable
-        returns (bool success);
+        returns (bool);
 
     function withdrawFees(address _receiver) external;
-
-    function updateListingFee(uint256 _fee) external;
-
-    function updateAcceptFee(uint256 _fee) external;
 }

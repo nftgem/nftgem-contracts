@@ -11,27 +11,33 @@ import "../interfaces/INFTGemMultiToken.sol";
 
 import "../interfaces/INFTComplexGemPoolData.sol";
 
+import "../interfaces/INFTGemFeeManager.sol";
+
 import "../libs/UInt256Set.sol";
 
 contract SwapMeet is ISwapMeet, Controllable {
     uint256 private feesBalance;
 
-    uint256 private listingFee;
-    uint256 private acceptFee;
-
+    INFTGemFeeManager private feeManager;
     INFTGemMultiToken private multitoken;
+
+    uint256 public constant listingFeeHash =
+        uint256(keccak256("swapMeetListingFee"));
+    uint256 public constant acceptFeeHash =
+        uint256(keccak256("swapMeetAcceptFee"));
+
     using UInt256Set for UInt256Set.Set;
 
     mapping(uint256 => Offer) private offers;
+
     mapping(address => Offer[]) private offersByOwner;
 
     UInt256Set.Set private offerIds;
 
-    constructor(address _multitoken) {
+    constructor(address _multitoken, address _feeManager) {
         _addController(msg.sender);
         multitoken = INFTGemMultiToken(_multitoken);
-        listingFee = 1 ether;
-        acceptFee = 1 ether;
+        feeManager = INFTGemFeeManager(_feeManager);
     }
 
     // register a new offer
@@ -40,13 +46,18 @@ contract SwapMeet is ISwapMeet, Controllable {
         address _pool,
         uint256 _gem,
         // what you are willing to swap it for
-        address[] memory _pools,
-        uint256[] memory _gems,
+        address[] calldata _pools,
+        uint256[] calldata _gems,
         uint256 references
-    ) external payable override returns (uint256 _id) {
+    ) external payable override returns (Offer memory _offer) {
+        // get the listing fee
+        uint256 listingFee = INFTGemFeeManager(feeManager).fee(listingFeeHash);
+        listingFee = listingFee == 0 ? 0.01 ether : listingFee;
+
         require(!offerIds.exists(_gem), "gem already registered");
         require(_gems.length <= _pools.length, "too many gems");
         require(msg.value >= listingFee, "insufficient listing fee");
+
         // make sure they own the gem they wanna trade
         require(
             IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) == 1,
@@ -56,6 +67,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         // make sure the gem is of the specified pool
         INFTGemMultiToken.TokenType tt = INFTComplexGemPoolData(_pool)
             .tokenType(_gem);
+
         // require that the gem be from this pool
         require(tt == INFTGemMultiToken.TokenType.GEM, "invalid token type");
 
@@ -66,7 +78,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         );
 
         // create the offer
-        Offer memory offer = Offer(
+        offers[_gem] = Offer(
             msg.sender,
             _pool,
             _gem,
@@ -78,17 +90,16 @@ contract SwapMeet is ISwapMeet, Controllable {
         );
 
         // add the offer to the offers mapping
-        offers[_gem] = offer;
         offerIds.insert(_gem);
-        offersByOwner[msg.sender].push(offer);
+        offersByOwner[msg.sender].push(offers[_gem]);
 
-        // return offer id
-        _id = _gem;
+        // return offer
+        _offer = offers[_gem];
 
         // emit the event
         emit OfferRegistered(
             msg.sender,
-            _id,
+            _gem,
             _pool,
             _gem,
             _pools,
@@ -103,17 +114,20 @@ contract SwapMeet is ISwapMeet, Controllable {
         override
         returns (bool success)
     {
-        // ensure caller is the owner of the offer
-        require(msg.sender == offers[_id].owner, "not owner");
+        // // ensure the offer is registered
+        require(offerIds.exists(_id) == true, "offer not registered");
 
-        // ensure the offer is registered
-        require(offerIds.exists(_id), "offer not registered");
+        // ensure the offer is the message sender
+        require(offers[_id].owner == msg.sender, "caller not owner");
 
         // get the listing fee of the offer
         uint256 _listingFee = offers[_id].listingFee;
 
         // find out if they are penalized for missing tokens
         bool penalty = offers[_id].missingTokenPenalty;
+
+        // get the offer owner
+        address offerOwner = offers[_id].owner;
 
         // remove offer from offers mapping
         offerIds.remove(_id);
@@ -122,21 +136,21 @@ contract SwapMeet is ISwapMeet, Controllable {
         // remove offer from owner's offers mapping
         for (
             uint256 offerIndex = 0;
-            offerIndex < offersByOwner[msg.sender].length;
+            offerIndex < offersByOwner[offerOwner].length;
             ++offerIndex
         ) {
-            if (offersByOwner[msg.sender][offerIndex].gem == _id) {
-                offersByOwner[msg.sender][offerIndex] = offersByOwner[
-                    msg.sender
-                ][offersByOwner[msg.sender].length - 1];
-                offersByOwner[msg.sender].pop();
+            if (offersByOwner[offerOwner][offerIndex].gem == _id) {
+                offersByOwner[offerOwner][offerIndex] = offersByOwner[
+                    offerOwner
+                ][offersByOwner[offerOwner].length - 1];
+                offersByOwner[offerOwner].pop();
             }
         }
 
         // give them their fees back if they arent penalized
         if (!penalty) {
             // refund listing fee to the owner
-            payable(msg.sender).transfer(_listingFee);
+            payable(offerOwner).transfer(_listingFee);
         }
 
         // emit the unregistered event
@@ -160,9 +174,26 @@ contract SwapMeet is ISwapMeet, Controllable {
         external
         view
         override
-        returns (uint256[] memory _ids)
+        returns (Offer[] memory offersOut)
     {
-        _ids = offerIds.keyList;
+        offersOut = new Offer[](offerIds.keyList.length);
+        for (
+            uint256 offerIndex = 0;
+            offerIndex < offerIds.keyList.length;
+            ++offerIndex
+        ) {
+            offersOut[offerIndex] = offers[offerIds.keyList[offerIndex]];
+        }
+    }
+
+    // list all offers
+    function listOfferIds()
+        external
+        view
+        override
+        returns (uint256[] memory _offerIds)
+    {
+        _offerIds = offerIds.keyList;
     }
 
     // list all offers
@@ -176,27 +207,14 @@ contract SwapMeet is ISwapMeet, Controllable {
     }
 
     // get details of an offer
-    function getOfferDetails(uint256 _id)
+    function getOffer(uint256 _id)
         external
         view
         override
-        returns (
-            address _owner,
-            address _pool,
-            uint256 _gem,
-            address[] memory _pools,
-            uint256[] memory _gems,
-            uint256 _references
-        )
+        returns (Offer memory)
     {
         require(offerIds.exists(_id), "offer not registered");
-        Offer memory offer = offers[_id];
-        _owner = offer.owner;
-        _pool = offer.pool;
-        _gem = offer.gem;
-        _pools = offer.pools;
-        _gems = offer.gems;
-        _references = offer.references;
+        return offers[_id];
     }
 
     // accept an offer
@@ -206,20 +224,20 @@ contract SwapMeet is ISwapMeet, Controllable {
         override
         returns (bool success)
     {
+        uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
+        acceptFee = acceptFee == 0 ? 0.01 ether : acceptFee;
+
         // check that the offer is valid
         require(offerIds.exists(_id), "offer not registered");
         require(_gems.length <= offers[_id].gems.length, "too many gems");
         require(msg.value >= acceptFee, "insufficient accept fee");
 
-        // get the offer
-        Offer memory offer = offers[_id];
-
-        uint256[] memory gemQUantities = new uint256[](_gems.length);
+        uint256[] memory gemQuantities = new uint256[](_gems.length);
         // iterate over the gem pools and swap the gems
-        for (uint256 i = 0; i < offer.pools.length; i++) {
-            address pool = offer.pools[i]; // get the pool
+        for (uint256 i = 0; i < offers[_id].pools.length; i++) {
+            address pool = offers[_id].pools[i]; // get the pool
             // get the gem or 0 for any gem in pool
-            uint256 gem = offer.gems.length > i ? offer.gems[i] : 0;
+            uint256 gem = offers[_id].gems.length > i ? offers[_id].gems[i] : 0;
             if (gem == 0) {
                 gem = _gems[i]; // if any gem get the one passed in
             } else {
@@ -238,36 +256,41 @@ contract SwapMeet is ISwapMeet, Controllable {
                 tt == INFTGemMultiToken.TokenType.GEM,
                 "invalid token type"
             );
-            gemQUantities[i] = 1;
+            gemQuantities[i] = 1;
         }
 
         // check that the offer owner has the token to swap
         // and penalize them if they do mot have it.
         if (
-            IERC1155(address(multitoken)).balanceOf(offer.owner, offer.gem) == 0
+            IERC1155(address(multitoken)).balanceOf(
+                offers[_id].owner,
+                offers[_id].gem
+            ) == 0
         ) {
             // penalize the owner for not having the token
-            offer.missingTokenPenalty = true;
+            offers[_id].missingTokenPenalty = true;
             success = false;
             // refund the accepter
             payable(msg.sender).transfer(acceptFee);
             return success;
         }
 
+        feesBalance += acceptFee + offers[_id].listingFee;
+
         // swap the gems
         IERC1155(address(multitoken)).safeBatchTransferFrom(
             msg.sender,
-            offer.owner,
+            offers[_id].owner,
             _gems,
-            gemQUantities,
+            gemQuantities,
             ""
         );
 
         // swap the gem
         IERC1155(address(multitoken)).safeTransferFrom(
-            offer.owner,
+            offers[_id].owner,
             msg.sender,
-            offer.gem,
+            offers[_id].gem,
             1,
             ""
         );
@@ -275,8 +298,6 @@ contract SwapMeet is ISwapMeet, Controllable {
         // remove the offer
         offerIds.remove(_id);
         delete offers[_id];
-
-        feesBalance += acceptFee + listingFee;
 
         emit OfferAccepted(_id, msg.sender, _gems);
 
@@ -288,14 +309,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         uint256 balanceToWithdraw = feesBalance;
         feesBalance = 0;
         payable(_receiver).transfer(balanceToWithdraw);
-    }
-
-    function updateListingFee(uint256 _fee) external override onlyController {
-        listingFee = _fee;
-    }
-
-    function updateAcceptFee(uint256 _fee) external override onlyController {
-        acceptFee = _fee;
+        emit SwapMeetFeesWithdrawn(_receiver, balanceToWithdraw);
     }
 
     function proxies(address input) external pure returns (address) {
