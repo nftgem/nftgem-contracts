@@ -105,24 +105,24 @@ describe('Governor Alpha Test Suite', function () {
       const actor: SignerWithAddress = accounts[6];
       const {proposal} = await createProposal({
         proposer: actor,
-        transferAmount: '300000000000000000000001',
+        transferAmount: ethers.utils.parseEther("300001"),
       });
       await mineBlocks(2);
       await GovernorAlpha.connect(actor).castVote(proposal.id, true);
       const forVotes = (await GovernorAlpha.proposals(proposal.id)).forVotes;
-      expect(forVotes.toString()).to.be.equal('300000000000000000000001');
+      expect(forVotes.toString()).to.be.equal(ethers.utils.parseEther("300001"));
     });
     it('Should add votes to against votes', async () => {
       const actor: SignerWithAddress = accounts[6];
       const {proposal} = await createProposal({
         proposer: actor,
-        transferAmount: '300000000000000000000001',
+        transferAmount: ethers.utils.parseEther("300001"),
       });
       await mineBlocks(2);
       await GovernorAlpha.connect(actor).castVote(proposal.id, false);
       const againstVotes = (await GovernorAlpha.proposals(proposal.id))
         .againstVotes;
-      expect(againstVotes.toString()).to.be.equal('300000000000000000000001');
+      expect(againstVotes.toString()).to.be.equal(ethers.utils.parseEther("300001"));
     });
   });
 
@@ -131,7 +131,7 @@ describe('Governor Alpha Test Suite', function () {
       const actor: SignerWithAddress = accounts[6];
       const {proposal} = await createProposal({
         proposer: actor,
-        transferAmount: '300000000000000000000001',
+        transferAmount: ethers.utils.parseEther("300001"),
       });
       await mineBlocks(2);
       await expect(
@@ -143,7 +143,7 @@ describe('Governor Alpha Test Suite', function () {
       const actor: SignerWithAddress = accounts[6];
       const {proposal} = await createProposal({
         proposer: actor,
-        transferAmount: '300000000000000000000001',
+        transferAmount: ethers.utils.parseEther("300001"),
       });
       const {chainId} = await ethers.provider.getNetwork();
       const Domain = {
@@ -163,7 +163,7 @@ describe('Governor Alpha Test Suite', function () {
       await mineBlocks(2);
       await GovernorAlpha.castVoteBySig(proposal.id, true, v, r, s);
       const forVotes = (await GovernorAlpha.proposals(proposal.id)).forVotes;
-      expect(forVotes.toString()).to.be.equal('300000000000000000000001');
+      expect(forVotes.toString()).to.be.equal(ethers.utils.parseEther("300001"));
     });
   });
 

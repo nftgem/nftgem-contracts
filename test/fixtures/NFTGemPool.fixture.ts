@@ -15,7 +15,7 @@ export const createNFTGemPool = deployments.createFixture(
       NFTGemPoolFactory,
       NFTGemMultiToken,
       NFTGemFeeManager,
-      owner,
+      owner
     } = await setupNFTGemPool();
 
     const {poolData, tokenData} = data;
@@ -24,7 +24,7 @@ export const createNFTGemPool = deployments.createFixture(
     // try to find an existing pool with the given symbol
     const salt = keccak256(['bytes'], [pack(['string'], [poolData.symbol])]);
     let poolAddress = await NFTGemPoolFactory.getNFTGemPool(salt);
-    if (poolAddress.eq(0)) {
+    if (poolAddress === ethers.constants.AddressZero) {
       // if one is not found then create it
       await NFTGemGovernor.createSystemPool(
         poolData.symbol,
@@ -62,12 +62,24 @@ export const createNFTGemPool = deployments.createFixture(
       owner
     );
 
+    const ERC20WrappedGem = await ethers.getContractAt(
+      'ERC20WrappedGem',
+      tokenAddress,
+      owner
+    );
+    
+    // Wrap some gems to get ERC20 tokens
+    await NFTGemMultiToken.setApprovalForAll(tokenAddress, true);
+    await ERC20WrappedGem.wrap(2);
+    // Transfer some ERC20 tokens to the gempool contract
+    await ERC20WrappedGem.transfer(NFTComplexGemPool.address, 1000000);
     return {
       NFTGemPoolFactory,
       ERC20GemTokenFactory,
       NFTGemMultiToken,
       NFTGemFeeManager,
       NFTComplexGemPool,
+      ERC20WrappedGem,
       poolAddress,
       tokenAddress,
       owner,
