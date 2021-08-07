@@ -128,12 +128,25 @@ export default async function publish(
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
 
-      // add swap meet as a proxy registry for the multitoken
-      console.log('adding SwapMeet as multitoken proxy registry...');
-      const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
-        dc.SwapMeet.address
-      );
-      await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      let foundRegistry = false;
+      const apl = await dc.NFTGemMultiToken.allProxyRegistriesLength();
+      if (!apl.eq(0)) {
+        for (let j = 0; j < apl.toNumber(); j++) {
+          const proxyRegistry = await dc.NFTGemMultiToken.getProxyRegistryAt(j);
+          if (proxyRegistry === dc.SwapMeet.address) {
+            foundRegistry = true;
+            break;
+          }
+        }
+      }
+      if (!foundRegistry) {
+        // add swap meet as a proxy registry for the multitoken
+        console.log('adding SwapMeet as multitoken proxy registry...');
+        const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
+          dc.SwapMeet.address
+        );
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      }
 
       if (!inited) {
         console.log('initializing nftgem governor...');

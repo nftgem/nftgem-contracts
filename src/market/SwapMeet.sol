@@ -57,7 +57,7 @@ contract SwapMeet is ISwapMeet, Controllable {
 
         // basic sanity checks
         require(!offerIds.exists(_gem), "gem already registered");
-        require(_gems.length <= _pools.length, "too many gems");
+        require(_gems.length == _pools.length, "mismatched gem quantities");
         require(msg.value >= listingFee, "insufficient listing fee");
 
         // make sure they own the gem they wanna trade
@@ -76,13 +76,29 @@ contract SwapMeet is ISwapMeet, Controllable {
         // make sure the pool addresses are valid and that
         // the token quantities are all valid
         for (uint256 i = 0; i < _quantities.length; i++) {
-            try INFTComplexGemPoolData(_pools[i]).symbol() returns (
-                string memory _poolSymbol
-            ) {
-                require(bytes(_poolSymbol).length > 0, "invalid pool");
-            } catch {
-                require(false, "invalid pool");
+            if (_gems[i] == 0) {
+                // if any gem, then check to see that this pool is valid
+                try INFTComplexGemPoolData(_pools[i]).symbol() returns (
+                    string memory _symbol
+                ) {
+                    require(bytes(_symbol).length > 0, "invalid pool");
+                } catch {
+                    require(false, "invalid pool");
+                }
+            } else {
+                // if a specific gem, then check to make sure the gem is from this pool
+                try
+                    INFTComplexGemPoolData(_pools[i]).tokenType(_gems[i])
+                returns (INFTGemMultiToken.TokenType _tokenType) {
+                    require(
+                        _tokenType == INFTGemMultiToken.TokenType.GEM,
+                        "not a gem from this pool"
+                    );
+                } catch {
+                    require(false, "invalid pool");
+                }
             }
+
             require(_quantities[i] > 0, "invalid token quantity");
         }
 
