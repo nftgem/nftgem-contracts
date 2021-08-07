@@ -1,10 +1,10 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import 'hardhat-deploy-ethers';
 
-import {pack, keccak256} from '@ethersproject/solidity';
-import {BigNumberish} from '@ethersproject/bignumber';
-import {parseEther} from '@ethersproject/units';
+import { pack, keccak256 } from '@ethersproject/solidity';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { parseEther } from '@ethersproject/units';
 
 export default async function publish(
   hre: HardhatRuntimeEnvironment,
@@ -183,7 +183,7 @@ export default async function publish(
 
         // add swap meet as a proxy registry for the multitoken
         console.log('adding SwapMeet as multitoken proxy registry...');
-        tx = await dc.NFTGemMultiToken.addProxyRegistry(dc.swapMeet.address);
+        tx = await dc.NFTGemMultiToken.addProxyRegistry(dc.SwapMeet.address);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governor as controller of the multitoken so that it is privileged
@@ -395,7 +395,7 @@ export default async function publish(
           diff,
           maxClaims,
           allowedToken,
-          {gasLimit: 8000000}
+          { gasLimit: 8000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // set created flag
@@ -419,7 +419,7 @@ export default async function publish(
           dc.NFTGemMultiToken.address,
           18,
           dc.NFTGemFeeManager.address,
-          {gasLimit: 5000000}
+          { gasLimit: 5000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // get the address
@@ -445,7 +445,7 @@ export default async function publish(
           } else {
             console.log(
               `adding complex requirements to ${name} (${symbol}): ` +
-                JSON.stringify(inputRequirements[ii])
+              JSON.stringify(inputRequirements[ii])
             );
             tx = await pc.addInputRequirement(...inputRequirements[ii]);
           }

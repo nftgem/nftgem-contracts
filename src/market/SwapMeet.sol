@@ -48,19 +48,21 @@ contract SwapMeet is ISwapMeet, Controllable {
         // what you are willing to swap it for
         address[] calldata _pools,
         uint256[] calldata _gems,
+        uint256[] calldata _quantities,
         uint256 references
     ) external payable override returns (Offer memory _offer) {
-        // get the listing fee
+        // get the listing fee - the service is a flat fee
         uint256 listingFee = INFTGemFeeManager(feeManager).fee(listingFeeHash);
         listingFee = listingFee == 0 ? 0.01 ether : listingFee;
 
+        // basic sanity checks
         require(!offerIds.exists(_gem), "gem already registered");
         require(_gems.length <= _pools.length, "too many gems");
         require(msg.value >= listingFee, "insufficient listing fee");
 
         // make sure they own the gem they wanna trade
         require(
-            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) == 1,
+            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) > 0,
             "insufficient gem balance"
         );
 
@@ -71,11 +73,18 @@ contract SwapMeet is ISwapMeet, Controllable {
         // require that the gem be from this pool
         require(tt == INFTGemMultiToken.TokenType.GEM, "invalid token type");
 
-        // require that the message sender have enough tokens
-        require(
-            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) >= 1,
-            "insufficient gem balance"
-        );
+        // make sure the pool addresses are valid and that
+        // the token quantities are all valid
+        for (uint256 i = 0; i < _quantities.length; i++) {
+            try INFTComplexGemPoolData(_pools[i]).symbol() returns (
+                string memory _poolSymbol
+            ) {
+                require(bytes(_poolSymbol).length > 0, "invalid pool");
+            } catch {
+                require(false, "invalid pool");
+            }
+            require(_quantities[i] > 0, "invalid token quantity");
+        }
 
         // create the offer
         offers[_gem] = Offer(
@@ -84,7 +93,9 @@ contract SwapMeet is ISwapMeet, Controllable {
             _gem,
             _pools,
             _gems,
+            _quantities,
             listingFee,
+            0,
             references,
             false
         );
@@ -104,7 +115,9 @@ contract SwapMeet is ISwapMeet, Controllable {
             _gem,
             _pools,
             _gems,
-            references
+            _quantities,
+            references,
+            listingFee
         );
     }
 
@@ -186,7 +199,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         }
     }
 
-    // list all offers
+    // list all offer ids
     function listOfferIds()
         external
         view
@@ -196,7 +209,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         _offerIds = offerIds.keyList;
     }
 
-    // list all offers
+    // list all offers by owner
     function listOffersByOwner(address ownerAddress)
         external
         view
@@ -232,7 +245,6 @@ contract SwapMeet is ISwapMeet, Controllable {
         require(_gems.length <= offers[_id].gems.length, "too many gems");
         require(msg.value >= acceptFee, "insufficient accept fee");
 
-        uint256[] memory gemQuantities = new uint256[](_gems.length);
         // iterate over the gem pools and swap the gems
         for (uint256 i = 0; i < offers[_id].pools.length; i++) {
             address pool = offers[_id].pools[i]; // get the pool
@@ -245,7 +257,8 @@ contract SwapMeet is ISwapMeet, Controllable {
             }
             // require sender owns the gem
             require(
-                IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >= 1,
+                IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >=
+                    offers[_id].quantities[i],
                 "insufficient gem balance"
             );
             // get the token type of gem for pool
@@ -256,7 +269,6 @@ contract SwapMeet is ISwapMeet, Controllable {
                 tt == INFTGemMultiToken.TokenType.GEM,
                 "invalid token type"
             );
-            gemQuantities[i] = 1;
         }
 
         // check that the offer owner has the token to swap
@@ -275,6 +287,7 @@ contract SwapMeet is ISwapMeet, Controllable {
             return success;
         }
 
+        // add the fees to our withdrawable balance
         feesBalance += acceptFee + offers[_id].listingFee;
 
         // swap the gems
@@ -282,7 +295,7 @@ contract SwapMeet is ISwapMeet, Controllable {
             msg.sender,
             offers[_id].owner,
             _gems,
-            gemQuantities,
+            offers[_id].quantities,
             ""
         );
 
@@ -299,11 +312,12 @@ contract SwapMeet is ISwapMeet, Controllable {
         offerIds.remove(_id);
         delete offers[_id];
 
-        emit OfferAccepted(_id, msg.sender, _gems);
+        emit OfferAccepted(_id, msg.sender, _gems, acceptFee);
 
         return true;
     }
 
+    // withdraw accrued fees
     function withdrawFees(address _receiver) external override onlyController {
         require(feesBalance > 0, "no fees to withdraw");
         uint256 balanceToWithdraw = feesBalance;

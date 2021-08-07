@@ -9,7 +9,9 @@ interface ISwapMeet {
         uint256 gem;
         address[] pools;
         uint256[] gems;
+        uint256[] quantities;
         uint256 listingFee;
+        uint256 acceptFee;
         uint256 references;
         bool missingTokenPenalty;
     }
@@ -22,14 +24,21 @@ interface ISwapMeet {
         uint256 _gem,
         address[] _pools,
         uint256[] _gems,
-        uint256 _references
+        uint256[] _quantities,
+        uint256 _references,
+        uint256 _listingFee
     );
 
     // an offer is cancelled
     event OfferUnregistered(uint256 _offerId);
 
     // an offer is aacepted
-    event OfferAccepted(uint256 _offerId, address _acceptor, uint256[] _gems);
+    event OfferAccepted(
+        uint256 _offerId,
+        address _acceptor,
+        uint256[] _gems,
+        uint256 _acceptFee
+    );
 
     // an offer is cancelled
     event SwapMeetFeesWithdrawn(address _recipient, uint256 _feesAmount);
@@ -42,6 +51,7 @@ interface ISwapMeet {
         // what you are willing to swap it for
         address[] calldata _pools,
         uint256[] calldata _gems,
+        uint256[] calldata _quantities,
         uint256 _references
     ) external payable returns (Offer memory);
 
@@ -72,5 +82,6 @@ interface ISwapMeet {
         payable
         returns (bool);
 
+    // withdraw the swap meet fees
     function withdrawFees(address _receiver) external;
 }
