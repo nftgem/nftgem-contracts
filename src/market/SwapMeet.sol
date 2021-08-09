@@ -15,6 +15,8 @@ import "../interfaces/INFTGemFeeManager.sol";
 
 import "../libs/UInt256Set.sol";
 
+import "hardhat/console.sol";
+
 contract SwapMeet is ISwapMeet, Controllable {
     uint256 private feesBalance;
 
@@ -33,6 +35,8 @@ contract SwapMeet is ISwapMeet, Controllable {
     mapping(address => Offer[]) private offersByOwner;
 
     UInt256Set.Set private offerIds;
+
+    mapping(address => address) private proxyList;
 
     constructor(address _multitoken, address _feeManager) {
         _addController(msg.sender);
@@ -256,35 +260,53 @@ contract SwapMeet is ISwapMeet, Controllable {
         uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
         acceptFee = acceptFee == 0 ? 0.01 ether : acceptFee;
 
+        console.log("acceptOffer: acceptFee = ", acceptFee);
+
         // check that the offer is valid
         require(offerIds.exists(_id), "offer not registered");
-        require(_gems.length <= offers[_id].gems.length, "too many gems");
+        require(_gems.length == offers[_id].gems.length, "too many gems");
         require(msg.value >= acceptFee, "insufficient accept fee");
+
+        console.log("acceptOffer: basic checks passed");
 
         // iterate over the gem pools and swap the gems
         for (uint256 i = 0; i < offers[_id].pools.length; i++) {
             address pool = offers[_id].pools[i]; // get the pool
+
             // get the gem or 0 for any gem in pool
-            uint256 gem = offers[_id].gems.length > i ? offers[_id].gems[i] : 0;
-            if (gem == 0) {
-                gem = _gems[i]; // if any gem get the one passed in
+            uint256 gem = _gems[i];
+            console.log("acceptOffer: pool, gem", pool, gem);
+
+            if (offers[_id].gems[i] != 0) {
+                if (offers[_id].gems[i] == gem) {
+                    require(
+                        IERC1155(address(multitoken)).balanceOf(
+                            msg.sender,
+                            gem
+                        ) >= offers[_id].quantities[i],
+                        "insufficient gem balance"
+                    );
+                    continue;
+                } else {
+                    require(false, "invalid input  gem");
+                }
             } else {
-                _gems[i] = gem;
+                // get the token type of gem for pool
+                INFTGemMultiToken.TokenType tt = INFTComplexGemPoolData(pool)
+                    .tokenType(gem);
+                // require that the gem be from this pool
+                require(
+                    tt == INFTGemMultiToken.TokenType.GEM,
+                    "invalid token type"
+                );
+                console.log("acceptOffer: token type", uint8(tt));
+                // require sender owns the gem
+                require(
+                    IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >=
+                        offers[_id].quantities[i],
+                    "insufficient gem balance"
+                );
             }
-            // require sender owns the gem
-            require(
-                IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >=
-                    offers[_id].quantities[i],
-                "insufficient gem balance"
-            );
-            // get the token type of gem for pool
-            INFTGemMultiToken.TokenType tt = INFTComplexGemPoolData(pool)
-                .tokenType(gem);
-            // require that the gem be from this pool
-            require(
-                tt == INFTGemMultiToken.TokenType.GEM,
-                "invalid token type"
-            );
         }
 
         // check that the offer owner has the token to swap
@@ -303,9 +325,12 @@ contract SwapMeet is ISwapMeet, Controllable {
             return success;
         }
 
+        console.log("acceptOffer: sender balance good");
+
         // add the fees to our withdrawable balance
         feesBalance += acceptFee + offers[_id].listingFee;
 
+        proxyList[msg.sender] = address(this);
         // swap the gems
         IERC1155(address(multitoken)).safeBatchTransferFrom(
             msg.sender,
@@ -314,8 +339,12 @@ contract SwapMeet is ISwapMeet, Controllable {
             offers[_id].quantities,
             ""
         );
+        delete proxyList[msg.sender];
+
+        console.log("acceptOffer: transfer batch");
 
         // swap the gem
+        proxyList[offers[_id].owner] = address(this);
         IERC1155(address(multitoken)).safeTransferFrom(
             offers[_id].owner,
             msg.sender,
@@ -323,6 +352,9 @@ contract SwapMeet is ISwapMeet, Controllable {
             1,
             ""
         );
+        delete proxyList[offers[_id].owner];
+
+        console.log("acceptOffer: transfer gem");
 
         // remove the offer
         offerIds.remove(_id);
@@ -342,7 +374,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         emit SwapMeetFeesWithdrawn(_receiver, balanceToWithdraw);
     }
 
-    function proxies(address input) external pure returns (address) {
-        return input;
+    function proxies(address input) external view returns (address) {
+        return proxyList[input];
     }
 }

@@ -3,7 +3,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import 'hardhat-deploy-ethers';
 
 import { pack, keccak256 } from '@ethersproject/solidity';
-import { BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { parseEther } from '@ethersproject/units';
 
 export default async function publish(
@@ -115,16 +115,6 @@ export default async function publish(
       // get all deployed contracts
       const dc = await this.getDeployedContracts();
 
-      let proxyRegistryCount =
-        await dc.NFTGemMultiToken.allProxyRegistriesLength();
-      console.log('removing old registries...');
-      while (proxyRegistryCount.gt(0)) {
-        await dc.NFTGemMultiToken.removeProxyRegistryAt(
-          proxyRegistryCount.sub(1)
-        );
-        proxyRegistryCount = proxyRegistryCount.sub(1);
-      }
-
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
 
@@ -132,20 +122,22 @@ export default async function publish(
       const apl = await dc.NFTGemMultiToken.allProxyRegistriesLength();
       if (!apl.eq(0)) {
         for (let j = 0; j < apl.toNumber(); j++) {
-          const proxyRegistry = await dc.NFTGemMultiToken.getProxyRegistryAt(j);
-          if (proxyRegistry === dc.SwapMeet.address) {
+          const proxyRegistry = await dc.NFTGemMultiToken.allProxyRegistries(j);
+          if (!BigNumber.from(proxyRegistry).eq(0) && BigNumber.from(proxyRegistry).eq(dc.SwapMeet.address)) {
             foundRegistry = true;
             break;
           }
         }
       }
-      if (!foundRegistry) {
+      if (!foundRegistry && !BigNumber.from(dc.SwapMeet.address).eq(0)) {
         // add swap meet as a proxy registry for the multitoken
         console.log('adding SwapMeet as multitoken proxy registry...');
-        const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
-          dc.SwapMeet.address
-        );
-        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        try {
+          const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
+            dc.SwapMeet.address
+          );
+          await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        } catch (e) {/**/ }
       }
 
       if (!inited) {
@@ -192,11 +184,6 @@ export default async function publish(
         tx = await dc.NFTGemMultiToken.addController(dc.SwapMeet.address, {
           gasLimit: 500000,
         });
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        // add swap meet as a proxy registry for the multitoken
-        console.log('adding SwapMeet as multitoken proxy registry...');
-        tx = await dc.NFTGemMultiToken.addProxyRegistry(dc.SwapMeet.address);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governor as controller of the multitoken so that it is privileged
