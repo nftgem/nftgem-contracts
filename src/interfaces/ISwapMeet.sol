@@ -35,6 +35,8 @@ interface ISwapMeet {
     // an offer is aacepted
     event OfferAccepted(
         uint256 _offerId,
+        address _offerPool,
+        uint256 _offerItem,
         address _acceptor,
         uint256[] _gems,
         uint256 _acceptFee
@@ -42,6 +44,10 @@ interface ISwapMeet {
 
     // an offer is cancelled
     event SwapMeetFeesWithdrawn(address _recipient, uint256 _feesAmount);
+
+    // when the meet is opened and closed. closed means
+    // the meet is no longer accepting offers
+    event SwapMeetIsOpen(bool openState);
 
     // registe a new offer
     function registerOffer(
@@ -84,4 +90,10 @@ interface ISwapMeet {
 
     // withdraw the swap meet fees
     function withdrawFees(address _receiver) external;
+
+    // set the open state of the swap
+    function setOpenState(bool openState) external;
+
+    // is the swap open
+    function isOpen() external view returns (bool);
 }

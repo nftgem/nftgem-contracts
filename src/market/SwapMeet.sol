@@ -19,6 +19,7 @@ import "hardhat/console.sol";
 
 contract SwapMeet is ISwapMeet, Controllable {
     uint256 private feesBalance;
+    bool private open;
 
     INFTGemFeeManager private feeManager;
     INFTGemMultiToken private multitoken;
@@ -30,18 +31,22 @@ contract SwapMeet is ISwapMeet, Controllable {
 
     using UInt256Set for UInt256Set.Set;
 
+    // all the offers in this contract
     mapping(uint256 => Offer) private offers;
 
+    // all the offer but by owner
     mapping(address => Offer[]) private offersByOwner;
 
     UInt256Set.Set private offerIds;
 
+    // proxy mapping manages alloewances w/o owner
     mapping(address => address) private proxyList;
 
     constructor(address _multitoken, address _feeManager) {
         _addController(msg.sender);
         multitoken = INFTGemMultiToken(_multitoken);
         feeManager = INFTGemFeeManager(_feeManager);
+        open = true;
     }
 
     // register a new offer
@@ -55,6 +60,8 @@ contract SwapMeet is ISwapMeet, Controllable {
         uint256[] calldata _quantities,
         uint256 references
     ) external payable override returns (Offer memory _offer) {
+        require(open, "swap meet closed");
+
         // get the listing fee - the service is a flat fee
         uint256 listingFee = INFTGemFeeManager(feeManager).fee(listingFeeHash);
         listingFee = listingFee == 0 ? 0.01 ether : listingFee;
@@ -257,57 +264,92 @@ contract SwapMeet is ISwapMeet, Controllable {
         override
         returns (bool success)
     {
+        // this is capitalism - so figure out our fee first
         uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
         acceptFee = acceptFee == 0 ? 0.01 ether : acceptFee;
-
         console.log("acceptOffer: acceptFee = ", acceptFee);
 
         // check that the offer is valid
         require(offerIds.exists(_id), "offer not registered");
-        require(_gems.length == offers[_id].gems.length, "too many gems");
         require(msg.value >= acceptFee, "insufficient accept fee");
-
         console.log("acceptOffer: basic checks passed");
 
-        // iterate over the gem pools and swap the gems
-        for (uint256 i = 0; i < offers[_id].pools.length; i++) {
-            address pool = offers[_id].pools[i]; // get the pool
+        // how many input pools' rquirements are met. Length of this must equal length of input pools
+        uint256 foundInputPools = 0;
 
-            // get the gem or 0 for any gem in pool
-            uint256 gem = _gems[i];
-            console.log("acceptOffer: pool, gem", pool, gem);
+        // iterate through all incoming gems to account for them
+        for (uint256 gemIndex = 0; gemIndex < _gems.length; gemIndex++) {
+            //
+            // we'll need to track the required quantity of each gem
+            uint256 requiredQuantity = 0;
+            uint256 theIncomingGem = _gems[gemIndex]; // the incoming gem we are validating
+            uint256 foundBalance = 0;
+            address thePool;
 
-            if (offers[_id].gems[i] != 0) {
-                if (offers[_id].gems[i] == gem) {
-                    require(
-                        IERC1155(address(multitoken)).balanceOf(
-                            msg.sender,
-                            gem
-                        ) >= offers[_id].quantities[i],
-                        "insufficient gem balance"
+            // iterate through all input pool requirements for this offer
+            for (
+                uint256 poolIndex = 0;
+                poolIndex < offers[_id].pools.length;
+                poolIndex++
+            ) {
+                uint256 theGemRequirement = offers[_id].gems[poolIndex]; // the gem requirement for the above pool (or 0 if any gem)
+
+                console.log("requirement: ", theGemRequirement);
+                console.log("pool: ", thePool);
+
+                // determine if the gem we are validating is a member of this pool
+                INFTGemMultiToken.TokenType tokenType = INFTComplexGemPoolData(
+                    offers[_id].pools[poolIndex]
+                ).tokenType(_gems[gemIndex]);
+
+                // if it is then get the message senders balance of the gem
+                // and add it to the balance we are tracking
+                if (tokenType == INFTGemMultiToken.TokenType.GEM) {
+                    //
+                    // the gem pool from the offer
+                    thePool = offers[_id].pools[poolIndex];
+
+                    // if we have no balance yet its the first time we have seen the pool
+                    // so increment the total count of input pools we have seen
+                    if (foundBalance == 0) {
+                        foundInputPools++;
+                    }
+
+                    // incement the pool gem balance
+                    foundBalance += IERC1155(address(multitoken)).balanceOf(
+                        msg.sender,
+                        _gems[gemIndex]
                     );
-                    continue;
-                } else {
-                    require(false, "invalid input  gem");
+
+                    console.log(_gems[gemIndex], " balance: ", foundBalance);
+
+                    // if the requirement is specific (not 'any') then this is the
+                    // place to check if the gem the pool requires is the gem we are checking
+                    if (theGemRequirement != 0) {
+                        require(
+                            theGemRequirement == theIncomingGem,
+                            "gem mismatch"
+                        );
+                    }
+
+                    // grab required quantity so we can see if we have enough
+                    requiredQuantity = offers[_id].quantities[poolIndex];
                 }
-            } else {
-                // get the token type of gem for pool
-                INFTGemMultiToken.TokenType tt = INFTComplexGemPoolData(pool)
-                    .tokenType(gem);
-                // require that the gem be from this pool
-                require(
-                    tt == INFTGemMultiToken.TokenType.GEM,
-                    "invalid token type"
-                );
-                console.log("acceptOffer: token type", uint8(tt));
-                // require sender owns the gem
-                require(
-                    IERC1155(address(multitoken)).balanceOf(msg.sender, gem) >=
-                        offers[_id].quantities[i],
-                    "insufficient gem balance"
-                );
             }
+
+            // if the balance is less than the required quantity then reject
+            require(
+                thePool != address(0) && foundBalance >= requiredQuantity,
+                "Insufficient gem balance"
+            );
+            thePool = address(0);
         }
+
+        // require that the number of pools we have seen is equal to the number of input pools
+        require(
+            offers[_id].pools.length == foundInputPools,
+            "conditions unsatisfied"
+        );
 
         // check that the offer owner has the token to swap
         // and penalize them if they do mot have it.
@@ -320,6 +362,7 @@ contract SwapMeet is ISwapMeet, Controllable {
             // penalize the owner for not having the token
             offers[_id].missingTokenPenalty = true;
             success = false;
+
             // refund the accepter
             payable(msg.sender).transfer(acceptFee);
             return success;
@@ -330,7 +373,11 @@ contract SwapMeet is ISwapMeet, Controllable {
         // add the fees to our withdrawable balance
         feesBalance += acceptFee + offers[_id].listingFee;
 
+        address offerPool = offers[_id].pool;
+        uint256 offerHash = offers[_id].gem;
+
         proxyList[msg.sender] = address(this);
+
         // swap the gems
         IERC1155(address(multitoken)).safeBatchTransferFrom(
             msg.sender,
@@ -360,7 +407,14 @@ contract SwapMeet is ISwapMeet, Controllable {
         offerIds.remove(_id);
         delete offers[_id];
 
-        emit OfferAccepted(_id, msg.sender, _gems, acceptFee);
+        emit OfferAccepted(
+            _id,
+            offerPool,
+            offerHash,
+            msg.sender,
+            _gems,
+            acceptFee
+        );
 
         return true;
     }
@@ -374,6 +428,20 @@ contract SwapMeet is ISwapMeet, Controllable {
         emit SwapMeetFeesWithdrawn(_receiver, balanceToWithdraw);
     }
 
+    // set open state
+    function setOpenState(bool openState) external override onlyController {
+        open = openState;
+        emit SwapMeetIsOpen(open);
+    }
+
+    // is the swap open
+    function isOpen() external view override returns (bool) {
+        return open;
+    }
+
+    // called by the multitoken when a swap is performed by the
+    // swap meet - we temporarily set the operator of the token
+    // via this proxy function, which is called from isApproved()
     function proxies(address input) external view returns (address) {
         return proxyList[input];
     }
