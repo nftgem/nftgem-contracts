@@ -32,7 +32,7 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
         returns (uint256[] memory claims, uint256[] memory gems)
     {
         uint256 allTokenHashesLength = IGemPoolData(gemPool)
-        .allTokenHashesLength();
+            .allTokenHashesLength();
         require((page * count) <= allTokenHashesLength, "OUT_OF_RANGE");
 
         uint256 claimLen = 0;
@@ -47,7 +47,7 @@ contract TokenPoolQuerier is ITokenPoolQuerier {
             }
             uint256 claimHash = IGemPoolData(gemPool).allTokenHashes(i);
             INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)
-            .tokenType(claimHash);
+                .tokenType(claimHash);
             uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);
             if (bal == 0 || claimHash == 0 || claimHash == 1) continue;
             else if (tokenType == INFTGemMultiToken.TokenType.CLAIM)

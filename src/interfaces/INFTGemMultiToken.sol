@@ -12,6 +12,11 @@ interface INFTGemMultiToken {
         GEM
     }
 
+    struct Royalty {
+        address owner;
+        uint256 royaltyPermillion;
+    }
+
     // called by controller to mint a claim or a gem
     function mint(
         address account,
@@ -82,6 +87,12 @@ interface INFTGemMultiToken {
     function getRegistryManager() external view returns (address);
 
     function setRegistryManager(address newManager) external;
+
+    function setRoyaltyInfo(
+        uint256 _tokenId,
+        address _owner,
+        uint256 feePermil
+    ) external;
 
     function lock(uint256 token, uint256 timeframe) external;
 

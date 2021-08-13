@@ -11,6 +11,7 @@ import "../libs/UInt256Set.sol";
 import "../access/Controllable.sol";
 
 import "../interfaces/INFTGemMultiToken.sol";
+import "../interfaces/IERC2981.sol";
 
 /**
  * @dev ProxyContract placeholder - the proxy delegate
@@ -42,7 +43,8 @@ contract NFTGemMultiToken is
     ERC1155Pausable,
     ERC1155Holder,
     INFTGemMultiToken,
-    Controllable
+    Controllable,
+    IERC2981
 {
     using AddressSet for AddressSet.Set;
     using UInt256Set for UInt256Set.Set;
@@ -52,6 +54,7 @@ contract NFTGemMultiToken is
     // proxy registries for exchanges to enable no-fee trading
     AddressSet.Set private proxyRegistries;
     address private registryManager;
+    mapping(uint256 => Royalty) private royaltyData;
 
     // total balance per token id
     mapping(uint256 => uint256) private _totalBalances;
@@ -67,10 +70,12 @@ contract NFTGemMultiToken is
     mapping(uint256 => INFTGemMultiToken.TokenType) private _tokenTypes;
     mapping(uint256 => address) private _tokenPools;
 
+    bytes4 public constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+
     /**
      * @dev Contract initializer.
      */
-    constructor() ERC1155("https://metadata.nftgem.host/") {
+    constructor() ERC1155("https://metadata.bitgem.co/") {
         _addController(msg.sender);
         registryManager = msg.sender;
     }
@@ -87,6 +92,7 @@ contract NFTGemMultiToken is
     {
         return
             interfaceId == type(IERC1155).interfaceId ||
+            interfaceId == type(IERC2981).interfaceId ||
             interfaceId == type(IERC1155MetadataURI).interfaceId ||
             super.supportsInterface(interfaceId);
     }
@@ -109,6 +115,36 @@ contract NFTGemMultiToken is
         returns (uint256 theTime)
     {
         theTime = _tokenLocks[account][token];
+    }
+
+    /**
+     * @dev ierc2981
+     */
+    function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+        external
+        view
+        override
+        returns (address receiver, uint256 royaltyAmount)
+    {
+        require(royaltyData[_tokenId].owner != address(0), "NO_SUCH_TOKEN");
+        return (
+            royaltyData[_tokenId].owner,
+            (_salePrice * royaltyData[_tokenId].royaltyPermillion) / 1000000
+        );
+    }
+
+    /**
+     * @dev Update the royalty info. only callable by the royalty owner.
+     */
+    function setRoyaltyInfo(
+        uint256 _tokenId,
+        address _owner,
+        uint256 feePermil
+    ) external override {
+        require(msg.sender == royaltyData[_tokenId].owner, "INVALID_OWNER");
+        Royalty storage roy = royaltyData[_tokenId];
+        roy.owner = _owner;
+        roy.royaltyPermillion = feePermil;
     }
 
     /**
@@ -314,7 +350,8 @@ contract NFTGemMultiToken is
         uint256 tokenHash,
         uint256 amount
     ) external override onlyController {
-        _mint(account, uint256(tokenHash), amount, "0x0");
+        _mint(account, tokenHash, amount, "0x0");
+        royaltyData[tokenHash] = Royalty(msg.sender, 100000);
     }
 
     /**

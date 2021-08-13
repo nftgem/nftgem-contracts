@@ -1,10 +1,10 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import 'hardhat-deploy-ethers';
 
-import {pack, keccak256} from '@ethersproject/solidity';
-import {BigNumberish} from '@ethersproject/bignumber';
-import {parseEther} from '@ethersproject/units';
+import { pack, keccak256 } from '@ethersproject/solidity';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { parseEther } from '@ethersproject/units';
 
 export default async function publish(
   hre: HardhatRuntimeEnvironment,
@@ -61,7 +61,7 @@ export default async function publish(
       await this.d('NFTGemGovernor', deployParams);
       const multitokenDeploy = await this.d('NFTGemMultiToken', deployParams);
       await this.d('NFTGemPoolFactory', deployParams);
-      await this.d('NFTGemFeeManager', deployParams);
+      const feeManagerDeploy = await this.d('NFTGemFeeManager', deployParams);
       await this.d('MockProxyRegistry', deployParams);
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
@@ -109,7 +109,7 @@ export default async function publish(
       await this.d('GovernorAlpha', deployParams);
 
       // deploy the swap meet contract
-      deployParams.args = [multitokenDeploy.address];
+      deployParams.args = [multitokenDeploy.address, feeManagerDeploy.address];
       await this.d('SwapMeet', deployParams);
 
       // get all deployed contracts
@@ -117,6 +117,28 @@ export default async function publish(
 
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
+
+      let foundRegistry = false;
+      const apl = await dc.NFTGemMultiToken.allProxyRegistriesLength();
+      if (!apl.eq(0)) {
+        for (let j = 0; j < apl.toNumber(); j++) {
+          const proxyRegistry = await dc.NFTGemMultiToken.allProxyRegistries(j);
+          if (!BigNumber.from(proxyRegistry).eq(0) && BigNumber.from(proxyRegistry).eq(dc.SwapMeet.address)) {
+            foundRegistry = true;
+            break;
+          }
+        }
+      }
+      if (!foundRegistry && !BigNumber.from(dc.SwapMeet.address).eq(0)) {
+        // add swap meet as a proxy registry for the multitoken
+        console.log('adding SwapMeet as multitoken proxy registry...');
+        try {
+          const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
+            dc.SwapMeet.address
+          );
+          await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        } catch (e) {/**/ }
+      }
 
       if (!inited) {
         console.log('initializing nftgem governor...');
@@ -162,11 +184,6 @@ export default async function publish(
         tx = await dc.NFTGemMultiToken.addController(dc.SwapMeet.address, {
           gasLimit: 500000,
         });
-        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-
-        // add swap meet as a proxy registry for the multitoken
-        console.log('adding SwapMeet as multitoken proxy registry...');
-        tx = await dc.NFTGemMultiToken.addProxyRegistry(dc.swapMeet.address);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
 
         // add governor as controller of the multitoken so that it is privileged
@@ -378,7 +395,7 @@ export default async function publish(
           diff,
           maxClaims,
           allowedToken,
-          {gasLimit: 8000000}
+          { gasLimit: 8000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // set created flag
@@ -402,7 +419,7 @@ export default async function publish(
           dc.NFTGemMultiToken.address,
           18,
           dc.NFTGemFeeManager.address,
-          {gasLimit: 5000000}
+          { gasLimit: 5000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // get the address
@@ -428,7 +445,7 @@ export default async function publish(
           } else {
             console.log(
               `adding complex requirements to ${name} (${symbol}): ` +
-                JSON.stringify(inputRequirements[ii])
+              JSON.stringify(inputRequirements[ii])
             );
             tx = await pc.addInputRequirement(...inputRequirements[ii]);
           }
