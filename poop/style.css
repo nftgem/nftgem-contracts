@@ -1,0 +1,22 @@
+@font-face {
+	font-family: 'Pixelated';
+	src: url(./Pixelated.ttf.woff) format('woff'),
+	url(./Pixelated.ttf.svg) format('svg'),
+	url(./Pixelated.ttf.eot) format('embedded-opentype'),
+	url(./Pixelated.ttf.eot) format('embedded-opentype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+html {
+    font-family: 'Pixelated', sans-serif;
+}
+.card {
+    font-family: 'Pixelated', sans-serif;
+}
+  
+  .css-clamp {
+    background-color: lightblue;
+    width: clamp(400px, 60vw, 600px);
+    height: 100px;
+  }

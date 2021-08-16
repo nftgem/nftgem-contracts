@@ -3,7 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
-import "../interfaces/ISwapMeet.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import "../interfaces/ISwapMeetV2.sol";
 
 import "../access/Controllable.sol";
 
@@ -13,11 +15,12 @@ import "../interfaces/INFTComplexGemPoolData.sol";
 
 import "../interfaces/INFTGemFeeManager.sol";
 
+import "../interfaces/IWrappedFtm.sol";
+
 import "../libs/UInt256Set.sol";
 
-import "hardhat/console.sol";
-
-contract SwapMeet is ISwapMeet, Controllable {
+contract SwapMeet is ISwapMeetV2, Controllable {
+    address private auctionMaster;
     using UInt256Set for UInt256Set.Set;
 
     uint256 public constant listingFeeHash =
@@ -26,6 +29,9 @@ contract SwapMeet is ISwapMeet, Controllable {
         uint256(keccak256("swapMeetAcceptFee"));
     uint256 public constant acceptVariableFeeHash =
         uint256(keccak256("swapMeetAcceptVariableFee"));
+    uint256 public constant bidFeeHash = uint256(keccak256("bidFee"));
+
+    address private constant WFTM = 0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83;
 
     bool internal open;
 
@@ -35,6 +41,9 @@ contract SwapMeet is ISwapMeet, Controllable {
     // all the offers in this contract
     mapping(uint256 => Offer) internal offers;
 
+    // all the offers bids in this contract
+    mapping(uint256 => Bid[]) internal offerBids;
+
     // all the offer but by owner
     mapping(address => Offer[]) internal offersByOwner;
 
@@ -43,10 +52,15 @@ contract SwapMeet is ISwapMeet, Controllable {
     // proxy mapping manages alloewances w/o owner
     mapping(address => address) internal proxyList;
 
-    constructor(address _multitoken, address _feeManager) {
+    constructor(
+        address _multitoken,
+        address _feeManager,
+        address _auctionMaster
+    ) {
         _addController(msg.sender);
         multitoken = INFTGemMultiToken(_multitoken);
         feeManager = INFTGemFeeManager(_feeManager);
+        auctionMaster = _auctionMaster;
         open = true;
     }
 
@@ -55,12 +69,13 @@ contract SwapMeet is ISwapMeet, Controllable {
         // what to have to swap
         address _pool,
         uint256 _gem,
-        uint256 _quantity,
         // what you are willing to swap it for
         address[] calldata _pools,
         uint256[] calldata _gems,
         uint256[] calldata _quantities,
-        uint256 references
+        uint256 references,
+        uint256 _blockCount,
+        bool _wethOnly
     )
         external
         payable
@@ -71,7 +86,7 @@ contract SwapMeet is ISwapMeet, Controllable {
 
         // get the listing fee - the service is a flat fee
         uint256 listingFee = INFTGemFeeManager(feeManager).fee(listingFeeHash);
-        listingFee = listingFee == 0 ? 0.5 ether : listingFee;
+        listingFee = listingFee == 0 ? 0.01 ether : listingFee;
 
         // an offer is offerer address plus gem hash
         _offerId = uint256(keccak256(abi.encodePacked(msg.sender, _gem)));
@@ -80,12 +95,20 @@ contract SwapMeet is ISwapMeet, Controllable {
         require(!offerIds.exists(_offerId), "gem already registered");
         require(_gems.length == _pools.length, "mismatched gem quantities");
         require(msg.value >= listingFee, "insufficient listing fee");
-        require(_quantity > 0, "invalid quantity");
+
+        // if wethOnly is set, then the offer is only acceptable using weth
+        if (offers[_offerId].wethOnly) {
+            require(
+                _pools.length == 0 &&
+                    _gems.length == 0 &&
+                    _quantities.length == 1,
+                "not a token sale or auction"
+            );
+        }
 
         // make sure they own the gem they wanna trade
         require(
-            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) >=
-                _quantity,
+            IERC1155(address(multitoken)).balanceOf(msg.sender, _gem) > 0,
             "insufficient gem balance"
         );
 
@@ -96,59 +119,6 @@ contract SwapMeet is ISwapMeet, Controllable {
         // require that the gem be from this pool
         require(tt == INFTGemMultiToken.TokenType.GEM, "invalid token type");
 
-        // validate the input gems list
-        require(
-            _validateInputGems(_pools, _gems, _quantities),
-            "invalid input"
-        );
-
-        // create the offer
-        offers[_offerId] = Offer(
-            _offerId,
-            msg.sender,
-            _pool,
-            _gem,
-            _quantity,
-            _pools,
-            _gems,
-            _quantities,
-            listingFee,
-            0,
-            references,
-            false
-        );
-
-        // add the offer to the offers mapping
-        offerIds.insert(_offerId);
-        offersByOwner[msg.sender].push(offers[_offerId]);
-
-        // return offer
-        _offer = offers[_offerId];
-
-        _emitOffer(_offerId);
-    }
-
-    function _emitOffer(uint256 _offerId) internal {
-        Offer memory offer = offers[_offerId];
-        // emit the event
-        emit OfferRegistered(
-            offer.owner,
-            _offerId,
-            offer.pool,
-            offer.gem,
-            offer.quantity,
-            offer.pools,
-            offer.gems,
-            offer.quantities,
-            offer.references
-        );
-    }
-
-    function _validateInputGems(
-        address[] memory _pools,
-        uint256[] memory _gems,
-        uint256[] memory _quantities
-    ) internal view returns (bool) {
         // make sure the pool addresses are valid and that
         // the token quantities are all valid
         for (uint256 i = 0; i < _quantities.length; i++) {
@@ -182,7 +152,70 @@ contract SwapMeet is ISwapMeet, Controllable {
 
             require(_quantities[i] > 0, "invalid token quantity");
         }
-        return true;
+
+        // create the offer
+        offers[_offerId] = Offer(
+            msg.sender,
+            _pool,
+            _gem,
+            _pools,
+            _gems,
+            _quantities,
+            listingFee,
+            0,
+            references,
+            false,
+            _blockCount,
+            _wethOnly,
+            false,
+            address(0),
+            0
+        );
+
+        // add the offer to the offers mapping
+        offerIds.insert(_offerId);
+        offersByOwner[msg.sender].push(offers[_offerId]);
+
+        // return offer
+        _offer = offers[_offerId];
+
+        // emit the event
+        emit OfferRegistered(
+            msg.sender,
+            _offerId,
+            _pool,
+            _gem,
+            _pools,
+            _gems,
+            _quantities,
+            references,
+            listingFee,
+            _blockCount
+        );
+    }
+
+    function _deleteOffer(uint256 _offerId) internal {
+        // get the offer owner
+        address offerOwner = offers[_offerId].owner;
+
+        // remove offer from offers mapping
+        offerIds.remove(_offerId);
+        delete offers[_offerId];
+        delete offerBids[_offerId];
+
+        // remove offer from owner's offers mapping
+        for (
+            uint256 offerIndex = 0;
+            offerIndex < offersByOwner[offerOwner].length;
+            ++offerIndex
+        ) {
+            if (offersByOwner[offerOwner][offerIndex].gem == _offerId) {
+                offersByOwner[offerOwner][offerIndex] = offersByOwner[
+                    offerOwner
+                ][offersByOwner[offerOwner].length - 1];
+                offersByOwner[offerOwner].pop();
+            }
+        }
     }
 
     // unregister an offer
@@ -206,23 +239,8 @@ contract SwapMeet is ISwapMeet, Controllable {
         // get the offer owner
         address offerOwner = offers[_id].owner;
 
-        // remove offer from offers mapping
-        offerIds.remove(_id);
-        delete offers[_id];
-
-        // remove offer from owner's offers mapping
-        for (
-            uint256 offerIndex = 0;
-            offerIndex < offersByOwner[offerOwner].length;
-            ++offerIndex
-        ) {
-            if (offersByOwner[offerOwner][offerIndex].gem == _id) {
-                offersByOwner[offerOwner][offerIndex] = offersByOwner[
-                    offerOwner
-                ][offersByOwner[offerOwner].length - 1];
-                offersByOwner[offerOwner].pop();
-            }
-        }
+        // delete the offer
+        _deleteOffer(_id);
 
         // give them their fees back if they arent penalized
         if (!penalty) {
@@ -294,6 +312,60 @@ contract SwapMeet is ISwapMeet, Controllable {
         return offers[_id];
     }
 
+    // get bids of an offer
+    function getOfferBids(uint256 _id)
+        external
+        view
+        override
+        returns (Bid[] memory _bids)
+    {
+        require(offerIds.exists(_id), "offer not registered");
+        _bids = offerBids[_id];
+    }
+
+    // create a bid
+    function createBid(
+        uint256 _id,
+        uint256 _amount,
+        bool useWeth
+    ) external payable override returns (bool) {
+        // this tell us if this is is a gem to fantom swap
+        bool _isTokenAuction = isTokenAuction(_id);
+        require(_isTokenAuction, "not an auction");
+
+        // this is capitalism - so figure out our fee first
+        uint256 bidFee = INFTGemFeeManager(feeManager).fee(bidFeeHash);
+        bidFee = bidFee == 0 ? 100 : bidFee;
+
+        // check that the offer is valid
+        require(offerIds.exists(_id), "offer not registered");
+        require(msg.value >= bidFee, "insufficient bid fee");
+        require(offers[_id].wethOnly && !useWeth, "offer is weth only");
+
+        // the min amount for the next bid. Must be greater than the current bid
+        uint256 minAmount = offerBids[_id].length > 0
+            ? offerBids[_id][offerBids[_id].length - 1].amount
+            : offers[_id].quantities[0];
+
+        // TODO: increase the bid by a set amount
+        if (useWeth) {
+            uint256 bal = IERC20(WFTM).balanceOf(msg.sender);
+            require(bal > minAmount, "cant afford bid");
+        } else {
+            require(
+                payable(msg.sender).balance >= minAmount,
+                "cant afford bid"
+            );
+        }
+        // add the bid to the bid mapping
+        Bid memory _bid = Bid(_id, msg.sender, _amount);
+
+        offerBids[_id].push(_bid);
+
+        emit BidCreated(_id, msg.sender, _amount);
+        return true;
+    }
+
     // accept an offer
     function acceptOffer(uint256 _id, uint256[] memory _gems)
         external
@@ -301,9 +373,13 @@ contract SwapMeet is ISwapMeet, Controllable {
         override
         returns (bool success)
     {
+        // require this not be an auction
+        bool _isTokenAuction = isTokenAuction(_id);
+        require(!_isTokenAuction, "is an auction");
+
         // this is capitalism - so figure out our fee first
         uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
-        acceptFee = acceptFee == 0 ? 0.5 ether : acceptFee;
+        acceptFee = acceptFee == 0 ? 0.01 ether : acceptFee;
 
         // check that the offer is valid
         require(offerIds.exists(_id), "offer not registered");
@@ -375,12 +451,10 @@ contract SwapMeet is ISwapMeet, Controllable {
             thePool = address(0);
         }
         // this tell us if this is is a gem to fantom swap
-        bool isTokenSwap = (offers[_id].pools.length == 0 &&
-            offers[_id].gems.length == 0 &&
-            offers[_id].quantities.length == 1);
+        bool _isTokenSwap = isTokenSwap(_id);
 
         // if this is not a gem to ftm swap
-        if (!isTokenSwap) {
+        if (!_isTokenSwap) {
             // require that the number of pools we have seen is equal to the number of input pools
             require(
                 offers[_id].pools.length == foundInputPools,
@@ -394,7 +468,7 @@ contract SwapMeet is ISwapMeet, Controllable {
             IERC1155(address(multitoken)).balanceOf(
                 offers[_id].owner,
                 offers[_id].gem
-            ) < offers[_id].quantity
+            ) == 0
         ) {
             // penalize the owner for not having the token
             offers[_id].missingTokenPenalty = true;
@@ -406,15 +480,13 @@ contract SwapMeet is ISwapMeet, Controllable {
             return success;
         }
 
-        console.log("acceptOffer: sender balance good");
-
         // if this is a gem to ftm swap
-        if (isTokenSwap) {
+        if (_isTokenSwap) {
             // fee is permillion - unite per million
             acceptFee = INFTGemFeeManager(feeManager).fee(
                 acceptVariableFeeHash
             );
-            acceptFee = acceptFee == 0 ? 3000 : acceptFee; // 1000 permillion is 0.1%
+            acceptFee = acceptFee == 0 ? 1000 : acceptFee; // 1000 permillion is 0.1%
 
             // closing fee is x permillion of the cost of the swap
             acceptFee = (offers[_id].quantities[0] / 1000000) * acceptFee;
@@ -428,7 +500,7 @@ contract SwapMeet is ISwapMeet, Controllable {
         uint256 offerHash = offers[_id].gem;
 
         //if this is a gem to token swap, send the FTM minus fee to seller
-        if (isTokenSwap) {
+        if (_isTokenSwap) {
             require(
                 payable(offers[_id].owner).send(
                     offers[_id].quantities[0] - acceptFee
@@ -448,24 +520,19 @@ contract SwapMeet is ISwapMeet, Controllable {
             delete proxyList[msg.sender];
         }
 
-        console.log("acceptOffer: transfer batch");
-
         // swap the gem
         proxyList[offers[_id].owner] = address(this);
         IERC1155(address(multitoken)).safeTransferFrom(
             offers[_id].owner,
             msg.sender,
             offers[_id].gem,
-            offers[_id].quantity,
+            1,
             ""
         );
         delete proxyList[offers[_id].owner];
 
-        console.log("acceptOffer: transfer gem");
-
         // remove the offer
-        offerIds.remove(_id);
-        delete offers[_id];
+        _deleteOffer(_id);
 
         emit OfferAccepted(
             _id,
@@ -476,6 +543,140 @@ contract SwapMeet is ISwapMeet, Controllable {
             acceptFee
         );
 
+        return true;
+    }
+
+    function isTokenSwap(uint256 _id) internal view returns (bool) {
+        return (offers[_id].pools.length == 0 &&
+            offers[_id].gems.length == 0 &&
+            offers[_id].quantities.length == 1 &&
+            offers[_id].blockCount == 0);
+    }
+
+    function isTokenAuction(uint256 _id) internal view returns (bool) {
+        return (offers[_id].pools.length == 0 &&
+            offers[_id].gems.length == 0 &&
+            offers[_id].quantities.length == 1 &&
+            offers[_id].blockCount > 0);
+    }
+
+    // is the swap offer an auction?
+    function isAuction(uint256 _id) external view override returns (bool) {
+        return isTokenAuction(_id);
+    }
+
+    // set the open state of the swap
+    function closeAuction(uint256 _id) external override returns (bool) {
+        require(isTokenAuction(_id), "not an auction");
+        require(
+            msg.sender == auctionMaster ||
+                this.isController(msg.sender) ||
+                offers[_id].owner == msg.sender,
+            "not owner or manager"
+        );
+        require(block.number > offers[_id].blockCount, "auction still running");
+
+        // check if there's a winner
+        bool hasWinner = offerBids[_id].length > 0;
+        if (!hasWinner) {
+            emit AuctionClosed(_id, address(0), 0, block.number);
+            return true;
+        }
+
+        // the winning bid
+        Bid memory winningBid = offerBids[_id][offerBids[_id].length - 1];
+        uint256 winningBidAmount = winningBid.amount;
+        address winner = winningBid.bidder;
+
+        // this is capitalism - so figure out our fee
+        uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
+        acceptFee = acceptFee == 0 ? 1000 : acceptFee;
+        acceptFee = (winningBidAmount / 1000000) * acceptFee;
+
+        if (offers[_id].wethOnly) {
+            // swap the gem
+            proxyList[offers[_id].owner] = address(this);
+            IERC1155(address(multitoken)).safeTransferFrom(
+                offers[_id].owner,
+                msg.sender,
+                offers[_id].gem,
+                1,
+                ""
+            );
+            delete proxyList[offers[_id].owner];
+
+            // TODO: check allowance here
+
+            // transfer erc20 from user to owner minus
+            // fee portion. MUST ALEADY BE APPROVED!
+            IERC20(WFTM).transferFrom(
+                msg.sender,
+                offers[_id].owner,
+                winningBidAmount - acceptFee
+            );
+            // transfer weth fee portion contract
+            IERC20(WFTM).transferFrom(msg.sender, address(this), acceptFee);
+            IWrappedFtm(WFTM).withdraw(acceptFee);
+
+            // delete the offer, we dont need it anymore
+            _deleteOffer(_id);
+
+            // auction now fully completed
+            emit AuctionCompleted(_id, winner, winningBidAmount, block.number);
+            return true;
+        } else {
+            // flip collect payment flag to true - the offer is now in
+            // a ready state to be paid for by the purchaser
+            offers[_id].collectPayment = true;
+            offers[_id].winner = winner;
+            offers[_id].winningBidAmount = winningBidAmount;
+        }
+
+        emit AuctionClosed(_id, winner, winningBidAmount, block.number);
+        return true;
+    }
+
+    // withdraw accrued fees
+    function completeAuction(uint256 _id)
+        external
+        payable
+        override
+        returns (bool)
+    {
+        require(offers[_id].collectPayment, "not ready to collect payment");
+        require(offers[_id].winner == msg.sender, "not auction winner");
+        require(!offers[_id].wethOnly, "offer is weth only");
+
+        // the winning bid
+        Bid memory winningBid = offerBids[_id][offerBids[_id].length - 1];
+        uint256 winningBidAmount = winningBid.amount;
+
+        require(msg.value >= winningBidAmount, "insufficient funds");
+
+        // swap the gem
+        proxyList[offers[_id].owner] = address(this);
+        IERC1155(address(multitoken)).safeTransferFrom(
+            offers[_id].owner,
+            msg.sender,
+            offers[_id].gem,
+            1,
+            ""
+        );
+        delete proxyList[offers[_id].owner];
+
+        // this is capitalism - so figure out our fee
+        uint256 acceptFee = INFTGemFeeManager(feeManager).fee(acceptFeeHash);
+        acceptFee = acceptFee == 0 ? 1000 : acceptFee;
+        acceptFee = (winningBidAmount / 1000000) * acceptFee;
+
+        // transfer the FTM to the seller
+        payable(offers[_id].owner).transfer(winningBidAmount - acceptFee);
+
+        // delete the offer, we dont need it anymore
+        _deleteOffer(_id);
+
+        // auction now fully completed
+        emit AuctionCompleted(_id, msg.sender, winningBidAmount, block.number);
         return true;
     }
 
@@ -504,4 +705,5 @@ contract SwapMeet is ISwapMeet, Controllable {
     function proxies(address input) external view returns (address) {
         return proxyList[input];
     }
+
 }

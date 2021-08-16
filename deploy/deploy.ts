@@ -1,6 +1,7 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {DeployFunction} from 'hardhat-deploy/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { DeployFunction } from 'hardhat-deploy/types';
 import publisher from '../lib/publishLib';
+import { parseEther } from '@ethersproject/units';
 
 /**
  * @dev retrieve and display address, chain, balance
@@ -12,6 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // we are done!
   console.log('Deploy complete\n');
+
 
   return publishItems.deployedContracts;
 };

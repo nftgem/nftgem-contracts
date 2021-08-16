@@ -1,8 +1,8 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
-import {pack, keccak256} from '@ethersproject/solidity';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { pack, keccak256 } from '@ethersproject/solidity';
 import publisher from './publishLib';
-import {BigNumber, Contract} from 'ethers';
-import {formatEther} from '@ethersproject/units';
+import { BigNumber, Contract } from 'ethers';
+import { formatEther } from '@ethersproject/units';
 
 export default async function migrator(
   hre: HardhatRuntimeEnvironment,
@@ -12,15 +12,15 @@ export default async function migrator(
   migrateGovernance?: boolean,
   migrateGems?: boolean
 ): Promise<any> {
-  const {ethers} = hre;
-  const {getContractAt} = ethers;
+  const { ethers } = hre;
+  const { getContractAt } = ethers;
 
   console.log('Bitgem migration\n');
   const [sender] = await hre.ethers.getSigners();
 
   // get published artifacts
   const publishItems = await publisher(hre, false);
-  const {deployedContracts} = publishItems,
+  const { deployedContracts } = publishItems,
     dc = deployedContracts;
 
   // factory and token addresses
@@ -138,16 +138,20 @@ export default async function migrator(
         keccak256(['bytes'], [pack(['string'], [sym])])
       );
       if (BigNumber.from(newGpAddr).eq(0)) {
+
+
+        const oldName = (await oldData.name()).replace('BoujaBonga', 'Boojabaunga');
+
         newGpAddr = await publishItems.createPool(
           sym,
-          await oldData.name(),
+          oldName,
           await oldData.ethPrice(),
           await oldData.minTime(),
           await oldData.maxTime(),
           await oldData.difficultyStep(),
           await oldData.maxClaims(),
           '0x0000000000000000000000000000000000000000',
-          {gasLimit: 8000000}
+          { gasLimit: 8000000 }
         );
       }
       if (BigNumber.from(newGpAddr).eq(0)) {
@@ -235,7 +239,7 @@ export default async function migrator(
               hash,
               holder,
               false,
-              {gasLimit: 5000000}
+              { gasLimit: 5000000 }
             );
             await hre.ethers.provider.waitForTransaction(tx.hash, 1);
           }
@@ -266,7 +270,7 @@ export default async function migrator(
             newToken.address,
             holders,
             govQuantities,
-            {gasLimit: 5000000}
+            { gasLimit: 5000000 }
           );
           await hre.ethers.provider.waitForTransaction(tx.hash, 1);
           holders = [];
@@ -280,10 +284,10 @@ export default async function migrator(
           newToken.address,
           holders,
           govQuantities,
-          {gasLimit: 5000000}
+          { gasLimit: 5000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        
+
       }
 
       for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
@@ -293,7 +297,7 @@ export default async function migrator(
           thAddr,
           0,
           th0Bal,
-          {gasLimit: 5000000}
+          { gasLimit: 5000000 }
         );
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       }
