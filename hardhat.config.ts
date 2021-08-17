@@ -851,6 +851,51 @@ task(
   );
 });
 
+task(
+  'publish-aquarium',
+  'Publish Aquarium and a fish'
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+  // get all gempool contracts
+  const publisher = await publish(hre, false);
+  const deployedContracts = await publisher.getDeployedContracts();
+
+  // publish the aquarium
+  const aquarium = await publisher.createPool(
+    'AQRM',
+    'BitNautica Aquarium',
+    hre.ethers.utils.parseEther('500'),
+    86400,
+    86400 * 7,
+    128,
+    0,
+    '0x0000000000000000000000000000000000000000'
+  );
+
+  // publish the fish
+  const fish = await publisher.createPool(
+    'FISH',
+    'BitNautica Fish',
+    hre.ethers.utils.parseEther('100'),
+    86400,
+    86400 * 7,
+    65536,
+    0,
+    '0x0000000000000000000000000000000000000000',
+    [
+      [
+        deployedContracts.NFTGemMultiToken.address,
+        aquarium,
+        2,
+        0,
+        1,
+        false,
+        false,
+        false,
+      ],
+    ]
+  );
+
+});
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [

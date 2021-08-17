@@ -1,66 +1,112 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "../data/GenericDatasource.sol";
+import "../data/GenericDataSource.sol";
 
-import "../interface/ILootboxData.sol";
+import "../interfaces/ILootboxData.sol";
+
+import "../interfaces/INFTGemMultiToken.sol";
+
+import "../interfaces/INFTComplexGemPoolData.sol";
+
+import "../interfaces/ILootbox.sol";
 
 contract LootboxData is ILootboxData, GenericDatasource {
-    Lootbox[] private _allLootboxes;
-    mapping(address => Lootbox) private _lootboxes;
-    mapping(address => Loot[]) private _loot;
+    ILootbox.Lootbox[] private _allLootboxes;
+
+    mapping(uint256 => ILootbox.Lootbox) private _lootboxes;
+    mapping(uint256 => ILootbox.Loot[]) private _loot;
+
+    mapping(uint256 => ILootbox.Loot) private _lootHashes;
+    ILootbox.Loot[] private _mintedLoot;
 
     constructor() {
         _addController(msg.sender);
     }
 
-    function getLootbox(address lootbox) external returns (Lootbox) {
-        return lootboxes[lootbox];
+    function getLootbox(uint256 lootbox)
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Lootbox memory)
+    {
+        return _lootboxes[lootbox];
     }
 
-    function setLootbox(address lootbox, Lootbox lootboxData) external {
-        if (bytes(lootboxes[lootbox]).length == 0) {
+    function setLootbox(uint256 lootbox, ILootbox.Lootbox memory lootboxData)
+        external
+        override
+        onlyController
+    {
+        if (_lootboxes[lootbox].owner == address(0)) {
             _allLootboxes.push(lootboxData);
         }
-        lootboxes[lootbox] = lootboxData;
+        _lootboxes[lootbox] = lootboxData;
     }
 
-    function allLootboxes() external view returns (Lootbox[]) {
+    function allLootboxes()
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Lootbox[] memory)
+    {
         return _allLootboxes;
     }
 
-    function getLoot(address lootbox, uint256 index) external returns (Loot) {
+    function getLoot(uint256 lootbox, uint256 index)
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Loot memory)
+    {
         return _loot[lootbox][index];
     }
 
-    function addLoot(address lootbox, Loot lootboxData) external {
-        if (bytes(_loot[lootbox]).length == 0) {
-            _loot[lootbox] = Array(lootboxData.index);
-        }
+    function addLoot(uint256 lootbox, ILootbox.Loot memory lootboxData)
+        external
+        override
+        onlyController
+        returns (uint256)
+    {
+        require(_lootboxes[lootbox].owner != address(0), "Lootbox is not set"); // require a valid lootbox
+        _loot[lootbox].push(lootboxData);
+        return _loot[lootbox].length;
     }
 
     function setLoot(
-        address lootbox,
+        uint256 lootbox,
         uint256 index,
-        Loot lootboxData
-    ) external {
+        ILootbox.Loot memory lootboxData
+    ) external override onlyController {
+        require(index < _loot[lootbox].length, "Index out of bounds");
         _loot[lootbox][index] = lootboxData;
     }
 
-    function allLoot(address lootbox) external view returns (Loot[]) {
+    function allLoot(uint256 lootbox)
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Loot[] memory)
+    {
         return _loot[lootbox];
     }
 
-    function delLoot(address lootbox, uint256 index)
+    function delLoot(uint256 lootbox, uint256 index)
         external
-        view
-        returns (bool)
+        override
+        onlyController
+        returns (ILootbox.Loot memory lootboxData)
     {
         require(
             index >= 0 && index < _loot[lootbox].length,
             "Index out of bounds"
         );
-        uint356 lastEl = _loot[lootbox].length - 1;
+        uint256 lastEl = _loot[lootbox].length - 1;
+        lootboxData = _loot[lootbox][index];
         if (lastEl > index) {
             _loot[lootbox][index] = _loot[lootbox][lastEl];
         }

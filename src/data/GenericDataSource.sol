@@ -12,7 +12,7 @@ import "../access/Controllable.sol";
 /// changing the smart contract.
 contract GenericDatasource is IGenericDatasource, Controllable {
     mapping(string => string) internal stringData;
-    mapping(string => bytes32) internal bytesData;
+    mapping(string => bytes) internal bytesData;
     mapping(string => uint256) internal uintData;
     mapping(string => bool) internal boolData;
     mapping(string => address) internal addressData;
@@ -25,11 +25,12 @@ contract GenericDatasource is IGenericDatasource, Controllable {
     /// @dev set a string value
     /// @param key the key of the string value
     /// @return the value if the value was set, falsey otherwise
-    function getStr(string key)
+    function getStr(string memory key)
         external
+        view
         override
         onlyController
-        returns (string)
+        returns (string memory)
     {
         return stringData[key];
     }
@@ -37,14 +38,20 @@ contract GenericDatasource is IGenericDatasource, Controllable {
     /// @dev set a string value
     /// @param key the key of the string value
     /// @param value the value to set
-    /// @return string the old data the the new data replaced
-    function setStr(string memory key, string memory value) external override onlyController returns{string memory oldData} {
+    /// @return oldData string the old data the the new data replaced
+    function setStr(string memory key, string memory value)
+        external
+        override
+        onlyController
+        returns (string memory oldData)
+    {
         oldData = stringData[key];
         stringData[key] = value;
     }
 
-    function getInt(string key)
+    function getInt(string memory key)
         external
+        view
         override
         onlyController
         returns (uint256 _data)
@@ -52,7 +59,7 @@ contract GenericDatasource is IGenericDatasource, Controllable {
         _data = uintData[key];
     }
 
-    function setInt(string key, uint256 value)
+    function setInt(string memory key, uint256 value)
         external
         override
         onlyController
@@ -60,8 +67,9 @@ contract GenericDatasource is IGenericDatasource, Controllable {
         uintData[key] = value;
     }
 
-    function getBool(string key)
+    function getBool(string memory key)
         external
+        view
         override
         onlyController
         returns (bool _data)
@@ -69,20 +77,25 @@ contract GenericDatasource is IGenericDatasource, Controllable {
         _data = boolData[key];
     }
 
-    function setBool(string key, bool bval) external override onlyController {
-        boolData[key] = bval;
-    }
-
-    function getBytes(string key)
+    function setBool(string memory key, bool bval)
         external
         override
         onlyController
-        returns (bytes)
+    {
+        boolData[key] = bval;
+    }
+
+    function getBytes(string memory key)
+        external
+        view
+        override
+        onlyController
+        returns (bytes memory)
     {
         return bytesData[key];
     }
 
-    function setBytes(string key, bytes value)
+    function setBytes(string memory key, bytes memory value)
         external
         override
         onlyController
@@ -90,8 +103,9 @@ contract GenericDatasource is IGenericDatasource, Controllable {
         bytesData[key] = value;
     }
 
-    function getAddr(string key)
+    function getAddr(string memory key)
         external
+        view
         override
         onlyController
         returns (address)
@@ -99,7 +113,7 @@ contract GenericDatasource is IGenericDatasource, Controllable {
         return addressData[key];
     }
 
-    function setAddr(string key, address value)
+    function setAddr(string memory key, address value)
         external
         override
         onlyController

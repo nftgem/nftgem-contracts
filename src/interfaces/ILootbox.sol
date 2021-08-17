@@ -15,57 +15,71 @@ pragma solidity >=0.8.0;
 interface ILootbox {
     // the lootbox itself
     struct Lootbox {
+        address owner;
+        address randomFarmer;
         address multitoken;
-        uint256 tokenHash;
+        uint256 lootboxHash; // identifier and lootbox token hash for the lootbox
         string symbol;
         string name;
         string description;
-        uint256 minLoot;
-        uint256 maxLoot;
+        uint8 minLootPerOpen;
+        uint8 maxLootPerOpen;
+        uint256 maxOpens;
+        uint256 openCount;
+        uint256 totalLootGenerated;
+        uint256 lootboxTokenSalePrice;
+        uint256 probabilitiesSum;
+        bool initialized;
     }
 
     // loot items
     struct Loot {
+        uint256 lootHash;
+        address owner;
+        address multitoken;
         string symbol;
         string name;
-        uint256 tokenHash;
         uint256 probability;
+        uint256 probabilityIndex;
+        uint256 probabilityRoll;
+        uint256 maxMint;
+        uint256 minted;
     }
 
-    event LootboxCreated(
-        address lootbox,
-        address creator,
-        uint256 lootHash,
-        string symbol,
-        string name,
-        Loot[] loot
-    );
-    event LootboxOpened(
-        address lootbox,
-        address opener,
-        string symbol,
-        string name,
-        Loot[] loot
-    );
+    event LootboxCreated(uint256 id, address contractAddress, Lootbox data);
+
+    event LootboxMigrated(uint256 id, address contractAddress, Lootbox data);
+
+    event LootboxOpened(address opener, Lootbox openedBox, Loot[] receivedLoot);
+
+    event LootAdded(uint256 lootboxHash, Loot addedLoot);
+
+    event LootUpdated(uint256 lootboxHash, Loot updatedLoot);
+
+    event LootRemoved(uint256 lootboxHash, Loot removedLoot);
+
     event LootboxLootAdded(
-        address lootbox,
+        uint256 lootbox,
         address adder,
         string symbol,
         string name,
         uint256 probability
     );
 
-    function openLootbox(uint256 lootHash) external returns (Loot[]);
+    function initialize(
+        address lootboxData,
+        ILootbox.Lootbox memory lootboxInit
+    ) external;
 
-    function allLoot() external view returns (Loot[]);
+    function openLootbox() external returns (Loot[] memory);
 
-    function addLoot(Loot _loot) external returns (uint256);
+    function allLoot() external view returns (Loot[] memory);
 
-    function setLoot(uint256 index, Loot _loot) external;
+    function addLoot(Loot memory _loot) external returns (uint256);
 
-    function getLoot(uint256 index) external returns (Loot);
+    function setLoot(uint256 index, Loot memory _loot) external;
 
-    function delLoot(uint256 index) external returns (Loot);
+    function getLoot(uint256 index) external view returns (Loot memory);
 
-    function eidthdrawFees(address receiver) external;
+    function delLoot(uint256 index) external returns (Loot memory);
 }
