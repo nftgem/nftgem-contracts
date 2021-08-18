@@ -77,11 +77,11 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
                 )
             );
             _lootbox.initialized = true;
-            _lootboxData.setLootbox(_lootbox.lootboxHash, _lootbox);
+            _lootboxData.addLootbox(_lootbox);
             emit LootboxCreated(_lootbox.lootboxHash, address(this), _lootbox);
         } else {
             // load the lootbox struct
-            _lootbox = _lootboxData.getLootbox(lootboxInit.lootboxHash);
+            _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
             require(
                 _lootbox.owner == msg.sender,
                 "Lootbox must be owned by the caller to uppgrade contract"

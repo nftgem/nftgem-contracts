@@ -4,15 +4,28 @@ pragma solidity >=0.8.0;
 import "./ILootbox.sol";
 
 interface ILootboxData {
-    function getLootbox(uint256 lootbox)
+    function addLootbox(ILootbox.Lootbox memory)
+        external
+        returns (uint256 lootbox);
+
+    function getLootboxBySymbol(uint256 lootbox)
         external
         view
         returns (ILootbox.Lootbox memory);
 
-    function setLootbox(uint256 lootbox, ILootbox.Lootbox memory lootboxData)
-        external;
+    function getLootboxByHash(uint256 lootbox)
+        external
+        view
+        returns (ILootbox.Lootbox memory);
 
-    function allLootboxes() external view returns (ILootbox.Lootbox[] memory);
+    function lootboxes() external view returns (ILootbox.Lootbox[] memory);
+
+    function allLootboxes(uint256 index)
+        external
+        view
+        returns (ILootbox.Lootbox memory);
+
+    function allLootboxesLength() external view returns (uint256);
 
     function getLoot(uint256 lootbox, uint256 index)
         external

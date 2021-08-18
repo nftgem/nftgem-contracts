@@ -12,19 +12,43 @@ import "../interfaces/INFTComplexGemPoolData.sol";
 import "../interfaces/ILootbox.sol";
 
 contract LootboxData is ILootboxData, GenericDatasource {
+    // all track lootboxes - as an array, by hash, and by symbol hash
     ILootbox.Lootbox[] private _allLootboxes;
-
     mapping(uint256 => ILootbox.Lootbox) private _lootboxes;
-    mapping(uint256 => ILootbox.Loot[]) private _loot;
+    mapping(uint256 => ILootbox.Lootbox) private _lootboxesBySymbol;
 
-    mapping(uint256 => ILootbox.Loot) private _lootHashes;
-    ILootbox.Loot[] private _mintedLoot;
+    // tracks loot for each lootbox
+    mapping(uint256 => ILootbox.Loot[]) private _loot;
 
     constructor() {
         _addController(msg.sender);
     }
 
-    function getLootbox(uint256 lootbox)
+    function addLootbox(ILootbox.Lootbox memory _lootbox)
+        external
+        override
+        returns (uint256 lootbox)
+    {
+        // TODO sanity checks here
+        _allLootboxes.push(_lootbox);
+        _lootboxes[_lootbox.lootboxHash] = _lootbox;
+        _lootboxesBySymbol[
+            uint256(keccak256(abi.encodePacked(_lootbox.symbol)))
+        ] = _lootbox;
+        return _allLootboxes.length - 1;
+    }
+
+    function getLootboxBySymbol(uint256 lootbox)
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Lootbox memory)
+    {
+        return _lootboxesBySymbol[lootbox];
+    }
+
+    function getLootboxByHash(uint256 lootbox)
         external
         view
         override
@@ -34,18 +58,7 @@ contract LootboxData is ILootboxData, GenericDatasource {
         return _lootboxes[lootbox];
     }
 
-    function setLootbox(uint256 lootbox, ILootbox.Lootbox memory lootboxData)
-        external
-        override
-        onlyController
-    {
-        if (_lootboxes[lootbox].owner == address(0)) {
-            _allLootboxes.push(lootboxData);
-        }
-        _lootboxes[lootbox] = lootboxData;
-    }
-
-    function allLootboxes()
+    function lootboxes()
         external
         view
         override
@@ -53,6 +66,26 @@ contract LootboxData is ILootboxData, GenericDatasource {
         returns (ILootbox.Lootbox[] memory)
     {
         return _allLootboxes;
+    }
+
+    function allLootboxes(uint256 index)
+        external
+        view
+        override
+        onlyController
+        returns (ILootbox.Lootbox memory)
+    {
+        return _allLootboxes[index];
+    }
+
+    function allLootboxesLength()
+        external
+        view
+        override
+        onlyController
+        returns (uint256)
+    {
+        return _allLootboxes.length;
     }
 
     function getLoot(uint256 lootbox, uint256 index)

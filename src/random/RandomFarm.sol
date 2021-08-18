@@ -19,6 +19,10 @@ contract RandomFarm is IRandomFarm, Initializable {
         randomSeed = seed;
     }
 
+    function isInitialized() external view returns (bool) {
+        return randomSeed != 0;
+    }
+
     function addRandomness(uint256 randomness) external override {
         randomSeed = uint256(
             keccak256(abi.encodePacked(randomSeed, randomness))

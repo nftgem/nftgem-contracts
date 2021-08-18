@@ -16,6 +16,7 @@ interface ILootbox {
     // the lootbox itself
     struct Lootbox {
         address owner;
+        address contractAddress;
         address randomFarmer;
         address multitoken;
         uint256 lootboxHash; // identifier and lootbox token hash for the lootbox

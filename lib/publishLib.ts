@@ -66,6 +66,10 @@ export default async function publish(
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
       await this.d('BulkGovernanceTokenMinter', deployParams);
+      await this.d('LootboxData', deployParams);
+      await this.d('LootboxFactory', deployParams);
+      await this.d('RandomFarm', deployParams);
+      await this.d('RandomFarmer', deployParams);
 
       let SwapHelper = undefined;
       if (parseInt(networkId) === 1) {
@@ -115,32 +119,50 @@ export default async function publish(
       // get all deployed contracts
       const dc = await this.getDeployedContracts();
 
+      const lbInited = await dc.LootboxFactory.isInitialized();
+      if (!lbInited) {
+        console.log('initializing lootbox factory');
+        let ttx = await dc.LootboxData.addController(dc.LootboxFactory.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        ttx = await dc.LootboxFactory.initialize(dc.LootboxData.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      }
+      const rfInited = await dc.RandomFarm.isInitialized();
+      if (!rfInited) {
+        console.log('initializing random farm');
+        let ttx = await dc.RandomFarm.initialize(dc.RandomFarmer.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        ttx = await dc.RandomFarmer.setFarm(dc.RandomFarm.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      }
+
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
-
-      let foundRegistry = false;
-      const apl = await dc.NFTGemMultiToken.allProxyRegistriesLength();
-      if (!apl.eq(0)) {
-        for (let j = 0; j < apl.toNumber(); j++) {
-          const proxyRegistry = await dc.NFTGemMultiToken.allProxyRegistries(j);
-          if (!BigNumber.from(proxyRegistry).eq(0) && BigNumber.from(proxyRegistry).eq(dc.SwapMeet.address)) {
-            foundRegistry = true;
-            break;
+      if (!inited) {
+        console.log('initializing governor');
+        let foundRegistry = false;
+        const apl = await dc.NFTGemMultiToken.allProxyRegistriesLength();
+        if (!apl.eq(0)) {
+          for (let j = 0; j < apl.toNumber(); j++) {
+            const proxyRegistry = await dc.NFTGemMultiToken.allProxyRegistries(j);
+            if (!BigNumber.from(proxyRegistry).eq(0) && BigNumber.from(proxyRegistry).eq(dc.SwapMeet.address)) {
+              foundRegistry = true;
+              break;
+            }
           }
         }
-      }
-      if (!foundRegistry && !BigNumber.from(dc.SwapMeet.address).eq(0)) {
-        // add swap meet as a proxy registry for the multitoken
-        console.log('adding SwapMeet as multitoken proxy registry...');
-        try {
-          const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
-            dc.SwapMeet.address
-          );
-          await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
-        } catch (e) {/**/ }
-      }
+        if (!foundRegistry && !BigNumber.from(dc.SwapMeet.address).eq(0)) {
+          // add swap meet as a proxy registry for the multitoken
+          console.log('adding SwapMeet as multitoken proxy registry...');
+          try {
+            const ttx = await dc.NFTGemMultiToken.addProxyRegistry(
+              dc.SwapMeet.address
+            );
+            await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+          } catch (e) {/**/ }
+        }
 
-      if (!inited) {
+
         console.log('initializing nftgem governor...');
 
         // initialize governor - link it with the other contracts it works with
@@ -291,6 +313,34 @@ export default async function publish(
           'SwapMeet',
           (
             await this.get('SwapMeet')
+          ).address,
+          sender
+        ),
+        LootboxData: await this.getContractAt(
+          'LootboxData',
+          (
+            await this.get('LootboxData')
+          ).address,
+          sender
+        ),
+        LootboxFactory: await this.getContractAt(
+          'LootboxFactory',
+          (
+            await this.get('LootboxFactory')
+          ).address,
+          sender
+        ),
+        RandomFarm: await this.getContractAt(
+          'RandomFarm',
+          (
+            await this.get('RandomFarm')
+          ).address,
+          sender
+        ),
+        RandomFarmer: await this.getContractAt(
+          'RandomFarmer',
+          (
+            await this.get('RandomFarmer')
           ).address,
           sender
         ),
