@@ -22,6 +22,7 @@ export const setupNftGemGovernor = deployments.createFixture(
       ProposalFactory,
       NFTGemFeeManager,
       ERC20GemTokenFactory,
+      SwapMeet
     } = deployedContracts;
     return {
       NFTGemGovernor,
@@ -32,6 +33,7 @@ export const setupNftGemGovernor = deployments.createFixture(
       ProposalFactory,
       NFTGemFeeManager,
       ERC20GemTokenFactory,
+      SwapMeet,
       owner,
       sender,
     };
