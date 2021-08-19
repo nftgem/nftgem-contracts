@@ -78,7 +78,12 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
             );
             _lootbox.initialized = true;
             _lootboxData.addLootbox(_lootbox);
-            emit LootboxCreated(_lootbox.lootboxHash, address(this), _lootbox);
+            emit LootboxCreated(
+                msg.sender,
+                _lootbox.lootboxHash,
+                address(this),
+                _lootbox
+            );
         } else {
             // load the lootbox struct
             _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
@@ -86,7 +91,13 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
                 _lootbox.owner == msg.sender,
                 "Lootbox must be owned by the caller to uppgrade contract"
             );
-            emit LootboxMigrated(_lootbox.lootboxHash, address(this), _lootbox);
+            emit LootboxMigrated(
+                msg.sender,
+                _lootbox.lootboxHash,
+                _lootbox.contractAddress,
+                address(this),
+                _lootbox
+            );
         }
     }
 
@@ -155,7 +166,61 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         }
 
         /// generate an event reporting on the loot that was found
-        emit LootboxOpened(msg.sender, _lootbox, _lootOut);
+        emit LootboxOpened(
+            msg.sender,
+            _lootbox.lootboxHash,
+            _lootbox,
+            _lootOut
+        );
+    }
+
+    function mintLootboxTokens(uint256 amount)
+        external
+        override
+        initialized
+        onlyController
+    {
+        // mint the loot item to the owner
+        INFTGemMultiToken(_lootbox.multitoken).mint(
+            msg.sender,
+            _lootbox.lootboxHash,
+            amount
+        );
+
+        // generate an event reporting on the loot that was found
+        emit LootboxTokensMinted(
+            msg.sender,
+            _lootbox.lootboxHash,
+            _lootbox,
+            amount
+        );
+    }
+
+    function mintLoot(uint8 index, uint256 amount)
+        external
+        override
+        initialized
+        onlyController
+        returns (Loot memory)
+    {
+        // require a valid loot index
+        Loot[] memory _allLoot = _lootboxData.allLoot(_lootbox.lootboxHash);
+        require(index < _allLoot.length, "Loot index out of bounds");
+        // mint the loot item to the minter
+        INFTGemMultiToken(_lootbox.multitoken).mint(
+            msg.sender,
+            _allLoot[index].lootHash,
+            amount
+        );
+        // emit a message about it
+        emit LootMinted(
+            msg.sender,
+            _lootbox.lootboxHash,
+            _lootbox,
+            _allLoot[index]
+        );
+        // return the loot item we minted
+        return _allLoot[index];
     }
 
     function _generateLoot(uint256 dice)
@@ -197,10 +262,12 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         onlyController
         returns (uint256)
     {
+        // basic sanity checks
         require(bytes(_loot.symbol).length > 0, "Symbol must be set");
         require(bytes(_loot.name).length > 0, "name must be set");
         require(_loot.probability > 0, "probability must be set");
 
+        // populate field values the loot must have
         _loot.multitoken = _lootbox.multitoken;
         _loot.probabilityIndex = _lootbox.probabilitiesSum;
         _lootbox.probabilitiesSum += _loot.probability;
@@ -208,33 +275,11 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
             keccak256(abi.encodePacked(_lootbox.lootboxHash, _loot.symbol))
         );
 
-        emit LootAdded(_lootbox.lootboxHash, _loot);
-        return _lootboxData.addLoot(_lootbox.lootboxHash, _loot);
-    }
+        // emit a message about it
+        emit LootAdded(msg.sender, _lootbox.lootboxHash, _lootbox, _loot);
 
-    function setLoot(uint256 index, Loot memory _loot)
-        external
-        override
-        initialized
-        onlyController
-    {
-        // make sure the incoming hash matches a computed hash
-        require(
-            uint256(
-                keccak256(abi.encodePacked(_lootbox.lootboxHash, _loot.symbol))
-            ) == _loot.lootHash,
-            "Loot hash must match"
-        );
-        // check to see if proability has changed
-        Loot memory loot = _lootboxData.getLoot(_lootbox.lootboxHash, index);
-        bool probabilityChanged = loot.probability != _loot.probability;
-        //set loot data
-        _lootboxData.setLoot(_lootbox.lootboxHash, index, _loot);
-        // recalc the probability sum if changed
-        if (probabilityChanged == true) {
-            _recalculateProbabilities();
-        }
-        emit LootUpdated(_lootbox.lootboxHash, _loot);
+        // return the added loot item index
+        return _lootboxData.addLoot(_lootbox.lootboxHash, _loot);
     }
 
     function _recalculateProbabilities() internal {

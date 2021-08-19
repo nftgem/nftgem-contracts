@@ -12,6 +12,7 @@ pragma solidity >=0.8.0;
 /// Users open the lootbox by providing the right gem to the lootbox contract, and then
 /// the lootbox contract mints the right number of tokens for the user. This contract uses
 /// a pseudo-random deterministic sieve to determine the number and type of tokens minted
+
 interface ILootbox {
     // the lootbox itself
     struct Lootbox {
@@ -25,6 +26,7 @@ interface ILootbox {
         string description;
         uint8 minLootPerOpen;
         uint8 maxLootPerOpen;
+        uint256 openPrice;
         uint256 maxOpens;
         uint256 openCount;
         uint256 totalLootGenerated;
@@ -47,24 +49,47 @@ interface ILootbox {
         uint256 minted;
     }
 
-    event LootboxCreated(uint256 id, address contractAddress, Lootbox data);
+    event LootboxCreated(
+        address indexed creator,
+        uint256 indexed hash,
+        address indexed contractAddress,
+        Lootbox data
+    );
 
-    event LootboxMigrated(uint256 id, address contractAddress, Lootbox data);
+    event LootboxMigrated(
+        address indexed migrator,
+        uint256 indexed hash,
+        address indexed oldContractAddress,
+        address newContractAddress,
+        Lootbox data
+    );
 
-    event LootboxOpened(address opener, Lootbox openedBox, Loot[] receivedLoot);
+    event LootboxOpened(
+        address indexed opener,
+        uint256 indexed hash,
+        Lootbox openedLootbox,
+        Loot[] receivedLoot
+    );
 
-    event LootAdded(uint256 lootboxHash, Loot addedLoot);
+    event LootAdded(
+        address indexed adder,
+        uint256 indexed hash,
+        Lootbox addedLootbox,
+        Loot addedLoot
+    );
 
-    event LootUpdated(uint256 lootboxHash, Loot updatedLoot);
+    event LootboxTokensMinted(
+        address indexed minter,
+        uint256 indexed hash,
+        Lootbox mintedLootbox,
+        uint256 mintedAmount
+    );
 
-    event LootRemoved(uint256 lootboxHash, Loot removedLoot);
-
-    event LootboxLootAdded(
-        uint256 lootbox,
-        address adder,
-        string symbol,
-        string name,
-        uint256 probability
+    event LootMinted(
+        address indexed minter,
+        uint256 indexed hash,
+        Lootbox mintedLootbox,
+        Loot mintedLoot
     );
 
     function initialize(
@@ -72,13 +97,17 @@ interface ILootbox {
         ILootbox.Lootbox memory lootboxInit
     ) external;
 
+    function mintLootboxTokens(uint256 amount) external;
+
+    function mintLoot(uint8 index, uint256 amount)
+        external
+        returns (Loot memory);
+
     function openLootbox() external returns (Loot[] memory);
 
     function allLoot() external view returns (Loot[] memory);
 
     function addLoot(Loot memory _loot) external returns (uint256);
-
-    function setLoot(uint256 index, Loot memory _loot) external;
 
     function getLoot(uint256 index) external view returns (Loot memory);
 

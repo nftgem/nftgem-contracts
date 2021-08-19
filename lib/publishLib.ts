@@ -130,7 +130,7 @@ export default async function publish(
       const rfInited = await dc.RandomFarm.isInitialized();
       if (!rfInited) {
         console.log('initializing random farm');
-        let ttx = await dc.RandomFarm.initialize(dc.RandomFarmer.address);
+        let ttx = await dc.RandomFarm.initialize(dc.LootboxData.address);
         await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
         ttx = await dc.RandomFarmer.setFarm(dc.RandomFarm.address);
         await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
