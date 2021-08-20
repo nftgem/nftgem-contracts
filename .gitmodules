@@ -8,3 +8,12 @@ url = git@github.com:nftgem/nftgem-ui.git
 [submodule "bitgem-ui"]
 	path = bitgem-ui
 	url = git@github.com:nftgem/bitgem-ui.git
+[submodule "subgraphs/bitgem-subgraph"]
+	path = subgraphs/bitgem-subgraph
+	url = git@github.com:nftgem/bitgem-subgraph
+[submodule "subgraphs/swapmeet-subgraph"]
+	path = subgraphs/swapmeet-subgraph
+	url = git@github.com:nftgem/swapmeet-subgraph
+[submodule "subgraphs/lootbox-subgraph"]
+	path = subgraphs/lootbox-subgraph
+	url = git@github.com:nftgem/lootbox-subgraph
