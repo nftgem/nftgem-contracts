@@ -30,7 +30,7 @@ import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
 import { formatEther, parseEther } from '@ethersproject/units';
 
-import * as NiftyPixABI from './build/NiftyPixContract.json';
+import * as NFTGemPool from './nftgem-ui/abis-legacy/NFTGemPool.json';
 
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
@@ -112,6 +112,26 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     for (let i = 0; i < poolContracts.length; i++) {
       const symbol = await poolContracts[i].symbol();
       console.log(symbol, poolContracts[i].address);
+    }
+  }
+);
+
+task('list-gem-pools-for', 'Lists all current gem pools')
+.addParam('address', 'The gem pool address')
+.setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+    // get the gem pool factory
+    const gemPoolFactory = await hre.ethers.getContractAt(
+      NFTGemPool,
+      address
+    );
+    // get all gem pool addresses
+    const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
+
+    // iterate through all contracts
+    // and output symbol and address
+    for (let i = 0; i < gemPools.toNumber(); i++) {
+      let gemPool = await gemPoolFactory.allNFTGemPools(i);
+      console.log(gemPool);
     }
   }
 );

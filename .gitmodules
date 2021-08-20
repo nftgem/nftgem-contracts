@@ -17,3 +17,15 @@ url = git@github.com:nftgem/nftgem-ui.git
 [submodule "subgraphs/lootbox-subgraph"]
 	path = subgraphs/lootbox-subgraph
 	url = git@github.com:nftgem/lootbox-subgraph
+[submodule "subgraphs/--name"]
+	path = subgraphs/sub
+	url = git@github.com:nftgem/bitgemv0-subgraph
+[submodule "subgraphs/v1-subgraph"]
+	path = subgraphs/v1-subgraph
+	url = git@github.com:nftgem/bitgemv1-subgraph
+[submodule "subgraphs/v0-subgraph"]
+	path = subgraphs/v0-subgraph
+	url = git@github.com:nftgem/bitgemv0-subgraph
+[submodule "subgraphs/bitlootboxv1-subgraph"]
+	path = subgraphs/bitlootboxv1-subgraph
+	url = git@github.com:nftgem/bitlootboxv1-subgraph
