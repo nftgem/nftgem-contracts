@@ -70,9 +70,7 @@ describe('NFTGemMultiToken contract', function () {
         (await NFTGemMultiToken.allProxyRegistriesLength()).toNumber()
       ).to.equal(1);
       await NFTGemMultiToken.removeProxyRegistryAt(0);
-      expect(await NFTGemMultiToken.allProxyRegistries(0)).to.equal(
-        ZERO_ADDRESS
-      );
+      expect(await NFTGemMultiToken.allProxyRegistriesLength()).to.equal(0);
     });
 
     it('Should not remove proxy registry', async function () {
@@ -115,12 +113,8 @@ describe('NFTGemMultiToken contract', function () {
     expect(
       (await NFTGemMultiToken.balanceOf(receiver.address, tokenHash)).toNumber()
     ).to.equal(0);
-
-    expect(
-      (await NFTGemMultiToken.allHeldTokens(receiver.address, 0)).toNumber()
-    ).to.equal(0);
-    expect(await NFTGemMultiToken.allTokenHolders(tokenHash, 0)).to.equal(
-      ZERO_ADDRESS
+    expect(await NFTGemMultiToken.allTokenHoldersLength(tokenHash)).to.equal(
+      0
     );
   });
 
