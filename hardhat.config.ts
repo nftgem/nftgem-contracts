@@ -30,7 +30,7 @@ import publish from './lib/publishLib';
 import migrator from './lib/migrateLib';
 import { formatEther, parseEther } from '@ethersproject/units';
 
-import * as NiftyPixABI from './build/NiftyPixContract.json';
+import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
 
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
@@ -97,22 +97,50 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
         await hre.deployments.get('NFTGemPoolFactory')
       ).address
     );
+
     // get all gem pool addresses
-    const gemPools = await gemPoolFactory.nftGemPools();
-
-    // get all gempool contracts
-    const poolContracts: any = await Promise.all(
-      gemPools.map(async (gp: string) =>
-        hre.ethers.getContractAt('NFTComplexGemPoolData', gp)
-      )
-    );
-
+    const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
     // iterate through all contracts
     // and output symbol and address
-    for (let i = 0; i < poolContracts.length; i++) {
-      const symbol = await poolContracts[i].symbol();
-      console.log(symbol, poolContracts[i].address);
+    const out:any = [];
+    for (let i = 0; i < gemPools.toNumber(); i++) {
+      let gemPool = await gemPoolFactory.allNFTGemPools(i);
+      const gemPoolO = await hre.ethers.getContractAt(
+        'NFTComplexGemPool',
+        gemPool
+      );
+      const sym = await gemPoolO.symbol();
+      out.push([sym, gemPool]);
     }
+    console.log(JSON.stringify(out, null, 4));
+  }
+);
+
+task('list-gem-pools-for', 'Lists all current gem pools')
+.addParam('address', 'The gem pool address')
+.setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+    // get the gem pool factory
+    const gemPoolFactory = await hre.ethers.getContractAt(
+      'NFTGemPoolFactory',
+      address
+    );
+
+    // get all gem pool addresses
+    const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
+    const abi2 = require('./nftgem-ui/abis-legacy/INFTGemPoolData.json')
+    // iterate through all contracts
+    // and output symbol and address
+    const out:any = [];
+    for (let i = 0; i < gemPools.toNumber(); i++) {
+      let gemPool = await gemPoolFactory.allNFTGemPools(i);
+      const gemPoolO = await hre.ethers.getContractAt(
+        'NFTComplexGemPool',
+        gemPool
+      );
+      const sym = await gemPoolO.symbol();
+      out.push([sym, gemPool]);
+    }
+    console.log(JSON.stringify(out, null, 4));
   }
 );
 

@@ -1,7 +1,7 @@
 import {expect} from './chai-setup';
 import {ethers} from 'hardhat';
 import {pack, keccak256} from '@ethersproject/solidity';
-import {createNFTGemPool} from './fixtures/NFTGemPool.fixture';
+import {flashLoanSetup} from './fixtures/NFTGemPool.fixture';
 
 describe('Flash Loan Test Suite', () => {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -24,7 +24,7 @@ describe('Flash Loan Test Suite', () => {
   };
   describe('Flash Loan', () => {
     it('Should success flashloan', async () => {
-      const {NFTComplexGemPool, ERC20WrappedGem} = await createNFTGemPool(data);
+      const {NFTComplexGemPool, ERC20WrappedGem} = await flashLoanSetup(data);
       const receiver = await (
         await ethers.getContractFactory('ERC3156FlashBorrowerMock')
       ).deploy(true, true);
@@ -51,7 +51,7 @@ describe('Flash Loan Test Suite', () => {
         .withArgs(receiver.address, NFTComplexGemPool.address, 1000);
     });
     it('Should revert flashloan if invalid success callback', async () => {
-      const {NFTComplexGemPool, ERC20WrappedGem} = await createNFTGemPool(data);
+      const {NFTComplexGemPool, ERC20WrappedGem} = await flashLoanSetup(data);
       const receiver = await (
         await ethers.getContractFactory('ERC3156FlashBorrowerMock')
       ).deploy(false, true);
@@ -65,7 +65,7 @@ describe('Flash Loan Test Suite', () => {
       ).to.be.revertedWith('FlashMinter: Callback failed');
     });
     it('Should revert flashloan if approval is missing', async () => {
-      const {NFTComplexGemPool, ERC20WrappedGem} = await createNFTGemPool(data);
+      const {NFTComplexGemPool, ERC20WrappedGem} = await flashLoanSetup(data);
       const receiver = await (
         await ethers.getContractFactory('ERC3156FlashBorrowerMock')
       ).deploy(true, false);
@@ -80,14 +80,14 @@ describe('Flash Loan Test Suite', () => {
     });
   });
   it('should get maxFlashLoan amount', async () => {
-    const {NFTComplexGemPool, ERC20WrappedGem} = await createNFTGemPool(data);
+    const {NFTComplexGemPool, ERC20WrappedGem} = await flashLoanSetup(data);
     expect(
       (await NFTComplexGemPool.maxFlashLoan(ERC20WrappedGem.address)).toNumber()
     ).to.be.equal(1000000 - 1000000 / 10);
   });
   it('should get correct flashFee', async () => {
     const {NFTComplexGemPool, NFTGemFeeManager, ERC20WrappedGem} =
-      await createNFTGemPool(data);
+      await flashLoanSetup(data);
     const feeHash = keccak256(['bytes'], [pack(['string'], ['flash_loan'])]);
     const fd = (await NFTGemFeeManager.fee(feeHash)).toNumber();
     const amount = 10000;
