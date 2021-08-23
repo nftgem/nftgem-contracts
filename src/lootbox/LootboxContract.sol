@@ -31,6 +31,7 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         _addController(msg.sender);
     }
 
+    /// @dev contract must be initilized for modified method to be called
     modifier initialized() {
         require(
             _lootbox.lootboxHash != 0 && _lootbox.initialized == true,
@@ -212,6 +213,18 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
             _allLoot[index].lootHash,
             amount
         );
+        // forced to use GOVERNANCE here as a token type because
+        // someone decided to 'clean up' what they didn't understand.
+        // there was a very good reason for this, that being that an
+        // int type rather than an enum allows us to easily add new
+        // token types. Noe I have to figure out how to handle this
+        // in some other way. Thanks, Justin
+        INFTGemMultiToken(_lootbox.multitoken).setTokenData(
+            _allLoot[index].lootHash,
+            INFTGemMultiToken.TokenType.GOVERNANCE,
+            address(this)
+        );
+
         // emit a message about it
         emit LootMinted(
             msg.sender,
@@ -228,18 +241,24 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         view
         returns (uint8 winnerIndex, uint256 winnerRoll)
     {
+        // validate the dice roll is in the proper range
         require(
             dice < _lootbox.probabilitiesSum,
             "Dice roll must be less than total probability"
         );
         uint256 floor = 0;
+        // get all the loot there is to award
         Loot[] memory _loot = _lootboxData.allLoot(_lootbox.lootboxHash);
+        // iterate through the loot items
         for (uint256 i = 0; i < _loot.length; i++) {
+            // if the dice roll is between the floor and the probability index
+            // then this is the item we will award
             if (floor <= dice && dice < _loot[i].probabilityIndex) {
                 winnerIndex = uint8(i);
                 winnerRoll = dice;
                 break;
             }
+            // increment the floor to the next probability index
             floor = _loot[i].probabilityIndex;
         }
         return (winnerIndex, winnerRoll);
@@ -269,7 +288,7 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
 
         // populate field values the loot must have
         _loot.multitoken = _lootbox.multitoken;
-        _loot.probabilityIndex = _lootbox.probabilitiesSum;
+        _loot.probabilityIndex = _lootbox.probabilitiesSum + _loot.probability;
         _lootbox.probabilitiesSum += _loot.probability;
         _loot.lootHash = uint256(
             keccak256(abi.encodePacked(_lootbox.lootboxHash, _loot.symbol))
@@ -283,10 +302,13 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
     }
 
     function _recalculateProbabilities() internal {
+        // get all the loot there is to award
         Loot[] memory _allLoot = _lootboxData.allLoot(_lootbox.lootboxHash);
         uint256 floor = 0;
+        // iterate through the loot items
         for (uint256 i = 0; i < _allLoot.length; i++) {
-            _allLoot[i].probabilityIndex = floor;
+            // set the probability index to the floor
+            _allLoot[i].probabilityIndex = floor + _allLoot[i].probability;
             floor += _allLoot[i].probability;
             _lootboxData.setLoot(_lootbox.lootboxHash, i, _allLoot[i]);
         }
@@ -300,17 +322,6 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         returns (Loot memory)
     {
         return _lootboxData.getLoot(_lootbox.lootboxHash, index);
-    }
-
-    function delLoot(uint256 index)
-        external
-        override
-        initialized
-        onlyController
-        returns (Loot memory _deldLoot)
-    {
-        _deldLoot = _lootboxData.delLoot(_lootbox.lootboxHash, index);
-        _recalculateProbabilities();
     }
 
     function withdrawFees(address receiver)

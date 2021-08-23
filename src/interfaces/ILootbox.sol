@@ -110,6 +110,4 @@ interface ILootbox {
     function addLoot(Loot memory _loot) external returns (uint256);
 
     function getLoot(uint256 index) external view returns (Loot memory);
-
-    function delLoot(uint256 index) external returns (Loot memory);
 }
