@@ -114,7 +114,7 @@ export default async function publish(
 
       // deploy the swap meet contract
       deployParams.args = [multitokenDeploy.address, feeManagerDeploy.address];
-      //await this.d('SwapMeet', deployParams);
+      await this.d('SwapMeet', deployParams);
 
       // get all deployed contracts
       const dc = await this.getDeployedContracts();

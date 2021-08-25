@@ -27,6 +27,7 @@ import { BigNumber } from 'ethers';
 import { pack, keccak256 } from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
+import lootbox, { Lootbox, Loot } from './lib/lootboxLib';
 import migrator from './lib/migrateLib';
 import { formatEther, parseEther } from '@ethersproject/units';
 
@@ -102,9 +103,9 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
     // iterate through all contracts
     // and output symbol and address
-    const out:any = [];
+    const out: any = [];
     for (let i = 0; i < gemPools.toNumber(); i++) {
-      let gemPool = await gemPoolFactory.allNFTGemPools(i);
+      const gemPool = await gemPoolFactory.allNFTGemPools(i);
       const gemPoolO = await hre.ethers.getContractAt(
         'NFTComplexGemPool',
         gemPool
@@ -116,33 +117,33 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
   }
 );
 
-task('list-gem-pools-for', 'Lists all current gem pools')
-.addParam('address', 'The gem pool address')
-.setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
-    // get the gem pool factory
-    const gemPoolFactory = await hre.ethers.getContractAt(
-      'NFTGemPoolFactory',
-      address
-    );
+// task('list-gem-pools-for', 'Lists all current gem pools')
+//   .addParam('address', 'The gem pool address')
+//   .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+//     // get the gem pool factory
+//     const gemPoolFactory = await hre.ethers.getContractAt(
+//       'NFTGemPoolFactory',
+//       address
+//     );
 
-    // get all gem pool addresses
-    const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
-    const abi2 = require('./nftgem-ui/abis-legacy/INFTGemPoolData.json')
-    // iterate through all contracts
-    // and output symbol and address
-    const out:any = [];
-    for (let i = 0; i < gemPools.toNumber(); i++) {
-      let gemPool = await gemPoolFactory.allNFTGemPools(i);
-      const gemPoolO = await hre.ethers.getContractAt(
-        'NFTComplexGemPool',
-        gemPool
-      );
-      const sym = await gemPoolO.symbol();
-      out.push([sym, gemPool]);
-    }
-    console.log(JSON.stringify(out, null, 4));
-  }
-);
+//     // get all gem pool addresses
+//     const gemPools = await gemPoolFactory.allNFTGemPoolsLength();
+//     const abi2 = require('./nftgem-ui/abis-legacy/INFTGemPoolData.json')
+//     // iterate through all contracts
+//     // and output symbol and address
+//     const out: any = [];
+//     for (let i = 0; i < gemPools.toNumber(); i++) {
+//       const gemPool = await gemPoolFactory.allNFTGemPools(i);
+//       const gemPoolO = await hre.ethers.getContractAt(
+//         'NFTComplexGemPool',
+//         gemPool
+//       );
+//       const sym = await gemPoolO.symbol();
+//       out.push([sym, gemPool]);
+//     }
+//     console.log(JSON.stringify(out, null, 4));
+//   }
+//   );
 
 task('pool-tokens', 'show pool tokens for given pool')
   .addParam('address', 'The pool address')
@@ -922,8 +923,80 @@ task(
       ],
     ]
   );
-
 });
+
+// export type Lootbox = {
+//   owner: string;
+//   contractAddress: string;
+//   contract: Contract;
+//   randomFarmer: string;
+//   multitoken: string;
+//   lootboxHash: BigNumber; // identifier and lootbox token hash for the lootbox
+//   symbol: string;
+//   name: string;
+//   description: string;
+//   minLootPerOpen: number;
+//   maxLootPerOpen: number;
+//   openPrice: BigNumber;
+//   maxOpens: BigNumber;
+//   openCount: BigNumber;
+//   totalLootGenerated: BigNumber;
+//   lootboxTokenSalePrice: BigNumber;
+//   probabilitiesSum: BigNumber;
+//   initialized: boolean;
+//   loot?: Loot[];
+//   openedCount: BigNumber;
+//   lootIssuedCount: BigNumber;
+// };
+
+task(
+  'publish-test-lootbox',
+  'Publish Test Lootbox'
+).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+  // get all gempool contracts
+  const publisher = await lootbox(hre);
+  const deployedContracts = await publisher.getDeployedContracts();
+  const [sender] = await hre.ethers.getSigners();
+  const senderAddress = await sender.getAddress();
+  // create a test lootbox
+  const lootB = {
+    owner: senderAddress,
+    randomFarmer: deployedContracts.RandomFarmer.address,
+    multitoken: deployedContracts.NFTGemMultiToken.address,
+    lootboxHash: BigNumber.from(0),
+    symbol: 'TEST5',
+    name: 'Test Lootbox',
+    description: 'Test Lootbox',
+    minLootPerOpen: 1,
+    maxLootPerOpen: 1,
+    openPrice: hre.ethers.utils.parseEther('0.1'),
+    maxOpens: hre.ethers.utils.parseEther('1'),
+    openCount: hre.ethers.utils.parseEther('0'),
+    totalLootGenerated: hre.ethers.utils.parseEther('0'),
+    lootboxTokenSalePrice: hre.ethers.utils.parseEther('0.1'),
+    probabilitiesSum: hre.ethers.utils.parseEther('1'),
+    initialized: true,
+    openedCount: hre.ethers.utils.parseEther('0'),
+    lootIssuedCount: hre.ethers.utils.parseEther('0'),
+  };
+
+  const loot = [
+    BigNumber.from(0),
+    senderAddress as string,
+    deployedContracts.NFTGemMultiToken.address,
+    'SMBL3',
+    'Test Loot 1',
+    BigNumber.from(1),
+    BigNumber.from(1),
+    BigNumber.from(1),
+    BigNumber.from(1),
+    BigNumber.from(1)
+  ];
+  const result = await publisher.createLootbox(lootB);
+  const contract = await publisher.getLootboxContract(result);
+  await contract.addLoot(loot);
+});
+
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [

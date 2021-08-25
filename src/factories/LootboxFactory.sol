@@ -126,6 +126,7 @@ contract LootboxFactory is ILootboxFactory, Controllable, Initializable {
 
         // set the controller of the lootbox
         IControllable(Lootbox).addController(owner);
+        IControllable(address(_lootboxData)).addController(Lootbox);
 
         ILootbox(Lootbox).initialize(address(_lootboxData), _lootbox);
         _lootbox.contractAddress = address(Lootbox);
