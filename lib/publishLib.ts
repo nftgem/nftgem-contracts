@@ -31,7 +31,7 @@ export default async function publish(
 
       const [addressSet] = [await this.d('AddressSet', libDeployParams)];
 
-      const [strings, uint256Set, create2, wrappedTokenLib, complexPoolLib] = [
+      const [strings, uint256Set, create2, wrappedTokenLib, complexPoolLib, lootboxLib] = [
         await this.d('Strings', libDeployParams),
         await this.d('UInt256Set', libDeployParams),
         await this.d('Create2', libDeployParams),
@@ -43,6 +43,7 @@ export default async function publish(
             AddressSet: addressSet.address,
           },
         }),
+        await this.d('LootboxLib', libDeployParams)
       ];
 
       const deployParams: any = {
@@ -55,6 +56,7 @@ export default async function publish(
           Create2: create2.address,
           WrappedTokenLib: wrappedTokenLib.address,
           ComplexPoolLib: complexPoolLib.address,
+          LootboxLib: lootboxLib.address,
         },
       };
 

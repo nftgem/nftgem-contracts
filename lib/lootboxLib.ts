@@ -99,7 +99,7 @@ export default async function publish(
             await this.get('RandomFarmer')
           ).address,
           sender
-        ),
+        )
       };
       return this.deployedContracts;
     }
@@ -111,18 +111,23 @@ export default async function publish(
     }
 
     async getLootboxContract(addr: string) {
-      if (!this.lootboxFactory)
-        this.lootboxFactory = await this.ethers.getContractFactory(
-          'LootboxContract',
-          {
-            signer: sender,
+      this.lootboxFactory = await this.ethers.getContractFactory(
+        'LootboxContract',
+        {
+          signer: sender,
+          libraries: {
+            'LootboxLib': (
+              await this.get('LootboxLib')
+            ).address,
           }
-        );
+        }
+      );
       return await this.lootboxFactory.attach(addr);
     }
 
     async createLootbox(
-      lootbox: Lootbox
+      lootbox: Lootbox,
+      tokenSeller: any
     ): Promise<any> {
       const dc = await this.getDeployedContracts();
       let tx,
@@ -130,7 +135,7 @@ export default async function publish(
 
       // create the lootbox if it does not exist
       let lootboxAddr = await this.getLootboxAddress(lootbox.symbol);
-      if (this.BigNumber.from(lootboxAddr).eq(0)) {
+      if (this.BigNumber.from(lootboxAddr.contractAddress).eq(0)) {
         // create the gem pool
         const lootboxArray = [
           lootbox.owner,
@@ -158,20 +163,21 @@ export default async function publish(
         tx = await dc.LootboxFactory.createLootbox(
           lootbox.owner,
           lootboxArray,
+          tokenSeller,
           { gasLimit: 8000000 }
         );
       }
 
       // get the lootbox contract addres
-      if (this.BigNumber.from(lootboxAddr).eq(0)) {
+      if (this.BigNumber.from(lootboxAddr.contractAddress).eq(0)) {
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
         // set created flag
         created = true;
         // get the address
         lootboxAddr = await this.getLootboxAddress(lootbox.symbol);
-        console.log(`address: ${lootboxAddr}`);
+        console.log(`address: ${lootboxAddr.contractAddress}`);
       } else {
-        console.log(`Exists. address: ${lootboxAddr}`);
+        console.log(`Exists. address: ${lootboxAddr.contractAddress}`);
       }
 
       return lootboxAddr;

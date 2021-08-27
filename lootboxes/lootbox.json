@@ -1,0 +1,39 @@
+{
+  "owner": "0x0000000000000000000000000000000000000000",
+  "randomFarmer": "0x0000000000000000000000000000000000000000",
+  "multitoken": "0x0000000000000000000000000000000000000000",
+  "lootboxHash": 0,
+  "symbol": "BEST",
+  "name": "The Best Test Lootbox",
+  "description": "The best test lootbox ever is packed with goodies and prizes",
+  "minLootPerOpen": 3,
+  "maxLootPerOpen": 3,
+  "maxOpens": 0,
+  "lootboxTokenSalePrice": 0.1,
+  "loot": [
+    {
+      "symbol": "LBA",
+      "name": "Awesome Loot",
+      "probability": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "maxMint": 0
+    },{
+      "symbol": "GLD",
+      "name": "Gold Piece",
+      "probability": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "maxMint": 0
+    },{
+      "symbol": "CRTL",
+      "name": "Crystal Piece",
+      "probability": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "maxMint": 0
+    }
+  ],
+  "buyPrice": 0.1,
+  "buyPriceIncreaseRateType": 0,
+  "buyPriceIncreaseRate": 0,
+  "maxQuantity": 0,
+  "maxBuyAmount": 0,
+  "maxTotalBuyAmount": 0,
+  "saleStartTime": 0,
+  "saleEndTime": 0
+}

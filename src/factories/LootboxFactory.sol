@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 import "../lootbox/LootboxContract.sol";
 
+import "../interfaces/ITokenSeller.sol";
+
 import "../interfaces/ILootbox.sol";
 
 import "../interfaces/ILootboxData.sol";
@@ -53,9 +55,9 @@ contract LootboxFactory is ILootboxFactory, Controllable, Initializable {
         view
         override
         initialized
-        returns (address _lootbox)
+        returns (ILootbox.Lootbox memory _lootbox)
     {
-        _lootbox = _lootboxData.getLootboxBySymbol(_symbolHash).contractAddress;
+        _lootbox = _lootboxData.getLootboxByHash(_symbolHash);
     }
 
     /**
@@ -79,9 +81,9 @@ contract LootboxFactory is ILootboxFactory, Controllable, Initializable {
         view
         override
         initialized
-        returns (address _lootbox)
+        returns (ILootbox.Lootbox memory _lootbox)
     {
-        _lootbox = _lootboxData.allLootboxes(idx).contractAddress;
+        _lootbox = _lootboxData.allLootboxes(idx);
     }
 
     /**
@@ -100,17 +102,17 @@ contract LootboxFactory is ILootboxFactory, Controllable, Initializable {
     /**
      * @dev deploy a new lootbox using create2
      */
-    function createLootbox(address owner, ILootbox.Lootbox memory _lootbox)
+    function createLootbox(address owner, ILootbox.Lootbox memory _lootbox, ITokenSeller.TokenSellerInfo memory _tokenSellerInfo)
         external
         override
         initialized
-        returns (address payable Lootbox)
+        returns (ILootbox.Lootbox memory lootbox_)
     {
         // create the lookup hash for the given symbol
         // and check if it already exists
         bytes32 salt = keccak256(abi.encodePacked(_lootbox.symbol));
         require(
-            _lootboxData.getLootboxBySymbol(uint256(salt)).contractAddress ==
+            _lootboxData.getLootboxByHash(uint256(salt)).contractAddress ==
                 address(0),
             "Lootbox EXISTS"
         ); // single check is sufficient
@@ -121,18 +123,18 @@ contract LootboxFactory is ILootboxFactory, Controllable, Initializable {
         // address of a gem pool without interacting with the contract itself
         bytes memory bytecode = type(LootboxContract).creationCode;
 
+        // initialize lootbox object
+        lootbox_ = _lootbox;
+
         // use create2 to deploy the gem pool contract
-        Lootbox = payable(Create2.deploy(0, salt, bytecode));
+        lootbox_.contractAddress = payable(Create2.deploy(0, salt, bytecode));
 
         // set the controller of the lootbox
-        IControllable(Lootbox).addController(owner);
-        IControllable(address(_lootboxData)).addController(Lootbox);
+        IControllable(lootbox_.contractAddress).addController(owner);
+        IControllable(address(_lootboxData)).addController(lootbox_.contractAddress);
 
-        ILootbox(Lootbox).initialize(address(_lootboxData), _lootbox);
-        _lootbox.contractAddress = address(Lootbox);
-
-        // insert the erc20 contract address into lists
-        _lootboxData.addLootbox(_lootbox);
+        // initialize the lootbox data
+        ILootbox(lootbox_.contractAddress).initialize(address(_lootboxData), _tokenSellerInfo, _lootbox);
 
         // emit an event about the new pool being created
         emit LootboxCreated(

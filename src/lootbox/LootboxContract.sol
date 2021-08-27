@@ -10,6 +10,8 @@ import "../interfaces/ILootboxData.sol";
 import "../interfaces/IControllable.sol";
 import "../interfaces/INFTGemMultiToken.sol";
 import "../access/Controllable.sol";
+import "./TokenSeller.sol";
+import "./LootboxLib.sol";
 
 /// @dev A lootbox is a contract that works with an erc1155 to implement a game lootbox:
 /// a lootbox is a contract that accepts a single quantity of some erc1155 tokenhash and
@@ -18,12 +20,12 @@ import "../access/Controllable.sol";
 /// stored in the lootbox contract. A newly-created lootbox contract assigns controllership
 /// to its creator, who can them add other controllers, and can set the rules for the lootbox.
 /// Each lootbox is configured with some number of Loot items, each of which has deterministic
-/// tokenhash. These loot items each have names, symboles, and a probability of being minted.
+/// tokenhash. These loot items each have names, symbols, and a probability of being minted.
 /// Users open the lootbox by providing the right gem to the lootbox contract, and then
 /// the lootbox contract mints the right number of tokens for the user. This contract uses
 /// a pseudo-random deterministic sieve to determine the number and type of tokens minted
 
-contract LootboxContract is ILootbox, Controllable, Initializable {
+contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
     ILootboxData internal _lootboxData;
     ILootbox.Lootbox internal _lootbox;
 
@@ -32,7 +34,7 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
     }
 
     /// @dev contract must be initilized for modified method to be called
-    modifier initialized() {
+    modifier initialized() override {
         require(
             _lootbox.lootboxHash != 0 && _lootbox.initialized == true,
             "Lootbox is not initialized"
@@ -44,40 +46,22 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
     // lootbox struct or it can load and update an existing lootbox struct.
     function initialize(
         address lootboxData,
+        ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
         ILootbox.Lootbox memory lootboxInit
-    ) external override initializer {
+    )
+    external override initializer {
         require(
             IControllable(lootboxData).isController(address(this)) == true,
             "Lootbox data must be controlled by this lootbox"
         );
         _lootboxData = ILootboxData(lootboxData);
-        if (lootboxInit.lootboxHash == 0) {
-            require(
-                lootboxInit.multitoken != address(0),
-                "Multitoken address must be set"
-            );
-            require(bytes(lootboxInit.name).length != 0, "Name must be set");
-            require(
-                bytes(lootboxInit.symbol).length != 0,
-                "Symbol must be set"
-            );
-            require(lootboxInit.minLootPerOpen != 0, "Min loot must be set");
-            require(lootboxInit.maxLootPerOpen != 0, "Max loot must be set");
-            // TODO: additional validity checks would not hurt here
-            _lootbox = lootboxInit;
-            _lootbox.owner = msg.sender;
-            _lootbox.lootboxHash = uint256(
-                keccak256(
-                    abi.encodePacked(
-                        msg.sender,
-                        lootboxInit.multitoken,
-                        lootboxInit.symbol,
-                        lootboxInit.name,
-                        block.timestamp
-                    )
-                )
-            );
-            _lootbox.initialized = true;
+        bool isNew = lootboxInit.lootboxHash == 0;
+        _lootbox = LootboxLib.initialize(lootboxInit);
+        _lootbox.contractAddress = address(this);
+        tokenSellerInfo.tokenHash = _lootbox.lootboxHash;
+        _lootboxData.setTokenSeller(address(this), tokenSellerInfo);
+        this.initialize(lootboxData, tokenSellerInfo);
+        if(isNew) {
             _lootboxData.addLootbox(_lootbox);
             emit LootboxCreated(
                 msg.sender,
@@ -88,6 +72,8 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         } else {
             // load the lootbox struct
             _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
+            _lootbox.contractAddress = address(this);
+            _lootboxData.setLootbox(_lootbox);
             require(
                 _lootbox.owner == msg.sender,
                 "Lootbox must be owned by the caller to uppgrade contract"
@@ -108,71 +94,8 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         initialized
         returns (Loot[] memory _lootOut)
     {
-        // make sure that the caller has at least one lootbox token
-        require(
-            IERC1155(_lootbox.multitoken).balanceOf(
-                msg.sender,
-                _lootbox.lootboxHash
-            ) > 0,
-            "Insufficient lootbox token balance"
-        );
-
-        // no need to transfer the lootbox token anywhere, we can just burn it in place
-        INFTGemMultiToken(_lootbox.multitoken).burn(
-            msg.sender,
-            _lootbox.lootboxHash,
-            1
-        );
-
-        // first we need to determine the number of loot items to mint
-        // if min == max, then we mint that exact number of items. Otherwise,
-        // we use a random number between min and max to determine the number
-        // of loot items to mint
-        uint8 lootCount = _lootbox.minLootPerOpen;
-        if (_lootbox.minLootPerOpen != _lootbox.maxLootPerOpen) {
-            lootCount = uint8(
-                IRandomFarmer(_lootbox.randomFarmer).getRandomNumber(
-                    uint256(_lootbox.minLootPerOpen),
-                    uint256(_lootbox.maxLootPerOpen)
-                )
-            );
-        } else lootCount = _lootbox.minLootPerOpen;
-
-        // now that we know how much we need to mint, we can create the
-        // loot roll array that will hold our results and create some loot
-        _lootOut = new Loot[](lootCount);
-
-        // grab the array of loot items to disburse from
-        Loot[] memory _loot = _lootboxData.allLoot(_lootbox.lootboxHash);
-
-        // now we need some randomness to determine which loot items we win
-        // we use a pseudo-random deterministic sieve to determine the number
-        // and type of tokens minted
-        uint256[] memory _lootRoll = IRandomFarmer(_lootbox.randomFarmer)
-            .getRandomUints(lootCount);
-
-        // mint the loot items
-        for (uint256 i = 0; i < lootCount; i++) {
-            // generate a loot item given a random seed
-            (uint8 winIndex, uint256 winRoll) = _generateLoot(_lootRoll[i]);
-            // assign the loot item to the loot array
-            _lootOut[i] = _loot[winIndex];
-            _lootOut[i].probabilityRoll = winRoll;
-            // mint the loot item to the multitoken
-            INFTGemMultiToken(_lootbox.multitoken).mint(
-                msg.sender,
-                _lootOut[i].lootHash,
-                1
-            );
-        }
-
-        /// generate an event reporting on the loot that was found
-        emit LootboxOpened(
-            msg.sender,
-            _lootbox.lootboxHash,
-            _lootbox,
-            _lootOut
-        );
+        Loot[] memory _allLoot = _lootboxData.allLoot(_lootbox.lootboxHash);
+        return LootboxLib.openLootbox(_lootbox, _allLoot);
     }
 
     function mintLootboxTokens(uint256 amount)
@@ -204,64 +127,8 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         onlyController
         returns (Loot memory)
     {
-        // require a valid loot index
         Loot[] memory _allLoot = _lootboxData.allLoot(_lootbox.lootboxHash);
-        require(index < _allLoot.length, "Loot index out of bounds");
-        // mint the loot item to the minter
-        INFTGemMultiToken(_lootbox.multitoken).mint(
-            msg.sender,
-            _allLoot[index].lootHash,
-            amount
-        );
-        // forced to use GOVERNANCE here as a token type because
-        // someone decided to 'clean up' what they didn't understand.
-        // there was a very good reason for this, that being that an
-        // int type rather than an enum allows us to easily add new
-        // token types. Noe I have to figure out how to handle this
-        // in some other way. Thanks, Justin
-        INFTGemMultiToken(_lootbox.multitoken).setTokenData(
-            _allLoot[index].lootHash,
-            INFTGemMultiToken.TokenType.GOVERNANCE,
-            address(this)
-        );
-
-        // emit a message about it
-        emit LootMinted(
-            msg.sender,
-            _lootbox.lootboxHash,
-            _lootbox,
-            _allLoot[index]
-        );
-        // return the loot item we minted
-        return _allLoot[index];
-    }
-
-    function _generateLoot(uint256 dice)
-        internal
-        view
-        returns (uint8 winnerIndex, uint256 winnerRoll)
-    {
-        // validate the dice roll is in the proper range
-        require(
-            dice < _lootbox.probabilitiesSum,
-            "Dice roll must be less than total probability"
-        );
-        uint256 floor = 0;
-        // get all the loot there is to award
-        Loot[] memory _loot = _lootboxData.allLoot(_lootbox.lootboxHash);
-        // iterate through the loot items
-        for (uint256 i = 0; i < _loot.length; i++) {
-            // if the dice roll is between the floor and the probability index
-            // then this is the item we will award
-            if (floor <= dice && dice < _loot[i].probabilityIndex) {
-                winnerIndex = uint8(i);
-                winnerRoll = dice;
-                break;
-            }
-            // increment the floor to the next probability index
-            floor = _loot[i].probabilityIndex;
-        }
-        return (winnerIndex, winnerRoll);
+        return LootboxLib.mintLoot(_lootbox, _allLoot, index, amount);
     }
 
     function allLoot()
@@ -287,11 +154,13 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         require(_loot.probability > 0, "probability must be set");
 
         // populate field values the loot must have
+        _loot.owner = _lootbox.owner;
         _loot.multitoken = _lootbox.multitoken;
         _loot.probabilityIndex = _lootbox.probabilitiesSum + _loot.probability;
         _lootbox.probabilitiesSum += _loot.probability;
+        _lootboxData.setLootbox(_lootbox);
         _loot.lootHash = uint256(
-            keccak256(abi.encodePacked(_lootbox.lootboxHash, _loot.symbol))
+            keccak256(abi.encodePacked(_lootbox.symbol, _loot.symbol))
         );
 
         // emit a message about it
@@ -337,9 +206,9 @@ contract LootboxContract is ILootbox, Controllable, Initializable {
         return address(this).balance;
     }
 
-    function migrate(address migrateTo) external initialized onlyController {
+    function migrate_LootboxContract(address migrateTo) external initialized onlyController {
+        this.migrate_TokenSeller(migrateTo, false);
         IControllable(address(_lootboxData)).addController(migrateTo);
-        ILootbox(migrateTo).initialize(address(_lootboxData), _lootbox);
-        selfdestruct(payable(migrateTo));
+        ILootbox(migrateTo).initialize (address(_lootboxData), _tokenSeller, _lootbox);
     }
 }

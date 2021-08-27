@@ -1,11 +1,11 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
-import { task } from 'hardhat/config';
+import {task} from 'hardhat/config';
 
 import fs from 'fs';
 
 import 'dotenv/config';
-import { HardhatUserConfig } from 'hardhat/types';
+import {HardhatUserConfig} from 'hardhat/types';
 
 import 'hardhat-deploy';
 import 'hardhat-deploy-ethers';
@@ -22,25 +22,23 @@ import '@nomiclabs/hardhat-ganache';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 
-import { node_url, accounts } from './utils/network';
-import { BigNumber } from 'ethers';
-import { pack, keccak256 } from '@ethersproject/solidity';
+import {node_url, accounts} from './utils/network';
+import {BigNumber} from 'ethers';
+import {pack, keccak256} from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
-import lootbox, { Lootbox, Loot } from './lib/lootboxLib';
+import lootbox, {Lootbox, Loot} from './lib/lootboxLib';
 import migrator from './lib/migrateLib';
-import { formatEther, parseEther } from '@ethersproject/units';
+import {formatEther, parseEther} from '@ethersproject/units';
 
-import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
+//import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
 
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
     const bitgemFeeManager = await hre.ethers.getContractAt(
       'NFTGemFeeManager',
-      (
-        await hre.deployments.get('NFTGemFeeManager')
-      ).address
+      (await hre.deployments.get('NFTGemFeeManager')).address
     );
     const bg = await bitgemFeeManager.ethBalanceOf();
     console.log(
@@ -52,13 +50,11 @@ task('check-fees', 'Check the fee manager balance').setAction(
 
 task('held-tokens', 'Get a list of held tokens for the given address')
   .addParam('address', 'The token holder address')
-  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     const allTokens = await multitoken.heldTokens(address);
     for (let i = 0; i < allTokens.length; i++) {
@@ -73,13 +69,11 @@ task(
   'Get a list of token holder addresses for the given token hash'
 )
   .addParam('hash', 'The token hash')
-  .setAction(async ({ hash }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({hash}, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     const allHodlers = await multitoken.tokenHolders(hash);
     for (let i = 0; i < allHodlers.length; i++) {
@@ -94,9 +88,7 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     // get the gem pool factory
     const gemPoolFactory = await hre.ethers.getContractAt(
       'NFTGemPoolFactory',
-      (
-        await hre.deployments.get('NFTGemPoolFactory')
-      ).address
+      (await hre.deployments.get('NFTGemPoolFactory')).address
     );
 
     // get all gem pool addresses
@@ -147,7 +139,7 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
 
 task('pool-tokens', 'show pool tokens for given pool')
   .addParam('address', 'The pool address')
-  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -162,7 +154,7 @@ task('pool-tokens', 'show pool tokens for given pool')
 task('pool-tokens-for', 'show pool tokens for given pool held by given address')
   .addParam('address', 'The pool address')
   .addParam('owner', 'The owner address')
-  .setAction(async ({ address, owner }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address, owner}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -171,9 +163,7 @@ task('pool-tokens-for', 'show pool tokens for given pool held by given address')
     // get all gempool contracts
     const multitoken: any = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (
-        await hre.deployments.get('NFTGemMultiToken')
-      ).address
+      (await hre.deployments.get('NFTGemMultiToken')).address
     );
     // get the token symbol
     const symbol = await poolContract.symbol();
@@ -219,7 +209,7 @@ task(
   .addParam('multitoken', 'The legacy multitoken address')
   .setAction(
     async (
-      { owner, factory, multitoken, symbol },
+      {owner, factory, multitoken, symbol},
       hre: HardhatRuntimeEnvironment
     ) => {
       // get all gempool contracts
@@ -274,7 +264,7 @@ task(
   .addParam('factory', 'The legacy factory address')
   .addParam('multitoken', 'The legacy multitoken address')
   .setAction(
-    async ({ owner, factory, multitoken }, hre: HardhatRuntimeEnvironment) => {
+    async ({owner, factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
       // get all gempool contracts
       const factoryContract: any = await hre.ethers.getContractAt(
         'NFTGemPoolFactory',
@@ -330,7 +320,7 @@ task(
 
 task('pool-settings', 'show pool settings for given pool address')
   .addParam('address', 'The pool address')
-  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -367,7 +357,7 @@ task('pool-settings', 'show pool settings for given pool address')
 
 task('pool-stats', 'show pool stats for given pool address')
   .addParam('address', 'The pool address')
-  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -400,7 +390,7 @@ task('pool-stats', 'show pool stats for given pool address')
 task('claim-details', 'show details for given claim in given pool')
   .addParam('claimHash', 'The claim hash')
   .addParam('address', 'The pool address')
-  .setAction(async ({ address, claimHash }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address, claimHash}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -429,7 +419,7 @@ task('claim-details', 'show details for given claim in given pool')
 task('token-details', 'show details for given token in given pool')
   .addParam('tokenHash', 'The token hash')
   .addParam('address', 'The pool address')
-  .setAction(async ({ address, tokenHash }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({address, tokenHash}, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -453,7 +443,7 @@ task('import-legacy-gem', 'Import a legacy gem into the given pool')
   .addParam('recipient', 'The token import recipient')
   .setAction(
     async (
-      { address, legacyAddress, legacyToken, tokenHash, recipient },
+      {address, legacyAddress, legacyToken, tokenHash, recipient},
       hre: HardhatRuntimeEnvironment
     ) => {
       // get all gempool contracts
@@ -477,18 +467,16 @@ task(
 )
   .addParam('address', 'The address')
   .addParam('amount', 'The amount to send to in whole units')
-  .setAction(
-    async ({ address, amount }, hre: HardhatRuntimeEnvironment) => {
-      // get all gempool contracts
-      const govToken: any = await hre.ethers.getContractAt(
-        'GovernanceToken',
-        address
-      );
-      const tx = await govToken.mint(address, parseEther(amount));
-      await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-      console.log(tx);
-    }
-  );
+  .setAction(async ({address, amount}, hre: HardhatRuntimeEnvironment) => {
+    // get all gempool contracts
+    const govToken: any = await hre.ethers.getContractAt(
+      'GovernanceToken',
+      address
+    );
+    const tx = await govToken.mint(address, parseEther(amount));
+    await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+    console.log(tx);
+  });
 
 task(
   'add-allowed-token-source',
@@ -497,7 +485,7 @@ task(
   .addParam('address', 'The pool address')
   .addParam('allowedAddress', 'The allowed source address')
   .setAction(
-    async ({ address, allowedAddress }, hre: HardhatRuntimeEnvironment) => {
+    async ({address, allowedAddress}, hre: HardhatRuntimeEnvironment) => {
       // get all gempool contracts
       const poolContract: any = await hre.ethers.getContractAt(
         'NFTComplexGemPoolData',
@@ -514,30 +502,26 @@ task(
 )
   .addParam('address', 'The pool address')
   .addParam('fee', 'The fee we are charging')
-  .setAction(
-    async (
-      { address, fee },
-      hre: HardhatRuntimeEnvironment
-    ) => {
-      const [sender] = await hre.ethers.getSigners();
-      const libDeployParams = {
-        from: await sender.getAddress(),
-        log: true,
-      };
-      await hre.deployments.deploy('NiftyPixContract', libDeployParams);
-      const NiftyPixContract = await hre.ethers.getContractAt(
-        'NiftyPixContract',
-        (
-          await hre.deployments.get('NiftyPixContract')
-        ).address,
-        sender
-      );
-      const tx = await NiftyPixContract.initialize(address, await hre.deployments.get('NFTGemMultiToken'), fee);
-      console.log('NiftyPix', NiftyPixContract.address);
-      await hre.ethers.provider.waitForTransaction(tx.hash, 10);
-    }
-  );
-
+  .setAction(async ({address, fee}, hre: HardhatRuntimeEnvironment) => {
+    const [sender] = await hre.ethers.getSigners();
+    const libDeployParams = {
+      from: await sender.getAddress(),
+      log: true,
+    };
+    await hre.deployments.deploy('NiftyPixContract', libDeployParams);
+    const NiftyPixContract = await hre.ethers.getContractAt(
+      'NiftyPixContract',
+      (await hre.deployments.get('NiftyPixContract')).address,
+      sender
+    );
+    const tx = await NiftyPixContract.initialize(
+      address,
+      await hre.deployments.get('NFTGemMultiToken'),
+      fee
+    );
+    console.log('NiftyPix', NiftyPixContract.address);
+    await hre.ethers.provider.waitForTransaction(tx.hash, 10);
+  });
 
 task(
   'migrate',
@@ -548,7 +532,7 @@ task(
   .addParam('governance', 'true or 1 to also migrate governance tokens')
   .setAction(
     async (
-      { factory, multitoken, migrateGovernance },
+      {factory, multitoken, migrateGovernance},
       hre: HardhatRuntimeEnvironment
     ) => {
       await migrator(hre, factory, multitoken, migrateGovernance);
@@ -557,7 +541,7 @@ task(
 
 task('migrate-governance', 'Migrate the legacy governance token to erc20')
   .addParam('multitoken', 'The legacy gem multitoken address')
-  .setAction(async ({ multitoken }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({multitoken}, hre: HardhatRuntimeEnvironment) => {
     // get the signers
     const [sender] = await hre.ethers.getSigners();
     // get the old token
@@ -569,9 +553,7 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
     // get the gov token minter
     const govToken: any = await hre.ethers.getContractAt(
       'GovernanceToken',
-      (
-        await hre.deployments.get('GovernanceToken')
-      ).address
+      (await hre.deployments.get('GovernanceToken')).address
     );
     // get the length of old gov token hodlers
     const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
@@ -610,7 +592,7 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('allowedToken', 'An optional allowed token')
   .setAction(
     async (
-      { symbol, name, price, min, max, diff, maxClaims, allowedToken },
+      {symbol, name, price, min, max, diff, maxClaims, allowedToken},
       hre: HardhatRuntimeEnvironment
     ) => {
       const publisher = await publish(hre, false);
@@ -632,15 +614,13 @@ task(
   'Mint governance tokens. Driven with a file input containing an array of address, quantity pairs'
 )
   .addParam('file', 'The legacy gem pool factory address')
-  .setAction(async ({ file }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({file}, hre: HardhatRuntimeEnvironment) => {
     const data = JSON.parse(fs.readFileSync(file).toString());
     // get the multitoken contract
     const signer = await hre.ethers.provider.getSigner();
     const govToken: any = await hre.ethers.getContractAt(
       'GovernanceToken',
-      (
-        await hre.deployments.get('GovernanceToken')
-      ).address,
+      (await hre.deployments.get('GovernanceToken')).address,
       signer
     );
     // get the signer
@@ -662,25 +642,21 @@ task(
   'Withdraw fees from fee manager. Pushes a governance proposal through for a transfer to the specific individualThe.'
 )
   .addParam('account', 'The legacy gem multitoken address')
-  .setAction(async ({ account }, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({account}, hre: HardhatRuntimeEnvironment) => {
     // get the signer
     const signer = await hre.ethers.provider.getSigner();
 
     // load the proposal factory contract
     const proposalFactory = await hre.ethers.getContractAt(
       'ProposalFactory',
-      (
-        await hre.deployments.get('ProposalFactory')
-      ).address,
+      (await hre.deployments.get('ProposalFactory')).address,
       signer
     );
 
     // load the nft gem governor contract
     const nftGemGovernor = await hre.ethers.getContractAt(
       'NFTGemGovernor',
-      (
-        await hre.deployments.get('NFTGemGovernor')
-      ).address,
+      (await hre.deployments.get('NFTGemGovernor')).address,
       signer
     );
 
@@ -701,7 +677,7 @@ task(
   .addParam('factory', 'The legacy gem pool factory address')
   .addParam('multitoken', 'The legacy gem multitoken address')
   .setAction(
-    async ({ factory, multitoken, account }, hre: HardhatRuntimeEnvironment) => {
+    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
       await migrator(hre, factory, multitoken, account);
     }
   );
@@ -714,7 +690,7 @@ task(
   .addParam('multitoken', 'The legacy gem multitoken address')
   .addParam('account', 'The target token holder account address')
   .setAction(
-    async ({ factory, multitoken, account }, hre: HardhatRuntimeEnvironment) => {
+    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
       await migrator(hre, factory, multitoken, account);
     }
   );
@@ -724,13 +700,11 @@ task('send-token-to', 'Send the given claim or gem to the given address')
   .addParam('recipient', 'The recipient address')
   .addParam('quantity', 'The recipient address')
   .setAction(
-    async ({ hash, recipient, quantity }, hre: HardhatRuntimeEnvironment) => {
+    async ({hash, recipient, quantity}, hre: HardhatRuntimeEnvironment) => {
       // get the multitoken contract
       const multitoken: any = await hre.ethers.getContractAt(
         'NFTGemMultiToken',
-        (
-          await hre.deployments.get('NFTGemMultiToken')
-        ).address
+        (await hre.deployments.get('NFTGemMultiToken')).address
       );
       // get the signer
       const signer = await hre.ethers.provider.getSigner();
@@ -880,122 +854,167 @@ task(
   );
 });
 
-task(
-  'publish-aquarium',
-  'Publish Aquarium and a fish'
-).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  // get all gempool contracts
-  const publisher = await publish(hre, false);
-  const deployedContracts = await publisher.getDeployedContracts();
+task('publish-aquarium', 'Publish Aquarium and a fish').setAction(
+  async (_, hre: HardhatRuntimeEnvironment) => {
+    // get all gempool contracts
+    const publisher = await publish(hre, false);
+    const deployedContracts = await publisher.getDeployedContracts();
 
-  // publish the aquarium
-  const aquarium = await publisher.createPool(
-    'AQRM',
-    'BitNautica Aquarium',
-    hre.ethers.utils.parseEther('500'),
-    86400,
-    86400 * 7,
-    128,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
+    // publish the aquarium
+    const aquarium = await publisher.createPool(
+      'AQRM',
+      'BitNautica Aquarium',
+      hre.ethers.utils.parseEther('500'),
+      86400,
+      86400 * 7,
+      128,
+      0,
+      '0x0000000000000000000000000000000000000000'
+    );
 
-  // publish the fish
-  const fish = await publisher.createPool(
-    'FISH',
-    'BitNautica Fish',
-    hre.ethers.utils.parseEther('100'),
-    86400,
-    86400 * 7,
-    65536,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    [
+    // publish the fish
+    const fish = await publisher.createPool(
+      'FISH',
+      'BitNautica Fish',
+      hre.ethers.utils.parseEther('100'),
+      86400,
+      86400 * 7,
+      65536,
+      0,
+      '0x0000000000000000000000000000000000000000',
       [
-        deployedContracts.NFTGemMultiToken.address,
-        aquarium,
-        2,
-        0,
-        1,
-        false,
-        false,
-        false,
-      ],
+        [
+          deployedContracts.NFTGemMultiToken.address,
+          aquarium,
+          2,
+          0,
+          1,
+          false,
+          false,
+          false,
+        ],
+      ]
+    );
+  }
+);
+
+task('publish-test-lootbox', 'Publish Test Lootbox').setAction(
+  async (_, hre: HardhatRuntimeEnvironment) => {
+    // get all gempool contracts
+    const publisher = await lootbox(hre);
+    const deployedContracts = await publisher.getDeployedContracts();
+    const [sender] = await hre.ethers.getSigners();
+    const senderAddress = await sender.getAddress();
+    // create a test lootbox
+    const lootB = {
+      owner: senderAddress,
+      randomFarmer: deployedContracts.RandomFarmer.address,
+      multitoken: deployedContracts.NFTGemMultiToken.address,
+      lootboxHash: BigNumber.from(0),
+      symbol: 'TEST6',
+      name: 'Test Lootbox',
+      description: 'Test Lootbox',
+      minLootPerOpen: 1,
+      maxLootPerOpen: 1,
+      openPrice: hre.ethers.utils.parseEther('0.1'),
+      maxOpens: hre.ethers.BigNumber.from('100'),
+      openCount: hre.ethers.utils.parseEther('0'),
+      totalLootGenerated: hre.ethers.utils.parseEther('0'),
+      lootboxTokenSalePrice: hre.ethers.utils.parseEther('0.1'),
+      probabilitiesSum: hre.ethers.utils.parseEther('0'),
+      initialized: true,
+      openedCount: hre.ethers.utils.parseEther('0'),
+      lootIssuedCount: hre.ethers.utils.parseEther('0'),
+    };
+    const tokenSeller = [
+      deployedContracts.NFTGemMultiToken.address,
+      "0x0000000000000000000000000000000000000000",
+      senderAddress,
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('1'),
+      0,
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('0'),
+      hre.ethers.utils.parseEther('0'),
+      true,
+      true,
+      hre.ethers.utils.parseEther('0')
     ]
-  );
-});
+    const loot = [
+      [
+        BigNumber.from(0),
+        senderAddress as string,
+        deployedContracts.NFTGemMultiToken.address,
+        'SMBL',
+        'Test Loot',
+        hre.ethers.constants.MaxUint256.div(4).sub(1),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+      ],
+      [
+        BigNumber.from(0),
+        senderAddress as string,
+        deployedContracts.NFTGemMultiToken.address,
+        'ABC',
+        'Another Name',
+        hre.ethers.constants.MaxUint256.div(4).sub(1),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+      ],
+      [
+        BigNumber.from(0),
+        senderAddress as string,
+        deployedContracts.NFTGemMultiToken.address,
+        'DEZ',
+        'Test Data',
+        hre.ethers.constants.MaxUint256.div(4).sub(1),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+      ],
+      [
+        BigNumber.from(0),
+        senderAddress as string,
+        deployedContracts.NFTGemMultiToken.address,
+        'GEM',
+        'Not Real but Fake',
+        hre.ethers.constants.MaxUint256.div(4).sub(1),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+        BigNumber.from(0),
+      ],
+    ];
 
-// export type Lootbox = {
-//   owner: string;
-//   contractAddress: string;
-//   contract: Contract;
-//   randomFarmer: string;
-//   multitoken: string;
-//   lootboxHash: BigNumber; // identifier and lootbox token hash for the lootbox
-//   symbol: string;
-//   name: string;
-//   description: string;
-//   minLootPerOpen: number;
-//   maxLootPerOpen: number;
-//   openPrice: BigNumber;
-//   maxOpens: BigNumber;
-//   openCount: BigNumber;
-//   totalLootGenerated: BigNumber;
-//   lootboxTokenSalePrice: BigNumber;
-//   probabilitiesSum: BigNumber;
-//   initialized: boolean;
-//   loot?: Loot[];
-//   openedCount: BigNumber;
-//   lootIssuedCount: BigNumber;
-// };
 
-task(
-  'publish-test-lootbox',
-  'Publish Test Lootbox'
-).setAction(async (_, hre: HardhatRuntimeEnvironment) => {
-  // get all gempool contracts
-  const publisher = await lootbox(hre);
-  const deployedContracts = await publisher.getDeployedContracts();
-  const [sender] = await hre.ethers.getSigners();
-  const senderAddress = await sender.getAddress();
-  // create a test lootbox
-  const lootB = {
-    owner: senderAddress,
-    randomFarmer: deployedContracts.RandomFarmer.address,
-    multitoken: deployedContracts.NFTGemMultiToken.address,
-    lootboxHash: BigNumber.from(0),
-    symbol: 'TEST5',
-    name: 'Test Lootbox',
-    description: 'Test Lootbox',
-    minLootPerOpen: 1,
-    maxLootPerOpen: 1,
-    openPrice: hre.ethers.utils.parseEther('0.1'),
-    maxOpens: hre.ethers.utils.parseEther('1'),
-    openCount: hre.ethers.utils.parseEther('0'),
-    totalLootGenerated: hre.ethers.utils.parseEther('0'),
-    lootboxTokenSalePrice: hre.ethers.utils.parseEther('0.1'),
-    probabilitiesSum: hre.ethers.utils.parseEther('1'),
-    initialized: true,
-    openedCount: hre.ethers.utils.parseEther('0'),
-    lootIssuedCount: hre.ethers.utils.parseEther('0'),
-  };
-
-  const loot = [
-    BigNumber.from(0),
-    senderAddress as string,
-    deployedContracts.NFTGemMultiToken.address,
-    'SMBL3',
-    'Test Loot 1',
-    BigNumber.from(1),
-    BigNumber.from(1),
-    BigNumber.from(1),
-    BigNumber.from(1),
-    BigNumber.from(1)
-  ];
-  const result = await publisher.createLootbox(lootB);
-  const contract = await publisher.getLootboxContract(result);
-  await contract.addLoot(loot);
-});
+    const result = await publisher.createLootbox(lootB, tokenSeller);
+    const contract = await new hre.ethers.Contract(result, require('./build/LootboxContract.json'), sender);
+    for(let j=0; j<loot.length; j++) {
+      const boob = {
+        lootHash: loot[j][0],
+        owner: loot[j][1],
+        multitoken : loot[j][2],
+        symbol : loot[j][3],
+        name : loot[j][4],
+        probability : loot[j][5],
+        probabilityIndex : loot[j][6],
+        probabilityRoll : loot[j][7],
+        maxMint : loot[j][8],
+        minted : loot[j][9],
+      };
+      await contract.addLoot(boob);
+      console.log(loot[j]);
+    }
+  }
+);
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -1005,7 +1024,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2222,
+            runs: 111,
           },
         },
       },
@@ -1014,7 +1033,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2222,
+            runs: 111,
           },
         },
       },
@@ -1023,7 +1042,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2200,
+            runs: 111,
           },
         },
       },

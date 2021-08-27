@@ -28,15 +28,15 @@ interface ILootboxFactory {
     function getLootbox(uint256 _symbolHash)
         external
         view
-        returns (address _lootbox);
+        returns (ILootbox.Lootbox memory);
 
     function lootboxes() external view returns (ILootbox.Lootbox[] memory _all);
 
-    function allLootboxes(uint256 idx) external view returns (address _lootbox);
+    function allLootboxes(uint256 idx) external view returns (ILootbox.Lootbox memory _lootbox);
 
     function allLootboxesLength() external view returns (uint256);
 
-    function createLootbox(address owner, ILootbox.Lootbox memory _lootbox)
+    function createLootbox(address owner, ILootbox.Lootbox memory _lootbox, ITokenSeller.TokenSellerInfo memory _tokenSellerInfo)
         external
-        returns (address payable);
+        returns (ILootbox.Lootbox memory);
 }

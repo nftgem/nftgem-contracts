@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import "./ITokenSeller.sol";
+
 /// @dev A lootbox is a contract that works with an erc1155 to implement a game lootbox:
 /// a lootbox is a contract that accepts a single quantity of some erc1155 tokenhash and
 /// then based on a set of rules goverened by probability, mints one or more outgoing tokens
@@ -26,11 +28,9 @@ interface ILootbox {
         string description;
         uint8 minLootPerOpen;
         uint8 maxLootPerOpen;
-        uint256 openPrice;
         uint256 maxOpens;
         uint256 openCount;
         uint256 totalLootGenerated;
-        uint256 lootboxTokenSalePrice;
         uint256 probabilitiesSum;
         bool initialized;
     }
@@ -94,6 +94,7 @@ interface ILootbox {
 
     function initialize(
         address lootboxData,
+        ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
         ILootbox.Lootbox memory lootboxInit
     ) external;
 
