@@ -1,0 +1,1027 @@
+{
+  "address": "0x8C1eEB73C02F28434C5A9561956375E5450Bd9f4",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "adder",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "addedLootbox",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "lootHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probability",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityRoll",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxMint",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minted",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Loot",
+          "name": "addedLoot",
+          "type": "tuple"
+        }
+      ],
+      "name": "LootAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "mintedLootbox",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "lootHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probability",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityRoll",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxMint",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minted",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Loot",
+          "name": "mintedLoot",
+          "type": "tuple"
+        }
+      ],
+      "name": "LootMinted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "LootboxCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "migrator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldContractAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newContractAddress",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "data",
+          "type": "tuple"
+        }
+      ],
+      "name": "LootboxMigrated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "opener",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "openedLootbox",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "lootHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probability",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilityRoll",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxMint",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minted",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Loot[]",
+          "name": "receivedLoot",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "LootboxOpened",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "hash",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "mintedLootbox",
+          "type": "tuple"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "mintedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "LootboxTokensMinted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "lootboxInit",
+          "type": "tuple"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "randomFarmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootboxHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "minLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "maxLootPerOpen",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxOpens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "openCount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalLootGenerated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probabilitiesSum",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "initialized",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ILootbox.Lootbox",
+          "name": "lootboxOut_",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xfd97e2b5de4616d574d54853f1855748a5a1a29effd1500eb2adb23fb54614d9",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0x8C1eEB73C02F28434C5A9561956375E5450Bd9f4",
+    "transactionIndex": 0,
+    "gasUsed": "1338054",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x000072b9000005693fc910a3b72042eee97e98edfa785ae4b7052e8c7ef472ae",
+    "transactionHash": "0xfd97e2b5de4616d574d54853f1855748a5a1a29effd1500eb2adb23fb54614d9",
+    "logs": [],
+    "blockNumber": 15726766,
+    "cumulativeGasUsed": "1338054",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "a1cc6b23aea3600574771b2259bdf38b",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"adder\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"addedLootbox\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"lootHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"probability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityRoll\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxMint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minted\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Loot\",\"name\":\"addedLoot\",\"type\":\"tuple\"}],\"name\":\"LootAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"mintedLootbox\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"lootHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"probability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityRoll\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxMint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minted\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Loot\",\"name\":\"mintedLoot\",\"type\":\"tuple\"}],\"name\":\"LootMinted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"LootboxCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"migrator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldContractAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContractAddress\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"data\",\"type\":\"tuple\"}],\"name\":\"LootboxMigrated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"opener\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"openedLootbox\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"lootHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"probability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityIndex\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilityRoll\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxMint\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minted\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Loot[]\",\"name\":\"receivedLoot\",\"type\":\"tuple[]\"}],\"name\":\"LootboxOpened\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"hash\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"mintedLootbox\",\"type\":\"tuple\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"mintedAmount\",\"type\":\"uint256\"}],\"name\":\"LootboxTokensMinted\",\"type\":\"event\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"lootboxInit\",\"type\":\"tuple\"}],\"name\":\"initialize\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"randomFarmer\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lootboxHash\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint8\",\"name\":\"minLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"maxLootPerOpen\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"maxOpens\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"openCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLootGenerated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"probabilitiesSum\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"initialized\",\"type\":\"bool\"}],\"internalType\":\"struct ILootbox.Lootbox\",\"name\":\"lootboxOut_\",\"type\":\"tuple\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"initialize(ILootbox.Lootbox)\":{\"details\":\"Sets the lootbox data. The lootbox contract can either initialise a new\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/lootbox/LootboxLib.sol\":\"LootboxLib\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2222},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/proxy/utils/Initializable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed\\n * behind a proxy. Since a proxied contract can't have a constructor, it's common to move constructor logic to an\\n * external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer\\n * function so it can only be called once. The {initializer} modifier provided by this contract will have this effect.\\n *\\n * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as\\n * possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}.\\n *\\n * CAUTION: When used with inheritance, manual care must be taken to not invoke a parent initializer twice, or to ensure\\n * that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.\\n */\\nabstract contract Initializable {\\n    /**\\n     * @dev Indicates that the contract has been initialized.\\n     */\\n    bool private _initialized;\\n\\n    /**\\n     * @dev Indicates that the contract is in the process of being initialized.\\n     */\\n    bool private _initializing;\\n\\n    /**\\n     * @dev Modifier to protect an initializer function from being invoked twice.\\n     */\\n    modifier initializer() {\\n        require(_initializing || !_initialized, \\\"Initializable: contract is already initialized\\\");\\n\\n        bool isTopLevelCall = !_initializing;\\n        if (isTopLevelCall) {\\n            _initializing = true;\\n            _initialized = true;\\n        }\\n\\n        _;\\n\\n        if (isTopLevelCall) {\\n            _initializing = false;\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x8b2abd85d0ece7e866e100e9d47ca9cbec93c87cf71a8d267b2b93eb81f7d5e9\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC1155 compliant contract, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-1155[EIP].\\n *\\n * _Available since v3.1._\\n */\\ninterface IERC1155 is IERC165 {\\n    /**\\n     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.\\n     */\\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\\n\\n    /**\\n     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all\\n     * transfers.\\n     */\\n    event TransferBatch(\\n        address indexed operator,\\n        address indexed from,\\n        address indexed to,\\n        uint256[] ids,\\n        uint256[] values\\n    );\\n\\n    /**\\n     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to\\n     * `approved`.\\n     */\\n    event ApprovalForAll(address indexed account, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.\\n     *\\n     * If an {URI} event was emitted for `id`, the standard\\n     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value\\n     * returned by {IERC1155MetadataURI-uri}.\\n     */\\n    event URI(string value, uint256 indexed id);\\n\\n    /**\\n     * @dev Returns the amount of tokens of token type `id` owned by `account`.\\n     *\\n     * Requirements:\\n     *\\n     * - `account` cannot be the zero address.\\n     */\\n    function balanceOf(address account, uint256 id) external view returns (uint256);\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.\\n     *\\n     * Requirements:\\n     *\\n     * - `accounts` and `ids` must have the same length.\\n     */\\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    /**\\n     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `operator` cannot be the caller.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\\n     *\\n     * See {setApprovalForAll}.\\n     */\\n    function isApprovedForAll(address account, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.\\n     *\\n     * Emits a {TransferSingle} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `to` cannot be the zero address.\\n     * - If the caller is not `from`, it must be have been approved to spend ``from``'s tokens via {setApprovalForAll}.\\n     * - `from` must have a balance of tokens of type `id` of at least `amount`.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the\\n     * acceptance magic value.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 id,\\n        uint256 amount,\\n        bytes calldata data\\n    ) external;\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.\\n     *\\n     * Emits a {TransferBatch} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `ids` and `amounts` must have the same length.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the\\n     * acceptance magic value.\\n     */\\n    function safeBatchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata ids,\\n        uint256[] calldata amounts,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0xfce1eb6398eae0e2b50251140866a70a3106193f101972c878bba1dbf44929ec\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/ILootbox.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"./ITokenSeller.sol\\\";\\n\\n/// @dev A lootbox is a contract that works with an erc1155 to implement a game lootbox:\\n/// a lootbox is a contract that accepts a single quantity of some erc1155 tokenhash and\\n/// then based on a set of rules goverened by probability, mints one or more outgoing tokens\\n/// as it burns the incoming token. The rules are defined by the lootbox author and are\\n/// stored in the lootbox contract. A newly-created lootbox contract assigns controllership\\n/// to its creator, who can them add other controllers, and can set the rules for the lootbox.\\n/// Each lootbox is configured with some number of Loot items, each of which has deterministic\\n/// tokenhash. These loot items each have names, symboles, and a probability of being minted.\\n/// Users open the lootbox by providing the right gem to the lootbox contract, and then\\n/// the lootbox contract mints the right number of tokens for the user. This contract uses\\n/// a pseudo-random deterministic sieve to determine the number and type of tokens minted\\n\\ninterface ILootbox {\\n    // the lootbox itself\\n    struct Lootbox {\\n        address owner;\\n        address contractAddress;\\n        address randomFarmer;\\n        address multitoken;\\n        uint256 lootboxHash; // identifier and lootbox token hash for the lootbox\\n        string symbol;\\n        string name;\\n        string description;\\n        uint8 minLootPerOpen;\\n        uint8 maxLootPerOpen;\\n        uint256 maxOpens;\\n        uint256 openCount;\\n        uint256 totalLootGenerated;\\n        uint256 probabilitiesSum;\\n        bool initialized;\\n    }\\n\\n    // loot items\\n    struct Loot {\\n        uint256 lootHash;\\n        address owner;\\n        address multitoken;\\n        string symbol;\\n        string name;\\n        uint256 probability;\\n        uint256 probabilityIndex;\\n        uint256 probabilityRoll;\\n        uint256 maxMint;\\n        uint256 minted;\\n    }\\n\\n    event LootboxCreated(\\n        address indexed creator,\\n        uint256 indexed hash,\\n        address indexed contractAddress,\\n        Lootbox data\\n    );\\n\\n    event LootboxMigrated(\\n        address indexed migrator,\\n        uint256 indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        Lootbox data\\n    );\\n\\n    event LootboxOpened(\\n        address indexed opener,\\n        uint256 indexed hash,\\n        Lootbox openedLootbox,\\n        Loot[] receivedLoot\\n    );\\n\\n    event LootAdded(\\n        address indexed adder,\\n        uint256 indexed hash,\\n        Lootbox addedLootbox,\\n        Loot addedLoot\\n    );\\n\\n    event LootboxTokensMinted(\\n        address indexed minter,\\n        uint256 indexed hash,\\n        Lootbox mintedLootbox,\\n        uint256 mintedAmount\\n    );\\n\\n    event LootMinted(\\n        address indexed minter,\\n        uint256 indexed hash,\\n        Lootbox mintedLootbox,\\n        Loot mintedLoot\\n    );\\n\\n    function initialize(\\n        address lootboxData,\\n        ITokenSeller.TokenSellerInfo memory tokenSellerInfo,\\n        ILootbox.Lootbox memory lootboxInit\\n    ) external;\\n\\n    function mintLootboxTokens(uint256 amount) external;\\n\\n    function mintLoot(uint8 index, uint256 amount)\\n        external\\n        returns (Loot memory);\\n\\n    function openLootbox() external returns (Loot[] memory);\\n\\n    function allLoot() external view returns (Loot[] memory);\\n\\n    function addLoot(Loot memory _loot) external returns (uint256);\\n\\n    function getLoot(uint256 index) external view returns (Loot memory);\\n}\\n\",\"keccak256\":\"0x7e5d02050a7e3e71d4e4c581991ba7d6e702b9bcde3558a6e1adb18d9e269cde\",\"license\":\"MIT\"},\"src/interfaces/ILootboxData.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"./ILootbox.sol\\\";\\nimport \\\"./ITokenSeller.sol\\\";\\n\\ninterface ILootboxData {\\n    function getFeeManager() external view returns (address);\\n\\n    function setFeeManager(address feeManagerAddress) external;\\n\\n    function addLootbox(ILootbox.Lootbox memory)\\n        external\\n        returns (uint256 lootbox);\\n\\n    function getLootboxByAddress(address lootbox)\\n        external\\n        view\\n        returns (ILootbox.Lootbox memory);\\n\\n    function getLootboxByHash(uint256 lootbox)\\n        external\\n        view\\n        returns (ILootbox.Lootbox memory);\\n\\n    function setLootbox(\\n        ILootbox.Lootbox memory lootboxData\\n    ) external;\\n\\n    function lootboxes() external view returns (ILootbox.Lootbox[] memory);\\n\\n    function allLootboxes(uint256 index)\\n        external\\n        view\\n        returns (ILootbox.Lootbox memory);\\n\\n    function allLootboxesLength() external view returns (uint256);\\n\\n    function getLoot(uint256 lootbox, uint256 index)\\n        external\\n        view\\n        returns (ILootbox.Loot memory);\\n\\n    function addLoot(uint256 lootbox, ILootbox.Loot memory lootboxData)\\n        external\\n        returns (uint256);\\n\\n    function setLoot(\\n        uint256 lootbox,\\n        uint256 index,\\n        ILootbox.Loot memory lootboxData\\n    ) external;\\n\\n    function allLoot(uint256 lootbox)\\n        external\\n        view\\n        returns (ILootbox.Loot[] memory);\\n\\n    function delLoot(uint256 lootbox, uint256 index)\\n        external\\n        returns (ILootbox.Loot memory);\\n\\n    function addTokenSeller(\\n        address tokenSeller,\\n        ITokenSeller.TokenSellerInfo memory\\n    ) external returns (uint256 tokenSellerIndex);\\n\\n    function getTokenSeller(address tokenSeller)\\n        external\\n        view\\n        returns (ITokenSeller.TokenSellerInfo memory);\\n\\n    function setTokenSeller(\\n        address tokenSellerAddress,\\n        ITokenSeller.TokenSellerInfo memory tokenSellerData\\n    ) external;\\n\\n    function tokenSellers()\\n        external\\n        view\\n        returns (ITokenSeller.TokenSellerInfo[] memory);\\n\\n    function allTokenSellers(uint256 index)\\n        external\\n        view\\n        returns (ITokenSeller.TokenSellerInfo memory);\\n\\n    function allTokenSellersLength() external view returns (uint256);\\n\\n    function increaseBuyPrice(address tokenSeller) external view  returns (uint256);\\n}\\n\",\"keccak256\":\"0x8bb32e5de27e125c38a97c75464ca6a6b585228794ffb4d276bd2129f79f92b1\",\"license\":\"MIT\"},\"src/interfaces/INFTGemFeeManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface INFTGemFeeManager {\\n    event FeeChanged(\\n        address indexed operator,\\n        uint256 indexed feeHash,\\n        uint256 value\\n    );\\n\\n    function fee(uint256 feeTypeHash) external view returns (uint256);\\n\\n    function setFee(uint256 feeTypeHash, uint256 _fee) external;\\n\\n    function balanceOf(address token) external view returns (uint256);\\n\\n    function transferEth(address payable recipient, uint256 amount) external;\\n\\n    function transferToken(\\n        address token,\\n        address recipient,\\n        uint256 amount\\n    ) external;\\n}\\n\",\"keccak256\":\"0x073089b45be4de1e2feecfa65d36ea9cb3ec18cec7e3c1e9de18ea8923c016c2\",\"license\":\"MIT\"},\"src/interfaces/INFTGemMultiToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface INFTGemMultiToken {\\n    enum TokenType {\\n        GOVERNANCE,\\n        CLAIM,\\n        GEM\\n    }\\n\\n    struct Royalty {\\n        address owner;\\n        uint256 royaltyPermillion;\\n    }\\n\\n    // called by controller to mint a claim or a gem\\n    function mint(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    // called by controller to mint a claim or a gem\\n    function mintBatch(\\n        address to,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    function burnBatch(\\n        address account,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    // called by controller to burn a claim\\n    function burn(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    function heldTokens(address holder)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    function allHeldTokens(address holder, uint256 _idx)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function allHeldTokensLength(address holder)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function tokenHolders(uint256 _token)\\n        external\\n        view\\n        returns (address[] memory);\\n\\n    function allTokenHolders(uint256 _token, uint256 _idx)\\n        external\\n        view\\n        returns (address);\\n\\n    function allTokenHoldersLength(uint256 _token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function totalBalances(uint256 _id) external view returns (uint256);\\n\\n    function allProxyRegistries(uint256 _idx) external view returns (address);\\n\\n    function allProxyRegistriesLength() external view returns (uint256);\\n\\n    function addProxyRegistry(address registry) external;\\n\\n    function removeProxyRegistryAt(uint256 index) external;\\n\\n    function getRegistryManager() external view returns (address);\\n\\n    function setRegistryManager(address newManager) external;\\n\\n    function setRoyaltyInfo(\\n        uint256 _tokenId,\\n        address _owner,\\n        uint256 feePermil\\n    ) external;\\n\\n    function lock(uint256 token, uint256 timeframe) external;\\n\\n    function unlockTime(address account, uint256 token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function setTokenData(\\n        uint256 tokenHash,\\n        TokenType tokenType,\\n        address tokenPool\\n    ) external;\\n\\n    function getTokenData(uint256 tokenHash)\\n        external\\n        view\\n        returns (TokenType, address);\\n}\\n\",\"keccak256\":\"0x1d54431d4f990265d8a0c692430e75c5c77870b78f19264069e1cfe86d7464c0\",\"license\":\"MIT\"},\"src/interfaces/IRandomFarm.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IRandomFarmer {\\n    function getRandomBytes(uint8 amount) external returns (bytes32[] memory);\\n\\n    function getRandomUints(uint8 amount) external returns (uint256[] memory);\\n\\n    function getRandomNumber(uint256 min, uint256 max)\\n        external\\n        returns (uint256);\\n}\\n\\ninterface IRandomFarm is IRandomFarmer {\\n    function initialize(uint256 seed) external;\\n\\n    function addRandomness(uint256 randomness) external;\\n}\\n\",\"keccak256\":\"0x30c47bb1d97367da45f911bfb8c63b0af671e1dae3d5faac65a6203af6717cf6\",\"license\":\"MIT\"},\"src/interfaces/ITokenSeller.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\n/// @dev A token seller is a contract that can sell tokens to a token buyer.\\n/// The token buyer can buy tokens from the seller by paying a certain amount\\n/// of base currency to receive a certain amount of erc1155 tokens. the number\\n/// of tokens that can be bought is limited by the seller - the seller can\\n/// specify the maximum number of tokens that can be bought per transaction\\n/// and the maximum number of tokens that can be bought in total for a given\\n/// address. The seller can also specify the price of erc1155 tokens and how\\n/// that price increases per successful transaction. the token seller assumes\\n/// supply of the erc1155 is unlimited and features a request method\\n\\ninterface ITokenSeller {\\n    enum BuyPriceIncreaseRateType {\\n        NONE,\\n        FIXED,\\n        EXPONENTIAL,\\n        INVERSELOG\\n    }\\n\\n    struct TokenSellerInfo {\\n        address multitoken;\\n        address contractAddress;\\n        address owner;\\n        uint256 tokenHash;\\n        uint256 buyPrice;\\n        BuyPriceIncreaseRateType buyPriceIncreaseRateType;\\n        uint256 buyPriceIncreaseRate;\\n        uint256 maxQuantity;\\n        uint256 maxBuyAmount;\\n        uint256 maxTotalBuyAmount;\\n        uint256 saleStartTime;\\n        uint256 saleEndTime;\\n        bool initialized;\\n        bool open;\\n        uint256 totalPurchased;\\n    }\\n\\n    event TokenSellerCreated(address indexed creator, TokenSellerInfo info);\\n\\n    event Sold(\\n        address indexed contractAddress,\\n        address indexed buyer,\\n        uint256 indexed tokenHash,\\n        uint256 price,\\n        uint256 amount\\n    );\\n\\n    event Requested(\\n        address indexed contractAddress,\\n        address indexed seller,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event Funded(\\n        address indexed contractAddress,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event FundsCollected(address indexed receiver, uint256 indexed amount);\\n\\n    event TokenSellerMigrated(\\n        address indexed migrator,\\n        address indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        TokenSellerInfo data\\n    );\\n\\n    function initialize(address tokenSellerData, TokenSellerInfo memory _info)\\n        external;\\n\\n    function isInitialized() external view returns (bool);\\n\\n    function getInfo() external view returns (TokenSellerInfo memory);\\n\\n    function setInfo(TokenSellerInfo memory _info) external;\\n\\n    /// @dev Buy tokens from the token seller.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were bought.\\n    function buy(uint256 _amount) external payable returns (uint256);\\n\\n    /// @dev Request tokens from the token provider.\\n    /// @param _recipient The address of the token receiver.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were requested.\\n    function request(address _recipient, uint256 _amount)\\n        external\\n        returns (uint256);\\n\\n    function receivePayout(address payable _recipient) external;\\n}\\n\",\"keccak256\":\"0x8783cfa454e469fc9425161cdc4336a2ea0db1379ad2828de0ab9197c36ea43c\",\"license\":\"MIT\"},\"src/lootbox/LootboxLib.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/ILootbox.sol\\\";\\nimport \\\"../interfaces/IRandomFarm.sol\\\";\\nimport \\\"../interfaces/ILootboxData.sol\\\";\\nimport \\\"../interfaces/IControllable.sol\\\";\\nimport \\\"../interfaces/INFTGemMultiToken.sol\\\";\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"./TokenSeller.sol\\\";\\n\\nlibrary LootboxLib {\\n\\n    event LootboxCreated(\\n        address indexed creator,\\n        uint256 indexed hash,\\n        address indexed contractAddress,\\n        ILootbox.Lootbox data\\n    );\\n\\n    event LootboxMigrated(\\n        address indexed migrator,\\n        uint256 indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        ILootbox.Lootbox data\\n    );\\n\\n    event LootboxOpened(\\n        address indexed opener,\\n        uint256 indexed hash,\\n        ILootbox.Lootbox openedLootbox,\\n        ILootbox.Loot[] receivedLoot\\n    );\\n\\n    event LootAdded(\\n        address indexed adder,\\n        uint256 indexed hash,\\n        ILootbox.Lootbox addedLootbox,\\n        ILootbox.Loot addedLoot\\n    );\\n\\n    event LootboxTokensMinted(\\n        address indexed minter,\\n        uint256 indexed hash,\\n        ILootbox.Lootbox mintedLootbox,\\n        uint256 mintedAmount\\n    );\\n\\n    event LootMinted(\\n        address indexed minter,\\n        uint256 indexed hash,\\n        ILootbox.Lootbox mintedLootbox,\\n        ILootbox.Loot mintedLoot\\n    );\\n\\n    /// @dev Sets the lootbox data. The lootbox contract can either initialise a new\\n    // lootbox struct or it can load and update an existing lootbox struct.\\n    function initialize(\\n        ILootbox.Lootbox memory lootboxInit\\n    )\\n    external pure returns (ILootbox.Lootbox memory lootboxOut_) {\\n        if (lootboxInit.lootboxHash == 0) {\\n            require(\\n                lootboxInit.multitoken != address(0),\\n                \\\"Multitoken address must be set\\\"\\n            );\\n            require(bytes(lootboxInit.name).length != 0, \\\"Name must be set\\\");\\n            require(\\n                bytes(lootboxInit.symbol).length != 0,\\n                \\\"Symbol must be set\\\"\\n            );\\n            require(lootboxInit.minLootPerOpen != 0, \\\"Min loot must be set\\\");\\n            require(lootboxInit.maxLootPerOpen != 0, \\\"Max loot must be set\\\");\\n            // TODO: additional validity checks would not hurt here\\n            lootboxOut_ = lootboxInit;\\n            lootboxOut_.lootboxHash = uint256(\\n                keccak256(\\n                    abi.encodePacked(\\n                        lootboxInit.symbol\\n                    )\\n                )\\n            );\\n            lootboxOut_.initialized = true;\\n        }\\n    }\\n\\n    function openLootbox(\\n        ILootbox.Lootbox memory _lootbox,\\n        ILootbox.Loot[] memory _loot\\n    )\\n        external\\n        returns (ILootbox.Loot[] memory _lootOut)\\n    {\\n        // make sure that the caller has at least one lootbox token\\n        require(\\n            IERC1155(_lootbox.multitoken).balanceOf(\\n                msg.sender,\\n                _lootbox.lootboxHash\\n            ) > 0,\\n            \\\"Insufficient lootbox token balance\\\"\\n        );\\n\\n        // no need to transfer the lootbox token anywhere, we can just burn it in place\\n        INFTGemMultiToken(_lootbox.multitoken).burn(\\n            msg.sender,\\n            _lootbox.lootboxHash,\\n            1\\n        );\\n\\n        // first we need to determine the number of loot items to mint\\n        // if min == max, then we mint that exact number of items. Otherwise,\\n        // we use a random number between min and max to determine the number\\n        // of loot items to mint\\n        uint8 lootCount = _lootbox.minLootPerOpen;\\n        if (_lootbox.minLootPerOpen != _lootbox.maxLootPerOpen) {\\n            lootCount = uint8(\\n                IRandomFarmer(_lootbox.randomFarmer).getRandomNumber(\\n                    uint256(_lootbox.minLootPerOpen),\\n                    uint256(_lootbox.maxLootPerOpen)\\n                )\\n            );\\n        } else lootCount = _lootbox.minLootPerOpen;\\n\\n        // now that we know how much we need to mint, we can create the\\n        // loot roll array that will hold our results and create some loot\\n        _lootOut = new ILootbox.Loot[](lootCount);\\n\\n        // now we need some randomness to determine which loot items we win\\n        // we use a pseudo-random deterministic sieve to determine the number\\n        // and type of tokens minted\\n        uint256[] memory _lootRoll = IRandomFarmer(_lootbox.randomFarmer)\\n        .getRandomUints(lootCount);\\n\\n        // mint the loot items\\n        for (uint256 i = 0; i < lootCount; i++) {\\n\\n            // generate a loot item given a random seed\\n            (uint8 winIndex, uint256 winRoll) = _generateLoot(\\n                _loot,\\n                _lootRoll[i],\\n                _lootbox.probabilitiesSum\\n            );\\n\\n            // assign the loot item to the loot array\\n            _lootOut[i] = _loot[winIndex];\\n            _lootOut[i].probabilityRoll = winRoll;\\n\\n            // mint the loot item to the multitoken\\n            INFTGemMultiToken(_lootbox.multitoken).mint(\\n                msg.sender,\\n                _lootOut[i].lootHash,\\n                1\\n            );\\n        }\\n\\n        /// generate an event reporting on the loot that was found\\n        emit LootboxOpened(\\n            msg.sender,\\n            _lootbox.lootboxHash,\\n            _lootbox,\\n            _lootOut\\n        );\\n    }\\n\\n    function mintLoot(ILootbox.Lootbox memory _lootbox, ILootbox.Loot[] memory _allLoot, uint8 index, uint256 amount)\\n        external\\n        returns (ILootbox.Loot memory)\\n    {\\n        require(index < _allLoot.length, \\\"Loot index out of bounds\\\");\\n        // mint the loot item to the minter\\n        INFTGemMultiToken(_lootbox.multitoken).mint(\\n            msg.sender,\\n            _allLoot[index].lootHash,\\n            amount\\n        );\\n        // forced to use GOVERNANCE here as a token type because\\n        // someone decided to 'clean up' what they didn't understand.\\n        // there was a very good reason for this, that being that an\\n        // int type rather than an enum allows us to easily add new\\n        // token types. Noe I have to figure out how to handle this\\n        // in some other way. Thanks, Justin\\n        INFTGemMultiToken(_lootbox.multitoken).setTokenData(\\n            _allLoot[index].lootHash,\\n            INFTGemMultiToken.TokenType.GOVERNANCE,\\n            address(this)\\n        );\\n\\n        // emit a message about it\\n        emit LootMinted(\\n            msg.sender,\\n            _lootbox.lootboxHash,\\n            _lootbox,\\n            _allLoot[index]\\n        );\\n        // return the loot item we minted\\n        return _allLoot[index];\\n    }\\n\\n    function _generateLoot(\\n        ILootbox.Loot[] memory _loot,\\n        uint256 dice,\\n        uint256 _probabilitiesSum\\n    )\\n        internal\\n        pure\\n        returns (uint8 winnerIndex, uint256 winnerRoll)\\n    {\\n        // validate the dice roll is in the proper range\\n        require(\\n            dice < _probabilitiesSum,\\n            \\\"Dice roll must be less than total probability\\\"\\n        );\\n        uint256 floor = 0;\\n        // get all the loot there is to award\\n\\n        // iterate through the loot items\\n        for (uint256 i = 0; i < _loot.length; i++) {\\n            // if the dice roll is between the floor and the probability index\\n            // then this is the item we will award\\n            if (floor <= dice && dice < _loot[i].probabilityIndex) {\\n                winnerIndex = uint8(i);\\n                winnerRoll = dice;\\n                break;\\n            }\\n            // increment the floor to the next probability index\\n            floor = _loot[i].probabilityIndex;\\n        }\\n        return (winnerIndex, winnerRoll);\\n    }\\n\\n\\n}\\n\",\"keccak256\":\"0x0ab165e7044d870890cd8fbd6da4b91105aafb8cc92b2e93b0fb54c98244abc0\",\"license\":\"MIT\"},\"src/lootbox/TokenSeller.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/ITokenSeller.sol\\\";\\nimport \\\"../interfaces/INFTGemMultiToken.sol\\\";\\nimport \\\"../interfaces/INFTGemFeeManager.sol\\\";\\nimport \\\"../interfaces/ILootboxData.sol\\\";\\nimport \\\"../access/Controllable.sol\\\";\\n\\nimport \\\"@openzeppelin/contracts/proxy/utils/Initializable.sol\\\";\\nimport \\\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\\\";\\n\\ncontract TokenSeller is ITokenSeller, Controllable, Initializable {\\n    ILootboxData internal _tokenSellerData;\\n    ITokenSeller.TokenSellerInfo internal _tokenSeller;\\n\\n    constructor() {\\n        _addController(msg.sender);\\n    }\\n\\n    /// @dev contract must be initilized for modified method to be called\\n    modifier initialized() virtual {\\n        require(\\n            _tokenSeller.multitoken != address(0) &&\\n                _tokenSeller.initialized == true,\\n            \\\"Token seller is not initialized\\\"\\n        );\\n        _;\\n    }\\n\\n    /// @dev Sets the lootbox data. The lootbox contract can either initialise a new\\n    // lootbox struct or it can load and update an existing lootbox struct.\\n    function initialize(\\n        address tokenSellerData,\\n        ITokenSeller.TokenSellerInfo memory tokenSellerInit\\n    ) external override initializer {\\n        require(\\n            IControllable(tokenSellerData).isController(address(this)) == true,\\n            \\\"Token seller data must be controlled by this token seller\\\"\\n        );\\n        _tokenSellerData = ILootboxData(tokenSellerData);\\n        if (tokenSellerInit.contractAddress == address(0)) {\\n            require(\\n                tokenSellerInit.multitoken != address(0),\\n                \\\"Multitoken address must be set\\\"\\n            );\\n            require(tokenSellerInit.tokenHash != 0, \\\"token hash must be set\\\");\\n            require(tokenSellerInit.buyPrice != 0, \\\"Price must be set\\\");\\n            _tokenSeller = tokenSellerInit;\\n            _tokenSeller.contractAddress = address(this);\\n            _tokenSeller.initialized = true;\\n            _tokenSellerData.addTokenSeller(address(this), _tokenSeller);\\n            emit TokenSellerCreated(msg.sender, _tokenSeller);\\n        } else {\\n            // load the lootbox struct\\n            _tokenSeller = _tokenSellerData.getTokenSeller(address(this));\\n            _tokenSeller.contractAddress = address(this);\\n            _tokenSellerData.setTokenSeller(address(this), _tokenSeller);\\n            require(\\n                _tokenSeller.owner == msg.sender,\\n                \\\"Lootbox must be owned by the caller to uppgrade contract\\\"\\n            );\\n            emit TokenSellerMigrated(\\n                msg.sender,\\n                address(this),\\n                _tokenSeller.contractAddress,\\n                address(this),\\n                _tokenSeller\\n            );\\n        }\\n    }\\n\\n    function isInitialized() external view override returns (bool) {\\n        return _tokenSeller.initialized;\\n    }\\n\\n    function getInfo() external view override returns (TokenSellerInfo memory) {\\n        return _tokenSeller;\\n    }\\n\\n    function setInfo(TokenSellerInfo memory _info)\\n        external\\n        override\\n        onlyController\\n    {\\n        _tokenSeller.buyPrice = _info.buyPrice;\\n        _tokenSeller.buyPriceIncreaseRateType = _info.buyPriceIncreaseRateType;\\n        _tokenSeller.buyPriceIncreaseRate = _info.buyPriceIncreaseRate;\\n        _tokenSeller.maxQuantity = _info.maxQuantity;\\n        _tokenSeller.maxBuyAmount = _info.maxBuyAmount;\\n        _tokenSeller.maxTotalBuyAmount = _info.maxTotalBuyAmount;\\n        _tokenSeller.saleStartTime = _info.saleStartTime;\\n        _tokenSeller.saleEndTime = _info.saleEndTime;\\n        _tokenSeller.open = _info.open;\\n        _tokenSeller.maxTotalBuyAmount = _info.maxTotalBuyAmount;\\n        _tokenSellerData.setTokenSeller(address(this), _tokenSeller);\\n    }\\n\\n    function _request(\\n        address _recipient,\\n        uint256 _token,\\n        uint256 _amount\\n    ) internal returns (uint256) {\\n        // mint the target token directly into the user's account\\n        INFTGemMultiToken(_tokenSeller.multitoken).mint(\\n            _recipient,\\n            _token,\\n            _amount\\n        );\\n        // set the token data - it's not a claim or gem and it was minted here\\n        INFTGemMultiToken(_tokenSeller.multitoken).setTokenData(\\n            _token,\\n            INFTGemMultiToken.TokenType.GOVERNANCE,\\n            address(this)\\n        );\\n        return _amount;\\n    }\\n\\n    /// @dev Buy tokens from the token seller.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were bought.\\n    function buy(uint256 _amount) external payable override returns (uint256) {\\n        require(_tokenSeller.open == true, \\\"The token seller is closed\\\");\\n        require(\\n            _tokenSeller.totalPurchased < _tokenSeller.maxQuantity,\\n            \\\"The maximum amount of tokens has been bought.\\\"\\n        );\\n        require(\\n            msg.value >= _tokenSeller.buyPrice * _amount,\\n            \\\"Insufficient base currency\\\"\\n        );\\n        require(\\n            _amount <= _tokenSeller.maxBuyAmount,\\n            \\\"Amount exceeds maximum buy amount\\\"\\n        );\\n        require(\\n            _amount <=\\n                _tokenSeller.maxTotalBuyAmount -\\n                    IERC1155(_tokenSeller.multitoken).balanceOf(\\n                        msg.sender,\\n                        _tokenSeller.tokenHash\\n                    ),\\n            \\\"Amount exceeds maximum buy total\\\"\\n        );\\n        require(\\n            block.timestamp >= _tokenSeller.saleStartTime ||\\n                _tokenSeller.saleStartTime == 0,\\n            \\\"The sale has not started yet\\\"\\n        );\\n        require(\\n            block.timestamp <= _tokenSeller.saleEndTime ||\\n                _tokenSeller.saleEndTime == 0,\\n            \\\"The sale has ended\\\"\\n        );\\n        // request (mint) the tokens\\n        _request(msg.sender, _tokenSeller.tokenHash, _amount);\\n        // increase total bought\\n        _tokenSeller.totalPurchased += _amount;\\n        // emit a message about the purchase\\n        emit Sold(\\n            address(this),\\n            msg.sender,\\n            _tokenSeller.tokenHash,\\n            _tokenSeller.buyPrice,\\n            _amount\\n        );\\n        // increase the purchase price if it's not fixed\\n        _tokenSeller.buyPrice = _tokenSellerData.increaseBuyPrice(address(this));\\n        _tokenSellerData.setTokenSeller(address(this), _tokenSeller);\\n        // return the amount of tokens that were bought\\n        return _amount;\\n    }\\n\\n    /// @dev Request tokens from the token provider.\\n    /// @param _recipient The address of the token receiver.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were requested.\\n    function request(address _recipient, uint256 _amount)\\n        external\\n        override\\n        onlyController\\n        returns (uint256)\\n    {\\n        require(\\n            _tokenSeller.totalPurchased < _tokenSeller.maxQuantity,\\n            \\\"The maximum amount of tokens has been bought.\\\"\\n        );\\n        return _request(_recipient, _tokenSeller.tokenHash, _amount);\\n    }\\n\\n    function migrate_TokenSeller(address migrateTo, bool bDestroy) external initialized onlyController {\\n        IControllable(address(_tokenSellerData)).addController(migrateTo);\\n        ITokenSeller(migrateTo).initialize(\\n            address(_tokenSellerData),\\n            _tokenSeller\\n        );\\n         if(bDestroy == true) {\\n             selfdestruct(payable(migrateTo));\\n         }\\n    }\\n\\n    function receivePayout(address payable _recipient) external override {\\n        require(\\n            this.isController(msg.sender) || msg.sender == _tokenSeller.owner,\\n            \\\"Only the token seller can receive payouts\\\"\\n        );\\n        uint256 balance = payable(address(this)).balance;\\n        if (balance == 0) {\\n            return;\\n        }\\n        address feeManager = _tokenSellerData.getFeeManager();\\n        require(\\n            feeManager != address(this),\\n            \\\"The token seller has no fee manager\\\"\\n        );\\n        uint256 fee = INFTGemFeeManager(feeManager).fee(\\n            uint256(keccak256(abi.encodePacked(\\\"lootbox\\\")))\\n        );\\n        _recipient = _recipient != address(0)\\n            ? _recipient\\n            : payable(msg.sender);\\n        fee = fee != 0 ? fee : 333;\\n        uint256 feeAmount = balance / fee;\\n        uint256 userPortion = balance - feeAmount;\\n        require(payable(_recipient).send(userPortion), \\\"Failed to send\\\");\\n        require(\\n            payable(feeManager).send(feeAmount),\\n            \\\"Failed to send to fee manager\\\"\\n        );\\n        emit FundsCollected(_recipient, userPortion);\\n    }\\n}\\n\",\"keccak256\":\"0x63d972d4ae1a13464856cf319d7cef477f9179e406fa3971ad08fda8b0d46be4\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x61174561003a600b82828239805160001a60731461002d57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe730000000000000000000000000000000000000000301460806040526004361061004b5760003560e01c806346fa907e1461005057806369dac38114610079578063a1ed5e8f146100a6575b600080fd5b61006361005e366004610dfc565b6100d3565b6040516100709190611418565b60405180910390f35b81801561008557600080fd5b50610099610094366004610e37565b6101e7565b604051610070919061117c565b8180156100b257600080fd5b506100c66100c1366004610e98565b610685565b60405161007091906113fe565b6100db610944565b60808201516101e25760608201516001600160a01b03166101175760405162461bcd60e51b815260040161010e90611390565b60405180910390fd5b60c0820151516101395760405162461bcd60e51b815260040161010e906111fa565b60a08201515161015b5760405162461bcd60e51b815260040161010e9061129f565b61010082015160ff166101805760405162461bcd60e51b815260040161010e90611231565b61012082015160ff166101a55760405162461bcd60e51b815260040161010e90611268565b5060a081015160405182916101bc91602001611126565b60408051601f198184030181529190528051602090910120608082015260016101c08201525b919050565b60608281015160808401516040517efdd58e0000000000000000000000000000000000000000000000000000000081526000926001600160a01b03169162fdd58e91610237913391600401611142565b60206040518083038186803b15801561024f57600080fd5b505afa158015610263573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102879190610f11565b116102a45760405162461bcd60e51b815260040161010e906112d6565b82606001516001600160a01b031663f5298aca33856080015160016040518463ffffffff1660e01b81526004016102dd9392919061115b565b600060405180830381600087803b1580156102f757600080fd5b505af115801561030b573d6000803e3d6000fd5b5050505061010083015161012084015160ff8083169116146103c25783604001516001600160a01b0316636e68fc0a85610100015160ff1686610120015160ff166040518363ffffffff1660e01b815260040161036992919061161a565b602060405180830381600087803b15801561038357600080fd5b505af1158015610397573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103bb9190610f11565b90506103ca565b506101008301515b8060ff1667ffffffffffffffff8111156103f457634e487b7160e01b600052604160045260246000fd5b60405190808252806020026020018201604052801561042d57816020015b61041a6109e6565b8152602001906001900390816104125790505b509150600084604001516001600160a01b03166382da649a836040518263ffffffff1660e01b81526004016104629190611628565b600060405180830381600087803b15801561047c57600080fd5b505af1158015610490573d6000803e3d6000fd5b505050506040513d6000823e601f3d908101601f191682016040526104b89190810190610d6c565b905060005b8260ff1681101561063457600080610502878585815181106104ef57634e487b7160e01b600052603260045260246000fd5b60200260200101518a6101a00151610880565b91509150868260ff168151811061052957634e487b7160e01b600052603260045260246000fd5b602002602001015186848151811061055157634e487b7160e01b600052603260045260246000fd5b60200260200101819052508086848151811061057d57634e487b7160e01b600052603260045260246000fd5b602002602001015160e001818152505087606001516001600160a01b031663156e29f6338886815181106105c157634e487b7160e01b600052603260045260246000fd5b60200260200101516000015160016040518463ffffffff1660e01b81526004016105ed9392919061115b565b600060405180830381600087803b15801561060757600080fd5b505af115801561061b573d6000803e3d6000fd5b505050505050808061062c906116b4565b9150506104bd565b508460800151336001600160a01b03167f717772adf4a2431d4709bd4569689688606f8e214f6e2188f6b1b65405aa25ea878660405161067592919061153a565b60405180910390a3505092915050565b61068d6109e6565b83518360ff16106106b05760405162461bcd60e51b815260040161010e906113c7565b84606001516001600160a01b031663156e29f633868660ff16815181106106e757634e487b7160e01b600052603260045260246000fd5b602002602001015160000151856040518463ffffffff1660e01b81526004016107129392919061115b565b600060405180830381600087803b15801561072c57600080fd5b505af1158015610740573d6000803e3d6000fd5b5050505084606001516001600160a01b0316637c881076858560ff168151811061077a57634e487b7160e01b600052603260045260246000fd5b6020026020010151600001516000306040518463ffffffff1660e01b81526004016107a7939291906115d8565b600060405180830381600087803b1580156107c157600080fd5b505af11580156107d5573d6000803e3d6000fd5b505050508460800151336001600160a01b03167f63697e2260b880409a8187357cee6ca473b32e0fe2f858fc0e14142696ca847087878760ff168151811061082d57634e487b7160e01b600052603260045260246000fd5b60200260200101516040516108439291906115aa565b60405180910390a3838360ff168151811061086e57634e487b7160e01b600052603260045260246000fd5b60200260200101519050949350505050565b6000808284106108a25760405162461bcd60e51b815260040161010e90611333565b6000805b865181101561093a578582111580156108e957508681815181106108da57634e487b7160e01b600052603260045260246000fd5b602002602001015160c0015186105b156108f95780935085925061093a565b86818151811061091957634e487b7160e01b600052603260045260246000fd5b602002602001015160c0015191508080610932906116b4565b9150506108a6565b5050935093915050565b604051806101e0016040528060006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160008152602001606081526020016060815260200160608152602001600060ff168152602001600060ff168152602001600081526020016000815260200160008152602001600081526020016000151581525090565b6040518061014001604052806000815260200160006001600160a01b0316815260200160006001600160a01b03168152602001606081526020016060815260200160008152602001600081526020016000815260200160008152602001600081525090565b80356001600160a01b03811681146101e257600080fd5b600082601f830112610a72578081fd5b81356020610a87610a8283611660565b611636565b82815281810190858301855b85811015610b8c578135880161014080601f19838d03011215610ab4578889fd5b610abd81611636565b8783013581526040610ad0818501610a4b565b898301526060610ae1818601610a4b565b828401526080850135915067ffffffffffffffff80831115610b01578c8dfd5b610b0f8f8c85890101610ba9565b8285015260a0860135925080831115610b26578c8dfd5b5050610b368d8a83870101610ba9565b60808301525060c083013560a082015260e083013560c08201526101008084013560e083015261012080850135828401528385013581840152505080875250505084840193508482019150600181019050610a93565b5090979650505050505050565b803580151581146101e257600080fd5b600082601f830112610bb9578081fd5b813567ffffffffffffffff811115610bd357610bd36116f9565b610be66020601f19601f84011601611636565b818152846020838601011115610bfa578283fd5b816020850160208301379081016020019190915292915050565b60006101e0808385031215610c27578182fd5b610c3081611636565b915050610c3c82610a4b565b8152610c4a60208301610a4b565b6020820152610c5b60408301610a4b565b6040820152610c6c60608301610a4b565b60608201526080820135608082015260a082013567ffffffffffffffff80821115610c9657600080fd5b610ca285838601610ba9565b60a084015260c0840135915080821115610cbb57600080fd5b610cc785838601610ba9565b60c084015260e0840135915080821115610ce057600080fd5b50610ced84828501610ba9565b60e083015250610100610d01818401610d5b565b90820152610120610d13838201610d5b565b908201526101408281013590820152610160808301359082015261018080830135908201526101a080830135908201526101c0610d51818401610b99565b9082015292915050565b803560ff811681146101e257600080fd5b60006020808385031215610d7e578182fd5b825167ffffffffffffffff811115610d94578283fd5b8301601f81018513610da4578283fd5b8051610db2610a8282611660565b8181528381019083850185840285018601891015610dce578687fd5b8694505b83851015610df0578051835260019490940193918501918501610dd2565b50979650505050505050565b600060208284031215610e0d578081fd5b813567ffffffffffffffff811115610e23578182fd5b610e2f84828501610c14565b949350505050565b60008060408385031215610e49578081fd5b823567ffffffffffffffff80821115610e60578283fd5b610e6c86838701610c14565b93506020850135915080821115610e81578283fd5b50610e8e85828601610a62565b9150509250929050565b60008060008060808587031215610ead578182fd5b843567ffffffffffffffff80821115610ec4578384fd5b610ed088838901610c14565b95506020870135915080821115610ee5578384fd5b50610ef287828801610a62565b935050610f0160408601610d5b565b9396929550929360600135925050565b600060208284031215610f22578081fd5b5051919050565b6001600160a01b03169052565b15159052565b60008151808452610f54816020860160208601611684565b601f01601f19169290920160200192915050565b6000610140825184526020830151610f836020860182610f29565b506040830151610f966040860182610f29565b506060830151816060860152610fae82860182610f3c565b91505060808301518482036080860152610fc88282610f3c565b91505060a083015160a085015260c083015160c085015260e083015160e08501526101008084015181860152506101208084015181860152508091505092915050565b60006101e061101b848451610f29565b602083015161102d6020860182610f29565b5060408301516110406040860182610f29565b5060608301516110536060860182610f29565b506080830151608085015260a08301518160a086015261107582860182610f3c565b91505060c083015184820360c086015261108f8282610f3c565b91505060e083015184820360e08601526110a98282610f3c565b915050610100808401516110bf8287018261111f565b5050610120808401516110d48287018261111f565b50506101408381015190850152610160808401519085015261018080840151908501526101a080840151908501526101c08084015161111582870182610f36565b5090949350505050565b60ff169052565b60008251611138818460208701611684565b9190910192915050565b6001600160a01b03929092168252602082015260400190565b6001600160a01b039390931683526020830191909152604082015260600190565b6000602080830181845280855180835260408601915060408482028701019250838701855b828110156111ed577fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc08886030184526111db858351610f68565b945092850192908501906001016111a1565b5092979650505050505050565b60208082526010908201527f4e616d65206d7573742062652073657400000000000000000000000000000000604082015260600190565b60208082526014908201527f4d696e206c6f6f74206d75737420626520736574000000000000000000000000604082015260600190565b60208082526014908201527f4d6178206c6f6f74206d75737420626520736574000000000000000000000000604082015260600190565b60208082526012908201527f53796d626f6c206d757374206265207365740000000000000000000000000000604082015260600190565b60208082526022908201527f496e73756666696369656e74206c6f6f74626f7820746f6b656e2062616c616e60408201527f6365000000000000000000000000000000000000000000000000000000000000606082015260800190565b6020808252602d908201527f4469636520726f6c6c206d757374206265206c657373207468616e20746f746160408201527f6c2070726f626162696c69747900000000000000000000000000000000000000606082015260800190565b6020808252601e908201527f4d756c7469746f6b656e2061646472657373206d757374206265207365740000604082015260600190565b60208082526018908201527f4c6f6f7420696e646578206f7574206f6620626f756e64730000000000000000604082015260600190565b6000602082526114116020830184610f68565b9392505050565b60006020825261142c602083018451610f29565b602083015161143e6040840182610f29565b5060408301516114516060840182610f29565b5060608301516114646080840182610f29565b50608083015160a083015260a08301516101e08060c085015261148b610200850183610f3c565b915060c0850151601f19808685030160e08701526114a98483610f3c565b935060e087015191506101008187860301818801526114c88584610f3c565b945080880151925050506101206114e18187018361111f565b86015190506101406114f58682018361111f565b86015161016086810191909152860151610180808701919091528601516101a0808701919091528601516101c080870191909152860151905061111582860182610f36565b60006040825261154d604083018561100b565b602083820381850152818551808452828401915082838202850101838801865b8381101561159b57601f19878403018552611589838351610f68565b9486019492509085019060010161156d565b50909998505050505050505050565b6000604082526115bd604083018561100b565b82810360208401526115cf8185610f68565b95945050505050565b83815260608101600384106115fd57634e487b7160e01b600052602160045260246000fd5b8360208301526001600160a01b0383166040830152949350505050565b918252602082015260400190565b60ff91909116815260200190565b60405181810167ffffffffffffffff81118282101715611658576116586116f9565b604052919050565b600067ffffffffffffffff82111561167a5761167a6116f9565b5060209081020190565b60005b8381101561169f578181015183820152602001611687565b838111156116ae576000848401525b50505050565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8214156116f257634e487b7160e01b81526011600452602481fd5b5060010190565b634e487b7160e01b600052604160045260246000fdfea26469706673582212200767aa02d89d037a18c0780d2ba20206662ac682e34bcbcc587c1d12d39e83b564736f6c63430008000033",
+  "deployedBytecode": "0x730000000000000000000000000000000000000000301460806040526004361061004b5760003560e01c806346fa907e1461005057806369dac38114610079578063a1ed5e8f146100a6575b600080fd5b61006361005e366004610dfc565b6100d3565b6040516100709190611418565b60405180910390f35b81801561008557600080fd5b50610099610094366004610e37565b6101e7565b604051610070919061117c565b8180156100b257600080fd5b506100c66100c1366004610e98565b610685565b60405161007091906113fe565b6100db610944565b60808201516101e25760608201516001600160a01b03166101175760405162461bcd60e51b815260040161010e90611390565b60405180910390fd5b60c0820151516101395760405162461bcd60e51b815260040161010e906111fa565b60a08201515161015b5760405162461bcd60e51b815260040161010e9061129f565b61010082015160ff166101805760405162461bcd60e51b815260040161010e90611231565b61012082015160ff166101a55760405162461bcd60e51b815260040161010e90611268565b5060a081015160405182916101bc91602001611126565b60408051601f198184030181529190528051602090910120608082015260016101c08201525b919050565b60608281015160808401516040517efdd58e0000000000000000000000000000000000000000000000000000000081526000926001600160a01b03169162fdd58e91610237913391600401611142565b60206040518083038186803b15801561024f57600080fd5b505afa158015610263573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906102879190610f11565b116102a45760405162461bcd60e51b815260040161010e906112d6565b82606001516001600160a01b031663f5298aca33856080015160016040518463ffffffff1660e01b81526004016102dd9392919061115b565b600060405180830381600087803b1580156102f757600080fd5b505af115801561030b573d6000803e3d6000fd5b5050505061010083015161012084015160ff8083169116146103c25783604001516001600160a01b0316636e68fc0a85610100015160ff1686610120015160ff166040518363ffffffff1660e01b815260040161036992919061161a565b602060405180830381600087803b15801561038357600080fd5b505af1158015610397573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103bb9190610f11565b90506103ca565b506101008301515b8060ff1667ffffffffffffffff8111156103f457634e487b7160e01b600052604160045260246000fd5b60405190808252806020026020018201604052801561042d57816020015b61041a6109e6565b8152602001906001900390816104125790505b509150600084604001516001600160a01b03166382da649a836040518263ffffffff1660e01b81526004016104629190611628565b600060405180830381600087803b15801561047c57600080fd5b505af1158015610490573d6000803e3d6000fd5b505050506040513d6000823e601f3d908101601f191682016040526104b89190810190610d6c565b905060005b8260ff1681101561063457600080610502878585815181106104ef57634e487b7160e01b600052603260045260246000fd5b60200260200101518a6101a00151610880565b91509150868260ff168151811061052957634e487b7160e01b600052603260045260246000fd5b602002602001015186848151811061055157634e487b7160e01b600052603260045260246000fd5b60200260200101819052508086848151811061057d57634e487b7160e01b600052603260045260246000fd5b602002602001015160e001818152505087606001516001600160a01b031663156e29f6338886815181106105c157634e487b7160e01b600052603260045260246000fd5b60200260200101516000015160016040518463ffffffff1660e01b81526004016105ed9392919061115b565b600060405180830381600087803b15801561060757600080fd5b505af115801561061b573d6000803e3d6000fd5b505050505050808061062c906116b4565b9150506104bd565b508460800151336001600160a01b03167f717772adf4a2431d4709bd4569689688606f8e214f6e2188f6b1b65405aa25ea878660405161067592919061153a565b60405180910390a3505092915050565b61068d6109e6565b83518360ff16106106b05760405162461bcd60e51b815260040161010e906113c7565b84606001516001600160a01b031663156e29f633868660ff16815181106106e757634e487b7160e01b600052603260045260246000fd5b602002602001015160000151856040518463ffffffff1660e01b81526004016107129392919061115b565b600060405180830381600087803b15801561072c57600080fd5b505af1158015610740573d6000803e3d6000fd5b5050505084606001516001600160a01b0316637c881076858560ff168151811061077a57634e487b7160e01b600052603260045260246000fd5b6020026020010151600001516000306040518463ffffffff1660e01b81526004016107a7939291906115d8565b600060405180830381600087803b1580156107c157600080fd5b505af11580156107d5573d6000803e3d6000fd5b505050508460800151336001600160a01b03167f63697e2260b880409a8187357cee6ca473b32e0fe2f858fc0e14142696ca847087878760ff168151811061082d57634e487b7160e01b600052603260045260246000fd5b60200260200101516040516108439291906115aa565b60405180910390a3838360ff168151811061086e57634e487b7160e01b600052603260045260246000fd5b60200260200101519050949350505050565b6000808284106108a25760405162461bcd60e51b815260040161010e90611333565b6000805b865181101561093a578582111580156108e957508681815181106108da57634e487b7160e01b600052603260045260246000fd5b602002602001015160c0015186105b156108f95780935085925061093a565b86818151811061091957634e487b7160e01b600052603260045260246000fd5b602002602001015160c0015191508080610932906116b4565b9150506108a6565b5050935093915050565b604051806101e0016040528060006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160008152602001606081526020016060815260200160608152602001600060ff168152602001600060ff168152602001600081526020016000815260200160008152602001600081526020016000151581525090565b6040518061014001604052806000815260200160006001600160a01b0316815260200160006001600160a01b03168152602001606081526020016060815260200160008152602001600081526020016000815260200160008152602001600081525090565b80356001600160a01b03811681146101e257600080fd5b600082601f830112610a72578081fd5b81356020610a87610a8283611660565b611636565b82815281810190858301855b85811015610b8c578135880161014080601f19838d03011215610ab4578889fd5b610abd81611636565b8783013581526040610ad0818501610a4b565b898301526060610ae1818601610a4b565b828401526080850135915067ffffffffffffffff80831115610b01578c8dfd5b610b0f8f8c85890101610ba9565b8285015260a0860135925080831115610b26578c8dfd5b5050610b368d8a83870101610ba9565b60808301525060c083013560a082015260e083013560c08201526101008084013560e083015261012080850135828401528385013581840152505080875250505084840193508482019150600181019050610a93565b5090979650505050505050565b803580151581146101e257600080fd5b600082601f830112610bb9578081fd5b813567ffffffffffffffff811115610bd357610bd36116f9565b610be66020601f19601f84011601611636565b818152846020838601011115610bfa578283fd5b816020850160208301379081016020019190915292915050565b60006101e0808385031215610c27578182fd5b610c3081611636565b915050610c3c82610a4b565b8152610c4a60208301610a4b565b6020820152610c5b60408301610a4b565b6040820152610c6c60608301610a4b565b60608201526080820135608082015260a082013567ffffffffffffffff80821115610c9657600080fd5b610ca285838601610ba9565b60a084015260c0840135915080821115610cbb57600080fd5b610cc785838601610ba9565b60c084015260e0840135915080821115610ce057600080fd5b50610ced84828501610ba9565b60e083015250610100610d01818401610d5b565b90820152610120610d13838201610d5b565b908201526101408281013590820152610160808301359082015261018080830135908201526101a080830135908201526101c0610d51818401610b99565b9082015292915050565b803560ff811681146101e257600080fd5b60006020808385031215610d7e578182fd5b825167ffffffffffffffff811115610d94578283fd5b8301601f81018513610da4578283fd5b8051610db2610a8282611660565b8181528381019083850185840285018601891015610dce578687fd5b8694505b83851015610df0578051835260019490940193918501918501610dd2565b50979650505050505050565b600060208284031215610e0d578081fd5b813567ffffffffffffffff811115610e23578182fd5b610e2f84828501610c14565b949350505050565b60008060408385031215610e49578081fd5b823567ffffffffffffffff80821115610e60578283fd5b610e6c86838701610c14565b93506020850135915080821115610e81578283fd5b50610e8e85828601610a62565b9150509250929050565b60008060008060808587031215610ead578182fd5b843567ffffffffffffffff80821115610ec4578384fd5b610ed088838901610c14565b95506020870135915080821115610ee5578384fd5b50610ef287828801610a62565b935050610f0160408601610d5b565b9396929550929360600135925050565b600060208284031215610f22578081fd5b5051919050565b6001600160a01b03169052565b15159052565b60008151808452610f54816020860160208601611684565b601f01601f19169290920160200192915050565b6000610140825184526020830151610f836020860182610f29565b506040830151610f966040860182610f29565b506060830151816060860152610fae82860182610f3c565b91505060808301518482036080860152610fc88282610f3c565b91505060a083015160a085015260c083015160c085015260e083015160e08501526101008084015181860152506101208084015181860152508091505092915050565b60006101e061101b848451610f29565b602083015161102d6020860182610f29565b5060408301516110406040860182610f29565b5060608301516110536060860182610f29565b506080830151608085015260a08301518160a086015261107582860182610f3c565b91505060c083015184820360c086015261108f8282610f3c565b91505060e083015184820360e08601526110a98282610f3c565b915050610100808401516110bf8287018261111f565b5050610120808401516110d48287018261111f565b50506101408381015190850152610160808401519085015261018080840151908501526101a080840151908501526101c08084015161111582870182610f36565b5090949350505050565b60ff169052565b60008251611138818460208701611684565b9190910192915050565b6001600160a01b03929092168252602082015260400190565b6001600160a01b039390931683526020830191909152604082015260600190565b6000602080830181845280855180835260408601915060408482028701019250838701855b828110156111ed577fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc08886030184526111db858351610f68565b945092850192908501906001016111a1565b5092979650505050505050565b60208082526010908201527f4e616d65206d7573742062652073657400000000000000000000000000000000604082015260600190565b60208082526014908201527f4d696e206c6f6f74206d75737420626520736574000000000000000000000000604082015260600190565b60208082526014908201527f4d6178206c6f6f74206d75737420626520736574000000000000000000000000604082015260600190565b60208082526012908201527f53796d626f6c206d757374206265207365740000000000000000000000000000604082015260600190565b60208082526022908201527f496e73756666696369656e74206c6f6f74626f7820746f6b656e2062616c616e60408201527f6365000000000000000000000000000000000000000000000000000000000000606082015260800190565b6020808252602d908201527f4469636520726f6c6c206d757374206265206c657373207468616e20746f746160408201527f6c2070726f626162696c69747900000000000000000000000000000000000000606082015260800190565b6020808252601e908201527f4d756c7469746f6b656e2061646472657373206d757374206265207365740000604082015260600190565b60208082526018908201527f4c6f6f7420696e646578206f7574206f6620626f756e64730000000000000000604082015260600190565b6000602082526114116020830184610f68565b9392505050565b60006020825261142c602083018451610f29565b602083015161143e6040840182610f29565b5060408301516114516060840182610f29565b5060608301516114646080840182610f29565b50608083015160a083015260a08301516101e08060c085015261148b610200850183610f3c565b915060c0850151601f19808685030160e08701526114a98483610f3c565b935060e087015191506101008187860301818801526114c88584610f3c565b945080880151925050506101206114e18187018361111f565b86015190506101406114f58682018361111f565b86015161016086810191909152860151610180808701919091528601516101a0808701919091528601516101c080870191909152860151905061111582860182610f36565b60006040825261154d604083018561100b565b602083820381850152818551808452828401915082838202850101838801865b8381101561159b57601f19878403018552611589838351610f68565b9486019492509085019060010161156d565b50909998505050505050505050565b6000604082526115bd604083018561100b565b82810360208401526115cf8185610f68565b95945050505050565b83815260608101600384106115fd57634e487b7160e01b600052602160045260246000fd5b8360208301526001600160a01b0383166040830152949350505050565b918252602082015260400190565b60ff91909116815260200190565b60405181810167ffffffffffffffff81118282101715611658576116586116f9565b604052919050565b600067ffffffffffffffff82111561167a5761167a6116f9565b5060209081020190565b60005b8381101561169f578181015183820152602001611687565b838111156116ae576000848401525b50505050565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8214156116f257634e487b7160e01b81526011600452602481fd5b5060010190565b634e487b7160e01b600052604160045260246000fdfea26469706673582212200767aa02d89d037a18c0780d2ba20206662ac682e34bcbcc587c1d12d39e83b564736f6c63430008000033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "initialize(ILootbox.Lootbox)": {
+        "details": "Sets the lootbox data. The lootbox contract can either initialise a new"
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

@@ -1,0 +1,808 @@
+{
+  "address": "0xe61618Ef54d6F58AbfD102A3A95A86cb58A2A6C6",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "controllerAddress",
+          "type": "address"
+        }
+      ],
+      "name": "ControllerAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "controllerAddress",
+          "type": "address"
+        }
+      ],
+      "name": "ControllerRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "gemCreateUID",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gemHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gemPoolFactory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IBitgemIndexer.Gem",
+          "name": "gem",
+          "type": "tuple"
+        }
+      ],
+      "name": "GemCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_controller",
+          "type": "address"
+        }
+      ],
+      "name": "addController",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemMap",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemsByFactory",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemsByMinter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemsByMultitoken",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemsByPool",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemHash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "gemPoolFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "gemPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "name": "getOwnedGems",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "gems",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gemHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gemPoolFactory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.Gem",
+          "name": "gem",
+          "type": "tuple"
+        }
+      ],
+      "name": "indexGem",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gemHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gemPoolFactory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.Gem[]",
+          "name": "gem",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "indexGems",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "isController",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "allowed",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "relinquishControl",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x0e8e7d991d251c2590917ccbac509f2524c15d8f8f3518ab718fc6ea8347956a",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0xe61618Ef54d6F58AbfD102A3A95A86cb58A2A6C6",
+    "transactionIndex": 0,
+    "gasUsed": "1132474",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x000073260000196f9c5555646020c2f15b7fb211bed6738dfd5a6bc28682c25b",
+    "transactionHash": "0x0e8e7d991d251c2590917ccbac509f2524c15d8f8f3518ab718fc6ea8347956a",
+    "logs": [],
+    "blockNumber": 15773496,
+    "cumulativeGasUsed": "1132474",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "1db607ea029aa0e8582f680b33913842",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"gemCreateUID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"GemCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_controller\",\"type\":\"address\"}],\"name\":\"addController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemMap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByFactory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMinter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMultitoken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByPool\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"gemPool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"getOwnedGems\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"gems\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"indexGem\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem[]\",\"name\":\"gem\",\"type\":\"tuple[]\"}],\"name\":\"indexGems\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"isController\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relinquishControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"The name of the author\",\"details\":\"Explain to a developer any extra details\",\"kind\":\"dev\",\"methods\":{\"addController(address)\":{\"details\":\"Add an address allowed to control this contract\"},\"isController(address)\":{\"details\":\"Check if this address is a controller\"},\"relinquishControl()\":{\"details\":\"Remove the sender address from the list of controllers\"}},\"title\":\"A title that should describe the contract/interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Explain to an end user what this does\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/IBitgemIndexer.sol\":\"BitgemIndexer\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2222},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC1155 compliant contract, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-1155[EIP].\\n *\\n * _Available since v3.1._\\n */\\ninterface IERC1155 is IERC165 {\\n    /**\\n     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.\\n     */\\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\\n\\n    /**\\n     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all\\n     * transfers.\\n     */\\n    event TransferBatch(\\n        address indexed operator,\\n        address indexed from,\\n        address indexed to,\\n        uint256[] ids,\\n        uint256[] values\\n    );\\n\\n    /**\\n     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to\\n     * `approved`.\\n     */\\n    event ApprovalForAll(address indexed account, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.\\n     *\\n     * If an {URI} event was emitted for `id`, the standard\\n     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value\\n     * returned by {IERC1155MetadataURI-uri}.\\n     */\\n    event URI(string value, uint256 indexed id);\\n\\n    /**\\n     * @dev Returns the amount of tokens of token type `id` owned by `account`.\\n     *\\n     * Requirements:\\n     *\\n     * - `account` cannot be the zero address.\\n     */\\n    function balanceOf(address account, uint256 id) external view returns (uint256);\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.\\n     *\\n     * Requirements:\\n     *\\n     * - `accounts` and `ids` must have the same length.\\n     */\\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    /**\\n     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `operator` cannot be the caller.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\\n     *\\n     * See {setApprovalForAll}.\\n     */\\n    function isApprovedForAll(address account, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.\\n     *\\n     * Emits a {TransferSingle} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `to` cannot be the zero address.\\n     * - If the caller is not `from`, it must be have been approved to spend ``from``'s tokens via {setApprovalForAll}.\\n     * - `from` must have a balance of tokens of type `id` of at least `amount`.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the\\n     * acceptance magic value.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 id,\\n        uint256 amount,\\n        bytes calldata data\\n    ) external;\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.\\n     *\\n     * Emits a {TransferBatch} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `ids` and `amounts` must have the same length.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the\\n     * acceptance magic value.\\n     */\\n    function safeBatchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata ids,\\n        uint256[] calldata amounts,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0xfce1eb6398eae0e2b50251140866a70a3106193f101972c878bba1dbf44929ec\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/interfaces/IBitgemIndexer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"./ITokenSeller.sol\\\";\\nimport \\\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\\\";\\nimport \\\"../interfaces/INFTGemMultiToken.sol\\\";\\n\\n/// @dev The gem indexer indexes all historical gems from legacy contracts and\\n/// produces a series of events that get indexed by thegraph indexer. this is\\n/// necessary because the legacy contracts generate events from library code,\\n/// making things not work in thegraph.\\n\\ninterface IGemPoolData {\\n    function allTokenHashesLength() external view returns (uint256);\\n\\n    function allTokenHashes(uint256 ndx) external view returns (uint256);\\n\\n    function tokenType(uint256 tokenHash)\\n        external\\n        view\\n        returns (INFTGemMultiToken.TokenType);\\n}\\n\\ninterface IBitgemIndexer {\\n    struct Gem {\\n        uint256 id;\\n        uint256 gemHash;\\n        address minter;\\n        address gemPoolFactory;\\n        address multitoken;\\n        address pool;\\n        uint256 quantity;\\n    }\\n\\n    event GemCreated(\\n        uint256 indexed gemCreateUID,\\n        uint256 gemHash,\\n        address minter,\\n        address gemPoolFactory,\\n        address multitoken,\\n        address pool,\\n        uint256 quantity,\\n        Gem gem\\n    );\\n\\n    function indexGem(\\n        Gem memory gem\\n    ) external returns (bool);\\n\\n    function indexGems(\\n        Gem[] memory gem\\n    ) external returns (bool);\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    )\\n        external\\n        view\\n        returns (uint256[] memory gems);\\n}\\n\\n/// @title A title that should describe the contract/interface\\n/// @author The name of the author\\n/// @notice Explain to an end user what this does\\n/// @dev Explain to a developer any extra details\\ncontract BitgemIndexer is IBitgemIndexer, Controllable {\\n\\n    mapping(uint256 => Gem) public gemMap;\\n    mapping(address => Gem[]) public gemsByMinter;\\n    mapping(address => Gem[]) public gemsByFactory;\\n    mapping(address => Gem[]) public gemsByMultitoken;\\n    mapping(address => Gem[]) public gemsByPool;\\n\\n    constructor() {\\n        _addController(address(this));\\n    }\\n\\n    function _makeId(Gem memory gem) internal pure returns (uint256) {\\n        return uint256(\\n            keccak256(\\n                abi.encodePacked(\\n                    gem.gemHash,\\n                    gem.minter,\\n                    gem.gemPoolFactory,\\n                    gem.multitoken,\\n                    gem.pool,\\n                    gem.quantity\\n                )\\n            )\\n        );\\n    }\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    )\\n        external\\n        view\\n        override\\n        returns (uint256[] memory gems)\\n    {\\n        // uint256 allTokenHashesLength = IGemPoolData(gemPool)\\n        //     .allTokenHashesLength();\\n        // require((page * count) + count <= allTokenHashesLength, \\\"OUT_OF_RANGE\\\");\\n\\n        uint256 gemLen = 0;\\n        gems = new uint256[](count);\\n\\n        for (uint256 i = page * count; i < (page * count) + count; i++) {\\n\\n            uint256 claimHash = 0;\\n            try IGemPoolData(gemPool).allTokenHashes(i) returns (uint256 _claimHash) {\\n                claimHash = _claimHash;\\n            } catch {\\n                continue;\\n            }\\n\\n            INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)\\n                .tokenType(claimHash);\\n\\n            uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);\\n            if (tokenType != INFTGemMultiToken.TokenType.GEM\\n                || bal == 0\\n                || claimHash == 0\\n                || claimHash == 1) continue;\\n\\n            if (tokenType == INFTGemMultiToken.TokenType.GEM)\\n                gems[gemLen++] = claimHash;\\n        }\\n    }\\n\\n    function _indexGem(\\n        Gem memory gem\\n    ) internal returns (bool) {\\n        uint256 gemId = _makeId(gem);\\n        if (gemMap[gemId].gemHash != 0) {\\n            return false;\\n        }\\n        gem.id = gemId;\\n        gemMap[gemId] = gem;\\n        gemsByMinter[gem.minter].push(gem);\\n        gemsByFactory[gem.gemPoolFactory].push(gem);\\n        gemsByMultitoken[gem.multitoken].push(gem);\\n        gemsByPool[gem.pool].push(gem);\\n        emit GemCreated(\\n            gem.id,\\n            gem.gemHash,\\n            gem.minter,\\n            gem.gemPoolFactory,\\n            gem.multitoken,\\n            gem.pool,\\n            gem.quantity,\\n            gem\\n        );\\n        return true;\\n    }\\n\\n\\n    function indexGem(\\n        Gem memory gem\\n    ) external override returns (bool) {\\n        return _indexGem(gem);\\n    }\\n\\n    function indexGems(\\n        Gem[] memory gem\\n    ) external override returns (bool) {\\n        bool success = true;\\n        for (uint256 i = 0; i < gem.length; i++) {\\n            success = success && _indexGem(gem[i]);\\n        }\\n        return success;\\n    }\\n\\n}\\n\",\"keccak256\":\"0x99a45b6da9ccd19e07401da9e72e2c877818e78823007e838d5f8adf07f531b6\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/INFTGemMultiToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface INFTGemMultiToken {\\n    enum TokenType {\\n        GOVERNANCE,\\n        CLAIM,\\n        GEM\\n    }\\n\\n    struct Royalty {\\n        address owner;\\n        uint256 royaltyPermillion;\\n    }\\n\\n    // called by controller to mint a claim or a gem\\n    function mint(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    // called by controller to mint a claim or a gem\\n    function mintBatch(\\n        address to,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    function burnBatch(\\n        address account,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    // called by controller to burn a claim\\n    function burn(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    function heldTokens(address holder)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    function allHeldTokens(address holder, uint256 _idx)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function allHeldTokensLength(address holder)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function tokenHolders(uint256 _token)\\n        external\\n        view\\n        returns (address[] memory);\\n\\n    function allTokenHolders(uint256 _token, uint256 _idx)\\n        external\\n        view\\n        returns (address);\\n\\n    function allTokenHoldersLength(uint256 _token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function totalBalances(uint256 _id) external view returns (uint256);\\n\\n    function allProxyRegistries(uint256 _idx) external view returns (address);\\n\\n    function allProxyRegistriesLength() external view returns (uint256);\\n\\n    function addProxyRegistry(address registry) external;\\n\\n    function removeProxyRegistryAt(uint256 index) external;\\n\\n    function getRegistryManager() external view returns (address);\\n\\n    function setRegistryManager(address newManager) external;\\n\\n    function setRoyaltyInfo(\\n        uint256 _tokenId,\\n        address _owner,\\n        uint256 feePermil\\n    ) external;\\n\\n    function lock(uint256 token, uint256 timeframe) external;\\n\\n    function unlockTime(address account, uint256 token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function setTokenData(\\n        uint256 tokenHash,\\n        TokenType tokenType,\\n        address tokenPool\\n    ) external;\\n\\n    function getTokenData(uint256 tokenHash)\\n        external\\n        view\\n        returns (TokenType, address);\\n}\\n\",\"keccak256\":\"0x1d54431d4f990265d8a0c692430e75c5c77870b78f19264069e1cfe86d7464c0\",\"license\":\"MIT\"},\"src/interfaces/ITokenSeller.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\n/// @dev A token seller is a contract that can sell tokens to a token buyer.\\n/// The token buyer can buy tokens from the seller by paying a certain amount\\n/// of base currency to receive a certain amount of erc1155 tokens. the number\\n/// of tokens that can be bought is limited by the seller - the seller can\\n/// specify the maximum number of tokens that can be bought per transaction\\n/// and the maximum number of tokens that can be bought in total for a given\\n/// address. The seller can also specify the price of erc1155 tokens and how\\n/// that price increases per successful transaction. the token seller assumes\\n/// supply of the erc1155 is unlimited and features a request method\\n\\ninterface ITokenSeller {\\n    enum BuyPriceIncreaseRateType {\\n        NONE,\\n        FIXED,\\n        EXPONENTIAL,\\n        INVERSELOG\\n    }\\n\\n    struct TokenSellerInfo {\\n        address multitoken;\\n        address contractAddress;\\n        address owner;\\n        uint256 tokenHash;\\n        uint256 buyPrice;\\n        BuyPriceIncreaseRateType buyPriceIncreaseRateType;\\n        uint256 buyPriceIncreaseRate;\\n        uint256 maxQuantity;\\n        uint256 maxBuyAmount;\\n        uint256 maxTotalBuyAmount;\\n        uint256 saleStartTime;\\n        uint256 saleEndTime;\\n        bool initialized;\\n        bool open;\\n        uint256 totalPurchased;\\n    }\\n\\n    event TokenSellerCreated(address indexed creator, TokenSellerInfo info);\\n\\n    event Sold(\\n        address indexed contractAddress,\\n        address indexed buyer,\\n        uint256 indexed tokenHash,\\n        uint256 price,\\n        uint256 amount\\n    );\\n\\n    event Requested(\\n        address indexed contractAddress,\\n        address indexed seller,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event Funded(\\n        address indexed contractAddress,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event FundsCollected(address indexed receiver, uint256 indexed amount);\\n\\n    event TokenSellerMigrated(\\n        address indexed migrator,\\n        address indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        TokenSellerInfo data\\n    );\\n\\n    function initialize(address tokenSellerData, TokenSellerInfo memory _info)\\n        external;\\n\\n    function isInitialized() external view returns (bool);\\n\\n    function getInfo() external view returns (TokenSellerInfo memory);\\n\\n    function setInfo(TokenSellerInfo memory _info) external;\\n\\n    /// @dev Buy tokens from the token seller.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were bought.\\n    function buy(uint256 _amount) external payable returns (uint256);\\n\\n    /// @dev Request tokens from the token provider.\\n    /// @param _recipient The address of the token receiver.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were requested.\\n    function request(address _recipient, uint256 _amount)\\n        external\\n        returns (uint256);\\n\\n    function receivePayout(address payable _recipient) external;\\n}\\n\",\"keccak256\":\"0x8783cfa454e469fc9425161cdc4336a2ea0db1379ad2828de0ab9197c36ea43c\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061001a3061001f565b610043565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b61132c806100526000396000f3fe608060405234801561001057600080fd5b50600436106100c95760003560e01c80638c54baf011610081578063d02906561161005b578063d02906561461019e578063e1c28bef146101b1578063ef3c4a05146101b9576100c9565b80638c54baf014610163578063a7fc7a0714610176578063b429afeb1461018b576100c9565b806335d2a2fe116100b257806335d2a2fe14610110578063677808aa146101305780636d990d1a14610150576100c9565b80630551f733146100ce5780630f4c5ccf146100fd575b600080fd5b6100e16100dc366004610f0f565b6101cc565b6040516100f49796959493929190611213565b60405180910390f35b6100e161010b366004610f0f565b610239565b61012361011e36600461100b565b610255565b6040516100f4919061110b565b61014361013e366004610ebb565b610268565b6040516100f491906110c7565b61012361015e366004610f38565b610571565b6100e1610171366004610f0f565b6105d3565b610189610184366004610e9a565b6105ef565b005b610123610199366004610e9a565b610674565b6100e16101ac366004611026565b610692565b6101896106df565b6100e16101c7366004610f0f565b610750565b600360205281600052604060002081815481106101e857600080fd5b600091825260209091206007909102018054600182015460028301546003840154600485015460058601546006909601549497509295506001600160a01b0391821694908216939282169291169087565b600560205281600052604060002081815481106101e857600080fd5b60006102608261076c565b90505b919050565b606060008267ffffffffffffffff81111561029357634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102bc578160200160208202803683370190505b50915060006102cb8486611290565b90505b836102d98187611290565b6102e39190611278565b811015610566576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610332908590600401611173565b60206040518083038186803b15801561034a57600080fd5b505afa92505050801561037a575060408051601f3d908101601f191682019092526103779181019061103e565b60015b6103845750610554565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906103ce908590600401611173565b60206040518083038186803b1580156103e657600080fd5b505afa1580156103fa573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061041e9190610fec565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161044f9291906110ae565b60206040518083038186803b15801561046757600080fd5b505afa15801561047b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061049f919061103e565b905060028260028111156104c357634e487b7160e01b600052602160045260246000fd5b1415806104ce575080155b806104d7575082155b806104e25750826001145b156104ef57505050610554565b600282600281111561051157634e487b7160e01b600052602160045260246000fd5b141561055057828686610523816112af565b97508151811061054357634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505b5050505b8061055e816112af565b9150506102ce565b505095945050505050565b60006001815b83518110156105cc578180156105b857506105b88482815181106105ab57634e487b7160e01b600052603260045260246000fd5b602002602001015161076c565b9150806105c4816112af565b915050610577565b5092915050565b600460205281600052604060002081815481106101e857600080fd5b3360009081526020819052604090205460ff1615156001148061061157503033145b610650576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6001602081905260009182526040909120805491810154600282015460038301546004840154600585015460069095015493946001600160a01b0393841694928416939182169291169087565b3360009081526020819052604090205460ff1615156001148061070157503033145b610737576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b336000908152602081905260409020805460ff19169055565b600260205281600052604060002081815481106101e857600080fd5b60008061077883610d95565b600081815260016020819052604090912001549091501561079d576000915050610263565b808360000181815250508260016000838152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601559050506002600084604001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506003600084606001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506004600084608001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601555050600560008460a001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c08201518160060155505082600001517f3abf67e6c3ea7bc9de98686cd6782a586518bd1cdb89786b5296a68de202873084602001518560400151866060015187608001518860a001518960c001518a604051610d84979695949392919061117c565b60405180910390a250600192915050565b6020808201516040808401516060850151608086015160a087015160c08801519451600097610dc697969101611056565b60408051601f19818403018152919052805160209091012092915050565b80356001600160a01b038116811461026357600080fd5b600060e08284031215610e0c578081fd5b60405160e0810181811067ffffffffffffffff82111715610e2f57610e2f6112e0565b80604052508091508235815260208301356020820152610e5160408401610de4565b6040820152610e6260608401610de4565b6060820152610e7360808401610de4565b6080820152610e8460a08401610de4565b60a082015260c083013560c08201525092915050565b600060208284031215610eab578081fd5b610eb482610de4565b9392505050565b600080600080600060a08688031215610ed2578081fd5b610edb86610de4565b9450610ee960208701610de4565b9350610ef760408701610de4565b94979396509394606081013594506080013592915050565b60008060408385031215610f21578182fd5b610f2a83610de4565b946020939093013593505050565b60006020808385031215610f4a578182fd5b823567ffffffffffffffff80821115610f61578384fd5b818501915085601f830112610f74578384fd5b813581811115610f8657610f866112e0565b610f93848583020161124e565b818152848101925083850160e0808402860187018a1015610fb2578788fd5b8795505b83861015610fde57610fc88a83610dfb565b8552600195909501949386019390810190610fb6565b509098975050505050505050565b600060208284031215610ffd578081fd5b815160038110610eb4578182fd5b600060e0828403121561101c578081fd5b610eb48383610dfb565b600060208284031215611037578081fd5b5035919050565b60006020828403121561104f578081fd5b5051919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b818110156110ff578351835292840192918401916001016110e3565b50909695505050505050565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b60006101a0820190508882526001600160a01b0380891660208401528088166040840152808716606084015280861660808401528460a0840152835160c0840152602084015160e08401528060408501511661010084015280606085015116610120840152806080850151166101408401528060a0850151166101608401525060c083015161018083015298975050505050505050565b96875260208701959095526001600160a01b0393841660408701529183166060860152821660808501521660a083015260c082015260e00190565b60405181810167ffffffffffffffff81118282101715611270576112706112e0565b604052919050565b6000821982111561128b5761128b6112ca565b500190565b60008160001904831182151516156112aa576112aa6112ca565b500290565b60006000198214156112c3576112c36112ca565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea2646970667358221220b42c308e259ce4cec1aec85fa8e43ecd09637603d77e90aad7e6f8d99276dd1a64736f6c63430008000033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100c95760003560e01c80638c54baf011610081578063d02906561161005b578063d02906561461019e578063e1c28bef146101b1578063ef3c4a05146101b9576100c9565b80638c54baf014610163578063a7fc7a0714610176578063b429afeb1461018b576100c9565b806335d2a2fe116100b257806335d2a2fe14610110578063677808aa146101305780636d990d1a14610150576100c9565b80630551f733146100ce5780630f4c5ccf146100fd575b600080fd5b6100e16100dc366004610f0f565b6101cc565b6040516100f49796959493929190611213565b60405180910390f35b6100e161010b366004610f0f565b610239565b61012361011e36600461100b565b610255565b6040516100f4919061110b565b61014361013e366004610ebb565b610268565b6040516100f491906110c7565b61012361015e366004610f38565b610571565b6100e1610171366004610f0f565b6105d3565b610189610184366004610e9a565b6105ef565b005b610123610199366004610e9a565b610674565b6100e16101ac366004611026565b610692565b6101896106df565b6100e16101c7366004610f0f565b610750565b600360205281600052604060002081815481106101e857600080fd5b600091825260209091206007909102018054600182015460028301546003840154600485015460058601546006909601549497509295506001600160a01b0391821694908216939282169291169087565b600560205281600052604060002081815481106101e857600080fd5b60006102608261076c565b90505b919050565b606060008267ffffffffffffffff81111561029357634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102bc578160200160208202803683370190505b50915060006102cb8486611290565b90505b836102d98187611290565b6102e39190611278565b811015610566576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610332908590600401611173565b60206040518083038186803b15801561034a57600080fd5b505afa92505050801561037a575060408051601f3d908101601f191682019092526103779181019061103e565b60015b6103845750610554565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906103ce908590600401611173565b60206040518083038186803b1580156103e657600080fd5b505afa1580156103fa573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061041e9190610fec565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161044f9291906110ae565b60206040518083038186803b15801561046757600080fd5b505afa15801561047b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061049f919061103e565b905060028260028111156104c357634e487b7160e01b600052602160045260246000fd5b1415806104ce575080155b806104d7575082155b806104e25750826001145b156104ef57505050610554565b600282600281111561051157634e487b7160e01b600052602160045260246000fd5b141561055057828686610523816112af565b97508151811061054357634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505b5050505b8061055e816112af565b9150506102ce565b505095945050505050565b60006001815b83518110156105cc578180156105b857506105b88482815181106105ab57634e487b7160e01b600052603260045260246000fd5b602002602001015161076c565b9150806105c4816112af565b915050610577565b5092915050565b600460205281600052604060002081815481106101e857600080fd5b3360009081526020819052604090205460ff1615156001148061061157503033145b610650576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6001602081905260009182526040909120805491810154600282015460038301546004840154600585015460069095015493946001600160a01b0393841694928416939182169291169087565b3360009081526020819052604090205460ff1615156001148061070157503033145b610737576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b336000908152602081905260409020805460ff19169055565b600260205281600052604060002081815481106101e857600080fd5b60008061077883610d95565b600081815260016020819052604090912001549091501561079d576000915050610263565b808360000181815250508260016000838152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601559050506002600084604001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506003600084606001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506004600084608001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601555050600560008460a001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c08201518160060155505082600001517f3abf67e6c3ea7bc9de98686cd6782a586518bd1cdb89786b5296a68de202873084602001518560400151866060015187608001518860a001518960c001518a604051610d84979695949392919061117c565b60405180910390a250600192915050565b6020808201516040808401516060850151608086015160a087015160c08801519451600097610dc697969101611056565b60408051601f19818403018152919052805160209091012092915050565b80356001600160a01b038116811461026357600080fd5b600060e08284031215610e0c578081fd5b60405160e0810181811067ffffffffffffffff82111715610e2f57610e2f6112e0565b80604052508091508235815260208301356020820152610e5160408401610de4565b6040820152610e6260608401610de4565b6060820152610e7360808401610de4565b6080820152610e8460a08401610de4565b60a082015260c083013560c08201525092915050565b600060208284031215610eab578081fd5b610eb482610de4565b9392505050565b600080600080600060a08688031215610ed2578081fd5b610edb86610de4565b9450610ee960208701610de4565b9350610ef760408701610de4565b94979396509394606081013594506080013592915050565b60008060408385031215610f21578182fd5b610f2a83610de4565b946020939093013593505050565b60006020808385031215610f4a578182fd5b823567ffffffffffffffff80821115610f61578384fd5b818501915085601f830112610f74578384fd5b813581811115610f8657610f866112e0565b610f93848583020161124e565b818152848101925083850160e0808402860187018a1015610fb2578788fd5b8795505b83861015610fde57610fc88a83610dfb565b8552600195909501949386019390810190610fb6565b509098975050505050505050565b600060208284031215610ffd578081fd5b815160038110610eb4578182fd5b600060e0828403121561101c578081fd5b610eb48383610dfb565b600060208284031215611037578081fd5b5035919050565b60006020828403121561104f578081fd5b5051919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b818110156110ff578351835292840192918401916001016110e3565b50909695505050505050565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b60006101a0820190508882526001600160a01b0380891660208401528088166040840152808716606084015280861660808401528460a0840152835160c0840152602084015160e08401528060408501511661010084015280606085015116610120840152806080850151166101408401528060a0850151166101608401525060c083015161018083015298975050505050505050565b96875260208701959095526001600160a01b0393841660408701529183166060860152821660808501521660a083015260c082015260e00190565b60405181810167ffffffffffffffff81118282101715611270576112706112e0565b604052919050565b6000821982111561128b5761128b6112ca565b500190565b60008160001904831182151516156112aa576112aa6112ca565b500290565b60006000198214156112c3576112c36112ca565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea2646970667358221220b42c308e259ce4cec1aec85fa8e43ecd09637603d77e90aad7e6f8d99276dd1a64736f6c63430008000033",
+  "libraries": {
+    "Strings": "0xeB3E79099663eC952e02E608E00d463F36b4Fb75",
+    "AddressSet": "0x8974D57fCfF9C10E9d41709da86d006604D8c75d",
+    "UInt256Set": "0x8B6893DB13b55d4952a51d5188215e2a470515a9",
+    "Create2": "0xBa85d3e8E0F9e48F5c21649d33f6d0f9Af12E3f5",
+    "WrappedTokenLib": "0x0307a2E913FD8fb384a939Cfb7655C30820727D8",
+    "ComplexPoolLib": "0x3802c9d35c585ac6668e24A93Bb341D50662aA4E",
+    "LootboxLib": "0x8C1eEB73C02F28434C5A9561956375E5450Bd9f4"
+  },
+  "devdoc": {
+    "author": "The name of the author",
+    "details": "Explain to a developer any extra details",
+    "kind": "dev",
+    "methods": {
+      "addController(address)": {
+        "details": "Add an address allowed to control this contract"
+      },
+      "isController(address)": {
+        "details": "Check if this address is a controller"
+      },
+      "relinquishControl()": {
+        "details": "Remove the sender address from the list of controllers"
+      }
+    },
+    "title": "A title that should describe the contract/interface",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "Explain to an end user what this does",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 12920,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "_controllers",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 15806,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "gemMap",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_uint256,t_struct(Gem)15743_storage)"
+      },
+      {
+        "astId": 15812,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "gemsByMinter",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+      },
+      {
+        "astId": 15818,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "gemsByFactory",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+      },
+      {
+        "astId": 15824,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "gemsByMultitoken",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+      },
+      {
+        "astId": 15830,
+        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "label": "gemsByPool",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_struct(Gem)15743_storage)dyn_storage": {
+        "base": "t_struct(Gem)15743_storage",
+        "encoding": "dynamic_array",
+        "label": "struct IBitgemIndexer.Gem[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct IBitgemIndexer.Gem[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_struct(Gem)15743_storage)dyn_storage"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_uint256,t_struct(Gem)15743_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct IBitgemIndexer.Gem)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Gem)15743_storage"
+      },
+      "t_struct(Gem)15743_storage": {
+        "encoding": "inplace",
+        "label": "struct IBitgemIndexer.Gem",
+        "members": [
+          {
+            "astId": 15730,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "id",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 15732,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "gemHash",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 15734,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "minter",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 15736,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "gemPoolFactory",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 15738,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "multitoken",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address"
+          },
+          {
+            "astId": 15740,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "pool",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_address"
+          },
+          {
+            "astId": 15742,
+            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "label": "quantity",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "224"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
