@@ -2,7 +2,7 @@ import {HardhatRuntimeEnvironment} from 'hardhat/types';
 
 import {task} from 'hardhat/config';
 
-import fs from 'fs';
+import fs, {writeFileSync} from 'fs';
 
 import 'dotenv/config';
 import {HardhatUserConfig} from 'hardhat/types';
@@ -38,7 +38,9 @@ task('check-fees', 'Check the fee manager balance').setAction(
     // get the fee manager contract
     const bitgemFeeManager = await hre.ethers.getContractAt(
       'NFTGemFeeManager',
-      (await hre.deployments.get('NFTGemFeeManager')).address
+      (
+        await hre.deployments.get('NFTGemFeeManager')
+      ).address
     );
     const bg = await bitgemFeeManager.ethBalanceOf();
     console.log(
@@ -54,7 +56,9 @@ task('held-tokens', 'Get a list of held tokens for the given address')
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     const allTokens = await multitoken.heldTokens(address);
     for (let i = 0; i < allTokens.length; i++) {
@@ -73,7 +77,9 @@ task(
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     const allHodlers = await multitoken.tokenHolders(hash);
     for (let i = 0; i < allHodlers.length; i++) {
@@ -88,7 +94,9 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
     // get the gem pool factory
     const gemPoolFactory = await hre.ethers.getContractAt(
       'NFTGemPoolFactory',
-      (await hre.deployments.get('NFTGemPoolFactory')).address
+      (
+        await hre.deployments.get('NFTGemPoolFactory')
+      ).address
     );
 
     // get all gem pool addresses
@@ -163,7 +171,9 @@ task('pool-tokens-for', 'show pool tokens for given pool held by given address')
     // get all gempool contracts
     const multitoken: any = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
-      (await hre.deployments.get('NFTGemMultiToken')).address
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
     );
     // get the token symbol
     const symbol = await poolContract.symbol();
@@ -317,6 +327,60 @@ task(
       }
     }
   );
+
+  task(
+    'index-legacy-pools',
+    'index all legacy pools for given factory and multitoken'
+  )
+    .addParam('factory', 'The legacy factory address')
+    .addParam('multitoken', 'The legacy multitoken address')
+    .setAction(
+      async ({factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
+        // get all gempool contracts
+        const factoryContract: any = await hre.ethers.getContractAt(
+          'NFTGemPoolFactory',
+          factory
+        );
+        // get all gempool contracts
+        const bitgemIndexer: any = await hre.ethers.getContractAt(
+          'BitgemIndexer',
+          multitoken
+        );
+
+        // get length of all gempools, load gempool calls into array
+        // use Promise.all to load all the addresses at once
+        let poolsArray: any = [];
+        const poolcount = await factoryContract.allNFTGemPoolsLength();
+        for (let i = 0; i < poolcount.toNumber(); i++) {
+          poolsArray.push(factoryContract.allNFTGemPools(i));
+        }
+        // get all gem pool data contracts
+        poolsArray = await Promise.all(poolsArray);
+        poolsArray = poolsArray.map((pa: string) =>
+          hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
+        );
+        // load all gem pool addresses at once
+        poolsArray = await Promise.all(poolsArray);
+
+        // iterate through all gempools
+        for (let i = 11; i < poolsArray.length; i++) {  // 10,438(35 per)
+          const poolContract: any = poolsArray[i];
+          console.log(i, poolContract.address);
+          const tokenHashLen = await poolContract.allTokenHashesLength();
+          let tx;
+          if(tokenHashLen.gt(50)) {
+            for(let j = 0; j <= ~~(tokenHashLen.toNumber() / 50); j++) {
+              tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, j, 50, {gasLimit: 9000000});
+              console.log(j);
+            }
+          } else {
+            tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, 0, tokenHashLen.toNumber(), {gasLimit: 9000000});
+            console.log('0');
+          }
+          await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        }
+      }
+    );
 
 task('pool-settings', 'show pool settings for given pool address')
   .addParam('address', 'The pool address')
@@ -511,7 +575,9 @@ task(
     await hre.deployments.deploy('NiftyPixContract', libDeployParams);
     const NiftyPixContract = await hre.ethers.getContractAt(
       'NiftyPixContract',
-      (await hre.deployments.get('NiftyPixContract')).address,
+      (
+        await hre.deployments.get('NiftyPixContract')
+      ).address,
       sender
     );
     const tx = await NiftyPixContract.initialize(
@@ -553,7 +619,9 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
     // get the gov token minter
     const govToken: any = await hre.ethers.getContractAt(
       'GovernanceToken',
-      (await hre.deployments.get('GovernanceToken')).address
+      (
+        await hre.deployments.get('GovernanceToken')
+      ).address
     );
     // get the length of old gov token hodlers
     const allGovTokenHolders = await oldToken.allTokenHoldersLength(0);
@@ -579,6 +647,138 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
         console.log(`${i} ${thAddr} ${th0Bal.toString()}`);
       }
     }
+  });
+
+task('index-bitgem', 'Create easy to index events for gem create events')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .addParam('factory', 'The legacy factory address')
+  .setAction(async ({multitoken, factory}, hre: HardhatRuntimeEnvironment) => {
+    // get the signers
+    const [sender] = await hre.ethers.getSigners();
+    // get the old token
+    const oldToken = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken,
+      sender
+    );
+
+    // get all gempool contracts
+    const factoryContract: any = await hre.ethers.getContractAt(
+      'NFTGemPoolFactory',
+      factory
+    );
+    // get all gempool contracts
+    const multitokenContract: any = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken
+    );
+    // get the gov token minter
+    const bitgemIndexer: any = await hre.ethers.getContractAt(
+      'BitgemIndexer',
+      (
+        await hre.deployments.get('BitgemIndexer')
+      ).address
+    );
+
+    let cached = undefined;
+    try {
+      cached = fs.readFileSync('./token_' + oldToken.address + '.json', 'utf8');
+    } catch (e) {}
+
+    let allTokenHodlers = [];
+    const largeTokenHodlers = [];
+    if (!cached) {
+      // get the length of old gov token hodlers
+      const allGovTokenHolders = await oldToken.allTokenHoldersLength(1);
+      console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+      // process each gov token hodler
+
+      for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+        const thAddr = await oldToken.allTokenHolders(1, i);
+        if (BigNumber.from(thAddr).eq(0) || BigNumber.from(thAddr).eq(1))
+          continue;
+        allTokenHodlers.push(thAddr);
+        console.log(thAddr);
+      }
+      writeFileSync(
+        './token_' + oldToken.address + '.json',
+        JSON.stringify(allTokenHodlers)
+      );
+    } else {
+      allTokenHodlers = JSON.parse(cached);
+    }
+
+    // get length of all gempools, load gempool calls into array
+    // use Promise.all to load all the addresses at once
+    let poolsArray: any = [];
+    const poolcount = await factoryContract.allNFTGemPoolsLength();
+    for (let i = 0; i < poolcount.toNumber(); i++) {
+      poolsArray.push(factoryContract.allNFTGemPools(i));
+    }
+    // get all gem pool data contracts
+    poolsArray = await Promise.all(poolsArray);
+    poolsArray = poolsArray.map((pa: string) =>
+      hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
+    );
+    // load all gem pool addresses at once
+    poolsArray = await Promise.all(poolsArray);
+
+    for (let u = 0; u < allTokenHodlers.length; u++) {
+      const owner = allTokenHodlers[u];
+
+      let cachedUser = undefined;
+      let ownedGems: any = [];
+
+      try {
+        cachedUser = fs.readFileSync('./user_' + owner + '.json', 'utf8');
+      } catch (e) {}
+
+      if (!cachedUser) {
+        // iterate through all gempools
+        for (let i = 0; i < poolsArray.length; i++) {
+          let out = [];
+          const poolContract: any = poolsArray[i];
+          const tokenHashLen = await poolContract.allTokenHashesLength();
+
+          if(tokenHashLen.toNumber() > 50) {
+            for (let i = 0; i <= (tokenHashLen.toNumber() / 50); i++) {
+              out = await bitgemIndexer.getOwnedGems(
+                poolsArray[i].address,
+                multitokenContract.address,
+                await sender.getAddress(),
+                i,
+                50, {gasLimit: 80000000});
+              const fj = out
+                .filter((e:any)=>!e.eq(0))
+                .map((e:any)=>e.toHexString());
+              if(fj.length === 0) break;
+              ownedGems = ownedGems.concat(fj);
+              console.log(i, fj);
+            }
+          } else {
+            const out = await bitgemIndexer.getOwnedGems(
+              poolsArray[i].address,
+              multitokenContract.address,
+              await sender.getAddress(),
+              0,
+              tokenHashLen.toNumber(),
+              {gasLimit: 80000000});
+            const fj = out.filter((e:any)=>!e.eq(0)).map((e:any)=>e.toHexString());
+            if(fj.length ===0) break;
+            ownedGems = fj;
+            console.log(i, fj);
+          }
+          if(ownedGems.length) {
+            writeFileSync(
+              './user_' + owner + '.json',
+              JSON.stringify(ownedGems, null, 4)
+            );
+          }
+        }
+        console.log('user', owner);
+      }
+    }
+
   });
 
 task('publish-gempool', 'Publish a new gem pool with the given parameters')
@@ -620,7 +820,9 @@ task(
     const signer = await hre.ethers.provider.getSigner();
     const govToken: any = await hre.ethers.getContractAt(
       'GovernanceToken',
-      (await hre.deployments.get('GovernanceToken')).address,
+      (
+        await hre.deployments.get('GovernanceToken')
+      ).address,
       signer
     );
     // get the signer
@@ -649,14 +851,18 @@ task(
     // load the proposal factory contract
     const proposalFactory = await hre.ethers.getContractAt(
       'ProposalFactory',
-      (await hre.deployments.get('ProposalFactory')).address,
+      (
+        await hre.deployments.get('ProposalFactory')
+      ).address,
       signer
     );
 
     // load the nft gem governor contract
     const nftGemGovernor = await hre.ethers.getContractAt(
       'NFTGemGovernor',
-      (await hre.deployments.get('NFTGemGovernor')).address,
+      (
+        await hre.deployments.get('NFTGemGovernor')
+      ).address,
       signer
     );
 
@@ -704,7 +910,9 @@ task('send-token-to', 'Send the given claim or gem to the given address')
       // get the multitoken contract
       const multitoken: any = await hre.ethers.getContractAt(
         'NFTGemMultiToken',
-        (await hre.deployments.get('NFTGemMultiToken')).address
+        (
+          await hre.deployments.get('NFTGemMultiToken')
+        ).address
       );
       // get the signer
       const signer = await hre.ethers.provider.getSigner();
@@ -928,7 +1136,7 @@ task('publish-test-lootbox', 'Publish Test Lootbox').setAction(
     };
     const tokenSeller = [
       deployedContracts.NFTGemMultiToken.address,
-      "0x0000000000000000000000000000000000000000",
+      '0x0000000000000000000000000000000000000000',
       senderAddress,
       hre.ethers.utils.parseEther('0'),
       hre.ethers.utils.parseEther('1'),
@@ -941,8 +1149,8 @@ task('publish-test-lootbox', 'Publish Test Lootbox').setAction(
       hre.ethers.utils.parseEther('0'),
       true,
       true,
-      hre.ethers.utils.parseEther('0')
-    ]
+      hre.ethers.utils.parseEther('0'),
+    ];
     const loot = [
       [
         BigNumber.from(0),
@@ -994,21 +1202,24 @@ task('publish-test-lootbox', 'Publish Test Lootbox').setAction(
       ],
     ];
 
-
     const result = await publisher.createLootbox(lootB, tokenSeller);
-    const contract = await new hre.ethers.Contract(result, require('./build/LootboxContract.json'), sender);
-    for(let j=0; j<loot.length; j++) {
+    const contract = await new hre.ethers.Contract(
+      result,
+      require('./build/LootboxContract.json'),
+      sender
+    );
+    for (let j = 0; j < loot.length; j++) {
       const boob = {
         lootHash: loot[j][0],
         owner: loot[j][1],
-        multitoken : loot[j][2],
-        symbol : loot[j][3],
-        name : loot[j][4],
-        probability : loot[j][5],
-        probabilityIndex : loot[j][6],
-        probabilityRoll : loot[j][7],
-        maxMint : loot[j][8],
-        minted : loot[j][9],
+        multitoken: loot[j][2],
+        symbol: loot[j][3],
+        name: loot[j][4],
+        probability: loot[j][5],
+        probabilityIndex: loot[j][6],
+        probabilityRoll: loot[j][7],
+        maxMint: loot[j][8],
+        minted: loot[j][9],
       };
       await contract.addLoot(boob);
       console.log(loot[j]);
@@ -1024,7 +1235,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 111,
+            runs: 2222,
           },
         },
       },
@@ -1033,7 +1244,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 111,
+            runs: 2222,
           },
         },
       },
@@ -1042,7 +1253,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 111,
+            runs: 2200,
           },
         },
       },

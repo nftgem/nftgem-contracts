@@ -68,10 +68,12 @@ export default async function publish(
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
       await this.d('BulkGovernanceTokenMinter', deployParams);
-      await this.d('LootboxData', deployParams);
-      await this.d('LootboxFactory', deployParams);
-      await this.d('RandomFarm', deployParams);
-      await this.d('RandomFarmer', deployParams);
+      await this.d('BitgemIndexer', deployParams);
+      // await this.d('LootboxData', deployParams);
+      // await this.d('LootboxFactory', deployParams);
+      // await this.d('RandomFarm', deployParams);
+      // await this.d('RandomFarmer', deployParams);
+
 
       let SwapHelper = undefined;
       if (parseInt(networkId) === 1) {
@@ -343,6 +345,13 @@ export default async function publish(
           'RandomFarmer',
           (
             await this.get('RandomFarmer')
+          ).address,
+          sender
+        ),
+        BitgemIndexer: await this.getContractAt(
+          'BitgemIndexer',
+          (
+            await this.get('BitgemIndexer')
           ).address,
           sender
         ),

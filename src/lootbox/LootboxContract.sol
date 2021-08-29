@@ -59,8 +59,8 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         _lootbox = LootboxLib.initialize(lootboxInit);
         _lootbox.contractAddress = address(this);
         tokenSellerInfo.tokenHash = _lootbox.lootboxHash;
-        _lootboxData.setTokenSeller(address(this), tokenSellerInfo);
         this.initialize(lootboxData, tokenSellerInfo);
+        _lootboxData.setTokenSeller(address(this), tokenSellerInfo);
         if(isNew) {
             _lootboxData.addLootbox(_lootbox);
             emit LootboxCreated(
