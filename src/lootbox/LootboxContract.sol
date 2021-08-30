@@ -49,19 +49,19 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
         ILootbox.Lootbox memory lootboxInit
     ) external override initializer {
-        require(
-            IControllable(lootboxData).isController(address(this)) == true,
-            "Lootbox data must be controlled by this lootbox"
-        );
         _lootboxData = ILootboxData(lootboxData);
-        bool isNew = lootboxInit.lootboxHash == 0;
-        _lootbox = LootboxLib.initialize(lootboxInit);
-        _lootbox.contractAddress = address(this);
-        tokenSellerInfo.tokenHash = _lootbox.lootboxHash;
+        bool _isNew = false;
+
+        (_lootboxData, _isNew, _lootbox, tokenSellerInfo) = LootboxLib
+            .initialize(
+                address(this),
+                lootboxData,
+                tokenSellerInfo,
+                lootboxInit
+            );
+
         this.initialize(lootboxData, tokenSellerInfo);
-        _lootboxData.setTokenSeller(address(this), tokenSellerInfo);
-        if (isNew) {
-            _lootboxData.addLootbox(_lootbox);
+        if (_isNew) {
             emit LootboxCreated(
                 msg.sender,
                 _lootbox.lootboxHash,
@@ -69,14 +69,6 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
                 _lootbox
             );
         } else {
-            // load the lootbox struct
-            _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
-            _lootbox.contractAddress = address(this);
-            _lootboxData.setLootbox(_lootbox);
-            require(
-                _lootbox.owner == msg.sender,
-                "Lootbox must be owned by the caller to uppgrade contract"
-            );
             emit LootboxMigrated(
                 msg.sender,
                 _lootbox.lootboxHash,

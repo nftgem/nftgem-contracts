@@ -55,11 +55,27 @@ library LootboxLib {
 
     /// @dev Sets the lootbox data. The lootbox contract can either initialise a new
     // lootbox struct or it can load and update an existing lootbox struct.
-    function initialize(ILootbox.Lootbox memory lootboxInit)
+    function initialize(
+        address contractAddress,
+        address lootboxData,
+        ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
+        ILootbox.Lootbox memory lootboxInit
+    )
         external
-        pure
-        returns (ILootbox.Lootbox memory lootboxOut_)
+        returns (
+            ILootboxData _lootboxData,
+            bool _isNew,
+            ILootbox.Lootbox memory _lootbox,
+            ITokenSeller.TokenSellerInfo memory tokenSellerInfo_
+        )
     {
+        require(
+            IControllable(lootboxData).isController(address(this)) == true,
+            "Lootbox data must be controlled by this lootbox"
+        );
+        tokenSellerInfo_ = tokenSellerInfo;
+        _lootboxData = ILootboxData(lootboxData);
+        _isNew = lootboxInit.lootboxHash == 0;
         if (lootboxInit.lootboxHash == 0) {
             require(
                 lootboxInit.multitoken != address(0),
@@ -73,11 +89,26 @@ library LootboxLib {
             require(lootboxInit.minLootPerOpen != 0, "Min loot must be set");
             require(lootboxInit.maxLootPerOpen != 0, "Max loot must be set");
             // TODO: additional validity checks would not hurt here
-            lootboxOut_ = lootboxInit;
-            lootboxOut_.lootboxHash = uint256(
+            _lootbox = lootboxInit;
+            _lootbox.lootboxHash = uint256(
                 keccak256(abi.encodePacked(lootboxInit.symbol))
             );
-            lootboxOut_.initialized = true;
+            _lootbox.initialized = true;
+        }
+        _lootbox.contractAddress = contractAddress;
+        tokenSellerInfo_.tokenHash = _lootbox.lootboxHash;
+        _lootboxData.setTokenSeller(contractAddress, tokenSellerInfo);
+        if (_isNew) {
+            _lootboxData.addLootbox(_lootbox);
+        } else {
+            // load the lootbox struct
+            _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
+            _lootbox.contractAddress = contractAddress;
+            _lootboxData.setLootbox(_lootbox);
+            require(
+                _lootbox.owner == msg.sender,
+                "Lootbox must be owned by the caller to uppgrade contract"
+            );
         }
     }
 
