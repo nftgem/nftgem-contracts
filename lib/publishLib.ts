@@ -69,10 +69,10 @@ export default async function publish(
       await this.d('TokenPoolQuerier', deployParams);
       await this.d('BulkGovernanceTokenMinter', deployParams);
       await this.d('BitgemIndexer', deployParams);
-      // await this.d('LootboxData', deployParams);
-      // await this.d('LootboxFactory', deployParams);
-      // await this.d('RandomFarm', deployParams);
-      // await this.d('RandomFarmer', deployParams);
+      await this.d('LootboxData', deployParams);
+      await this.d('LootboxFactory', deployParams);
+      await this.d('RandomFarm', deployParams);
+      await this.d('RandomFarmer', deployParams);
 
 
       let SwapHelper = undefined;
@@ -93,7 +93,7 @@ export default async function publish(
         const deployParams: any = {
           from: sender.address,
           log: true,
-          libraries: {},
+          libraries: { },
         };
         deployParams.libraries[`${SwapHelper}Lib`] = (
           await this.d(`${SwapHelper}Lib`, libDeployParams)

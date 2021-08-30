@@ -1,11 +1,11 @@
-import {HardhatRuntimeEnvironment} from 'hardhat/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-import {task} from 'hardhat/config';
+import { task } from 'hardhat/config';
 
-import fs, {writeFileSync} from 'fs';
+import fs, { writeFileSync } from 'fs';
 
 import 'dotenv/config';
-import {HardhatUserConfig} from 'hardhat/types';
+import { HardhatUserConfig } from 'hardhat/types';
 
 import 'hardhat-deploy';
 import 'hardhat-deploy-ethers';
@@ -22,14 +22,14 @@ import '@nomiclabs/hardhat-ganache';
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 
-import {node_url, accounts} from './utils/network';
-import {BigNumber} from 'ethers';
-import {pack, keccak256} from '@ethersproject/solidity';
+import { node_url, accounts } from './utils/network';
+import { BigNumber } from 'ethers';
+import { pack, keccak256 } from '@ethersproject/solidity';
 
 import publish from './lib/publishLib';
-import lootbox, {Lootbox, Loot} from './lib/lootboxLib';
+import lootbox, { Lootbox, Loot } from './lib/lootboxLib';
 import migrator from './lib/migrateLib';
-import {formatEther, parseEther} from '@ethersproject/units';
+import { formatEther, parseEther } from '@ethersproject/units';
 
 //import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
 
@@ -52,7 +52,7 @@ task('check-fees', 'Check the fee manager balance').setAction(
 
 task('held-tokens', 'Get a list of held tokens for the given address')
   .addParam('address', 'The token holder address')
-  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
@@ -73,7 +73,7 @@ task(
   'Get a list of token holder addresses for the given token hash'
 )
   .addParam('hash', 'The token hash')
-  .setAction(async ({hash}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ hash }, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
     const multitoken = await hre.ethers.getContractAt(
       'NFTGemMultiToken',
@@ -147,7 +147,7 @@ task('list-gem-pools', 'Lists all current gem pools').setAction(
 
 task('pool-tokens', 'show pool tokens for given pool')
   .addParam('address', 'The pool address')
-  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -162,7 +162,7 @@ task('pool-tokens', 'show pool tokens for given pool')
 task('pool-tokens-for', 'show pool tokens for given pool held by given address')
   .addParam('address', 'The pool address')
   .addParam('owner', 'The owner address')
-  .setAction(async ({address, owner}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address, owner }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -219,7 +219,7 @@ task(
   .addParam('multitoken', 'The legacy multitoken address')
   .setAction(
     async (
-      {owner, factory, multitoken, symbol},
+      { owner, factory, multitoken, symbol },
       hre: HardhatRuntimeEnvironment
     ) => {
       // get all gempool contracts
@@ -274,7 +274,7 @@ task(
   .addParam('factory', 'The legacy factory address')
   .addParam('multitoken', 'The legacy multitoken address')
   .setAction(
-    async ({owner, factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
+    async ({ owner, factory, multitoken }, hre: HardhatRuntimeEnvironment) => {
       // get all gempool contracts
       const factoryContract: any = await hre.ethers.getContractAt(
         'NFTGemPoolFactory',
@@ -328,63 +328,64 @@ task(
     }
   );
 
-  task(
-    'index-legacy-pools',
-    'index all legacy pools for given factory and multitoken'
-  )
-    .addParam('factory', 'The legacy factory address')
-    .addParam('multitoken', 'The legacy multitoken address')
-    .setAction(
-      async ({factory, multitoken}, hre: HardhatRuntimeEnvironment) => {
-        // get all gempool contracts
-        const factoryContract: any = await hre.ethers.getContractAt(
-          'NFTGemPoolFactory',
-          factory
-        );
-        // get all gempool contracts
-        const bitgemIndexer: any = await hre.ethers.getContractAt(
-          'BitgemIndexer',
-          multitoken
-        );
+task(
+  'index-legacy-pools',
+  'index all legacy pools for given factory and multitoken'
+)
+  .addParam('factory', 'The legacy factory address')
+  .addParam('multitoken', 'The legacy multitoken address')
+  .setAction(
+    async ({ factory, multitoken }, hre: HardhatRuntimeEnvironment) => {
+      // get all gempool contracts
+      const factoryContract: any = await hre.ethers.getContractAt(
+        'NFTGemPoolFactory',
+        factory
+      );
+      // get all gempool contracts
+      const bitgemIndexer: any = await hre.ethers.getContractAt(
+        'BitgemIndexer',
+        multitoken
+      );
 
-        // get length of all gempools, load gempool calls into array
-        // use Promise.all to load all the addresses at once
-        let poolsArray: any = [];
-        const poolcount = await factoryContract.allNFTGemPoolsLength();
-        for (let i = 0; i < poolcount.toNumber(); i++) {
-          poolsArray.push(factoryContract.allNFTGemPools(i));
-        }
-        // get all gem pool data contracts
-        poolsArray = await Promise.all(poolsArray);
-        poolsArray = poolsArray.map((pa: string) =>
-          hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
-        );
-        // load all gem pool addresses at once
-        poolsArray = await Promise.all(poolsArray);
-
-        // iterate through all gempools
-        for (let i = 11; i < poolsArray.length; i++) {  // 10,438(35 per)
-          const poolContract: any = poolsArray[i];
-          console.log(i, poolContract.address);
-          const tokenHashLen = await poolContract.allTokenHashesLength();
-          let tx;
-          if(tokenHashLen.gt(50)) {
-            for(let j = 0; j <= ~~(tokenHashLen.toNumber() / 50); j++) {
-              tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, j, 50, {gasLimit: 9000000});
-              console.log(j);
-            }
-          } else {
-            tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, 0, tokenHashLen.toNumber(), {gasLimit: 9000000});
-            console.log('0');
-          }
-          await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        }
+      // get length of all gempools, load gempool calls into array
+      // use Promise.all to load all the addresses at once
+      let poolsArray: any = [];
+      const poolcount = await factoryContract.allNFTGemPoolsLength();
+      for (let i = 0; i < poolcount.toNumber(); i++) {
+        poolsArray.push(factoryContract.allNFTGemPools(i));
       }
-    );
+      // get all gem pool data contracts
+      poolsArray = await Promise.all(poolsArray);
+      poolsArray = poolsArray.map((pa: string) =>
+        hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
+      );
+      // load all gem pool addresses at once
+      poolsArray = await Promise.all(poolsArray);
+
+      // iterate through all gempools
+      for (let i = 10; i < poolsArray.length; i++) {  // 10,438(35 per)
+        const poolContract: any = poolsArray[i];
+        console.log(i, poolContract.address);
+        const tokenHashLen = await poolContract.allTokenHashesLength();
+        let tx;
+        if (tokenHashLen.gt(35)) {
+          for (let j = 438; j <= ~~(tokenHashLen.toNumber() / 35); j++) {
+            tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, j, 35, { gasLimit: 8000000 });
+            console.log(j);
+          }
+        } else {
+          tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, 0, tokenHashLen.toNumber(), { gasLimit: 8000000 });
+          console.log('0');
+        }
+        await tx.wait();
+        // await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+      }
+    }
+  );
 
 task('pool-settings', 'show pool settings for given pool address')
   .addParam('address', 'The pool address')
-  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -421,7 +422,7 @@ task('pool-settings', 'show pool settings for given pool address')
 
 task('pool-stats', 'show pool stats for given pool address')
   .addParam('address', 'The pool address')
-  .setAction(async ({address}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -454,7 +455,7 @@ task('pool-stats', 'show pool stats for given pool address')
 task('claim-details', 'show details for given claim in given pool')
   .addParam('claimHash', 'The claim hash')
   .addParam('address', 'The pool address')
-  .setAction(async ({address, claimHash}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address, claimHash }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract: any = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -483,7 +484,7 @@ task('claim-details', 'show details for given claim in given pool')
 task('token-details', 'show details for given token in given pool')
   .addParam('tokenHash', 'The token hash')
   .addParam('address', 'The pool address')
-  .setAction(async ({address, tokenHash}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address, tokenHash }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const poolContract = await hre.ethers.getContractAt(
       'NFTComplexGemPoolData',
@@ -507,7 +508,7 @@ task('import-legacy-gem', 'Import a legacy gem into the given pool')
   .addParam('recipient', 'The token import recipient')
   .setAction(
     async (
-      {address, legacyAddress, legacyToken, tokenHash, recipient},
+      { address, legacyAddress, legacyToken, tokenHash, recipient },
       hre: HardhatRuntimeEnvironment
     ) => {
       // get all gempool contracts
@@ -531,7 +532,7 @@ task(
 )
   .addParam('address', 'The address')
   .addParam('amount', 'The amount to send to in whole units')
-  .setAction(async ({address, amount}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address, amount }, hre: HardhatRuntimeEnvironment) => {
     // get all gempool contracts
     const govToken: any = await hre.ethers.getContractAt(
       'GovernanceToken',
@@ -549,7 +550,7 @@ task(
   .addParam('address', 'The pool address')
   .addParam('allowedAddress', 'The allowed source address')
   .setAction(
-    async ({address, allowedAddress}, hre: HardhatRuntimeEnvironment) => {
+    async ({ address, allowedAddress }, hre: HardhatRuntimeEnvironment) => {
       // get all gempool contracts
       const poolContract: any = await hre.ethers.getContractAt(
         'NFTComplexGemPoolData',
@@ -566,7 +567,7 @@ task(
 )
   .addParam('address', 'The pool address')
   .addParam('fee', 'The fee we are charging')
-  .setAction(async ({address, fee}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ address, fee }, hre: HardhatRuntimeEnvironment) => {
     const [sender] = await hre.ethers.getSigners();
     const libDeployParams = {
       from: await sender.getAddress(),
@@ -598,7 +599,7 @@ task(
   .addParam('governance', 'true or 1 to also migrate governance tokens')
   .setAction(
     async (
-      {factory, multitoken, migrateGovernance},
+      { factory, multitoken, migrateGovernance },
       hre: HardhatRuntimeEnvironment
     ) => {
       await migrator(hre, factory, multitoken, migrateGovernance);
@@ -607,7 +608,7 @@ task(
 
 task('migrate-governance', 'Migrate the legacy governance token to erc20')
   .addParam('multitoken', 'The legacy gem multitoken address')
-  .setAction(async ({multitoken}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ multitoken }, hre: HardhatRuntimeEnvironment) => {
     // get the signers
     const [sender] = await hre.ethers.getSigners();
     // get the old token
@@ -652,7 +653,7 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
 task('index-bitgem', 'Create easy to index events for gem create events')
   .addParam('multitoken', 'The legacy gem multitoken address')
   .addParam('factory', 'The legacy factory address')
-  .setAction(async ({multitoken, factory}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ multitoken, factory }, hre: HardhatRuntimeEnvironment) => {
     // get the signers
     const [sender] = await hre.ethers.getSigners();
     // get the old token
@@ -683,7 +684,7 @@ task('index-bitgem', 'Create easy to index events for gem create events')
     let cached = undefined;
     try {
       cached = fs.readFileSync('./token_' + oldToken.address + '.json', 'utf8');
-    } catch (e) {}
+    } catch (e) { }
 
     let allTokenHodlers = [];
     const largeTokenHodlers = [];
@@ -731,7 +732,7 @@ task('index-bitgem', 'Create easy to index events for gem create events')
 
       try {
         cachedUser = fs.readFileSync('./user_' + owner + '.json', 'utf8');
-      } catch (e) {}
+      } catch (e) { }
 
       if (!cachedUser) {
         // iterate through all gempools
@@ -740,18 +741,18 @@ task('index-bitgem', 'Create easy to index events for gem create events')
           const poolContract: any = poolsArray[i];
           const tokenHashLen = await poolContract.allTokenHashesLength();
 
-          if(tokenHashLen.toNumber() > 50) {
+          if (tokenHashLen.toNumber() > 50) {
             for (let i = 0; i <= (tokenHashLen.toNumber() / 50); i++) {
               out = await bitgemIndexer.getOwnedGems(
                 poolsArray[i].address,
                 multitokenContract.address,
                 await sender.getAddress(),
                 i,
-                50, {gasLimit: 80000000});
+                50, { gasLimit: 80000000 });
               const fj = out
-                .filter((e:any)=>!e.eq(0))
-                .map((e:any)=>e.toHexString());
-              if(fj.length === 0) break;
+                .filter((e: any) => !e.eq(0))
+                .map((e: any) => e.toHexString());
+              if (fj.length === 0) break;
               ownedGems = ownedGems.concat(fj);
               console.log(i, fj);
             }
@@ -762,13 +763,13 @@ task('index-bitgem', 'Create easy to index events for gem create events')
               await sender.getAddress(),
               0,
               tokenHashLen.toNumber(),
-              {gasLimit: 80000000});
-            const fj = out.filter((e:any)=>!e.eq(0)).map((e:any)=>e.toHexString());
-            if(fj.length ===0) break;
+              { gasLimit: 80000000 });
+            const fj = out.filter((e: any) => !e.eq(0)).map((e: any) => e.toHexString());
+            if (fj.length === 0) break;
             ownedGems = fj;
             console.log(i, fj);
           }
-          if(ownedGems.length) {
+          if (ownedGems.length) {
             writeFileSync(
               './user_' + owner + '.json',
               JSON.stringify(ownedGems, null, 4)
@@ -792,7 +793,7 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('allowedToken', 'An optional allowed token')
   .setAction(
     async (
-      {symbol, name, price, min, max, diff, maxClaims, allowedToken},
+      { symbol, name, price, min, max, diff, maxClaims, allowedToken },
       hre: HardhatRuntimeEnvironment
     ) => {
       const publisher = await publish(hre, false);
@@ -814,7 +815,7 @@ task(
   'Mint governance tokens. Driven with a file input containing an array of address, quantity pairs'
 )
   .addParam('file', 'The legacy gem pool factory address')
-  .setAction(async ({file}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ file }, hre: HardhatRuntimeEnvironment) => {
     const data = JSON.parse(fs.readFileSync(file).toString());
     // get the multitoken contract
     const signer = await hre.ethers.provider.getSigner();
@@ -844,7 +845,7 @@ task(
   'Withdraw fees from fee manager. Pushes a governance proposal through for a transfer to the specific individualThe.'
 )
   .addParam('account', 'The legacy gem multitoken address')
-  .setAction(async ({account}, hre: HardhatRuntimeEnvironment) => {
+  .setAction(async ({ account }, hre: HardhatRuntimeEnvironment) => {
     // get the signer
     const signer = await hre.ethers.provider.getSigner();
 
@@ -883,7 +884,7 @@ task(
   .addParam('factory', 'The legacy gem pool factory address')
   .addParam('multitoken', 'The legacy gem multitoken address')
   .setAction(
-    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
+    async ({ factory, multitoken, account }, hre: HardhatRuntimeEnvironment) => {
       await migrator(hre, factory, multitoken, account);
     }
   );
@@ -896,7 +897,7 @@ task(
   .addParam('multitoken', 'The legacy gem multitoken address')
   .addParam('account', 'The target token holder account address')
   .setAction(
-    async ({factory, multitoken, account}, hre: HardhatRuntimeEnvironment) => {
+    async ({ factory, multitoken, account }, hre: HardhatRuntimeEnvironment) => {
       await migrator(hre, factory, multitoken, account);
     }
   );
@@ -906,7 +907,7 @@ task('send-token-to', 'Send the given claim or gem to the given address')
   .addParam('recipient', 'The recipient address')
   .addParam('quantity', 'The recipient address')
   .setAction(
-    async ({hash, recipient, quantity}, hre: HardhatRuntimeEnvironment) => {
+    async ({ hash, recipient, quantity }, hre: HardhatRuntimeEnvironment) => {
       // get the multitoken contract
       const multitoken: any = await hre.ethers.getContractAt(
         'NFTGemMultiToken',
@@ -1235,7 +1236,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 2222,
+            runs: 1111,
           },
         },
       },

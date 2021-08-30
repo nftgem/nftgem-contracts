@@ -10,7 +10,6 @@ import "../access/Controllable.sol";
 import "./TokenSeller.sol";
 
 library LootboxLib {
-
     event LootboxCreated(
         address indexed creator,
         uint256 indexed hash,
@@ -56,10 +55,11 @@ library LootboxLib {
 
     /// @dev Sets the lootbox data. The lootbox contract can either initialise a new
     // lootbox struct or it can load and update an existing lootbox struct.
-    function initialize(
-        ILootbox.Lootbox memory lootboxInit
-    )
-    external pure returns (ILootbox.Lootbox memory lootboxOut_) {
+    function initialize(ILootbox.Lootbox memory lootboxInit)
+        external
+        pure
+        returns (ILootbox.Lootbox memory lootboxOut_)
+    {
         if (lootboxInit.lootboxHash == 0) {
             require(
                 lootboxInit.multitoken != address(0),
@@ -75,11 +75,7 @@ library LootboxLib {
             // TODO: additional validity checks would not hurt here
             lootboxOut_ = lootboxInit;
             lootboxOut_.lootboxHash = uint256(
-                keccak256(
-                    abi.encodePacked(
-                        lootboxInit.symbol
-                    )
-                )
+                keccak256(abi.encodePacked(lootboxInit.symbol))
             );
             lootboxOut_.initialized = true;
         }
@@ -88,10 +84,7 @@ library LootboxLib {
     function openLootbox(
         ILootbox.Lootbox memory _lootbox,
         ILootbox.Loot[] memory _loot
-    )
-        external
-        returns (ILootbox.Loot[] memory _lootOut)
-    {
+    ) external returns (ILootbox.Loot[] memory _lootOut) {
         // make sure that the caller has at least one lootbox token
         require(
             IERC1155(_lootbox.multitoken).balanceOf(
@@ -130,11 +123,10 @@ library LootboxLib {
         // we use a pseudo-random deterministic sieve to determine the number
         // and type of tokens minted
         uint256[] memory _lootRoll = IRandomFarmer(_lootbox.randomFarmer)
-        .getRandomUints(lootCount);
+            .getRandomUints(lootCount);
 
         // mint the loot items
         for (uint256 i = 0; i < lootCount; i++) {
-
             // generate a loot item given a random seed
             (uint8 winIndex, uint256 winRoll) = _generateLoot(
                 _loot,
@@ -163,10 +155,12 @@ library LootboxLib {
         );
     }
 
-    function mintLoot(ILootbox.Lootbox memory _lootbox, ILootbox.Loot[] memory _allLoot, uint8 index, uint256 amount)
-        external
-        returns (ILootbox.Loot memory)
-    {
+    function mintLoot(
+        ILootbox.Lootbox memory _lootbox,
+        ILootbox.Loot[] memory _allLoot,
+        uint8 index,
+        uint256 amount
+    ) external returns (ILootbox.Loot memory) {
         require(index < _allLoot.length, "Loot index out of bounds");
         // mint the loot item to the minter
         INFTGemMultiToken(_lootbox.multitoken).mint(
@@ -201,11 +195,7 @@ library LootboxLib {
         ILootbox.Loot[] memory _loot,
         uint256 dice,
         uint256 _probabilitiesSum
-    )
-        internal
-        pure
-        returns (uint8 winnerIndex, uint256 winnerRoll)
-    {
+    ) internal pure returns (uint8 winnerIndex, uint256 winnerRoll) {
         // validate the dice roll is in the proper range
         require(
             dice < _probabilitiesSum,
@@ -229,5 +219,21 @@ library LootboxLib {
         return (winnerIndex, winnerRoll);
     }
 
-
+    function recalculateProbabilities(address lootboxData, uint256 _lootboxHash)
+        public
+        returns (ILootbox.Loot[] memory _allLootOut)
+    {
+        uint256 floor = 0;
+        // iterate through the loot items
+        ILootbox.Loot[] memory _allLoot = ILootboxData(lootboxData).allLoot(
+            _lootboxHash
+        );
+        for (uint256 i = 0; i < _allLoot.length; i++) {
+            // set the probability index to the floor
+            _allLoot[i].probabilityIndex = floor + _allLoot[i].probability;
+            floor += _allLoot[i].probability;
+            ILootboxData(lootboxData).setLoot(_lootboxHash, i, _allLoot[i]);
+        }
+        _allLootOut = _allLoot;
+    }
 }
