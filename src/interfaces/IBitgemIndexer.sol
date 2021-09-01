@@ -122,7 +122,7 @@ interface IBitgemIndexer {
         address account,
         uint256 page,
         uint256 count
-    ) external view returns (uint256[] memory gems);
+    ) external view returns (uint256[] memory gems, uint256 gemLen);
 
     function indexGemPool(
         address gemPool,

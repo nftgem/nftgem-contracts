@@ -1,0 +1,207 @@
+{
+  "address": "0x1844A5ACC0f4DEFDc2E605EBaA9162A6e0facE5D",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "randomness",
+          "type": "uint256"
+        }
+      ],
+      "name": "addRandomness",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "amount",
+          "type": "uint8"
+        }
+      ],
+      "name": "getRandomBytes",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "_randomBytes",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "min",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "max",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRandomNumber",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "amount",
+          "type": "uint8"
+        }
+      ],
+      "name": "getRandomUints",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_randomUints",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "seed",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isInitialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x3ec799f62495dff45075a0ae7fc87079c9b4a4f65757f9e6cf0b7ffbf99c15df",
+  "receipt": {
+    "to": null,
+    "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
+    "contractAddress": "0x1844A5ACC0f4DEFDc2E605EBaA9162A6e0facE5D",
+    "transactionIndex": 0,
+    "gasUsed": "429006",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x00000d92000005e3d327170d8940bb86c57fac0dbf8aa6e12a978527bdaa51e9",
+    "transactionHash": "0x3ec799f62495dff45075a0ae7fc87079c9b4a4f65757f9e6cf0b7ffbf99c15df",
+    "logs": [],
+    "blockNumber": 1566207,
+    "cumulativeGasUsed": "429006",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "b3aca09260278d33fac105eaeaa8855b",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"randomness\",\"type\":\"uint256\"}],\"name\":\"addRandomness\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"amount\",\"type\":\"uint8\"}],\"name\":\"getRandomBytes\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"_randomBytes\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"min\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"max\",\"type\":\"uint256\"}],\"name\":\"getRandomNumber\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"amount\",\"type\":\"uint8\"}],\"name\":\"getRandomUints\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"_randomUints\",\"type\":\"uint256[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"seed\",\"type\":\"uint256\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"A randomness farm. It does what it says - it farms randomness that is provided by the user into usable randomness by other contracts.\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/random/RandomFarm.sol\":\"RandomFarm\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2222},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/proxy/utils/Initializable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed\\n * behind a proxy. Since a proxied contract can't have a constructor, it's common to move constructor logic to an\\n * external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer\\n * function so it can only be called once. The {initializer} modifier provided by this contract will have this effect.\\n *\\n * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as\\n * possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}.\\n *\\n * CAUTION: When used with inheritance, manual care must be taken to not invoke a parent initializer twice, or to ensure\\n * that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.\\n */\\nabstract contract Initializable {\\n    /**\\n     * @dev Indicates that the contract has been initialized.\\n     */\\n    bool private _initialized;\\n\\n    /**\\n     * @dev Indicates that the contract is in the process of being initialized.\\n     */\\n    bool private _initializing;\\n\\n    /**\\n     * @dev Modifier to protect an initializer function from being invoked twice.\\n     */\\n    modifier initializer() {\\n        require(_initializing || !_initialized, \\\"Initializable: contract is already initialized\\\");\\n\\n        bool isTopLevelCall = !_initializing;\\n        if (isTopLevelCall) {\\n            _initializing = true;\\n            _initialized = true;\\n        }\\n\\n        _;\\n\\n        if (isTopLevelCall) {\\n            _initializing = false;\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x8b2abd85d0ece7e866e100e9d47ca9cbec93c87cf71a8d267b2b93eb81f7d5e9\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/IRandomFarm.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IRandomFarmer {\\n    function getRandomBytes(uint8 amount) external returns (bytes32[] memory);\\n\\n    function getRandomUints(uint8 amount) external returns (uint256[] memory);\\n\\n    function getRandomNumber(uint256 min, uint256 max)\\n        external\\n        returns (uint256);\\n}\\n\\ninterface IRandomFarm is IRandomFarmer {\\n    function initialize(uint256 seed) external;\\n\\n    function addRandomness(uint256 randomness) external;\\n}\\n\",\"keccak256\":\"0x30c47bb1d97367da45f911bfb8c63b0af671e1dae3d5faac65a6203af6717cf6\",\"license\":\"MIT\"},\"src/random/RandomFarm.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"@openzeppelin/contracts/proxy/utils/Initializable.sol\\\";\\n\\nimport \\\"../interfaces/IRandomFarm.sol\\\";\\n\\nimport \\\"../access/Controllable.sol\\\";\\n\\n/**\\n * @dev A randomness farm. It does what it says - it farms randomness that\\n * is provided by the user into usable randomness by other contracts.\\n */\\ncontract RandomFarm is IRandomFarm, Initializable {\\n    uint256 private randomSeed;\\n    mapping(address => uint256) private salt;\\n\\n    function initialize(uint256 seed) external override initializer {\\n        randomSeed = seed;\\n    }\\n\\n    function isInitialized() external view returns (bool) {\\n        return randomSeed != 0;\\n    }\\n\\n    function addRandomness(uint256 randomness) external override {\\n        randomSeed = uint256(\\n            keccak256(abi.encodePacked(randomSeed, randomness))\\n        );\\n    }\\n\\n    function getRandomBytes(uint8 amount)\\n        external\\n        override\\n        returns (bytes32[] memory _randomBytes)\\n    {\\n        _randomBytes = new bytes32[](amount);\\n        for (uint8 i = 0; i < amount; i++) {\\n            _randomBytes[i] = _randomByte32();\\n        }\\n    }\\n\\n    function getRandomUints(uint8 amount)\\n        external\\n        override\\n        returns (uint256[] memory _randomUints)\\n    {\\n        _randomUints = new uint256[](amount);\\n        for (uint8 i = 0; i < amount; i++) {\\n            _randomUints[i] = _randomUint();\\n        }\\n    }\\n\\n    function _randomByte32() internal returns (bytes32 _bytes32) {\\n        _bytes32 = bytes32(\\n            keccak256(\\n                abi.encodePacked(\\n                    blockhash(block.number - 1),\\n                    randomSeed,\\n                    tx.origin,\\n                    salt[tx.origin]++\\n                )\\n            )\\n        );\\n    }\\n\\n    function _randomUint() internal returns (uint256 _uint) {\\n        _uint = uint256(\\n            keccak256(\\n                abi.encodePacked(\\n                    blockhash(block.number - 1),\\n                    randomSeed,\\n                    tx.origin,\\n                    salt[tx.origin]++\\n                )\\n            )\\n        );\\n    }\\n\\n    function getRandomNumber(uint256 min, uint256 max)\\n        external\\n        override\\n        returns (uint256)\\n    {\\n        return min + (_randomUint() % (max - min));\\n    }\\n}\\n\\ncontract RandomFarmer is IRandomFarmer, Controllable {\\n    IRandomFarm private farm;\\n\\n    constructor() {\\n        _addController(msg.sender);\\n    }\\n\\n    function setFarm(address _farm) public onlyController {\\n        farm = IRandomFarm(_farm);\\n    }\\n\\n    function getFarm() public view returns (address _farm) {\\n        _farm = address(farm);\\n    }\\n\\n    function getRandomBytes(uint8 amount)\\n        external\\n        override\\n        returns (bytes32[] memory)\\n    {\\n        return farm.getRandomBytes(amount);\\n    }\\n\\n    function getRandomUints(uint8 amount)\\n        external\\n        override\\n        returns (uint256[] memory)\\n    {\\n        return farm.getRandomUints(amount);\\n    }\\n\\n    function getRandomNumber(uint256 min, uint256 max)\\n        external\\n        override\\n        returns (uint256)\\n    {\\n        return farm.getRandomNumber(min, max);\\n    }\\n}\\n\",\"keccak256\":\"0x53475aaa27edf8aca961af748588c9be73fba059e167717c89cfa7a2c3e523b0\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506106d0806100206000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c80636e68fc0a116100505780636e68fc0a146100ca57806382da649a146100ea578063fe4b84df146100fd57610072565b8063392e53cd1461007757806352e22aff1461009557806359792406146100aa575b600080fd5b61007f610110565b60405161008c919061056b565b60405180910390f35b6100a86100a336600461047f565b610118565b005b6100bd6100b83660046104b8565b610169565b60405161008c9190610527565b6100dd6100d8366004610497565b610220565b60405161008c91906105d3565b6100bd6100f83660046104b8565b61024f565b6100a861010b36600461047f565b610300565b600154151590565b6001548160405160200161012d929190610519565b604080517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0818403018152919052805160209091012060015550565b60608160ff1667ffffffffffffffff81111561019557634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156101be578160200160208202803683370190505b50905060005b8260ff168160ff16101561021a576101da6103bc565b828260ff16815181106101fd57634e487b7160e01b600052603260045260246000fd5b60209081029190910101528061021281610644565b9150506101c4565b50919050565b600061022c83836105f4565b61023461041c565b61023e9190610664565b61024890846105dc565b9392505050565b60608160ff1667ffffffffffffffff81111561027b57634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102a4578160200160208202803683370190505b50905060005b8260ff168160ff16101561021a576102c061041c565b828260ff16815181106102e357634e487b7160e01b600052603260045260246000fd5b6020908102919091010152806102f881610644565b9150506102aa565b600054610100900460ff1680610319575060005460ff16155b610358576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161034f90610576565b60405180910390fd5b600054610100900460ff161580156103a157600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0061ff0019909116610100171660011790555b600182905580156103b8576000805461ff00191690555b5050565b60006103c96001436105f4565b6001543260008181526002602052604081208054944094916103ea8361060b565b9190505560405160200161040194939291906104d9565b60405160208183030381529060405280519060200120905090565b60006104296001436105f4565b60015432600081815260026020526040812080549440949161044a8361060b565b9190505560405160200161046194939291906104d9565b6040516020818303038152906040528051906020012060001c905090565b600060208284031215610490578081fd5b5035919050565b600080604083850312156104a9578081fd5b50508035926020909101359150565b6000602082840312156104c9578081fd5b813560ff81168114610248578182fd5b938452602084019290925260601b7fffffffffffffffffffffffffffffffffffffffff000000000000000000000000166040830152605482015260740190565b918252602082015260400190565b6020808252825182820181905260009190848201906040850190845b8181101561055f57835183529284019291840191600101610543565b50909695505050505050565b901515815260200190565b6020808252602e908201527f496e697469616c697a61626c653a20636f6e747261637420697320616c72656160408201527f647920696e697469616c697a6564000000000000000000000000000000000000606082015260800190565b90815260200190565b600082198211156105ef576105ef610684565b500190565b60008282101561060657610606610684565b500390565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82141561063d5761063d610684565b5060010190565b600060ff821660ff81141561065b5761065b610684565b60010192915050565b60008261067f57634e487b7160e01b81526012600452602481fd5b500690565b634e487b7160e01b600052601160045260246000fdfea26469706673582212207ebe841b50f2e430d4e96ad8ef007a6ff992d5a2b1b0469cced05d0ba23020fa64736f6c63430008000033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c80636e68fc0a116100505780636e68fc0a146100ca57806382da649a146100ea578063fe4b84df146100fd57610072565b8063392e53cd1461007757806352e22aff1461009557806359792406146100aa575b600080fd5b61007f610110565b60405161008c919061056b565b60405180910390f35b6100a86100a336600461047f565b610118565b005b6100bd6100b83660046104b8565b610169565b60405161008c9190610527565b6100dd6100d8366004610497565b610220565b60405161008c91906105d3565b6100bd6100f83660046104b8565b61024f565b6100a861010b36600461047f565b610300565b600154151590565b6001548160405160200161012d929190610519565b604080517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0818403018152919052805160209091012060015550565b60608160ff1667ffffffffffffffff81111561019557634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156101be578160200160208202803683370190505b50905060005b8260ff168160ff16101561021a576101da6103bc565b828260ff16815181106101fd57634e487b7160e01b600052603260045260246000fd5b60209081029190910101528061021281610644565b9150506101c4565b50919050565b600061022c83836105f4565b61023461041c565b61023e9190610664565b61024890846105dc565b9392505050565b60608160ff1667ffffffffffffffff81111561027b57634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102a4578160200160208202803683370190505b50905060005b8260ff168160ff16101561021a576102c061041c565b828260ff16815181106102e357634e487b7160e01b600052603260045260246000fd5b6020908102919091010152806102f881610644565b9150506102aa565b600054610100900460ff1680610319575060005460ff16155b610358576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161034f90610576565b60405180910390fd5b600054610100900460ff161580156103a157600080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0061ff0019909116610100171660011790555b600182905580156103b8576000805461ff00191690555b5050565b60006103c96001436105f4565b6001543260008181526002602052604081208054944094916103ea8361060b565b9190505560405160200161040194939291906104d9565b60405160208183030381529060405280519060200120905090565b60006104296001436105f4565b60015432600081815260026020526040812080549440949161044a8361060b565b9190505560405160200161046194939291906104d9565b6040516020818303038152906040528051906020012060001c905090565b600060208284031215610490578081fd5b5035919050565b600080604083850312156104a9578081fd5b50508035926020909101359150565b6000602082840312156104c9578081fd5b813560ff81168114610248578182fd5b938452602084019290925260601b7fffffffffffffffffffffffffffffffffffffffff000000000000000000000000166040830152605482015260740190565b918252602082015260400190565b6020808252825182820181905260009190848201906040850190845b8181101561055f57835183529284019291840191600101610543565b50909695505050505050565b901515815260200190565b6020808252602e908201527f496e697469616c697a61626c653a20636f6e747261637420697320616c72656160408201527f647920696e697469616c697a6564000000000000000000000000000000000000606082015260800190565b90815260200190565b600082198211156105ef576105ef610684565b500190565b60008282101561060657610606610684565b500390565b60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82141561063d5761063d610684565b5060010190565b600060ff821660ff81141561065b5761065b610684565b60010192915050565b60008261067f57634e487b7160e01b81526012600452602481fd5b500690565b634e487b7160e01b600052601160045260246000fdfea26469706673582212207ebe841b50f2e430d4e96ad8ef007a6ff992d5a2b1b0469cced05d0ba23020fa64736f6c63430008000033",
+  "libraries": {
+    "Strings": "0x9cd2aa68ecCF27b393E825c6fC844eF4217D4c22",
+    "AddressSet": "0x5d3EFF596b76CAaF5F71176D5B8499BDB7fCb639",
+    "UInt256Set": "0x0690fedAEc49A5Bd4c2fb723Cf3F0114E57014BC",
+    "Create2": "0x931Fd76E170a15918409dBA587F0802da03845AD",
+    "WrappedTokenLib": "0x3A00E3758B9B7bcf4E03bf5Aef69fd079aCbd852",
+    "ComplexPoolLib": "0xd7203305346B69227e126D7FBfCE20Fc976aE524",
+    "LootboxLib": "0x21e2C4b3B71b25cE2FcB1902CB469cf34Fef5402"
+  },
+  "devdoc": {
+    "details": "A randomness farm. It does what it says - it farms randomness that is provided by the user into usable randomness by other contracts.",
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 109,
+        "contract": "src/random/RandomFarm.sol:RandomFarm",
+        "label": "_initialized",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 112,
+        "contract": "src/random/RandomFarm.sol:RandomFarm",
+        "label": "_initializing",
+        "offset": 1,
+        "slot": "0",
+        "type": "t_bool"
+      },
+      {
+        "astId": 29966,
+        "contract": "src/random/RandomFarm.sol:RandomFarm",
+        "label": "randomSeed",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 29970,
+        "contract": "src/random/RandomFarm.sol:RandomFarm",
+        "label": "salt",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

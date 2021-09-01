@@ -18,17 +18,18 @@ import "./ITokenSeller.sol";
 interface ILootbox {
     // the lootbox itself
     struct Lootbox {
-        address owner;
-        address contractAddress;
-        address randomFarmer;
-        address multitoken;
+        address owner; // the owner of the lootbox. they can do some admin things others cannot
+        address contractAddress; // this is the address of the smart contract that implements lootbox
+        address randomFarmer; // address of the random number generator used to generate the random numbers
+        address multitoken; // address of the multitoken contract that mints the tokens
         uint256 lootboxHash; // identifier and lootbox token hash for the lootbox
-        string symbol;
-        string name;
-        string description;
-        uint8 minLootPerOpen;
-        uint8 maxLootPerOpen;
-        uint256 maxOpens;
+        string symbol; // the symbol of the lootbox
+        string name; // the name of the lootbox
+        string description; // the description of the lootbox
+        uint8 minLootPerOpen; // the minimum number of loot items that can be issued per open
+        uint8 maxLootPerOpen; // the maximum number of loot items that can be issued per open
+        uint256 maxOpens; // maximum number of times the lootbox can be opened
+        // these are all values set by the system - not configurable by the user
         uint256 openCount;
         uint256 totalLootGenerated;
         uint256 probabilitiesSum;
@@ -111,4 +112,6 @@ interface ILootbox {
     function addLoot(Loot memory _loot) external returns (uint256);
 
     function getLoot(uint256 index) external view returns (Loot memory);
+
+    // TODO: add a allItemsLength()
 }

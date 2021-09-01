@@ -30,6 +30,7 @@ import publish from './lib/publishLib';
 import lootbox, { Lootbox, Loot } from './lib/lootboxLib';
 import migrator from './lib/migrateLib';
 import { formatEther, parseEther } from '@ethersproject/units';
+import { info } from 'console';
 
 //import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
 
@@ -363,22 +364,22 @@ task(
       poolsArray = await Promise.all(poolsArray);
 
       // iterate through all gempools
-      for (let i = 10; i < poolsArray.length; i++) {  // 10,438(35 per)
+      for (let i = 0; i < 1; i++) {  // 10,438(35 per)
         const poolContract: any = poolsArray[i];
         console.log(i, poolContract.address);
         const tokenHashLen = await poolContract.allTokenHashesLength();
         let tx;
-        if (tokenHashLen.gt(35)) {
-          for (let j = 438; j <= ~~(tokenHashLen.toNumber() / 35); j++) {
-            tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, j, 35, { gasLimit: 8000000 });
+        if (tokenHashLen.gt(25)) {
+          for (let j = 0; j <= ~~(tokenHashLen.toNumber() / 25); j++) {
+            tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, j, 25, { gasLimit: 8000000 });
+            await hre.ethers.provider.waitForTransaction(tx.hash, 1);
             console.log(j);
           }
         } else {
           tx = await bitgemIndexer.indexGemPool(poolContract.address, multitoken, 0, tokenHashLen.toNumber(), { gasLimit: 8000000 });
-          console.log('0');
+          //await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+          await tx.wait();
         }
-        await tx.wait();
-        // await hre.ethers.provider.waitForTransaction(tx.hash, 1);
       }
     }
   );
@@ -650,6 +651,157 @@ task('migrate-governance', 'Migrate the legacy governance token to erc20')
     }
   });
 
+task('index-flat', 'Create easy to index events for gem create events')
+  .addParam('multitoken', 'The legacy gem multitoken address')
+  .addParam('factory', 'The legacy factory address')
+  .setAction(async ({ multitoken, factory }, hre: HardhatRuntimeEnvironment) => {
+    // get the signers
+    const [sender] = await hre.ethers.getSigners();
+    // get the old token
+    const oldToken = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken,
+      sender
+    );
+
+    const index: any = {
+      pools: { },
+      gems: { },
+      users: { }
+    };
+    // get all gempool contracts
+    const factoryContract: any = await hre.ethers.getContractAt(
+      'NFTGemPoolFactory',
+      factory
+    );
+    // get all gempool contracts
+    const multitokenContract: any = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      multitoken
+    );
+    // get the gov token minter
+    const bitgemIndexer: any = await hre.ethers.getContractAt(
+      'BitgemIndexer',
+      (
+        await hre.deployments.get('BitgemIndexer')
+      ).address
+    );
+
+    let cached = undefined;
+    try {
+      cached = fs.readFileSync('./token_' + oldToken.address + '.json', 'utf8');
+      cached = JSON.parse(cached);
+    } catch (e) { }
+    cached.forEach((ci: any) => index.users[ci.address] = ci);
+
+    let allTokenHodlers = [];
+    const largeTokenHodlers = [];
+    if (!cached) {
+      // get the length of old gov token hodlers
+      const allGovTokenHolders = await oldToken.allTokenHoldersLength(1);
+      console.log(`num holders: ${allGovTokenHolders.toNumber()}`);
+      // process each gov token hodler
+
+      for (let i = 0; i < allGovTokenHolders.toNumber(); i++) {
+        const thAddr = await oldToken.allTokenHolders(1, i);
+        if (BigNumber.from(thAddr).eq(0) || BigNumber.from(thAddr).eq(1))
+          continue;
+        allTokenHodlers.push(thAddr);
+        console.log(thAddr);
+      }
+      writeFileSync(
+        './token_' + oldToken.address + '.json',
+        JSON.stringify(allTokenHodlers)
+      );
+    }
+    // allTokenHodlers.forEach(async (thAddr: string) => {
+    //   index.users[thAddr] = [];
+    // });
+
+    // get length of all gempools, load gempool calls into array
+    // use Promise.all to load all the addresses at once
+    let poolsArray: any = [];
+    const poolcount = await factoryContract.allNFTGemPoolsLength();
+    for (let i = 0; i < poolcount.toNumber(); i++) {
+      poolsArray.push(factoryContract.allNFTGemPools(i));
+    }
+    // get all gem pool data contracts
+    poolsArray = await Promise.all(poolsArray);
+    poolsArray = poolsArray.map((pa: string) =>
+      hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
+    );
+    // load all gem pool addresses at once
+    poolsArray = await Promise.all(poolsArray);
+
+    // iterate through all gempools
+    for (let i = 0; i < poolsArray.length; i++) {
+      let out = [];
+      const poolContract: any = poolsArray[i];
+      const tokenHashLen = await poolContract.allTokenHashesLength();
+      // index.pools[poolContract.address] = [];
+
+      // get all token hashes for this pool
+      let allTokenHashes: any = [];
+      try {
+        allTokenHashes = fs.readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
+        allTokenHashes = JSON.parse(allTokenHashes);
+      } catch (e) { }
+      if (!allTokenHashes.length) {
+        let allTokenHashesPromises = [];
+        for (let j = 0; j <= ~~(tokenHashLen.toNumber() / 10); j++) {
+          for (let k = (j * 10); k < (j * 10) + 10; k++) {
+            if (k >= tokenHashLen.toNumber()) break;
+            allTokenHashesPromises.push(poolContract.allTokenHashes(k));
+          }
+          allTokenHashes = allTokenHashes
+            .concat(await Promise.all(allTokenHashesPromises))
+            .filter((e: any) => !e.eq(0));
+        }
+        //index.pools[poolContract.address] = allTokenHashes;
+        writeFileSync(
+          './index.json',
+          JSON.stringify(index));
+        console.log('.');
+
+
+        // save all token hashes for pool to file
+        writeFileSync(
+          './pool_' + poolContract.address + '.json',
+          JSON.stringify(allTokenHashes));
+
+        // index.pools[poolContract.address] = allTokenHashes;
+      }
+
+      writeFileSync(
+        './index.json',
+        JSON.stringify(index));
+      console.log('.');
+
+      // find the users tokens by finding nonzero balances
+      let allMyTokens: any = [];
+      let allMyTokenPromises = [];
+      let senderAddress = await sender.getAddress();
+      for (let j = 0; j <= ~~(allTokenHashes.length / 10); j++) {
+        for (let k = j * 10; k < (j * 10) + 10; k++) {
+          if (k >= tokenHashLen.toNumber()) break;
+          const athl = allTokenHashes[k];
+          allMyTokenPromises.push(multitokenContract.balanceOf(senderAddress, athl));
+        }
+        allMyTokens = allMyTokens
+          .concat(await Promise.all(allMyTokenPromises))
+          .filter((e: any) => !e.eq(0) && !e.eq(1));
+      }
+      writeFileSync(
+        './user_' + senderAddress + '.json',
+        JSON.stringify(allMyTokens));
+    }
+
+    writeFileSync(
+      './index.json',
+      JSON.stringify(index));
+
+  });
+
 task('index-bitgem', 'Create easy to index events for gem create events')
   .addParam('multitoken', 'The legacy gem multitoken address')
   .addParam('factory', 'The legacy factory address')
@@ -724,60 +876,80 @@ task('index-bitgem', 'Create easy to index events for gem create events')
     // load all gem pool addresses at once
     poolsArray = await Promise.all(poolsArray);
 
+    // write out pools data to file
+    // const poolSettings = await Promise.all(poolsArray.map((pa: any) => pa.settings()))
+    // writeFileSync(
+    //   './pools.json',
+    //   JSON.stringify(poolSettings));
+
     for (let u = 0; u < allTokenHodlers.length; u++) {
       const owner = allTokenHodlers[u];
 
-      let cachedUser = undefined;
       let ownedGems: any = [];
-
       try {
-        cachedUser = fs.readFileSync('./user_' + owner + '.json', 'utf8');
+        ownedGems = fs.readFileSync('./user_' + owner + '.json', 'utf8');
       } catch (e) { }
 
-      if (!cachedUser) {
-        // iterate through all gempools
-        for (let i = 0; i < poolsArray.length; i++) {
-          let out = [];
-          const poolContract: any = poolsArray[i];
-          const tokenHashLen = await poolContract.allTokenHashesLength();
+      // iterate through all gempools
+      for (let i = 0; i < poolsArray.length; i++) {
+        let out = [];
+        const poolContract: any = poolsArray[i];
+        const tokenHashLen = await poolContract.allTokenHashesLength();
 
-          if (tokenHashLen.toNumber() > 50) {
-            for (let i = 0; i <= (tokenHashLen.toNumber() / 50); i++) {
-              out = await bitgemIndexer.getOwnedGems(
-                poolsArray[i].address,
-                multitokenContract.address,
-                await sender.getAddress(),
-                i,
-                50, { gasLimit: 80000000 });
-              const fj = out
-                .filter((e: any) => !e.eq(0))
-                .map((e: any) => e.toHexString());
-              if (fj.length === 0) break;
-              ownedGems = ownedGems.concat(fj);
-              console.log(i, fj);
+        // get all token hashes for this pool
+        let allTokenHashes: any = [];
+        try {
+          allTokenHashes = fs.readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
+          allTokenHashes = JSON.parse(allTokenHashes);
+        } catch (e) { }
+        if (!allTokenHashes.length) {
+          let allTokenHashesPromises = [];
+          for (let j = 0; j <= ~~(tokenHashLen.toNumber() / 10); j++) {
+            for (let k = (j * 10); k < (j * 10) + 10; k++) {
+              if (k >= tokenHashLen.toNumber()) break;
+              allTokenHashesPromises.push(poolContract.allTokenHashes(k));
             }
-          } else {
-            const out = await bitgemIndexer.getOwnedGems(
-              poolsArray[i].address,
-              multitokenContract.address,
-              await sender.getAddress(),
-              0,
-              tokenHashLen.toNumber(),
-              { gasLimit: 80000000 });
-            const fj = out.filter((e: any) => !e.eq(0)).map((e: any) => e.toHexString());
-            if (fj.length === 0) break;
-            ownedGems = fj;
-            console.log(i, fj);
+            allTokenHashes = allTokenHashes
+              .concat(await Promise.all(allTokenHashesPromises))
+              .filter((e: any) => !e.eq(0));
           }
-          if (ownedGems.length) {
-            writeFileSync(
-              './user_' + owner + '.json',
-              JSON.stringify(ownedGems, null, 4)
-            );
+          // save all token hashes for pool to file
+          writeFileSync(
+            './pool_' + poolContract.address + '.json',
+            JSON.stringify(allTokenHashes));
+        }
+
+        // find the users tokens by finding nonzero balances
+        let allMyTokens: any = [];
+        let allMyTokenPromises = [];
+        let senderAddress = await sender.getAddress();
+        for (let j = 0; j <= ~~(allTokenHashes.length / 10); j++) {
+          for (let k = j * 10; k < (j * 10) + 10; k++) {
+            if (k >= tokenHashLen.toNumber()) break;
+            const athl = allTokenHashes[k];
+            allMyTokenPromises.push(multitokenContract.balanceOf(senderAddress, athl));
+          }
+          allMyTokens = allMyTokens
+            .concat(await Promise.all(allMyTokenPromises))
+        }
+
+        // add the nonsero balance hashees to the ownedGems output array
+        for (let j = 0; j <= allTokenHashes.length; j++) {
+          if (!allMyTokens[j].eq(0)) {
+            ownedGems.push(allTokenHashes[j]);
           }
         }
-        console.log('user', owner);
+
+        // save the user file
+        if (ownedGems.length) {
+          writeFileSync(
+            './user_' + owner + '.json',
+            JSON.stringify(ownedGems, null, 4)
+          );
+        }
       }
+      console.log('user', owner);
+
     }
 
   });
@@ -1236,7 +1408,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1111,
+            runs: 2222,
           },
         },
       },

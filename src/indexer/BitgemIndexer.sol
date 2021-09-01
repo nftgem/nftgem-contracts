@@ -156,8 +156,7 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
         address account,
         uint256 page,
         uint256 count
-    ) external view override returns (uint256[] memory gems) {
-        uint256 gemLen = 0;
+    ) external view override returns (uint256[] memory gems, uint256 gemLen) {
         gems = new uint256[](count);
 
         for (uint256 i = page * count; i < (page * count) + count; i++) {
@@ -181,8 +180,7 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
                 claimHash == 1
             ) continue;
 
-            if (tokenType == INFTGemMultiToken.TokenType.GEM)
-                gems[gemLen++] = claimHash;
+            gems[gemLen++] = claimHash;
         }
     }
 
