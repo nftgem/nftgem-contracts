@@ -17,6 +17,7 @@ interface INFTComplexGemPoolData {
     struct InputRequirement {
         address token;
         address pool;
+        // TODO reassess whether we really want to support foreign reqs
         INFTComplexGemPool.RequirementType inputType; // 1 = erc20, 2 = erc1155, 3 = pool
         uint256 tokenId; // if erc20 slot 0 contains required amount
         uint256 minVal;

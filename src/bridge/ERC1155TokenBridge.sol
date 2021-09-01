@@ -5,25 +5,19 @@ import "../interfaces/IERC1155TokenBridge.sol";
 import "../interfaces/IBridgeableERC1155Token.sol";
 
 contract ERC1155TokenBridge is IERC1155TokenBridge {
-    // the list of approved erc1155 token addresses
-    // only these tokens can be moved by the bridge
-    IBridgeableERC1155Token[] internal _tokenList;
-    mapping(address => IBridgeableERC1155Token) internal _tokenMap;
-
-    // the list of validators that can validate transfers
-    Validator[] internal _validatorList;
-    mapping(address => Validator) public validatorMap;
-
-    // the list of pending transfers that need to be validated
-    NetworkTransferRequest[] internal _pendingTransferList;
-    mapping(address => NetworkTransferRequest) public _pendingTransferMap;
 
     /// @dev register a new token that can be moved by the bridge
     function registerToken(address _bridgeable)
         external
         override
         returns (bool)
-    {}
+    {
+        try IERC1155(_bridgeable).balanceOf(msg.sender) 
+        catch (e) {  
+            return false;
+        }
+        return 
+    }
 
     /// @dev unregister a token from the bridge
     function unregisterToken(address _bridgeable)
