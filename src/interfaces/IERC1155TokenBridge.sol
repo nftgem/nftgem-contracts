@@ -52,7 +52,7 @@ interface IERC1155TokenBridge {
 
     event NetworkTransferStatus(
         uint256 indexed receiptId,
-        NetworkTransferStatus status
+        TransferStatus status
     );
 
     event TokenRegistered(

@@ -31,7 +31,7 @@ import lootbox, { Lootbox, Loot } from './lib/lootboxLib';
 import migrator from './lib/migrateLib';
 import { formatEther, parseEther } from '@ethersproject/units';
 
-task('scan-gems', 'Scan the given gem pool contract address for gem created')
+task('scan-gem', 'Scan the given gem pool contract address for gem created')
   .addParam('address', 'The gem pool address')
   .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
 
@@ -58,11 +58,132 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
       .map((log: any) => {
         return {
           event: iface.decodeEventLog('NFTGemCreated', log.data),
-          log,
         };
       })
       .filter((e: any) => e.event['values']);
+
     console.log(events);
+
+  });
+
+task('scan-gems', 'Scan the given gem pool contract address for gem created')
+  .addParam('factory', 'The gem pool factory')
+  .setAction(async ({ factory }, hre: HardhatRuntimeEnvironment) => {
+    const [sender] = await hre.ethers.getSigners();
+    const factoryContract: any = await hre.ethers.getContractAt(
+      'NFTGemPoolFactory',
+      factory
+    );
+
+    const bitgemIndexer: any = await hre.ethers.getContractAt(
+      'BitgemIndexer',
+      factory,
+      sender
+    );
+
+    const multitokenContract: any = await hre.ethers.getContractAt(
+      'NFTGemMultiToken',
+      (
+        await hre.deployments.get('NFTGemMultiToken')
+      ).address
+    );
+
+
+    const senderAddress = await sender.getAddress();
+
+    const dataAbi = require('./build/NFTComplexGemPoolData.json');
+
+    // load the complex gem pool ABI (note theres probably a way to get this from the contract)
+    const abi = require('./nftgem-ui/abis-legacy/NFTGemPool.json');
+    const iface = new hre.ethers.utils.Interface(abi);
+
+    // get length of all gempools, load gempool calls into array
+    // use Promise.all to load all the addresses at once
+    let poolsArray: any = [];
+    const poolcount = await factoryContract.allNFTGemPoolsLength();
+    for (let i = 0; i < poolcount.toNumber(); i++) {
+      poolsArray.push(factoryContract.allNFTGemPools(i));
+    }
+    // get all gem pool data contracts
+    poolsArray = await Promise.all(poolsArray);
+    for (let i = 0; i < poolsArray.length; i++) {
+      // load the complex gem pool contract
+      const gemPool = await new hre.ethers.Contract(
+        poolsArray[i],
+        abi
+      );
+
+      // set up the event filter we are gonna query - this takes params for the filter expression - null returns all
+      const filter: any = gemPool.filters.NFTGemCreated(null, null, null, null, null);
+      filter.fromBlock = 3975244; // the block to start indexing from. This should be the block the contract was deployed at.
+      filter.toBlock = 'latest'; // the block to scan to
+
+      // query for Events using the filter we built above
+      const logs = await hre.ethers.provider.getLogs(filter); // this is an ethers provider object
+
+      // process the events - call decodeEventLog on the contract interface to decode the event
+      const events = (logs || [])
+        .map((log: any) => {
+          return {
+            event: iface.decodeEventLog('NFTGemCreated', log.data),
+          };
+        })
+        .filter((e: any) => e.event['values']);
+
+
+      // right here we call the bitgem indexer to create our new events stream
+      // first let's try and see if we can pass several events at once into the indexer
+      // to make it go faster. Otherwise, generating the events one at a time is going
+      // to take some time.
+      // let's try to do this in batches of 10 events
+      for (let j = 0; j < events.length; j++) {
+        const gemCreatedEvent = events[j];
+
+        const gemPoolData: any = await hre.ethers.getContractAt(
+          require('./nftgem-ui/abis-legacy/NFTGemPool.json'),
+          poolsArray[i]
+        );
+
+
+        const symbol = await gemPoolData.symbol()
+        const name = await gemPoolData.name()
+        const ethPrice = await gemPoolData.ethPrice()
+        const minTime = await gemPoolData.minTime()
+        const maxTime = await gemPoolData.maxTime()
+
+        const gemPoolStruct: any = [
+          factory,
+          multitokenContract.address,
+          poolsArray[i],
+          symbol,
+          name,
+          '',
+          0,
+          ethPrice
+        ];
+
+        const gem = [
+          0,
+          symbol,
+          name,
+          gemCreatedEvent.event.gemHash,
+          poolsArray[i],
+          senderAddress,
+          factory,
+          multitokenContract.address,
+          gemCreatedEvent.event.quantity
+        ];
+
+        console.log(gemPoolStruct, gem);
+
+        const tx = await bitgemIndexer.indexGemUnsafe(gemPoolStruct, gem);
+        await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        console.log(gem);
+      }
+
+    }
+
+
   });
 
 task('check-fees', 'Check the fee manager balance').setAction(
@@ -402,7 +523,9 @@ task(
       // get all gempool contracts
       const bitgemIndexer: any = await hre.ethers.getContractAt(
         'BitgemIndexer',
-        multitoken
+        (
+          await hre.deployments.get('BitgemIndexer')
+        ).address
       );
 
       // get length of all gempools, load gempool calls into array

@@ -1,5 +1,5 @@
 {
-  "address": "0xe61618Ef54d6F58AbfD102A3A95A86cb58A2A6C6",
+  "address": "0x015f1eF07ee0238668d6C7c45004269F6903b004",
   "abi": [
     {
       "inputs": [],
@@ -54,40 +54,52 @@
           "type": "uint256"
         },
         {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "poolAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ethPrice",
+              "type": "uint256"
+            }
+          ],
           "indexed": false,
-          "internalType": "uint256",
-          "name": "gemHash",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "minter",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "gemPoolFactory",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "multitoken",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
+          "internalType": "struct IBitgemIndexer.GemPool",
           "name": "pool",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "quantity",
-          "type": "uint256"
+          "type": "tuple"
         },
         {
           "components": [
@@ -97,9 +109,24 @@
               "type": "uint256"
             },
             {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
               "name": "gemHash",
               "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
             },
             {
               "internalType": "address",
@@ -117,11 +144,6 @@
               "type": "address"
             },
             {
-              "internalType": "address",
-              "name": "pool",
-              "type": "address"
-            },
-            {
               "internalType": "uint256",
               "name": "quantity",
               "type": "uint256"
@@ -134,6 +156,138 @@
         }
       ],
       "name": "GemCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "opener",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "factoryAddress",
+              "type": "address"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IBitgemIndexer.LootboxFactory",
+          "name": "factory",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "poolAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IBitgemIndexer.Lootbox",
+          "name": "lootbox",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lootbox",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "probability",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct IBitgemIndexer.Loot[]",
+          "name": "receivedLoot",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "LootboxOpened",
       "type": "event"
     },
     {
@@ -165,9 +319,24 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "gemHash",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -185,13 +354,170 @@
           "type": "address"
         },
         {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
-          "name": "pool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "gemPoolFactoriesMap",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "factory",
           "type": "address"
         },
         {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "poolAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
-          "name": "quantity",
+          "name": "category",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethPrice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "gemPools",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "factory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "poolAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "category",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethPrice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "gemPoolsMap",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "factory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "poolAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "category",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ethPrice",
           "type": "uint256"
         }
       ],
@@ -219,9 +545,24 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "gemHash",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -236,11 +577,6 @@
         {
           "internalType": "address",
           "name": "multitoken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "pool",
           "type": "address"
         },
         {
@@ -273,9 +609,24 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "gemHash",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -290,11 +641,6 @@
         {
           "internalType": "address",
           "name": "multitoken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "pool",
           "type": "address"
         },
         {
@@ -327,9 +673,24 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "gemHash",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -344,11 +705,6 @@
         {
           "internalType": "address",
           "name": "multitoken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "pool",
           "type": "address"
         },
         {
@@ -381,9 +737,24 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "gemHash",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
         },
         {
           "internalType": "address",
@@ -398,11 +769,6 @@
         {
           "internalType": "address",
           "name": "multitoken",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "pool",
           "type": "address"
         },
         {
@@ -448,6 +814,11 @@
           "internalType": "uint256[]",
           "name": "gems",
           "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "gemLen",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -458,14 +829,76 @@
         {
           "components": [
             {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "poolAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ethPrice",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.GemPool",
+          "name": "gemPool",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
               "internalType": "uint256",
               "name": "id",
               "type": "uint256"
             },
             {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
               "name": "gemHash",
               "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
             },
             {
               "internalType": "address",
@@ -480,11 +913,6 @@
             {
               "internalType": "address",
               "name": "multitoken",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "pool",
               "type": "address"
             },
             {
@@ -512,6 +940,29 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "gemPool",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "multitoken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "page",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "count",
+          "type": "uint256"
+        }
+      ],
+      "name": "indexGemPool",
+      "outputs": [
+        {
           "components": [
             {
               "internalType": "uint256",
@@ -519,9 +970,24 @@
               "type": "uint256"
             },
             {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
               "name": "gemHash",
               "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
             },
             {
               "internalType": "address",
@@ -539,8 +1005,215 @@
               "type": "address"
             },
             {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.Gem[]",
+          "name": "gems",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "poolAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ethPrice",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.GemPool",
+          "name": "gemPool",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gemHash",
+              "type": "uint256"
+            },
+            {
               "internalType": "address",
               "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gemPoolFactory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.Gem",
+          "name": "gem",
+          "type": "tuple"
+        }
+      ],
+      "name": "indexGemUnsafe",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "factory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "poolAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "category",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ethPrice",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBitgemIndexer.GemPool",
+          "name": "gemPool",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "gemHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "minter",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "gemPoolFactory",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "multitoken",
               "type": "address"
             },
             {
@@ -550,18 +1223,12 @@
             }
           ],
           "internalType": "struct IBitgemIndexer.Gem[]",
-          "name": "gem",
+          "name": "gems",
           "type": "tuple[]"
         }
       ],
       "name": "indexGems",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -592,35 +1259,35 @@
       "type": "function"
     }
   ],
-  "transactionHash": "0x0e8e7d991d251c2590917ccbac509f2524c15d8f8f3518ab718fc6ea8347956a",
+  "transactionHash": "0xaf2e11e7daaf7490c7b2edc8073d8da9dca6af66213f720d67cbdbb2799373ec",
   "receipt": {
     "to": null,
     "from": "0xE5E82ae456c04Ad0879785B4f678A4Fcace12AAf",
-    "contractAddress": "0xe61618Ef54d6F58AbfD102A3A95A86cb58A2A6C6",
-    "transactionIndex": 0,
-    "gasUsed": "1132474",
+    "contractAddress": "0x015f1eF07ee0238668d6C7c45004269F6903b004",
+    "transactionIndex": 2,
+    "gasUsed": "2210827",
     "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-    "blockHash": "0x000073260000196f9c5555646020c2f15b7fb211bed6738dfd5a6bc28682c25b",
-    "transactionHash": "0x0e8e7d991d251c2590917ccbac509f2524c15d8f8f3518ab718fc6ea8347956a",
+    "blockHash": "0x0000790600000e823675ab8975642f88ba936ecfe04f24ed339ccc421ee1cf74",
+    "transactionHash": "0xaf2e11e7daaf7490c7b2edc8073d8da9dca6af66213f720d67cbdbb2799373ec",
     "logs": [],
-    "blockNumber": 15773496,
-    "cumulativeGasUsed": "1132474",
+    "blockNumber": 16187094,
+    "cumulativeGasUsed": "2534377",
     "status": 1,
     "byzantium": true
   },
   "args": [],
-  "solcInputHash": "1db607ea029aa0e8582f680b33913842",
-  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"gemCreateUID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"GemCreated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_controller\",\"type\":\"address\"}],\"name\":\"addController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemMap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByFactory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMinter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMultitoken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByPool\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"gemPool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"getOwnedGems\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"gems\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"indexGem\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem[]\",\"name\":\"gem\",\"type\":\"tuple[]\"}],\"name\":\"indexGems\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"isController\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relinquishControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"The name of the author\",\"details\":\"Explain to a developer any extra details\",\"kind\":\"dev\",\"methods\":{\"addController(address)\":{\"details\":\"Add an address allowed to control this contract\"},\"isController(address)\":{\"details\":\"Check if this address is a controller\"},\"relinquishControl()\":{\"details\":\"Remove the sender address from the list of controllers\"}},\"title\":\"A title that should describe the contract/interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Explain to an end user what this does\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/IBitgemIndexer.sol\":\"BitgemIndexer\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2222},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC1155 compliant contract, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-1155[EIP].\\n *\\n * _Available since v3.1._\\n */\\ninterface IERC1155 is IERC165 {\\n    /**\\n     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.\\n     */\\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\\n\\n    /**\\n     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all\\n     * transfers.\\n     */\\n    event TransferBatch(\\n        address indexed operator,\\n        address indexed from,\\n        address indexed to,\\n        uint256[] ids,\\n        uint256[] values\\n    );\\n\\n    /**\\n     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to\\n     * `approved`.\\n     */\\n    event ApprovalForAll(address indexed account, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.\\n     *\\n     * If an {URI} event was emitted for `id`, the standard\\n     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value\\n     * returned by {IERC1155MetadataURI-uri}.\\n     */\\n    event URI(string value, uint256 indexed id);\\n\\n    /**\\n     * @dev Returns the amount of tokens of token type `id` owned by `account`.\\n     *\\n     * Requirements:\\n     *\\n     * - `account` cannot be the zero address.\\n     */\\n    function balanceOf(address account, uint256 id) external view returns (uint256);\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.\\n     *\\n     * Requirements:\\n     *\\n     * - `accounts` and `ids` must have the same length.\\n     */\\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    /**\\n     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `operator` cannot be the caller.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\\n     *\\n     * See {setApprovalForAll}.\\n     */\\n    function isApprovedForAll(address account, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.\\n     *\\n     * Emits a {TransferSingle} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `to` cannot be the zero address.\\n     * - If the caller is not `from`, it must be have been approved to spend ``from``'s tokens via {setApprovalForAll}.\\n     * - `from` must have a balance of tokens of type `id` of at least `amount`.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the\\n     * acceptance magic value.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 id,\\n        uint256 amount,\\n        bytes calldata data\\n    ) external;\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.\\n     *\\n     * Emits a {TransferBatch} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `ids` and `amounts` must have the same length.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the\\n     * acceptance magic value.\\n     */\\n    function safeBatchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata ids,\\n        uint256[] calldata amounts,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0xfce1eb6398eae0e2b50251140866a70a3106193f101972c878bba1dbf44929ec\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/interfaces/IBitgemIndexer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"./ITokenSeller.sol\\\";\\nimport \\\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\\\";\\nimport \\\"../interfaces/INFTGemMultiToken.sol\\\";\\n\\n/// @dev The gem indexer indexes all historical gems from legacy contracts and\\n/// produces a series of events that get indexed by thegraph indexer. this is\\n/// necessary because the legacy contracts generate events from library code,\\n/// making things not work in thegraph.\\n\\ninterface IGemPoolData {\\n    function allTokenHashesLength() external view returns (uint256);\\n\\n    function allTokenHashes(uint256 ndx) external view returns (uint256);\\n\\n    function tokenType(uint256 tokenHash)\\n        external\\n        view\\n        returns (INFTGemMultiToken.TokenType);\\n}\\n\\ninterface IBitgemIndexer {\\n    struct Gem {\\n        uint256 id;\\n        uint256 gemHash;\\n        address minter;\\n        address gemPoolFactory;\\n        address multitoken;\\n        address pool;\\n        uint256 quantity;\\n    }\\n\\n    event GemCreated(\\n        uint256 indexed gemCreateUID,\\n        uint256 gemHash,\\n        address minter,\\n        address gemPoolFactory,\\n        address multitoken,\\n        address pool,\\n        uint256 quantity,\\n        Gem gem\\n    );\\n\\n    function indexGem(\\n        Gem memory gem\\n    ) external returns (bool);\\n\\n    function indexGems(\\n        Gem[] memory gem\\n    ) external returns (bool);\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    )\\n        external\\n        view\\n        returns (uint256[] memory gems);\\n}\\n\\n/// @title A title that should describe the contract/interface\\n/// @author The name of the author\\n/// @notice Explain to an end user what this does\\n/// @dev Explain to a developer any extra details\\ncontract BitgemIndexer is IBitgemIndexer, Controllable {\\n\\n    mapping(uint256 => Gem) public gemMap;\\n    mapping(address => Gem[]) public gemsByMinter;\\n    mapping(address => Gem[]) public gemsByFactory;\\n    mapping(address => Gem[]) public gemsByMultitoken;\\n    mapping(address => Gem[]) public gemsByPool;\\n\\n    constructor() {\\n        _addController(address(this));\\n    }\\n\\n    function _makeId(Gem memory gem) internal pure returns (uint256) {\\n        return uint256(\\n            keccak256(\\n                abi.encodePacked(\\n                    gem.gemHash,\\n                    gem.minter,\\n                    gem.gemPoolFactory,\\n                    gem.multitoken,\\n                    gem.pool,\\n                    gem.quantity\\n                )\\n            )\\n        );\\n    }\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    )\\n        external\\n        view\\n        override\\n        returns (uint256[] memory gems)\\n    {\\n        // uint256 allTokenHashesLength = IGemPoolData(gemPool)\\n        //     .allTokenHashesLength();\\n        // require((page * count) + count <= allTokenHashesLength, \\\"OUT_OF_RANGE\\\");\\n\\n        uint256 gemLen = 0;\\n        gems = new uint256[](count);\\n\\n        for (uint256 i = page * count; i < (page * count) + count; i++) {\\n\\n            uint256 claimHash = 0;\\n            try IGemPoolData(gemPool).allTokenHashes(i) returns (uint256 _claimHash) {\\n                claimHash = _claimHash;\\n            } catch {\\n                continue;\\n            }\\n\\n            INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)\\n                .tokenType(claimHash);\\n\\n            uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);\\n            if (tokenType != INFTGemMultiToken.TokenType.GEM\\n                || bal == 0\\n                || claimHash == 0\\n                || claimHash == 1) continue;\\n\\n            if (tokenType == INFTGemMultiToken.TokenType.GEM)\\n                gems[gemLen++] = claimHash;\\n        }\\n    }\\n\\n    function _indexGem(\\n        Gem memory gem\\n    ) internal returns (bool) {\\n        uint256 gemId = _makeId(gem);\\n        if (gemMap[gemId].gemHash != 0) {\\n            return false;\\n        }\\n        gem.id = gemId;\\n        gemMap[gemId] = gem;\\n        gemsByMinter[gem.minter].push(gem);\\n        gemsByFactory[gem.gemPoolFactory].push(gem);\\n        gemsByMultitoken[gem.multitoken].push(gem);\\n        gemsByPool[gem.pool].push(gem);\\n        emit GemCreated(\\n            gem.id,\\n            gem.gemHash,\\n            gem.minter,\\n            gem.gemPoolFactory,\\n            gem.multitoken,\\n            gem.pool,\\n            gem.quantity,\\n            gem\\n        );\\n        return true;\\n    }\\n\\n\\n    function indexGem(\\n        Gem memory gem\\n    ) external override returns (bool) {\\n        return _indexGem(gem);\\n    }\\n\\n    function indexGems(\\n        Gem[] memory gem\\n    ) external override returns (bool) {\\n        bool success = true;\\n        for (uint256 i = 0; i < gem.length; i++) {\\n            success = success && _indexGem(gem[i]);\\n        }\\n        return success;\\n    }\\n\\n}\\n\",\"keccak256\":\"0x99a45b6da9ccd19e07401da9e72e2c877818e78823007e838d5f8adf07f531b6\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/INFTGemMultiToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface INFTGemMultiToken {\\n    enum TokenType {\\n        GOVERNANCE,\\n        CLAIM,\\n        GEM\\n    }\\n\\n    struct Royalty {\\n        address owner;\\n        uint256 royaltyPermillion;\\n    }\\n\\n    // called by controller to mint a claim or a gem\\n    function mint(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    // called by controller to mint a claim or a gem\\n    function mintBatch(\\n        address to,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    function burnBatch(\\n        address account,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    // called by controller to burn a claim\\n    function burn(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    function heldTokens(address holder)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    function allHeldTokens(address holder, uint256 _idx)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function allHeldTokensLength(address holder)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function tokenHolders(uint256 _token)\\n        external\\n        view\\n        returns (address[] memory);\\n\\n    function allTokenHolders(uint256 _token, uint256 _idx)\\n        external\\n        view\\n        returns (address);\\n\\n    function allTokenHoldersLength(uint256 _token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function totalBalances(uint256 _id) external view returns (uint256);\\n\\n    function allProxyRegistries(uint256 _idx) external view returns (address);\\n\\n    function allProxyRegistriesLength() external view returns (uint256);\\n\\n    function addProxyRegistry(address registry) external;\\n\\n    function removeProxyRegistryAt(uint256 index) external;\\n\\n    function getRegistryManager() external view returns (address);\\n\\n    function setRegistryManager(address newManager) external;\\n\\n    function setRoyaltyInfo(\\n        uint256 _tokenId,\\n        address _owner,\\n        uint256 feePermil\\n    ) external;\\n\\n    function lock(uint256 token, uint256 timeframe) external;\\n\\n    function unlockTime(address account, uint256 token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function setTokenData(\\n        uint256 tokenHash,\\n        TokenType tokenType,\\n        address tokenPool\\n    ) external;\\n\\n    function getTokenData(uint256 tokenHash)\\n        external\\n        view\\n        returns (TokenType, address);\\n}\\n\",\"keccak256\":\"0x1d54431d4f990265d8a0c692430e75c5c77870b78f19264069e1cfe86d7464c0\",\"license\":\"MIT\"},\"src/interfaces/ITokenSeller.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\n/// @dev A token seller is a contract that can sell tokens to a token buyer.\\n/// The token buyer can buy tokens from the seller by paying a certain amount\\n/// of base currency to receive a certain amount of erc1155 tokens. the number\\n/// of tokens that can be bought is limited by the seller - the seller can\\n/// specify the maximum number of tokens that can be bought per transaction\\n/// and the maximum number of tokens that can be bought in total for a given\\n/// address. The seller can also specify the price of erc1155 tokens and how\\n/// that price increases per successful transaction. the token seller assumes\\n/// supply of the erc1155 is unlimited and features a request method\\n\\ninterface ITokenSeller {\\n    enum BuyPriceIncreaseRateType {\\n        NONE,\\n        FIXED,\\n        EXPONENTIAL,\\n        INVERSELOG\\n    }\\n\\n    struct TokenSellerInfo {\\n        address multitoken;\\n        address contractAddress;\\n        address owner;\\n        uint256 tokenHash;\\n        uint256 buyPrice;\\n        BuyPriceIncreaseRateType buyPriceIncreaseRateType;\\n        uint256 buyPriceIncreaseRate;\\n        uint256 maxQuantity;\\n        uint256 maxBuyAmount;\\n        uint256 maxTotalBuyAmount;\\n        uint256 saleStartTime;\\n        uint256 saleEndTime;\\n        bool initialized;\\n        bool open;\\n        uint256 totalPurchased;\\n    }\\n\\n    event TokenSellerCreated(address indexed creator, TokenSellerInfo info);\\n\\n    event Sold(\\n        address indexed contractAddress,\\n        address indexed buyer,\\n        uint256 indexed tokenHash,\\n        uint256 price,\\n        uint256 amount\\n    );\\n\\n    event Requested(\\n        address indexed contractAddress,\\n        address indexed seller,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event Funded(\\n        address indexed contractAddress,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event FundsCollected(address indexed receiver, uint256 indexed amount);\\n\\n    event TokenSellerMigrated(\\n        address indexed migrator,\\n        address indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        TokenSellerInfo data\\n    );\\n\\n    function initialize(address tokenSellerData, TokenSellerInfo memory _info)\\n        external;\\n\\n    function isInitialized() external view returns (bool);\\n\\n    function getInfo() external view returns (TokenSellerInfo memory);\\n\\n    function setInfo(TokenSellerInfo memory _info) external;\\n\\n    /// @dev Buy tokens from the token seller.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were bought.\\n    function buy(uint256 _amount) external payable returns (uint256);\\n\\n    /// @dev Request tokens from the token provider.\\n    /// @param _recipient The address of the token receiver.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were requested.\\n    function request(address _recipient, uint256 _amount)\\n        external\\n        returns (uint256);\\n\\n    function receivePayout(address payable _recipient) external;\\n}\\n\",\"keccak256\":\"0x8783cfa454e469fc9425161cdc4336a2ea0db1379ad2828de0ab9197c36ea43c\",\"license\":\"MIT\"}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5061001a3061001f565b610043565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b61132c806100526000396000f3fe608060405234801561001057600080fd5b50600436106100c95760003560e01c80638c54baf011610081578063d02906561161005b578063d02906561461019e578063e1c28bef146101b1578063ef3c4a05146101b9576100c9565b80638c54baf014610163578063a7fc7a0714610176578063b429afeb1461018b576100c9565b806335d2a2fe116100b257806335d2a2fe14610110578063677808aa146101305780636d990d1a14610150576100c9565b80630551f733146100ce5780630f4c5ccf146100fd575b600080fd5b6100e16100dc366004610f0f565b6101cc565b6040516100f49796959493929190611213565b60405180910390f35b6100e161010b366004610f0f565b610239565b61012361011e36600461100b565b610255565b6040516100f4919061110b565b61014361013e366004610ebb565b610268565b6040516100f491906110c7565b61012361015e366004610f38565b610571565b6100e1610171366004610f0f565b6105d3565b610189610184366004610e9a565b6105ef565b005b610123610199366004610e9a565b610674565b6100e16101ac366004611026565b610692565b6101896106df565b6100e16101c7366004610f0f565b610750565b600360205281600052604060002081815481106101e857600080fd5b600091825260209091206007909102018054600182015460028301546003840154600485015460058601546006909601549497509295506001600160a01b0391821694908216939282169291169087565b600560205281600052604060002081815481106101e857600080fd5b60006102608261076c565b90505b919050565b606060008267ffffffffffffffff81111561029357634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102bc578160200160208202803683370190505b50915060006102cb8486611290565b90505b836102d98187611290565b6102e39190611278565b811015610566576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610332908590600401611173565b60206040518083038186803b15801561034a57600080fd5b505afa92505050801561037a575060408051601f3d908101601f191682019092526103779181019061103e565b60015b6103845750610554565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906103ce908590600401611173565b60206040518083038186803b1580156103e657600080fd5b505afa1580156103fa573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061041e9190610fec565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161044f9291906110ae565b60206040518083038186803b15801561046757600080fd5b505afa15801561047b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061049f919061103e565b905060028260028111156104c357634e487b7160e01b600052602160045260246000fd5b1415806104ce575080155b806104d7575082155b806104e25750826001145b156104ef57505050610554565b600282600281111561051157634e487b7160e01b600052602160045260246000fd5b141561055057828686610523816112af565b97508151811061054357634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505b5050505b8061055e816112af565b9150506102ce565b505095945050505050565b60006001815b83518110156105cc578180156105b857506105b88482815181106105ab57634e487b7160e01b600052603260045260246000fd5b602002602001015161076c565b9150806105c4816112af565b915050610577565b5092915050565b600460205281600052604060002081815481106101e857600080fd5b3360009081526020819052604090205460ff1615156001148061061157503033145b610650576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6001602081905260009182526040909120805491810154600282015460038301546004840154600585015460069095015493946001600160a01b0393841694928416939182169291169087565b3360009081526020819052604090205460ff1615156001148061070157503033145b610737576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b336000908152602081905260409020805460ff19169055565b600260205281600052604060002081815481106101e857600080fd5b60008061077883610d95565b600081815260016020819052604090912001549091501561079d576000915050610263565b808360000181815250508260016000838152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601559050506002600084604001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506003600084606001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506004600084608001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601555050600560008460a001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c08201518160060155505082600001517f3abf67e6c3ea7bc9de98686cd6782a586518bd1cdb89786b5296a68de202873084602001518560400151866060015187608001518860a001518960c001518a604051610d84979695949392919061117c565b60405180910390a250600192915050565b6020808201516040808401516060850151608086015160a087015160c08801519451600097610dc697969101611056565b60408051601f19818403018152919052805160209091012092915050565b80356001600160a01b038116811461026357600080fd5b600060e08284031215610e0c578081fd5b60405160e0810181811067ffffffffffffffff82111715610e2f57610e2f6112e0565b80604052508091508235815260208301356020820152610e5160408401610de4565b6040820152610e6260608401610de4565b6060820152610e7360808401610de4565b6080820152610e8460a08401610de4565b60a082015260c083013560c08201525092915050565b600060208284031215610eab578081fd5b610eb482610de4565b9392505050565b600080600080600060a08688031215610ed2578081fd5b610edb86610de4565b9450610ee960208701610de4565b9350610ef760408701610de4565b94979396509394606081013594506080013592915050565b60008060408385031215610f21578182fd5b610f2a83610de4565b946020939093013593505050565b60006020808385031215610f4a578182fd5b823567ffffffffffffffff80821115610f61578384fd5b818501915085601f830112610f74578384fd5b813581811115610f8657610f866112e0565b610f93848583020161124e565b818152848101925083850160e0808402860187018a1015610fb2578788fd5b8795505b83861015610fde57610fc88a83610dfb565b8552600195909501949386019390810190610fb6565b509098975050505050505050565b600060208284031215610ffd578081fd5b815160038110610eb4578182fd5b600060e0828403121561101c578081fd5b610eb48383610dfb565b600060208284031215611037578081fd5b5035919050565b60006020828403121561104f578081fd5b5051919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b818110156110ff578351835292840192918401916001016110e3565b50909695505050505050565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b60006101a0820190508882526001600160a01b0380891660208401528088166040840152808716606084015280861660808401528460a0840152835160c0840152602084015160e08401528060408501511661010084015280606085015116610120840152806080850151166101408401528060a0850151166101608401525060c083015161018083015298975050505050505050565b96875260208701959095526001600160a01b0393841660408701529183166060860152821660808501521660a083015260c082015260e00190565b60405181810167ffffffffffffffff81118282101715611270576112706112e0565b604052919050565b6000821982111561128b5761128b6112ca565b500190565b60008160001904831182151516156112aa576112aa6112ca565b500290565b60006000198214156112c3576112c36112ca565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea2646970667358221220b42c308e259ce4cec1aec85fa8e43ecd09637603d77e90aad7e6f8d99276dd1a64736f6c63430008000033",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100c95760003560e01c80638c54baf011610081578063d02906561161005b578063d02906561461019e578063e1c28bef146101b1578063ef3c4a05146101b9576100c9565b80638c54baf014610163578063a7fc7a0714610176578063b429afeb1461018b576100c9565b806335d2a2fe116100b257806335d2a2fe14610110578063677808aa146101305780636d990d1a14610150576100c9565b80630551f733146100ce5780630f4c5ccf146100fd575b600080fd5b6100e16100dc366004610f0f565b6101cc565b6040516100f49796959493929190611213565b60405180910390f35b6100e161010b366004610f0f565b610239565b61012361011e36600461100b565b610255565b6040516100f4919061110b565b61014361013e366004610ebb565b610268565b6040516100f491906110c7565b61012361015e366004610f38565b610571565b6100e1610171366004610f0f565b6105d3565b610189610184366004610e9a565b6105ef565b005b610123610199366004610e9a565b610674565b6100e16101ac366004611026565b610692565b6101896106df565b6100e16101c7366004610f0f565b610750565b600360205281600052604060002081815481106101e857600080fd5b600091825260209091206007909102018054600182015460028301546003840154600485015460058601546006909601549497509295506001600160a01b0391821694908216939282169291169087565b600560205281600052604060002081815481106101e857600080fd5b60006102608261076c565b90505b919050565b606060008267ffffffffffffffff81111561029357634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156102bc578160200160208202803683370190505b50915060006102cb8486611290565b90505b836102d98187611290565b6102e39190611278565b811015610566576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610332908590600401611173565b60206040518083038186803b15801561034a57600080fd5b505afa92505050801561037a575060408051601f3d908101601f191682019092526103779181019061103e565b60015b6103845750610554565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906103ce908590600401611173565b60206040518083038186803b1580156103e657600080fd5b505afa1580156103fa573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061041e9190610fec565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161044f9291906110ae565b60206040518083038186803b15801561046757600080fd5b505afa15801561047b573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061049f919061103e565b905060028260028111156104c357634e487b7160e01b600052602160045260246000fd5b1415806104ce575080155b806104d7575082155b806104e25750826001145b156104ef57505050610554565b600282600281111561051157634e487b7160e01b600052602160045260246000fd5b141561055057828686610523816112af565b97508151811061054357634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505b5050505b8061055e816112af565b9150506102ce565b505095945050505050565b60006001815b83518110156105cc578180156105b857506105b88482815181106105ab57634e487b7160e01b600052603260045260246000fd5b602002602001015161076c565b9150806105c4816112af565b915050610577565b5092915050565b600460205281600052604060002081815481106101e857600080fd5b3360009081526020819052604090205460ff1615156001148061061157503033145b610650576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6001602081905260009182526040909120805491810154600282015460038301546004840154600585015460069095015493946001600160a01b0393841694928416939182169291169087565b3360009081526020819052604090205460ff1615156001148061070157503033145b610737576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161064790611116565b336000908152602081905260409020805460ff19169055565b600260205281600052604060002081815481106101e857600080fd5b60008061077883610d95565b600081815260016020819052604090912001549091501561079d576000915050610263565b808360000181815250508260016000838152602001908152602001600020600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601559050506002600084604001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506003600084606001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c0820151816006015550506004600084608001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c082015181600601555050600560008460a001516001600160a01b03166001600160a01b03168152602001908152602001600020839080600181540180825580915050600190039060005260206000209060070201600090919091909150600082015181600001556020820151816001015560408201518160020160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060608201518160030160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060808201518160040160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060a08201518160050160006101000a8154816001600160a01b0302191690836001600160a01b0316021790555060c08201518160060155505082600001517f3abf67e6c3ea7bc9de98686cd6782a586518bd1cdb89786b5296a68de202873084602001518560400151866060015187608001518860a001518960c001518a604051610d84979695949392919061117c565b60405180910390a250600192915050565b6020808201516040808401516060850151608086015160a087015160c08801519451600097610dc697969101611056565b60408051601f19818403018152919052805160209091012092915050565b80356001600160a01b038116811461026357600080fd5b600060e08284031215610e0c578081fd5b60405160e0810181811067ffffffffffffffff82111715610e2f57610e2f6112e0565b80604052508091508235815260208301356020820152610e5160408401610de4565b6040820152610e6260608401610de4565b6060820152610e7360808401610de4565b6080820152610e8460a08401610de4565b60a082015260c083013560c08201525092915050565b600060208284031215610eab578081fd5b610eb482610de4565b9392505050565b600080600080600060a08688031215610ed2578081fd5b610edb86610de4565b9450610ee960208701610de4565b9350610ef760408701610de4565b94979396509394606081013594506080013592915050565b60008060408385031215610f21578182fd5b610f2a83610de4565b946020939093013593505050565b60006020808385031215610f4a578182fd5b823567ffffffffffffffff80821115610f61578384fd5b818501915085601f830112610f74578384fd5b813581811115610f8657610f866112e0565b610f93848583020161124e565b818152848101925083850160e0808402860187018a1015610fb2578788fd5b8795505b83861015610fde57610fc88a83610dfb565b8552600195909501949386019390810190610fb6565b509098975050505050505050565b600060208284031215610ffd578081fd5b815160038110610eb4578182fd5b600060e0828403121561101c578081fd5b610eb48383610dfb565b600060208284031215611037578081fd5b5035919050565b60006020828403121561104f578081fd5b5051919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b818110156110ff578351835292840192918401916001016110e3565b50909695505050505050565b901515815260200190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b90815260200190565b60006101a0820190508882526001600160a01b0380891660208401528088166040840152808716606084015280861660808401528460a0840152835160c0840152602084015160e08401528060408501511661010084015280606085015116610120840152806080850151166101408401528060a0850151166101608401525060c083015161018083015298975050505050505050565b96875260208701959095526001600160a01b0393841660408701529183166060860152821660808501521660a083015260c082015260e00190565b60405181810167ffffffffffffffff81118282101715611270576112706112e0565b604052919050565b6000821982111561128b5761128b6112ca565b500190565b60008160001904831182151516156112aa576112aa6112ca565b500290565b60006000198214156112c3576112c36112ca565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fdfea2646970667358221220b42c308e259ce4cec1aec85fa8e43ecd09637603d77e90aad7e6f8d99276dd1a64736f6c63430008000033",
+  "solcInputHash": "2461357fd4a73a29bb44730759b3dbd8",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.0+commit.c7dfd78e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"controllerAddress\",\"type\":\"address\"}],\"name\":\"ControllerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"gemCreateUID\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.GemPool\",\"name\":\"pool\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"GemCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"opener\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"factoryAddress\",\"type\":\"address\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.LootboxFactory\",\"name\":\"factory\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.Lootbox\",\"name\":\"lootbox\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"lootHash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lootbox\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"probability\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"indexed\":false,\"internalType\":\"struct IBitgemIndexer.Loot[]\",\"name\":\"receivedLoot\",\"type\":\"tuple[]\"}],\"name\":\"LootboxOpened\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_controller\",\"type\":\"address\"}],\"name\":\"addController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemMap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"gemPoolFactoriesMap\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemPools\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"gemPoolsMap\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByFactory\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMinter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByMultitoken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gemsByPool\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"gemPool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"getOwnedGems\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"gems\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"gemLen\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.GemPool\",\"name\":\"gemPool\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"indexGem\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"gemPool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"page\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"count\",\"type\":\"uint256\"}],\"name\":\"indexGemPool\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem[]\",\"name\":\"gems\",\"type\":\"tuple[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.GemPool\",\"name\":\"gemPool\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem\",\"name\":\"gem\",\"type\":\"tuple\"}],\"name\":\"indexGemUnsafe\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"factory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"poolAddress\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"category\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ethPrice\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.GemPool\",\"name\":\"gemPool\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"gemHash\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"pool\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"minter\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"gemPoolFactory\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"multitoken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"quantity\",\"type\":\"uint256\"}],\"internalType\":\"struct IBitgemIndexer.Gem[]\",\"name\":\"gems\",\"type\":\"tuple[]\"}],\"name\":\"indexGems\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"isController\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"allowed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relinquishControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"The name of the author\",\"details\":\"Explain to a developer any extra details\",\"kind\":\"dev\",\"methods\":{\"addController(address)\":{\"details\":\"Add an address allowed to control this contract\"},\"isController(address)\":{\"details\":\"Check if this address is a controller\"},\"relinquishControl()\":{\"details\":\"Remove the sender address from the list of controllers\"}},\"title\":\"A title that should describe the contract/interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Explain to an end user what this does\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/indexer/BitgemIndexer.sol\":\"BitgemIndexer\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":2222},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC1155 compliant contract, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-1155[EIP].\\n *\\n * _Available since v3.1._\\n */\\ninterface IERC1155 is IERC165 {\\n    /**\\n     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.\\n     */\\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\\n\\n    /**\\n     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all\\n     * transfers.\\n     */\\n    event TransferBatch(\\n        address indexed operator,\\n        address indexed from,\\n        address indexed to,\\n        uint256[] ids,\\n        uint256[] values\\n    );\\n\\n    /**\\n     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to\\n     * `approved`.\\n     */\\n    event ApprovalForAll(address indexed account, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.\\n     *\\n     * If an {URI} event was emitted for `id`, the standard\\n     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value\\n     * returned by {IERC1155MetadataURI-uri}.\\n     */\\n    event URI(string value, uint256 indexed id);\\n\\n    /**\\n     * @dev Returns the amount of tokens of token type `id` owned by `account`.\\n     *\\n     * Requirements:\\n     *\\n     * - `account` cannot be the zero address.\\n     */\\n    function balanceOf(address account, uint256 id) external view returns (uint256);\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.\\n     *\\n     * Requirements:\\n     *\\n     * - `accounts` and `ids` must have the same length.\\n     */\\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    /**\\n     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `operator` cannot be the caller.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\\n     *\\n     * See {setApprovalForAll}.\\n     */\\n    function isApprovedForAll(address account, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.\\n     *\\n     * Emits a {TransferSingle} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `to` cannot be the zero address.\\n     * - If the caller is not `from`, it must be have been approved to spend ``from``'s tokens via {setApprovalForAll}.\\n     * - `from` must have a balance of tokens of type `id` of at least `amount`.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the\\n     * acceptance magic value.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 id,\\n        uint256 amount,\\n        bytes calldata data\\n    ) external;\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.\\n     *\\n     * Emits a {TransferBatch} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `ids` and `amounts` must have the same length.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the\\n     * acceptance magic value.\\n     */\\n    function safeBatchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata ids,\\n        uint256[] calldata amounts,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0xfce1eb6398eae0e2b50251140866a70a3106193f101972c878bba1dbf44929ec\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\"},\"src/access/Controllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\nimport \\\"../interfaces/IControllable.sol\\\";\\n\\nabstract contract Controllable is IControllable {\\n    mapping(address => bool) internal _controllers;\\n\\n    /**\\n     * @dev Throws if called by any account not in authorized list\\n     */\\n    modifier onlyController() {\\n        require(\\n            _controllers[msg.sender] == true || address(this) == msg.sender,\\n            \\\"Controllable: caller is not a controller\\\"\\n        );\\n        _;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function _addController(address _controller) internal {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Add an address allowed to control this contract\\n     */\\n    function addController(address _controller)\\n        external\\n        override\\n        onlyController\\n    {\\n        _controllers[_controller] = true;\\n    }\\n\\n    /**\\n     * @dev Check if this address is a controller\\n     */\\n    function isController(address _address)\\n        external\\n        view\\n        override\\n        returns (bool allowed)\\n    {\\n        allowed = _controllers[_address];\\n    }\\n\\n    /**\\n     * @dev Remove the sender address from the list of controllers\\n     */\\n    function relinquishControl() external override onlyController {\\n        delete _controllers[msg.sender];\\n    }\\n}\\n\",\"keccak256\":\"0xa31f752b3b092c788ea06a6dced266db79c4407d69733d78bc15e519f39e1d3f\",\"license\":\"MIT\"},\"src/indexer/BitgemIndexer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\\\";\\n\\nimport \\\"../access/Controllable.sol\\\";\\nimport \\\"../interfaces/ITokenSeller.sol\\\";\\nimport \\\"../interfaces/IBitgemIndexer.sol\\\";\\n\\n/// @dev The gem indexer indexes all historical gems from legacy contracts and\\n/// produces a series of events that get indexed by thegraph indexer. this is\\n/// necessary because the legacy contracts generate events from library code,\\n/// making things not work in thegraph.\\n\\n/// @title A title that should describe the contract/interface\\n/// @author The name of the author\\n/// @notice Explain to an end user what this does\\n/// @dev Explain to a developer any extra details\\ncontract BitgemIndexer is IBitgemIndexer, Controllable {\\n    mapping(uint256 => Gem) public gemMap;\\n    mapping(address => Gem[]) public gemsByMinter;\\n    mapping(address => Gem[]) public gemsByFactory;\\n    mapping(address => Gem[]) public gemsByMultitoken;\\n    mapping(address => Gem[]) public gemsByPool;\\n\\n    GemPool[] public gemPools;\\n    mapping(address => GemPool) public gemPoolsMap;\\n    mapping(address => GemPool) public gemPoolFactoriesMap;\\n\\n    constructor() {\\n        _addController(address(this));\\n    }\\n\\n    function _makeId(Gem memory gem) internal pure returns (uint256) {\\n        return\\n            uint256(\\n                keccak256(\\n                    abi.encodePacked(\\n                        gem.gemHash,\\n                        gem.minter,\\n                        gem.gemPoolFactory,\\n                        gem.multitoken,\\n                        gem.pool,\\n                        gem.quantity\\n                    )\\n                )\\n            );\\n    }\\n\\n    function indexGemPool(\\n        address gemPool,\\n        address multitoken,\\n        uint256 page,\\n        uint256 count\\n    ) external override returns (Gem[] memory gems) {\\n        uint256 allTokenHashesLength = IGemPoolData(gemPool)\\n            .allTokenHashesLength();\\n        require((page * count) + count <= allTokenHashesLength, \\\"OUT_OF_RANGE\\\");\\n\\n        uint256 gemLen = 0;\\n        gems = new Gem[](count);\\n\\n        for (\\n            uint256 i = page * count;\\n            i < ((page * count) + count) && i < allTokenHashesLength;\\n            i++\\n        ) {\\n            uint256 claimHash = 0;\\n            try IGemPoolData(gemPool).allTokenHashes(i) returns (\\n                uint256 _claimHash\\n            ) {\\n                claimHash = _claimHash;\\n            } catch {\\n                continue;\\n            }\\n\\n            INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)\\n                .tokenType(claimHash);\\n\\n            if (tokenType == INFTGemMultiToken.TokenType.GEM) {\\n                uint256 allTokenHoldersLength = INFTGemMultiToken(multitoken)\\n                    .allTokenHoldersLength(claimHash);\\n                if (allTokenHoldersLength != 0) {\\n                    for (uint256 j = 0; j < allTokenHoldersLength; j++) {\\n                        (\\n                            GemPool memory _gemPool,\\n                            Gem memory _gem\\n                        ) = _createGemObjects(\\n                                multitoken,\\n                                gemPool,\\n                                i,\\n                                claimHash\\n                            );\\n                        if (_indexGem(_gemPool, _gem)) {\\n                            gems[gemLen++] = _gem;\\n                        }\\n                    }\\n                }\\n            }\\n        }\\n    }\\n\\n    function _createGemObjects(\\n        address multitoken,\\n        address gemPool,\\n        uint256 i,\\n        uint256 claimHash\\n    ) internal view returns (GemPool memory _gemPool, Gem memory _gem) {\\n        address holder = INFTGemMultiToken(multitoken).allTokenHolders(\\n            i,\\n            claimHash\\n        );\\n        (\\n            string memory settingsSymbol,\\n            string memory settingsName,\\n            string memory settingsDescription,\\n            uint256 settingsCategory,\\n            uint256 settingsEthPrice,\\n            ,\\n            ,\\n            ,\\n            ,\\n            ,\\n\\n        ) = IGemPoolData(gemPool).settings();\\n        _gemPool = GemPool(\\n            address(0),\\n            multitoken,\\n            gemPool,\\n            settingsSymbol,\\n            settingsName,\\n            settingsDescription,\\n            settingsCategory,\\n            settingsEthPrice\\n        );\\n        uint256 balance = IERC1155(multitoken).balanceOf(holder, claimHash);\\n        if (balance != 0) {\\n            _gem = Gem(\\n                0,\\n                settingsSymbol,\\n                settingsName,\\n                claimHash,\\n                holder,\\n                gemPool,\\n                multitoken,\\n                gemPool,\\n                balance\\n            );\\n            _gem.id = _makeId(_gem);\\n        }\\n    }\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    ) external view override returns (uint256[] memory gems, uint256 gemLen) {\\n        gems = new uint256[](count);\\n\\n        for (uint256 i = page * count; i < (page * count) + count; i++) {\\n            uint256 claimHash = 0;\\n            try IGemPoolData(gemPool).allTokenHashes(i) returns (\\n                uint256 _claimHash\\n            ) {\\n                claimHash = _claimHash;\\n            } catch {\\n                continue;\\n            }\\n\\n            INFTGemMultiToken.TokenType tokenType = IGemPoolData(gemPool)\\n                .tokenType(claimHash);\\n\\n            uint256 bal = IERC1155(multitoken).balanceOf(account, claimHash);\\n            if (\\n                tokenType != INFTGemMultiToken.TokenType.GEM ||\\n                bal == 0 ||\\n                claimHash == 0 ||\\n                claimHash == 1\\n            ) continue;\\n\\n            gems[gemLen++] = claimHash;\\n        }\\n    }\\n\\n    function _indexGem(GemPool memory gemPool, Gem memory gem)\\n        internal\\n        returns (bool)\\n    {\\n        uint256 gemId = _makeId(gem);\\n        if (gemMap[gemId].id != 0) {\\n            return false;\\n        }\\n        gem.id = gemId;\\n        gemMap[gemId] = gem;\\n        gemsByMinter[gem.minter].push(gem);\\n        gemsByFactory[gem.gemPoolFactory].push(gem);\\n        gemsByMultitoken[gem.multitoken].push(gem);\\n        gemsByPool[gem.pool].push(gem);\\n        if (gemPoolsMap[gem.pool].multitoken == address(0)) {\\n            gemPoolsMap[gem.pool] = gemPool;\\n            gemPools.push(gemPool);\\n        }\\n\\n        emit GemCreated(gem.id, gemPool, gem);\\n        return true;\\n    }\\n\\n    function indexGem(GemPool memory gemPool, Gem memory gem)\\n        external\\n        override\\n        returns (bool)\\n    {\\n        return _indexGem(gemPool, gem);\\n    }\\n\\n    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem)\\n        external\\n        override\\n    {\\n        emit GemCreated(gem.id, gemPool, gem);\\n    }\\n\\n    function indexGems(GemPool memory gemPool, Gem[] memory gems) external {\\n        for (uint256 i = 0; i < gems.length; i++) {\\n            _indexGem(gemPool, gems[i]);\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xd190e615c1765bcaf7b448062e406226c0436e88bc0a214938c148b1e63b76c8\",\"license\":\"MIT\"},\"src/interfaces/IBitgemIndexer.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\nimport \\\"./INFTGemMultiToken.sol\\\";\\n\\n/// @dev The gem indexer indexes all historical gems from legacy contracts and\\n/// produces a series of events that get indexed by thegraph indexer. this is\\n/// necessary because the legacy contracts generate events from library code,\\n/// making things not work in thegraph.\\n\\ninterface IGemPoolData {\\n    function allTokenHashesLength() external view returns (uint256);\\n\\n    function allTokenHashes(uint256 ndx) external view returns (uint256);\\n\\n    function tokenType(uint256 tokenHash)\\n        external\\n        view\\n        returns (INFTGemMultiToken.TokenType);\\n\\n    function settings()\\n        external\\n        view\\n        returns (\\n            string memory settingsSymbol,\\n            string memory settingsName,\\n            string memory settingsDescription,\\n            uint256 settingsCategory,\\n            uint256 settingsEthPrice,\\n            uint256 settingsMinTime,\\n            uint256 settingsMaxTime,\\n            uint256 settingsDiffStep,\\n            uint256 settingsMacClaims,\\n            uint256 settingsMaxQuantityPerClaim,\\n            uint256 settingsMaxClaimsPerAccount\\n        );\\n}\\n\\ninterface IBitgemIndexer {\\n    struct GemPoolFactory {\\n        address factoryAddress;\\n    }\\n    struct GemPool {\\n        address factory;\\n        address multitoken;\\n        address poolAddress;\\n        string symbol;\\n        string name;\\n        string description;\\n        uint256 category;\\n        uint256 ethPrice;\\n    }\\n    struct Gem {\\n        uint256 id;\\n        string symbol;\\n        string name;\\n        uint256 gemHash;\\n        address pool;\\n        address minter;\\n        address gemPoolFactory;\\n        address multitoken;\\n        uint256 quantity;\\n    }\\n    struct LootboxFactory {\\n        address factoryAddress;\\n    }\\n    struct Lootbox {\\n        address poolAddress;\\n        string symbol;\\n        string name;\\n        string description;\\n        address factory;\\n        address multitoken;\\n        uint256 quantity;\\n    }\\n    struct Loot {\\n        uint256 id;\\n        string symbol;\\n        string name;\\n        string description;\\n        uint256 lootHash;\\n        uint256 lootbox;\\n        address minter;\\n        address factory;\\n        address multitoken;\\n        uint256 probability;\\n        uint256 quantity;\\n    }\\n    struct SwapMeet {\\n        address swapMeetAddress;\\n    }\\n    struct Offer {\\n        uint256 id;\\n        address swapMeet;\\n        address owner;\\n        address pool;\\n        uint256 gem;\\n        uint256 quantity;\\n        address[] pools;\\n        uint256[] gems;\\n        uint256[] quantities;\\n        uint256 listingFee;\\n        uint256 acceptFee;\\n        uint256 references;\\n        bool missingTokenPenalty;\\n    }\\n    event GemCreated(uint256 indexed gemCreateUID, GemPool pool, Gem gem);\\n    event LootboxOpened(\\n        address opener,\\n        LootboxFactory factory,\\n        Lootbox lootbox,\\n        Loot[] receivedLoot\\n    );\\n\\n    function indexGem(GemPool memory gemPool, Gem memory gem)\\n        external\\n        returns (bool);\\n\\n    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem) external;\\n\\n    function getOwnedGems(\\n        address gemPool,\\n        address multitoken,\\n        address account,\\n        uint256 page,\\n        uint256 count\\n    ) external view returns (uint256[] memory gems, uint256 gemLen);\\n\\n    function indexGemPool(\\n        address gemPool,\\n        address multitoken,\\n        uint256 page,\\n        uint256 count\\n    ) external returns (Gem[] memory gems);\\n}\\n\",\"keccak256\":\"0xc054a26d98798ba96d7f8fbfc2287884b9a3e02c8191c7bb6b33c2aa445b124f\",\"license\":\"MIT\"},\"src/interfaces/IControllable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\ninterface IControllable {\\n    event ControllerAdded(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n    event ControllerRemoved(\\n        address indexed contractAddress,\\n        address indexed controllerAddress\\n    );\\n\\n    function addController(address controller) external;\\n\\n    function isController(address controller) external view returns (bool);\\n\\n    function relinquishControl() external;\\n}\\n\",\"keccak256\":\"0x2a44548d9ba1bcd73d5734b2265db6c1556c013ccc61df621a6cbd5cca42cfaf\",\"license\":\"MIT\"},\"src/interfaces/INFTGemMultiToken.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface INFTGemMultiToken {\\n    enum TokenType {\\n        GOVERNANCE,\\n        CLAIM,\\n        GEM\\n    }\\n\\n    struct Royalty {\\n        address owner;\\n        uint256 royaltyPermillion;\\n    }\\n\\n    // called by controller to mint a claim or a gem\\n    function mint(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    // called by controller to mint a claim or a gem\\n    function mintBatch(\\n        address to,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    function burnBatch(\\n        address account,\\n        uint256[] memory ids,\\n        uint256[] memory amounts\\n    ) external;\\n\\n    // called by controller to burn a claim\\n    function burn(\\n        address account,\\n        uint256 tokenHash,\\n        uint256 amount\\n    ) external;\\n\\n    function heldTokens(address holder)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    function allHeldTokens(address holder, uint256 _idx)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function allHeldTokensLength(address holder)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function tokenHolders(uint256 _token)\\n        external\\n        view\\n        returns (address[] memory);\\n\\n    function allTokenHolders(uint256 _token, uint256 _idx)\\n        external\\n        view\\n        returns (address);\\n\\n    function allTokenHoldersLength(uint256 _token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function totalBalances(uint256 _id) external view returns (uint256);\\n\\n    function allProxyRegistries(uint256 _idx) external view returns (address);\\n\\n    function allProxyRegistriesLength() external view returns (uint256);\\n\\n    function addProxyRegistry(address registry) external;\\n\\n    function removeProxyRegistryAt(uint256 index) external;\\n\\n    function getRegistryManager() external view returns (address);\\n\\n    function setRegistryManager(address newManager) external;\\n\\n    function setRoyaltyInfo(\\n        uint256 _tokenId,\\n        address _owner,\\n        uint256 feePermil\\n    ) external;\\n\\n    function lock(uint256 token, uint256 timeframe) external;\\n\\n    function unlockTime(address account, uint256 token)\\n        external\\n        view\\n        returns (uint256);\\n\\n    function setTokenData(\\n        uint256 tokenHash,\\n        TokenType tokenType,\\n        address tokenPool\\n    ) external;\\n\\n    function getTokenData(uint256 tokenHash)\\n        external\\n        view\\n        returns (TokenType, address);\\n}\\n\",\"keccak256\":\"0x1d54431d4f990265d8a0c692430e75c5c77870b78f19264069e1cfe86d7464c0\",\"license\":\"MIT\"},\"src/interfaces/ITokenSeller.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.0;\\n\\n/// @dev A token seller is a contract that can sell tokens to a token buyer.\\n/// The token buyer can buy tokens from the seller by paying a certain amount\\n/// of base currency to receive a certain amount of erc1155 tokens. the number\\n/// of tokens that can be bought is limited by the seller - the seller can\\n/// specify the maximum number of tokens that can be bought per transaction\\n/// and the maximum number of tokens that can be bought in total for a given\\n/// address. The seller can also specify the price of erc1155 tokens and how\\n/// that price increases per successful transaction. the token seller assumes\\n/// supply of the erc1155 is unlimited and features a request method\\n\\ninterface ITokenSeller {\\n    enum BuyPriceIncreaseRateType {\\n        NONE,\\n        FIXED,\\n        EXPONENTIAL,\\n        INVERSELOG\\n    }\\n\\n    struct TokenSellerInfo {\\n        address multitoken;\\n        address contractAddress;\\n        address owner;\\n        uint256 tokenHash;\\n        uint256 buyPrice;\\n        BuyPriceIncreaseRateType buyPriceIncreaseRateType;\\n        uint256 buyPriceIncreaseRate;\\n        uint256 maxQuantity;\\n        uint256 maxBuyAmount;\\n        uint256 maxTotalBuyAmount;\\n        uint256 saleStartTime;\\n        uint256 saleEndTime;\\n        bool initialized;\\n        bool open;\\n        uint256 totalPurchased;\\n    }\\n\\n    event TokenSellerCreated(address indexed creator, TokenSellerInfo info);\\n\\n    event Sold(\\n        address indexed contractAddress,\\n        address indexed buyer,\\n        uint256 indexed tokenHash,\\n        uint256 price,\\n        uint256 amount\\n    );\\n\\n    event Requested(\\n        address indexed contractAddress,\\n        address indexed seller,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event Funded(\\n        address indexed contractAddress,\\n        uint256 indexed tokenId,\\n        uint256 amount\\n    );\\n\\n    event FundsCollected(address indexed receiver, uint256 indexed amount);\\n\\n    event TokenSellerMigrated(\\n        address indexed migrator,\\n        address indexed hash,\\n        address indexed oldContractAddress,\\n        address newContractAddress,\\n        TokenSellerInfo data\\n    );\\n\\n    function initialize(address tokenSellerData, TokenSellerInfo memory _info)\\n        external;\\n\\n    function isInitialized() external view returns (bool);\\n\\n    function getInfo() external view returns (TokenSellerInfo memory);\\n\\n    function setInfo(TokenSellerInfo memory _info) external;\\n\\n    /// @dev Buy tokens from the token seller.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were bought.\\n    function buy(uint256 _amount) external payable returns (uint256);\\n\\n    /// @dev Request tokens from the token provider.\\n    /// @param _recipient The address of the token receiver.\\n    /// @param _amount The amount of erc1155 tokens to buy.\\n    /// @return The amount of erc1155 tokens that were requested.\\n    function request(address _recipient, uint256 _amount)\\n        external\\n        returns (uint256);\\n\\n    function receivePayout(address payable _recipient) external;\\n}\\n\",\"keccak256\":\"0x8783cfa454e469fc9425161cdc4336a2ea0db1379ad2828de0ab9197c36ea43c\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061001a3061001f565b610043565b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6126ae806100526000396000f3fe608060405234801561001057600080fd5b50600436106101005760003560e01c8063b429afeb11610097578063dec08e2f11610066578063dec08e2f14610245578063e1c28bef14610258578063e4cbbc7b14610260578063ef3c4a051461027357610100565b8063b429afeb146101df578063c6e8a9e4146101ff578063d029065614610212578063d7b20e6b1461022557610100565b8063677808aa116100d3578063677808aa146101835780638c54baf0146101a4578063a45c1d54146101b7578063a7fc7a07146101cc57610100565b80630551f733146101055780630f4c5ccf146101365780635890b53a1461014957806360daabda14610170575b600080fd5b610118610113366004611e54565b610286565b60405161012d999897969594939291906124ab565b60405180910390f35b610118610144366004611e54565b610414565b61015c610157366004611d76565b610430565b60405161012d989796959493929190612208565b61015c61017e366004611d76565b610619565b610196610191366004611db5565b610657565b60405161012d9291906122f6565b6101186101b2366004611e54565b610937565b6101ca6101c5366004611f7f565b610953565b005b6101ca6101da366004611d76565b6109a8565b6101f26101ed366004611d76565b610a13565b60405161012d919061233e565b6101f261020d36600461203f565b610a31565b6101186102203660046120a0565b610a46565b610238610233366004611e0f565b610a67565b60405161012d9190612296565b6101ca61025336600461203f565b610e49565b6101ca610e89565b61015c61026e3660046120a0565b610ee0565b610118610281366004611e54565b610f32565b600360205281600052604060002081815481106102a257600080fd5b9060005260206000209060090201600091509150508060000154908060010180546102cc906125de565b80601f01602080910402602001604051908101604052809291908181526020018280546102f8906125de565b80156103455780601f1061031a57610100808354040283529160200191610345565b820191906000526020600020905b81548152906001019060200180831161032857829003601f168201915b50505050509080600201805461035a906125de565b80601f0160208091040260200160405190810160405280929190818152602001828054610386906125de565b80156103d35780601f106103a8576101008083540402835291602001916103d3565b820191906000526020600020905b8154815290600101906020018083116103b657829003601f168201915b5050505060038301546004840154600585015460068601546007870154600890970154959693956001600160a01b0393841695509183169390831692169089565b600560205281600052604060002081815481106102a257600080fd5b60076020526000908152604090208054600182015460028301546003840180546001600160a01b039485169593851694909216929161046e906125de565b80601f016020809104026020016040519081016040528092919081815260200182805461049a906125de565b80156104e75780601f106104bc576101008083540402835291602001916104e7565b820191906000526020600020905b8154815290600101906020018083116104ca57829003601f168201915b5050505050908060040180546104fc906125de565b80601f0160208091040260200160405190810160405280929190818152602001828054610528906125de565b80156105755780601f1061054a57610100808354040283529160200191610575565b820191906000526020600020905b81548152906001019060200180831161055857829003601f168201915b50505050509080600501805461058a906125de565b80601f01602080910402602001604051908101604052809291908181526020018280546105b6906125de565b80156106035780601f106105d857610100808354040283529160200191610603565b820191906000526020600020905b8154815290600101906020018083116105e657829003601f168201915b5050505050908060060154908060070154905088565b60086020526000908152604090208054600182015460028301546003840180546001600160a01b039485169593851694909216929161046e906125de565b606060008267ffffffffffffffff81111561068257634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156106ab578160200160208202803683370190505b50915060006106ba848661258f565b90505b836106c8818761258f565b6106d29190612577565b81101561092c576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db906107219085906004016124a2565b60206040518083038186803b15801561073957600080fd5b505afa925050508015610769575060408051601f3d908101601f19168201909252610766918101906120b8565b60015b610773575061091a565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906107bd9085906004016124a2565b60206040518083038186803b1580156107d557600080fd5b505afa1580156107e9573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061080d9190611e7f565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161083e92919061227d565b60206040518083038186803b15801561085657600080fd5b505afa15801561086a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061088e91906120b8565b905060028260028111156108b257634e487b7160e01b600052602160045260246000fd5b1415806108bd575080155b806108c6575082155b806108d15750826001145b156108de5750505061091a565b8286866108ea81612619565b97508151811061090a57634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505050505b8061092481612619565b9150506106bd565b509550959350505050565b600460205281600052604060002081815481106102a257600080fd5b60005b81518110156109a3576109908383838151811061098357634e487b7160e01b600052603260045260246000fd5b6020026020010151610f4e565b508061099b81612619565b915050610956565b505050565b3360009081526020819052604090205460ff161515600114806109ca57503033145b6109ef5760405162461bcd60e51b81526004016109e690612380565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6000610a3d8383610f4e565b90505b92915050565b6001602081905260009182526040909120805491810180546102cc906125de565b60606000856001600160a01b031663f4fde0d36040518163ffffffff1660e01b815260040160206040518083038186803b158015610aa457600080fd5b505afa158015610ab8573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610adc91906120b8565b90508083610aea818761258f565b610af49190612577565b1115610b125760405162461bcd60e51b81526004016109e690612349565b60008367ffffffffffffffff811115610b3b57634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610b7457816020015b610b616119b2565b815260200190600190039081610b595790505b5092506000610b83858761258f565b90505b84610b91818861258f565b610b9b9190612577565b81108015610ba857508281105b15610e3e576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610bf59085906004016124a2565b60206040518083038186803b158015610c0d57600080fd5b505afa925050508015610c3d575060408051601f3d908101601f19168201909252610c3a918101906120b8565b60015b610c475750610e2c565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f690610c919085906004016124a2565b60206040518083038186803b158015610ca957600080fd5b505afa158015610cbd573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610ce19190611e7f565b90506002816002811115610d0557634e487b7160e01b600052602160045260246000fd5b1415610e29576040517ff68ee90e0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063f68ee90e90610d539086906004016124a2565b60206040518083038186803b158015610d6b57600080fd5b505afa158015610d7f573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610da391906120b8565b90508015610e275760005b81811015610e2557600080610dc58d8f89896116c0565b91509150610dd38282610f4e565b15610e1057808a89610de481612619565b9a5081518110610e0457634e487b7160e01b600052603260045260246000fd5b60200260200101819052505b50508080610e1d90612619565b915050610dae565b505b505b50505b80610e3681612619565b915050610b86565b505050949350505050565b80516040517f8c1ee35fa3a9dd5c4e2bfc4b7d4a9b944abf3f202ed9ec14c95708f08696a00c90610e7d90859085906123dd565b60405180910390a25050565b3360009081526020819052604090205460ff16151560011480610eab57503033145b610ec75760405162461bcd60e51b81526004016109e690612380565b336000908152602081905260409020805460ff19169055565b60068181548110610ef057600080fd5b600091825260209091206008909102018054600182015460028301546003840180546001600160a01b0394851696509284169493909116929161046e906125de565b600260205281600052604060002081815481106102a257600080fd5b600080610f5a8361195b565b60008181526001602052604090205490915015610f7b576000915050610a40565b80835260008181526001602081815260409092208551815582860151805187949293610fac93908501920190611a22565b5060408201518051610fc8916002840191602090910190611a22565b5060608201516003820155608082015160048201805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a080850151600585018054841691851691909117905560c0850151600685018054841691851691909117905560e0850151600785018054909316908416179091556101009093015160089092019190915590840151166000908152600260209081526040822080546001818101835591845292829020865160099094020192835581860151805187949361109f938501920190611a22565b50604082015180516110bb916002840191602090910190611a22565b506060820151600382810191909155608083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a0850151600585018054831691841691909117905560c080860151600686018054841691851691909117905560e08601516007860180549093169084161790915561010090940151600890930192909255918501511660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611193938501920190611a22565b50604082015180516111af916002840191602090910190611a22565b506060820151600382015560808201516004808301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039485161790915560a0850151600585018054831691851691909117905560c0850151600685018054831691851691909117905560e08086015160078601805490931690851617909155610100909401516008909301929092559185015190911660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611286938501920190611a22565b50604082015180516112a2916002840191602090910190611a22565b506060820151600382015560808083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a08501516005808601805484169285169290921790915560c0860151600686018054841691851691909117905560e086015160078601805490931690841617909155610100909401516008909301929092558501511660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611377938501920190611a22565b5060408201518051611393916002840191602090910190611a22565b506060820151600382015560808083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a0850151600585018054831691841691909117905560c0850151600685018054831691841691909117905560e0850151600780860180549093169184169190911790915561010090940151600890930192909255850151811660009081526020929092526040909120600101541661167a5760808301516001600160a01b039081166000908152600760209081526040918290208751815490851673ffffffffffffffffffffffffffffffffffffffff199182161782558289015160018301805491871691831691909117905592880151600282018054919095169316929092179092556060860151805187936114d1926003850192910190611a22565b50608082015180516114ed916004840191602090910190611a22565b5060a08201518051611509916005840191602090910190611a22565b5060c082015160068281019190915560e090920151600790910155805460018101825560009190915284517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d3f6008909202918201805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161782556020808901517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d4086018054841691861691909117905560408901517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d41860180549093169416939093179055606087015180518894929361162a937ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d4201920190611a22565b5060808201518051611646916004840191602090910190611a22565b5060a08201518051611662916005840191602090910190611a22565b5060c0820151816006015560e0820151816007015550505b82516040517f8c1ee35fa3a9dd5c4e2bfc4b7d4a9b944abf3f202ed9ec14c95708f08696a00c906116ae90879087906123dd565b60405180910390a25060019392505050565b6116c8611aa6565b6116d06119b2565b6040517f740ec99e0000000000000000000000000000000000000000000000000000000081526000906001600160a01b0388169063740ec99e9061171a9088908890600401612517565b60206040518083038186803b15801561173257600080fd5b505afa158015611746573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061176a9190611d99565b905060008060008060008a6001600160a01b031663e06174e46040518163ffffffff1660e01b815260040160006040518083038186803b1580156117ad57600080fd5b505afa1580156117c1573d6000803e3d6000fd5b505050506040513d6000823e601f3d908101601f191682016040526117e99190810190611e9e565b5050505050509450945094509450945060405180610100016040528060006001600160a01b031681526020018d6001600160a01b031681526020018c6001600160a01b0316815260200186815260200185815260200184815260200183815260200182815250975060008c6001600160a01b031662fdd58e888c6040518363ffffffff1660e01b815260040161188092919061227d565b60206040518083038186803b15801561189857600080fd5b505afa1580156118ac573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906118d091906120b8565b9050801561194b57604051806101200160405280600081526020018781526020018681526020018b8152602001886001600160a01b031681526020018d6001600160a01b031681526020018e6001600160a01b031681526020018d6001600160a01b031681526020018281525097506119488861195b565b88525b5050505050505094509492505050565b600081606001518260a001518360c001518460e001518560800151866101000151604051602001611991969594939291906121b0565b6040516020818303038152906040528051906020012060001c90505b919050565b6040518061012001604052806000815260200160608152602001606081526020016000815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b03168152602001600081525090565b828054611a2e906125de565b90600052602060002090601f016020900481019282611a505760008555611a96565b82601f10611a6957805160ff1916838001178555611a96565b82800160010185558215611a96579182015b82811115611a96578251825591602001919060010190611a7b565b50611aa2929150611b06565b5090565b60405180610100016040528060006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160608152602001606081526020016060815260200160008152602001600081525090565b5b80821115611aa25760008155600101611b07565b80356119ad81612660565b600082601f830112611b36578081fd5b8135611b49611b448261254f565b612525565b818152846020838601011115611b5d578283fd5b816020850160208301379081016020019190915292915050565b600082601f830112611b87578081fd5b8151611b95611b448261254f565b818152846020838601011115611ba9578283fd5b611bba8260208301602087016125ae565b949350505050565b6000610100808385031215611bd5578182fd5b611bde81612525565b915050611bea82611b1b565b8152611bf860208301611b1b565b6020820152611c0960408301611b1b565b6040820152606082013567ffffffffffffffff80821115611c2957600080fd5b611c3585838601611b26565b60608401526080840135915080821115611c4e57600080fd5b611c5a85838601611b26565b608084015260a0840135915080821115611c7357600080fd5b50611c8084828501611b26565b60a08301525060c082013560c082015260e082013560e082015292915050565b6000610120808385031215611cb3578182fd5b611cbc81612525565b91505081358152602082013567ffffffffffffffff80821115611cde57600080fd5b611cea85838601611b26565b60208401526040840135915080821115611d0357600080fd5b50611d1084828501611b26565b60408301525060608201356060820152611d2c60808301611b1b565b6080820152611d3d60a08301611b1b565b60a0820152611d4e60c08301611b1b565b60c0820152611d5f60e08301611b1b565b60e082015261010080830135818301525092915050565b600060208284031215611d87578081fd5b8135611d9281612660565b9392505050565b600060208284031215611daa578081fd5b8151611d9281612660565b600080600080600060a08688031215611dcc578081fd5b8535611dd781612660565b94506020860135611de781612660565b93506040860135611df781612660565b94979396509394606081013594506080013592915050565b60008060008060808587031215611e24578384fd5b8435611e2f81612660565b93506020850135611e3f81612660565b93969395505050506040820135916060013590565b60008060408385031215611e66578182fd5b8235611e7181612660565b946020939093013593505050565b600060208284031215611e90578081fd5b815160038110611d92578182fd5b60008060008060008060008060008060006101608c8e031215611ebf578586fd5b8b5167ffffffffffffffff811115611ed5578687fd5b611ee18e828f01611b77565b9b505060208c015167ffffffffffffffff811115611efd578687fd5b611f098e828f01611b77565b9a505060408c015167ffffffffffffffff811115611f25578687fd5b611f318e828f01611b77565b99505060608c0151975060808c0151965060a08c0151955060c08c0151945060e08c015193506101008c015192506101208c015191506101408c015190509295989b509295989b9093969950565b60008060408385031215611f91578182fd5b823567ffffffffffffffff80821115611fa8578384fd5b611fb486838701611bc2565b9350602091508185013581811115611fca578384fd5b8501601f81018713611fda578384fd5b803582811115611fec57611fec61264a565b611ff98485830201612525565b8181528481019350828501865b8381101561202f5761201d8b888435880101611ca0565b86529486019490860190600101612006565b5096999098509650505050505050565b60008060408385031215612051578182fd5b823567ffffffffffffffff80821115612068578384fd5b61207486838701611bc2565b93506020850135915080821115612089578283fd5b5061209685828601611ca0565b9150509250929050565b6000602082840312156120b1578081fd5b5035919050565b6000602082840312156120c9578081fd5b5051919050565b6001600160a01b03169052565b600081518084526120f58160208601602086016125ae565b601f01601f19169290920160200192915050565b6000610120825184526020830151816020860152612129828601826120dd565b9150506040830151848203604086015261214382826120dd565b91505060608301516060850152608083015161216260808601826120d0565b5060a083015161217560a08601826120d0565b5060c083015161218860c08601826120d0565b5060e083015161219b60e08601826120d0565b50610100928301519390920192909252919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b60006101006001600160a01b03808c168452808b166020850152808a1660408501525080606084015261223d818401896120dd565b9050828103608084015261225181886120dd565b905082810360a084015261226581876120dd565b60c0840195909552505060e001529695505050505050565b6001600160a01b03929092168252602082015260400190565b6000602080830181845280855180835260408601915060408482028701019250838701855b828110156122e957603f198886030184526122d7858351612109565b945092850192908501906001016122bb565b5092979650505050505050565b604080825283519082018190526000906020906060840190828701845b8281101561232f57815184529284019290840190600101612313565b50505092019290925292915050565b901515815260200190565b6020808252600c908201527f4f55545f4f465f52414e47450000000000000000000000000000000000000000604082015260600190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b6000604082526123f16040830185516120d0565b602084015161240360608401826120d0565b50604084015161241660808401826120d0565b5060608401516101008060a08501526124336101408501836120dd565b91506080860151603f19808685030160c087015261245184836120dd565b935060a08801519150808685030160e08701525061246f83826120dd565b92505060c0860151818501525060e085015161012084015282810360208401526124998185612109565b95945050505050565b90815260200190565b60006101208b83528060208401526124c58184018c6120dd565b905082810360408401526124d9818b6120dd565b606084019990995250506001600160a01b03958616608082015293851660a085015291841660c084015290921660e082015261010001529392505050565b918252602082015260400190565b60405181810167ffffffffffffffff811182821017156125475761254761264a565b604052919050565b600067ffffffffffffffff8211156125695761256961264a565b50601f01601f191660200190565b6000821982111561258a5761258a612634565b500190565b60008160001904831182151516156125a9576125a9612634565b500290565b60005b838110156125c95781810151838201526020016125b1565b838111156125d8576000848401525b50505050565b6002810460018216806125f257607f821691505b6020821081141561261357634e487b7160e01b600052602260045260246000fd5b50919050565b600060001982141561262d5761262d612634565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461267557600080fd5b5056fea264697066735822122029c8ab320e664bf5a5955ffbfc9331c07f5f67af17ed454b0d41ed81ad2b9a8f64736f6c63430008000033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101005760003560e01c8063b429afeb11610097578063dec08e2f11610066578063dec08e2f14610245578063e1c28bef14610258578063e4cbbc7b14610260578063ef3c4a051461027357610100565b8063b429afeb146101df578063c6e8a9e4146101ff578063d029065614610212578063d7b20e6b1461022557610100565b8063677808aa116100d3578063677808aa146101835780638c54baf0146101a4578063a45c1d54146101b7578063a7fc7a07146101cc57610100565b80630551f733146101055780630f4c5ccf146101365780635890b53a1461014957806360daabda14610170575b600080fd5b610118610113366004611e54565b610286565b60405161012d999897969594939291906124ab565b60405180910390f35b610118610144366004611e54565b610414565b61015c610157366004611d76565b610430565b60405161012d989796959493929190612208565b61015c61017e366004611d76565b610619565b610196610191366004611db5565b610657565b60405161012d9291906122f6565b6101186101b2366004611e54565b610937565b6101ca6101c5366004611f7f565b610953565b005b6101ca6101da366004611d76565b6109a8565b6101f26101ed366004611d76565b610a13565b60405161012d919061233e565b6101f261020d36600461203f565b610a31565b6101186102203660046120a0565b610a46565b610238610233366004611e0f565b610a67565b60405161012d9190612296565b6101ca61025336600461203f565b610e49565b6101ca610e89565b61015c61026e3660046120a0565b610ee0565b610118610281366004611e54565b610f32565b600360205281600052604060002081815481106102a257600080fd5b9060005260206000209060090201600091509150508060000154908060010180546102cc906125de565b80601f01602080910402602001604051908101604052809291908181526020018280546102f8906125de565b80156103455780601f1061031a57610100808354040283529160200191610345565b820191906000526020600020905b81548152906001019060200180831161032857829003601f168201915b50505050509080600201805461035a906125de565b80601f0160208091040260200160405190810160405280929190818152602001828054610386906125de565b80156103d35780601f106103a8576101008083540402835291602001916103d3565b820191906000526020600020905b8154815290600101906020018083116103b657829003601f168201915b5050505060038301546004840154600585015460068601546007870154600890970154959693956001600160a01b0393841695509183169390831692169089565b600560205281600052604060002081815481106102a257600080fd5b60076020526000908152604090208054600182015460028301546003840180546001600160a01b039485169593851694909216929161046e906125de565b80601f016020809104026020016040519081016040528092919081815260200182805461049a906125de565b80156104e75780601f106104bc576101008083540402835291602001916104e7565b820191906000526020600020905b8154815290600101906020018083116104ca57829003601f168201915b5050505050908060040180546104fc906125de565b80601f0160208091040260200160405190810160405280929190818152602001828054610528906125de565b80156105755780601f1061054a57610100808354040283529160200191610575565b820191906000526020600020905b81548152906001019060200180831161055857829003601f168201915b50505050509080600501805461058a906125de565b80601f01602080910402602001604051908101604052809291908181526020018280546105b6906125de565b80156106035780601f106105d857610100808354040283529160200191610603565b820191906000526020600020905b8154815290600101906020018083116105e657829003601f168201915b5050505050908060060154908060070154905088565b60086020526000908152604090208054600182015460028301546003840180546001600160a01b039485169593851694909216929161046e906125de565b606060008267ffffffffffffffff81111561068257634e487b7160e01b600052604160045260246000fd5b6040519080825280602002602001820160405280156106ab578160200160208202803683370190505b50915060006106ba848661258f565b90505b836106c8818761258f565b6106d29190612577565b81101561092c576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db906107219085906004016124a2565b60206040518083038186803b15801561073957600080fd5b505afa925050508015610769575060408051601f3d908101601f19168201909252610766918101906120b8565b60015b610773575061091a565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f6906107bd9085906004016124a2565b60206040518083038186803b1580156107d557600080fd5b505afa1580156107e9573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061080d9190611e7f565b90506000896001600160a01b031662fdd58e8a856040518363ffffffff1660e01b815260040161083e92919061227d565b60206040518083038186803b15801561085657600080fd5b505afa15801561086a573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061088e91906120b8565b905060028260028111156108b257634e487b7160e01b600052602160045260246000fd5b1415806108bd575080155b806108c6575082155b806108d15750826001145b156108de5750505061091a565b8286866108ea81612619565b97508151811061090a57634e487b7160e01b600052603260045260246000fd5b6020026020010181815250505050505b8061092481612619565b9150506106bd565b509550959350505050565b600460205281600052604060002081815481106102a257600080fd5b60005b81518110156109a3576109908383838151811061098357634e487b7160e01b600052603260045260246000fd5b6020026020010151610f4e565b508061099b81612619565b915050610956565b505050565b3360009081526020819052604090205460ff161515600114806109ca57503033145b6109ef5760405162461bcd60e51b81526004016109e690612380565b60405180910390fd5b6001600160a01b03166000908152602081905260409020805460ff19166001179055565b6001600160a01b031660009081526020819052604090205460ff1690565b6000610a3d8383610f4e565b90505b92915050565b6001602081905260009182526040909120805491810180546102cc906125de565b60606000856001600160a01b031663f4fde0d36040518163ffffffff1660e01b815260040160206040518083038186803b158015610aa457600080fd5b505afa158015610ab8573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610adc91906120b8565b90508083610aea818761258f565b610af49190612577565b1115610b125760405162461bcd60e51b81526004016109e690612349565b60008367ffffffffffffffff811115610b3b57634e487b7160e01b600052604160045260246000fd5b604051908082528060200260200182016040528015610b7457816020015b610b616119b2565b815260200190600190039081610b595790505b5092506000610b83858761258f565b90505b84610b91818861258f565b610b9b9190612577565b81108015610ba857508281105b15610e3e576040517fd31674db0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038a169063d31674db90610bf59085906004016124a2565b60206040518083038186803b158015610c0d57600080fd5b505afa925050508015610c3d575060408051601f3d908101601f19168201909252610c3a918101906120b8565b60015b610c475750610e2c565b90506040517fe6c3b1f60000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063e6c3b1f690610c919085906004016124a2565b60206040518083038186803b158015610ca957600080fd5b505afa158015610cbd573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610ce19190611e7f565b90506002816002811115610d0557634e487b7160e01b600052602160045260246000fd5b1415610e29576040517ff68ee90e0000000000000000000000000000000000000000000000000000000081526000906001600160a01b038b169063f68ee90e90610d539086906004016124a2565b60206040518083038186803b158015610d6b57600080fd5b505afa158015610d7f573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610da391906120b8565b90508015610e275760005b81811015610e2557600080610dc58d8f89896116c0565b91509150610dd38282610f4e565b15610e1057808a89610de481612619565b9a5081518110610e0457634e487b7160e01b600052603260045260246000fd5b60200260200101819052505b50508080610e1d90612619565b915050610dae565b505b505b50505b80610e3681612619565b915050610b86565b505050949350505050565b80516040517f8c1ee35fa3a9dd5c4e2bfc4b7d4a9b944abf3f202ed9ec14c95708f08696a00c90610e7d90859085906123dd565b60405180910390a25050565b3360009081526020819052604090205460ff16151560011480610eab57503033145b610ec75760405162461bcd60e51b81526004016109e690612380565b336000908152602081905260409020805460ff19169055565b60068181548110610ef057600080fd5b600091825260209091206008909102018054600182015460028301546003840180546001600160a01b0394851696509284169493909116929161046e906125de565b600260205281600052604060002081815481106102a257600080fd5b600080610f5a8361195b565b60008181526001602052604090205490915015610f7b576000915050610a40565b80835260008181526001602081815260409092208551815582860151805187949293610fac93908501920190611a22565b5060408201518051610fc8916002840191602090910190611a22565b5060608201516003820155608082015160048201805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a080850151600585018054841691851691909117905560c0850151600685018054841691851691909117905560e0850151600785018054909316908416179091556101009093015160089092019190915590840151166000908152600260209081526040822080546001818101835591845292829020865160099094020192835581860151805187949361109f938501920190611a22565b50604082015180516110bb916002840191602090910190611a22565b506060820151600382810191909155608083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a0850151600585018054831691841691909117905560c080860151600686018054841691851691909117905560e08601516007860180549093169084161790915561010090940151600890930192909255918501511660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611193938501920190611a22565b50604082015180516111af916002840191602090910190611a22565b506060820151600382015560808201516004808301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039485161790915560a0850151600585018054831691851691909117905560c0850151600685018054831691851691909117905560e08086015160078601805490931690851617909155610100909401516008909301929092559185015190911660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611286938501920190611a22565b50604082015180516112a2916002840191602090910190611a22565b506060820151600382015560808083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a08501516005808601805484169285169290921790915560c0860151600686018054841691851691909117905560e086015160078601805490931690841617909155610100909401516008909301929092558501511660009081526020918252604081208054600181810183559183529183902086516009909302019182558286015180518794611377938501920190611a22565b5060408201518051611393916002840191602090910190611a22565b506060820151600382015560808083015160048301805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161790915560a0850151600585018054831691841691909117905560c0850151600685018054831691841691909117905560e0850151600780860180549093169184169190911790915561010090940151600890930192909255850151811660009081526020929092526040909120600101541661167a5760808301516001600160a01b039081166000908152600760209081526040918290208751815490851673ffffffffffffffffffffffffffffffffffffffff199182161782558289015160018301805491871691831691909117905592880151600282018054919095169316929092179092556060860151805187936114d1926003850192910190611a22565b50608082015180516114ed916004840191602090910190611a22565b5060a08201518051611509916005840191602090910190611a22565b5060c082015160068281019190915560e090920151600790910155805460018101825560009190915284517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d3f6008909202918201805473ffffffffffffffffffffffffffffffffffffffff199081166001600160a01b039384161782556020808901517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d4086018054841691861691909117905560408901517ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d41860180549093169416939093179055606087015180518894929361162a937ff652222313e28459528d920b65115c16c04f3efc82aaedc97be59f3f377c0d4201920190611a22565b5060808201518051611646916004840191602090910190611a22565b5060a08201518051611662916005840191602090910190611a22565b5060c0820151816006015560e0820151816007015550505b82516040517f8c1ee35fa3a9dd5c4e2bfc4b7d4a9b944abf3f202ed9ec14c95708f08696a00c906116ae90879087906123dd565b60405180910390a25060019392505050565b6116c8611aa6565b6116d06119b2565b6040517f740ec99e0000000000000000000000000000000000000000000000000000000081526000906001600160a01b0388169063740ec99e9061171a9088908890600401612517565b60206040518083038186803b15801561173257600080fd5b505afa158015611746573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061176a9190611d99565b905060008060008060008a6001600160a01b031663e06174e46040518163ffffffff1660e01b815260040160006040518083038186803b1580156117ad57600080fd5b505afa1580156117c1573d6000803e3d6000fd5b505050506040513d6000823e601f3d908101601f191682016040526117e99190810190611e9e565b5050505050509450945094509450945060405180610100016040528060006001600160a01b031681526020018d6001600160a01b031681526020018c6001600160a01b0316815260200186815260200185815260200184815260200183815260200182815250975060008c6001600160a01b031662fdd58e888c6040518363ffffffff1660e01b815260040161188092919061227d565b60206040518083038186803b15801561189857600080fd5b505afa1580156118ac573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906118d091906120b8565b9050801561194b57604051806101200160405280600081526020018781526020018681526020018b8152602001886001600160a01b031681526020018d6001600160a01b031681526020018e6001600160a01b031681526020018d6001600160a01b031681526020018281525097506119488861195b565b88525b5050505050505094509492505050565b600081606001518260a001518360c001518460e001518560800151866101000151604051602001611991969594939291906121b0565b6040516020818303038152906040528051906020012060001c90505b919050565b6040518061012001604052806000815260200160608152602001606081526020016000815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b03168152602001600081525090565b828054611a2e906125de565b90600052602060002090601f016020900481019282611a505760008555611a96565b82601f10611a6957805160ff1916838001178555611a96565b82800160010185558215611a96579182015b82811115611a96578251825591602001919060010190611a7b565b50611aa2929150611b06565b5090565b60405180610100016040528060006001600160a01b0316815260200160006001600160a01b0316815260200160006001600160a01b0316815260200160608152602001606081526020016060815260200160008152602001600081525090565b5b80821115611aa25760008155600101611b07565b80356119ad81612660565b600082601f830112611b36578081fd5b8135611b49611b448261254f565b612525565b818152846020838601011115611b5d578283fd5b816020850160208301379081016020019190915292915050565b600082601f830112611b87578081fd5b8151611b95611b448261254f565b818152846020838601011115611ba9578283fd5b611bba8260208301602087016125ae565b949350505050565b6000610100808385031215611bd5578182fd5b611bde81612525565b915050611bea82611b1b565b8152611bf860208301611b1b565b6020820152611c0960408301611b1b565b6040820152606082013567ffffffffffffffff80821115611c2957600080fd5b611c3585838601611b26565b60608401526080840135915080821115611c4e57600080fd5b611c5a85838601611b26565b608084015260a0840135915080821115611c7357600080fd5b50611c8084828501611b26565b60a08301525060c082013560c082015260e082013560e082015292915050565b6000610120808385031215611cb3578182fd5b611cbc81612525565b91505081358152602082013567ffffffffffffffff80821115611cde57600080fd5b611cea85838601611b26565b60208401526040840135915080821115611d0357600080fd5b50611d1084828501611b26565b60408301525060608201356060820152611d2c60808301611b1b565b6080820152611d3d60a08301611b1b565b60a0820152611d4e60c08301611b1b565b60c0820152611d5f60e08301611b1b565b60e082015261010080830135818301525092915050565b600060208284031215611d87578081fd5b8135611d9281612660565b9392505050565b600060208284031215611daa578081fd5b8151611d9281612660565b600080600080600060a08688031215611dcc578081fd5b8535611dd781612660565b94506020860135611de781612660565b93506040860135611df781612660565b94979396509394606081013594506080013592915050565b60008060008060808587031215611e24578384fd5b8435611e2f81612660565b93506020850135611e3f81612660565b93969395505050506040820135916060013590565b60008060408385031215611e66578182fd5b8235611e7181612660565b946020939093013593505050565b600060208284031215611e90578081fd5b815160038110611d92578182fd5b60008060008060008060008060008060006101608c8e031215611ebf578586fd5b8b5167ffffffffffffffff811115611ed5578687fd5b611ee18e828f01611b77565b9b505060208c015167ffffffffffffffff811115611efd578687fd5b611f098e828f01611b77565b9a505060408c015167ffffffffffffffff811115611f25578687fd5b611f318e828f01611b77565b99505060608c0151975060808c0151965060a08c0151955060c08c0151945060e08c015193506101008c015192506101208c015191506101408c015190509295989b509295989b9093969950565b60008060408385031215611f91578182fd5b823567ffffffffffffffff80821115611fa8578384fd5b611fb486838701611bc2565b9350602091508185013581811115611fca578384fd5b8501601f81018713611fda578384fd5b803582811115611fec57611fec61264a565b611ff98485830201612525565b8181528481019350828501865b8381101561202f5761201d8b888435880101611ca0565b86529486019490860190600101612006565b5096999098509650505050505050565b60008060408385031215612051578182fd5b823567ffffffffffffffff80821115612068578384fd5b61207486838701611bc2565b93506020850135915080821115612089578283fd5b5061209685828601611ca0565b9150509250929050565b6000602082840312156120b1578081fd5b5035919050565b6000602082840312156120c9578081fd5b5051919050565b6001600160a01b03169052565b600081518084526120f58160208601602086016125ae565b601f01601f19169290920160200192915050565b6000610120825184526020830151816020860152612129828601826120dd565b9150506040830151848203604086015261214382826120dd565b91505060608301516060850152608083015161216260808601826120d0565b5060a083015161217560a08601826120d0565b5060c083015161218860c08601826120d0565b5060e083015161219b60e08601826120d0565b50610100928301519390920192909252919050565b9586527fffffffffffffffffffffffffffffffffffffffff000000000000000000000000606095861b8116602088015293851b8416603487015291841b8316604886015290921b16605c830152607082015260900190565b60006101006001600160a01b03808c168452808b166020850152808a1660408501525080606084015261223d818401896120dd565b9050828103608084015261225181886120dd565b905082810360a084015261226581876120dd565b60c0840195909552505060e001529695505050505050565b6001600160a01b03929092168252602082015260400190565b6000602080830181845280855180835260408601915060408482028701019250838701855b828110156122e957603f198886030184526122d7858351612109565b945092850192908501906001016122bb565b5092979650505050505050565b604080825283519082018190526000906020906060840190828701845b8281101561232f57815184529284019290840190600101612313565b50505092019290925292915050565b901515815260200190565b6020808252600c908201527f4f55545f4f465f52414e47450000000000000000000000000000000000000000604082015260600190565b60208082526028908201527f436f6e74726f6c6c61626c653a2063616c6c6572206973206e6f74206120636f60408201527f6e74726f6c6c6572000000000000000000000000000000000000000000000000606082015260800190565b6000604082526123f16040830185516120d0565b602084015161240360608401826120d0565b50604084015161241660808401826120d0565b5060608401516101008060a08501526124336101408501836120dd565b91506080860151603f19808685030160c087015261245184836120dd565b935060a08801519150808685030160e08701525061246f83826120dd565b92505060c0860151818501525060e085015161012084015282810360208401526124998185612109565b95945050505050565b90815260200190565b60006101208b83528060208401526124c58184018c6120dd565b905082810360408401526124d9818b6120dd565b606084019990995250506001600160a01b03958616608082015293851660a085015291841660c084015290921660e082015261010001529392505050565b918252602082015260400190565b60405181810167ffffffffffffffff811182821017156125475761254761264a565b604052919050565b600067ffffffffffffffff8211156125695761256961264a565b50601f01601f191660200190565b6000821982111561258a5761258a612634565b500190565b60008160001904831182151516156125a9576125a9612634565b500290565b60005b838110156125c95781810151838201526020016125b1565b838111156125d8576000848401525b50505050565b6002810460018216806125f257607f821691505b6020821081141561261357634e487b7160e01b600052602260045260246000fd5b50919050565b600060001982141561262d5761262d612634565b5060010190565b634e487b7160e01b600052601160045260246000fd5b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461267557600080fd5b5056fea264697066735822122029c8ab320e664bf5a5955ffbfc9331c07f5f67af17ed454b0d41ed81ad2b9a8f64736f6c63430008000033",
   "libraries": {
     "Strings": "0xeB3E79099663eC952e02E608E00d463F36b4Fb75",
     "AddressSet": "0x8974D57fCfF9C10E9d41709da86d006604D8c75d",
     "UInt256Set": "0x8B6893DB13b55d4952a51d5188215e2a470515a9",
     "Create2": "0xBa85d3e8E0F9e48F5c21649d33f6d0f9Af12E3f5",
-    "WrappedTokenLib": "0x0307a2E913FD8fb384a939Cfb7655C30820727D8",
-    "ComplexPoolLib": "0x3802c9d35c585ac6668e24A93Bb341D50662aA4E",
-    "LootboxLib": "0x8C1eEB73C02F28434C5A9561956375E5450Bd9f4"
+    "WrappedTokenLib": "0xA6E25B1B9f4E9DB9E9397853B26436Dcb0563565",
+    "ComplexPoolLib": "0x6B761F9d8d3E921fA50cB08b244D82D9D153D1e4",
+    "LootboxLib": "0x211f558db66012ac014d5b252823Fc862588EA7F"
   },
   "devdoc": {
     "author": "The name of the author",
@@ -650,51 +1317,75 @@
     "storage": [
       {
         "astId": 12920,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "_controllers",
         "offset": 0,
         "slot": "0",
         "type": "t_mapping(t_address,t_bool)"
       },
       {
-        "astId": 15806,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "astId": 16340,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "gemMap",
         "offset": 0,
         "slot": "1",
-        "type": "t_mapping(t_uint256,t_struct(Gem)15743_storage)"
+        "type": "t_mapping(t_uint256,t_struct(Gem)17065_storage)"
       },
       {
-        "astId": 15812,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "astId": 16346,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "gemsByMinter",
         "offset": 0,
         "slot": "2",
-        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)17065_storage)dyn_storage)"
       },
       {
-        "astId": 15818,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "astId": 16352,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "gemsByFactory",
         "offset": 0,
         "slot": "3",
-        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)17065_storage)dyn_storage)"
       },
       {
-        "astId": 15824,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "astId": 16358,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "gemsByMultitoken",
         "offset": 0,
         "slot": "4",
-        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)17065_storage)dyn_storage)"
       },
       {
-        "astId": 15830,
-        "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+        "astId": 16364,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
         "label": "gemsByPool",
         "offset": 0,
         "slot": "5",
-        "type": "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)"
+        "type": "t_mapping(t_address,t_array(t_struct(Gem)17065_storage)dyn_storage)"
+      },
+      {
+        "astId": 16368,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+        "label": "gemPools",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_array(t_struct(GemPool)17046_storage)dyn_storage"
+      },
+      {
+        "astId": 16373,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+        "label": "gemPoolsMap",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_address,t_struct(GemPool)17046_storage)"
+      },
+      {
+        "astId": 16378,
+        "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+        "label": "gemPoolFactoriesMap",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_mapping(t_address,t_struct(GemPool)17046_storage)"
       }
     ],
     "types": {
@@ -703,10 +1394,16 @@
         "label": "address",
         "numberOfBytes": "20"
       },
-      "t_array(t_struct(Gem)15743_storage)dyn_storage": {
-        "base": "t_struct(Gem)15743_storage",
+      "t_array(t_struct(Gem)17065_storage)dyn_storage": {
+        "base": "t_struct(Gem)17065_storage",
         "encoding": "dynamic_array",
         "label": "struct IBitgemIndexer.Gem[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_struct(GemPool)17046_storage)dyn_storage": {
+        "base": "t_struct(GemPool)17046_storage",
+        "encoding": "dynamic_array",
+        "label": "struct IBitgemIndexer.GemPool[]",
         "numberOfBytes": "32"
       },
       "t_bool": {
@@ -714,12 +1411,12 @@
         "label": "bool",
         "numberOfBytes": "1"
       },
-      "t_mapping(t_address,t_array(t_struct(Gem)15743_storage)dyn_storage)": {
+      "t_mapping(t_address,t_array(t_struct(Gem)17065_storage)dyn_storage)": {
         "encoding": "mapping",
         "key": "t_address",
         "label": "mapping(address => struct IBitgemIndexer.Gem[])",
         "numberOfBytes": "32",
-        "value": "t_array(t_struct(Gem)15743_storage)dyn_storage"
+        "value": "t_array(t_struct(Gem)17065_storage)dyn_storage"
       },
       "t_mapping(t_address,t_bool)": {
         "encoding": "mapping",
@@ -728,75 +1425,174 @@
         "numberOfBytes": "32",
         "value": "t_bool"
       },
-      "t_mapping(t_uint256,t_struct(Gem)15743_storage)": {
+      "t_mapping(t_address,t_struct(GemPool)17046_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct IBitgemIndexer.GemPool)",
+        "numberOfBytes": "32",
+        "value": "t_struct(GemPool)17046_storage"
+      },
+      "t_mapping(t_uint256,t_struct(Gem)17065_storage)": {
         "encoding": "mapping",
         "key": "t_uint256",
         "label": "mapping(uint256 => struct IBitgemIndexer.Gem)",
         "numberOfBytes": "32",
-        "value": "t_struct(Gem)15743_storage"
+        "value": "t_struct(Gem)17065_storage"
       },
-      "t_struct(Gem)15743_storage": {
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Gem)17065_storage": {
         "encoding": "inplace",
         "label": "struct IBitgemIndexer.Gem",
         "members": [
           {
-            "astId": 15730,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
+            "astId": 17048,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
             "label": "id",
             "offset": 0,
             "slot": "0",
             "type": "t_uint256"
           },
           {
-            "astId": 15732,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "gemHash",
+            "astId": 17050,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "symbol",
             "offset": 0,
             "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 17052,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "name",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 17054,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "gemHash",
+            "offset": 0,
+            "slot": "3",
             "type": "t_uint256"
           },
           {
-            "astId": 15734,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "minter",
-            "offset": 0,
-            "slot": "2",
-            "type": "t_address"
-          },
-          {
-            "astId": 15736,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "gemPoolFactory",
-            "offset": 0,
-            "slot": "3",
-            "type": "t_address"
-          },
-          {
-            "astId": 15738,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "multitoken",
+            "astId": 17056,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "pool",
             "offset": 0,
             "slot": "4",
             "type": "t_address"
           },
           {
-            "astId": 15740,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "pool",
+            "astId": 17058,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "minter",
             "offset": 0,
             "slot": "5",
             "type": "t_address"
           },
           {
-            "astId": 15742,
-            "contract": "src/interfaces/IBitgemIndexer.sol:BitgemIndexer",
-            "label": "quantity",
+            "astId": 17060,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "gemPoolFactory",
             "offset": 0,
             "slot": "6",
+            "type": "t_address"
+          },
+          {
+            "astId": 17062,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "multitoken",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_address"
+          },
+          {
+            "astId": 17064,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "quantity",
+            "offset": 0,
+            "slot": "8",
             "type": "t_uint256"
           }
         ],
-        "numberOfBytes": "224"
+        "numberOfBytes": "288"
+      },
+      "t_struct(GemPool)17046_storage": {
+        "encoding": "inplace",
+        "label": "struct IBitgemIndexer.GemPool",
+        "members": [
+          {
+            "astId": 17031,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "factory",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 17033,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "multitoken",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 17035,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "poolAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 17037,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "symbol",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 17039,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "name",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 17041,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "description",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 17043,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "category",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17045,
+            "contract": "src/indexer/BitgemIndexer.sol:BitgemIndexer",
+            "label": "ethPrice",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "256"
       },
       "t_uint256": {
         "encoding": "inplace",

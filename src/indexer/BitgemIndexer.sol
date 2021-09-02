@@ -214,4 +214,17 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
     {
         return _indexGem(gemPool, gem);
     }
+
+    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem)
+        external
+        override
+    {
+        emit GemCreated(gem.id, gemPool, gem);
+    }
+
+    function indexGems(GemPool memory gemPool, Gem[] memory gems) external {
+        for (uint256 i = 0; i < gems.length; i++) {
+            _indexGem(gemPool, gems[i]);
+        }
+    }
 }

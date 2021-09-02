@@ -62,14 +62,6 @@ contract ERC1155TokenBridge is IERC1155TokenBridge {
         returns (bool)
     {}
 
-    /// @dev cancel a transfer that has not been confirmed. This reverts the transfer
-    /// @dev and returns the source token(s) to the sender
-    function cancelTransfer(uint256 _receiptId)
-        external
-        override
-        returns (bool)
-    {}
-
     /// @dev get the data related to this transfer
     function getTransferData(uint256 _receiptId)
         external
