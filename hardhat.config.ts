@@ -70,6 +70,32 @@ task('held-tokens', 'Get a list of held tokens for the given address')
   });
 
 task(
+  'list-legacy-pools',
+  'index all legacy pools for given factory and multitoken'
+)
+  .addParam('factory', 'The legacy factory address')
+  .addParam('multitoken', 'The legacy multitoken address')
+  .setAction(
+    async ({ factory, multitoken }, hre: HardhatRuntimeEnvironment) => {
+      // get all gempool contracts
+      const factoryContract: any = await hre.ethers.getContractAt(
+        'NFTGemPoolFactory',
+        factory
+      );
+
+      // get length of all gempools, load gempool calls into array
+      // use Promise.all to load all the addresses at once
+      let poolsArray: any = [];
+      const poolcount = await factoryContract.allNFTGemPoolsLength();
+      for (let i = 0; i < poolcount.toNumber(); i++) {
+        poolsArray.push(factoryContract.allNFTGemPools(i));
+      }
+      // get all gem pool data contracts
+      poolsArray = await Promise.all(poolsArray);
+      console.log(poolsArray);
+    });
+
+task(
   'token-holders',
   'Get a list of token holder addresses for the given token hash'
 )
