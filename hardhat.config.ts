@@ -36,7 +36,7 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
   .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
 
     // load the complex gem pool ABI (note theres probably a way to get this from the contract)
-    const abi = require('./build/NFTComplexGemPool.json');
+    const abi = require('./nftgem-ui/abis-legacy/NFTGemPool.json');
     const iface = new hre.ethers.utils.Interface(abi);
 
     // load the complex gem pool contract
@@ -45,10 +45,9 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
       abi
     );
 
-
     // set up the event filter we are gonna query - this takes params for the filter expression - null returns all
     const filter: any = gemPool.filters.NFTGemCreated(null, null, null, null, null);
-    filter.fromBlock = 0; // the block to start indexing from. This should be the block the contract was deployed at.
+    filter.fromBlock = 3975244; // the block to start indexing from. This should be the block the contract was deployed at.
     filter.toBlock = 'latest'; // the block to scan to
 
     // query for Events using the filter we built above
@@ -63,7 +62,7 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
         };
       })
       .filter((e: any) => e.event['values']);
-
+    console.log(events);
   });
 
 task('check-fees', 'Check the fee manager balance').setAction(
