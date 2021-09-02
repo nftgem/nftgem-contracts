@@ -27,7 +27,7 @@ interface IERC1155TokenBridgeData {
         returns (uint256);
 
     // get validator data
-    function getValidator(uint256 validatorHash)
+    function getValidator(address validatorAddress)
         external
         returns (IERC1155TokenBridge.Validator memory);
 
@@ -55,4 +55,11 @@ interface IERC1155TokenBridgeData {
 
     // delete the request data to free up space
     function delRequest(uint256 requestHash) external returns (bool);
+
+    // @dev get the registered token list
+    function registeredTokens() external returns (address[] memory);
+
+    function registerToken(address token) external returns (uint256);
+
+    function unregisterToken(address token) external returns (bool);
 }

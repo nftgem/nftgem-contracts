@@ -9,18 +9,14 @@ import "../interfaces/IERC1155TokenBridgeData.sol";
 
 import "../interfaces/IERC1155TokenBridge.sol";
 
-contract ERC1155TokenBridgeData is
-    IERC1155TokenBridgeData,
-    GenericDatasource,
-    Controllable
-{
+contract ERC1155TokenBridgeData is IERC1155TokenBridgeData, GenericDatasource {
     // validator list and map
     IERC1155TokenBridge.Validator[] internal validatorList;
     mapping(address => IERC1155TokenBridge.Validator) internal validatorMap;
 
     // rending request list and map
     IERC1155TokenBridge.NetworkTransferRequest[] internal pendingRequestList;
-    mapping(address => IERC1155TokenBridge.NetworkTransferRequest)
+    mapping(uint256 => IERC1155TokenBridge.NetworkTransferRequest)
         internal pendingRequestMap;
 
     // registered token list and map
@@ -42,7 +38,7 @@ contract ERC1155TokenBridgeData is
 
     // @dev get the fee manager address
     function getFeeManager() external view override returns (address) {
-        return getAddr("feeManager");
+        return this.getAddr("feeManager");
     }
 
     // @dev set the fee manager address
@@ -55,6 +51,7 @@ contract ERC1155TokenBridgeData is
             msg.sender != address(0),
             "msg.sender cannot be the zero address"
         );
+        this.setAddr("feeManager", feeManagerAddress);
     }
 
     /// validator data
@@ -75,13 +72,14 @@ contract ERC1155TokenBridgeData is
         onlyController
         returns (uint256)
     {
-        require(validator.id != 0, "validator id cannot be zero");
+        // check if validator is already in the list
         require(
-            address(validatorMap[validator.id]) == address(0),
+            address(validator.validatorAddress) == address(0),
             "validator already exists"
         );
-        require(msg.value >= 100000 ether, "fee must be at least 100k ether");
-        validatorMap[validator] = validator;
+        // register the validator in map
+        validatorMap[validator.validatorAddress] = validator;
+        // and also in list
         validatorList.push(validator);
     }
 
@@ -130,10 +128,10 @@ contract ERC1155TokenBridgeData is
     ) external override onlyController returns (uint256) {
         require(request.id != 0, "request id cannot be zero");
         require(
-            pendingRequestMap[request.id] == address(0),
+            pendingRequestMap[request.id].id == 0,
             "request already exists"
         );
-        pendingRequestMap[request] = request;
+        pendingRequestMap[request.id] = request;
         pendingRequestList.push(request);
     }
 
@@ -170,7 +168,10 @@ contract ERC1155TokenBridgeData is
             pendingRequestMap[requestHash].id == requestHash,
             "Invalid request state"
         );
-        pendingRequestMap[requestHash] = address(0);
+        pendingRequestMap[requestHash].id = 0;
+        pendingRequestMap[requestHash].networkId = 0;
+        pendingRequestMap[requestHash].from = address(0);
+        pendingRequestMap[requestHash].to = address(0);
         // TODO: do not allow deleting the request if it's pending
         // TODO: return the validator bond to the operator
     }
@@ -178,7 +179,12 @@ contract ERC1155TokenBridgeData is
     // registered tokens
 
     // @dev get the registered token list
-    function registeredTokens() external override returns (address[] memory) {
+    function registeredTokens()
+        external
+        view
+        override
+        returns (address[] memory)
+    {
         return registeredTokenList;
     }
 

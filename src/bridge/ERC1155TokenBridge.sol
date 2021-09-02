@@ -4,19 +4,21 @@ pragma solidity >=0.8.0;
 import "../interfaces/IERC1155TokenBridge.sol";
 import "../interfaces/IBridgeableERC1155Token.sol";
 
-contract ERC1155TokenBridge is IERC1155TokenBridge {
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
+contract ERC1155TokenBridge is IERC1155TokenBridge {
     /// @dev register a new token that can be moved by the bridge
     function registerToken(address _bridgeable)
         external
         override
         returns (bool)
     {
-        try IERC1155(_bridgeable).balanceOf(msg.sender) 
-        catch (e) {  
+        try IERC1155(_bridgeable).balanceOf(msg.sender, 0) returns (
+            uint256
+        ) {} catch {
             return false;
         }
-        return 
+        return true;
     }
 
     /// @dev unregister a token from the bridge

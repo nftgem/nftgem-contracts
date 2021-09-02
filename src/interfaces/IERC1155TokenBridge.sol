@@ -16,15 +16,6 @@ pragma solidity >=0.8.0;
 /// re-register. Repeated violations of the rules of the bridge contract will result in the validator being removed
 /// from the validator set permanently via a ban.
 interface IERC1155TokenBridge {
-    struct NetworkTransferRequest {
-        uint256 id;
-        uint32 networkId;
-        address from;
-        address to;
-        uint256[] tokenHash;
-        uint256[] amount;
-    }
-
     struct Validator {
         address operatorAddress;
         address validatorAddress;
@@ -36,6 +27,16 @@ interface IERC1155TokenBridge {
         PENDING,
         COMPLETED,
         CANCELLED
+    }
+
+    struct NetworkTransferRequest {
+        uint256 id;
+        uint32 networkId;
+        address from;
+        address to;
+        uint256[] tokenHash;
+        uint256[] amount;
+        TransferStatus status;
     }
 
     event NetworkTransfer(
