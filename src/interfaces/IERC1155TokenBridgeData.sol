@@ -14,6 +14,7 @@ interface IERC1155TokenBridgeData {
     // list of validator data
     function validators()
         external
+        view
         returns (IERC1155TokenBridge.Validator[] memory);
 
     // add validator
@@ -36,6 +37,7 @@ interface IERC1155TokenBridgeData {
     // a list of (not started, pending) requests
     function pendingRequests()
         external
+        view
         returns (IERC1155TokenBridge.NetworkTransferRequest[] memory requests);
 
     function addRequest(
@@ -51,6 +53,7 @@ interface IERC1155TokenBridgeData {
     // get request by hash
     function getRequest(uint256 requestHash)
         external
+        view
         returns (IERC1155TokenBridge.NetworkTransferRequest memory request);
 
     // delete the request data to free up space

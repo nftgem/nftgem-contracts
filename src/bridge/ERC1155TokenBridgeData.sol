@@ -59,6 +59,7 @@ contract ERC1155TokenBridgeData is IERC1155TokenBridgeData, GenericDatasource {
     // @dev get the validator list
     function validators()
         external
+        view
         override
         returns (IERC1155TokenBridge.Validator[] memory)
     {
@@ -116,6 +117,7 @@ contract ERC1155TokenBridgeData is IERC1155TokenBridgeData, GenericDatasource {
     // @dev get the pending request list
     function pendingRequests()
         external
+        view
         override
         returns (IERC1155TokenBridge.NetworkTransferRequest[] memory)
     {
@@ -151,6 +153,7 @@ contract ERC1155TokenBridgeData is IERC1155TokenBridgeData, GenericDatasource {
     // @dev get a pending request given a pending request hash
     function getRequest(uint256 requestHash)
         external
+        view
         override
         returns (IERC1155TokenBridge.NetworkTransferRequest memory request)
     {
@@ -191,6 +194,7 @@ contract ERC1155TokenBridgeData is IERC1155TokenBridgeData, GenericDatasource {
     // @dev register a token to be used by the bridge
     function registerToken(address token)
         external
+        view
         override
         onlyController
         returns (uint256)
