@@ -25,8 +25,7 @@ interface IERC1155TokenBridge {
     enum TransferStatus {
         CREATED,
         PENDING,
-        COMPLETED,
-        CANCELLED
+        COMPLETED
     }
 
     struct NetworkTransferRequest {
@@ -42,11 +41,18 @@ interface IERC1155TokenBridge {
     event NetworkTransfer(
         address tokenAddress,
         uint256 indexed receiptId,
+        uint32 fromNetworkId,
         address indexed _from,
+        uint32 toNetworkId,
         address indexed _to,
         uint256[] _id,
         uint256[] _value,
         bool isBatch
+    );
+
+    event NetworkTransferStatus(
+        uint256 indexed receiptId,
+        NetworkTransferStatus status
     );
 
     event TokenRegistered(
@@ -107,8 +113,6 @@ interface IERC1155TokenBridge {
     ) external returns (bool);
 
     function confirmTransfer(uint256 _receiptId) external returns (bool);
-
-    function cancelTransfer(uint256 _receiptId) external returns (bool);
 
     function getTransferData(uint256 _receiptId)
         external
