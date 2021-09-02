@@ -65,43 +65,6 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
 
   });
 
-task(
-  'list-legacy-pools',
-  'index all legacy pools for given factory and multitoken'
-)
-  .addParam('factory', 'The legacy factory address')
-  .addParam('multitoken', 'The legacy multitoken address')
-  .setAction(
-    async ({ factory, multitoken }, hre: HardhatRuntimeEnvironment) => {
-      // get all gempool contracts
-      const factoryContract: any = await hre.ethers.getContractAt(
-        'NFTGemPoolFactory',
-        factory
-      );
-      // get all gempool contracts
-      const bitgemIndexer: any = await hre.ethers.getContractAt(
-        'BitgemIndexer',
-        multitoken
-      );
-
-      // get length of all gempools, load gempool calls into array
-      // use Promise.all to load all the addresses at once
-      let poolsArray: any = [];
-      const poolcount = await factoryContract.allNFTGemPoolsLength();
-      for (let i = 0; i < poolcount.toNumber(); i++) {
-        poolsArray.push(factoryContract.allNFTGemPools(i));
-      }
-      // get all gem pool data contracts
-      poolsArray = await Promise.all(poolsArray);
-      poolsArray = poolsArray.map((pa: string) =>
-        hre.ethers.getContractAt('NFTComplexGemPoolData', pa)
-      );
-      // load all gem pool addresses at once
-      poolsArray = await Promise.all(poolsArray);
-      console.log(poolsArray);
-    });
-
-
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
