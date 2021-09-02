@@ -34,6 +34,47 @@ import { info } from 'console';
 
 //import * as NFTGemPoolFactory from './build/INFTGemPoolFactory.json';
 
+task('scan-gems', 'Scan the given gem pool contract address for gem created')
+  .addParam('address', 'The gem pool address')
+  .setAction(async ({ address }, hre: HardhatRuntimeEnvironment) => {
+
+    // load the complex gem pool contract
+    const gemPool = await hre.ethers.getContractAt(
+      'NFTComplexGemPool',
+      address
+    );
+
+    // load the complex gem pool ABI (note theres probably a way to get this from the contract)
+    const abi = require('./nftgem-ui/abis-legacy/NFTComplexGemPool.json');
+    const iface = new hre.ethers.utils.Interface(abi);
+
+    //   event NFTGemCreated(
+    //     address account,
+    //     address pool,
+    //     uint256 claimHash,
+    //     uint256 gemHash,
+    //     uint256 quantity
+    // );
+    // set up the event filter we are gonna query - this takes params for the filter expression - null returns all
+    const filter: any = gemPool.filters.NFTGemCreated(null, null, null, null, null);
+    filter.fromBlock = 0; // the block to start indexing from. This should be the block the contract was deployed at.
+    filter.toBlock = 'latest'; // the block to scan to
+
+    // query for Events using the filter we built above
+    const logs = await hre.ethers.provider.getLogs(filter); // this is an ethers provider object
+
+    // process the events - call decodeEventLog on the contract interface to decode the event
+    const events = (logs || [])
+      .map((log: any) => {
+        return {
+          event: iface.decodeEventLog('NFTGemCreated', log.data),
+          log,
+        };
+      })
+      .filter((e: any) => e.event['values']);
+
+  });
+
 task('check-fees', 'Check the fee manager balance').setAction(
   async (_, hre: HardhatRuntimeEnvironment) => {
     // get the fee manager contract
