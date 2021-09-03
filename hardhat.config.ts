@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { task } from 'hardhat/config';
 
-import fs, { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 import 'dotenv/config';
 import { HardhatUserConfig } from 'hardhat/types';
@@ -77,8 +77,9 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
 
     const bitgemIndexer: any = await hre.ethers.getContractAt(
       'BitgemIndexer',
-      factory,
-      sender
+      (
+        await hre.deployments.get('BitgemIndexer')
+      ).address
     );
 
     const multitokenContract: any = await hre.ethers.getContractAt(
@@ -105,6 +106,7 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
       poolsArray.push(factoryContract.allNFTGemPools(i));
     }
     // get all gem pool data contracts
+    let allTransactions = [];
     poolsArray = await Promise.all(poolsArray);
     for (let i = 0; i < poolsArray.length; i++) {
       // load the complex gem pool contract
@@ -152,6 +154,7 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
         const maxTime = await gemPoolData.maxTime()
 
         const gemPoolStruct: any = [
+          poolsArray[i],
           factory,
           multitokenContract.address,
           poolsArray[i],
@@ -163,7 +166,7 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
         ];
 
         const gem = [
-          0,
+          gemCreatedEvent.event.gemHash,
           symbol,
           name,
           gemCreatedEvent.event.gemHash,
@@ -174,11 +177,22 @@ task('scan-gems', 'Scan the given gem pool contract address for gem created')
           gemCreatedEvent.event.quantity
         ];
 
-        console.log(gemPoolStruct, gem);
+        console.log(j, gem);
 
-        const tx = await bitgemIndexer.indexGemUnsafe(gemPoolStruct, gem);
+        const tx = await bitgemIndexer.indexGem(gemPoolStruct, gem);
         await hre.ethers.provider.waitForTransaction(tx.hash, 1);
-        console.log(gem);
+        allTransactions = [];
+
+        // allTransactions.push([gemPoolStruct, gem]);
+
+        // if (allTransactions.length >= 10 || (j === events.length - 1 && allTransactions.length > 0)) {
+        //   const gemPools = allTransactions.map(([gemPoolStruct, gem]) => gemPoolStruct);
+        //   const gems = allTransactions.map(([gemPoolStruct, gem]) => gem);
+        //   const tx = await bitgemIndexer.indexGem(gemPool, gem);
+        //   allTransactions = [];
+        //   await hre.ethers.provider.waitForTransaction(tx.hash, 1);
+        // }
+
       }
 
     }
@@ -869,7 +883,7 @@ task('index-flat', 'Create easy to index events for gem create events')
 
     let cached = undefined;
     try {
-      cached = fs.readFileSync('./token_' + oldToken.address + '.json', 'utf8');
+      cached = readFileSync('./token_' + oldToken.address + '.json', 'utf8');
       cached = JSON.parse(cached);
     } catch (e) { }
     cached.forEach((ci: any) => index.users[ci.address] = ci);
@@ -923,7 +937,7 @@ task('index-flat', 'Create easy to index events for gem create events')
       // get all token hashes for this pool
       let allTokenHashes: any = [];
       try {
-        allTokenHashes = fs.readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
+        allTokenHashes = readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
         allTokenHashes = JSON.parse(allTokenHashes);
       } catch (e) { }
       if (!allTokenHashes.length) {
@@ -1015,7 +1029,7 @@ task('index-bitgem', 'Create easy to index events for gem create events')
 
     let cached = undefined;
     try {
-      cached = fs.readFileSync('./token_' + oldToken.address + '.json', 'utf8');
+      cached = readFileSync('./token_' + oldToken.address + '.json', 'utf8');
     } catch (e) { }
 
     let allTokenHodlers = [];
@@ -1067,7 +1081,7 @@ task('index-bitgem', 'Create easy to index events for gem create events')
 
       let ownedGems: any = [];
       try {
-        ownedGems = fs.readFileSync('./user_' + owner + '.json', 'utf8');
+        ownedGems = readFileSync('./user_' + owner + '.json', 'utf8');
       } catch (e) { }
 
       // iterate through all gempools
@@ -1079,7 +1093,7 @@ task('index-bitgem', 'Create easy to index events for gem create events')
         // get all token hashes for this pool
         let allTokenHashes: any = [];
         try {
-          allTokenHashes = fs.readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
+          allTokenHashes = readFileSync('./pool_' + poolContract.address + '.json', 'utf8');
           allTokenHashes = JSON.parse(allTokenHashes);
         } catch (e) { }
         if (!allTokenHashes.length) {
@@ -1168,7 +1182,7 @@ task(
 )
   .addParam('file', 'The legacy gem pool factory address')
   .setAction(async ({ file }, hre: HardhatRuntimeEnvironment) => {
-    const data = JSON.parse(fs.readFileSync(file).toString());
+    const data = JSON.parse(readFileSync(file).toString());
     // get the multitoken contract
     const signer = await hre.ethers.provider.getSigner();
     const govToken: any = await hre.ethers.getContractAt(

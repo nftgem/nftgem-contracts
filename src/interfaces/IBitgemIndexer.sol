@@ -41,6 +41,7 @@ interface IBitgemIndexer {
         address factoryAddress;
     }
     struct GemPool {
+        uint256 id;
         address factory;
         address multitoken;
         address poolAddress;
@@ -104,7 +105,36 @@ interface IBitgemIndexer {
         uint256 references;
         bool missingTokenPenalty;
     }
-    event GemCreated(uint256 indexed gemCreateUID, GemPool pool, Gem gem);
+
+    event FactoryCreated(address factory);
+
+    event PoolCreated(
+        address factory,
+        address multitoken,
+        address poolAddress,
+        string symbol,
+        string name,
+        string description,
+        uint256 category,
+        uint256 ethPrice
+    );
+
+    event GemCreated(
+        uint256 id,
+        string symbol,
+        string name,
+        uint256 gemHash,
+        address pool,
+        address minter,
+        address gemPoolFactory,
+        address multitoken,
+        uint256 quantity
+    );
+
+    event BulkGemCreated(GemPool[] gemPools, Gem[] gems);
+
+    event UserCreated(uint256 indexed gemCreateUID, GemPool pool, Gem gem);
+
     event LootboxOpened(
         address opener,
         LootboxFactory factory,
@@ -116,7 +146,10 @@ interface IBitgemIndexer {
         external
         returns (bool);
 
-    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem) external;
+    function indexGems(GemPool[] memory gemPools, Gem[] memory gems) external;
+
+    function indexBulkGems(GemPool[] memory gemPools, Gem[] memory gems)
+        external;
 
     function getOwnedGems(
         address gemPool,

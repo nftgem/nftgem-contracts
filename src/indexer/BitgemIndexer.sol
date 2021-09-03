@@ -124,6 +124,7 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
 
         ) = IGemPoolData(gemPool).settings();
         _gemPool = GemPool(
+            uint256(uint160(gemPool)),
             address(0),
             multitoken,
             gemPool,
@@ -195,15 +196,37 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
         gem.id = gemId;
         gemMap[gemId] = gem;
         gemsByMinter[gem.minter].push(gem);
+        if (gemsByFactory[gem.gemPoolFactory].length == 0) {
+            FactoryCreated(gem.gemPoolFactory);
+        }
         gemsByFactory[gem.gemPoolFactory].push(gem);
         gemsByMultitoken[gem.multitoken].push(gem);
         gemsByPool[gem.pool].push(gem);
         if (gemPoolsMap[gem.pool].multitoken == address(0)) {
             gemPoolsMap[gem.pool] = gemPool;
             gemPools.push(gemPool);
+            emit PoolCreated(
+                gemPool.factory,
+                gemPool.multitoken,
+                gemPool.poolAddress,
+                gemPool.symbol,
+                gemPool.name,
+                gemPool.description,
+                gemPool.category,
+                gemPool.ethPrice
+            );
         }
-
-        emit GemCreated(gem.id, gemPool, gem);
+        emit GemCreated(
+            gem.id,
+            gem.symbol,
+            gem.name,
+            gem.gemHash,
+            gem.pool,
+            gem.minter,
+            gem.gemPoolFactory,
+            gem.multitoken,
+            gem.quantity
+        );
         return true;
     }
 
@@ -215,16 +238,19 @@ contract BitgemIndexer is IBitgemIndexer, Controllable {
         return _indexGem(gemPool, gem);
     }
 
-    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem)
+    function indexGems(GemPool[] memory gemPools, Gem[] memory gems)
         external
         override
     {
-        emit GemCreated(gem.id, gemPool, gem);
+        for (uint256 i = 0; i < gems.length; i++) {
+            _indexGem(gemPools[i], gems[i]);
+        }
     }
 
-    function indexGems(GemPool memory gemPool, Gem[] memory gems) external {
-        for (uint256 i = 0; i < gems.length; i++) {
-            _indexGem(gemPool, gems[i]);
-        }
+    function indexBulkGems(GemPool[] memory gemPools, Gem[] memory gems)
+        external
+        override
+    {
+        emit BulkGemCreated(gemPools, gems);
     }
 }
