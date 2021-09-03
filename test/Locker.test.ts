@@ -1,15 +1,35 @@
-import { keccak256 } from "ethers/lib/utils";
+import { Contract } from "ethers";
+import { expect } from "./chai-setup";
+import { pack, keccak256 } from "@ethersproject/solidity";
 import { ethers } from "hardhat";
+import {
+  setupNftGemGovernor
+} from './fixtures/Governance.fixture';
 
-describe('A', function () {
-  it('Drop Off', async function () {
-    const [unlocker, awardToken] = await ethers.getSigners();
-    const Locker = await (await ethers.getContractFactory('Locker')).deploy();
-    await Locker.dropOff(
-      unlocker,
-      keccak256(await unlocker.getAddress()),
-      awardToken,
-      keccak256(await awardToken.getAddress()),
-      5);
+describe('Locker Test Suite', function () {
+  let Locker: Contract;
+  let NFTGemMultiToken: any;
+  const tokenHash = keccak256(['bytes'], [pack(['string'], ['Test Token'])]);
+  beforeEach(async () => {
+    Locker = await (await ethers.getContractFactory('Locker')).deploy();
+    const setupNftGemGovernorResult = await setupNftGemGovernor();
+    NFTGemMultiToken = setupNftGemGovernorResult.NFTGemMultiToken;
+    const [sender] = await ethers.getSigners();
+    await NFTGemMultiToken.mint(sender.address, tokenHash, 100);
+    await NFTGemMultiToken.connect(sender).setApprovalForAll(Locker.address, true);
   })
+  it('Drop Off', async function () {
+    await Locker.dropOff(
+      NFTGemMultiToken.address,
+      tokenHash,
+      NFTGemMultiToken.address,
+      tokenHash,
+      5);
+    const LockerContent = await Locker.contents(tokenHash);
+    expect(LockerContent).to.not.be.undefined;
+    expect(LockerContent.awardTokenAddress).to.be.equal(NFTGemMultiToken.address);
+    expect(LockerContent.unlockTokenAddress).to.be.equal(NFTGemMultiToken.address);
+    expect(LockerContent.awardTokenHash).to.be.equal(tokenHash);
+    expect(LockerContent.unlockTokenHash).to.be.equal(tokenHash);
+  });
 });

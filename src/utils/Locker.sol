@@ -36,7 +36,7 @@ contract Locker is ILocker, ERC1155Holder {
         require(
             IERC1155(awardTokenAddress).balanceOf(msg.sender, awardTokenHash) >=
                 awardQty,
-            "Award quantity must be greater than 0"
+            "Sender Balance must be greater or equal than the award quantity"
         );
 
         // store the locker contents
