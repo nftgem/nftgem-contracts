@@ -11,10 +11,12 @@ describe('Locker Test Suite', function () {
   let NFTGemMultiToken: any;
   const tokenHash = keccak256(['bytes'], [pack(['string'], ['Test Token'])]);
   beforeEach(async () => {
+    // Deploy Locker Contract on each test iteration
     Locker = await (await ethers.getContractFactory('Locker')).deploy();
     const setupNftGemGovernorResult = await setupNftGemGovernor();
     NFTGemMultiToken = setupNftGemGovernorResult.NFTGemMultiToken;
     const [sender] = await ethers.getSigners();
+    // Mint token to sender to make sure the sender have enough balance
     await NFTGemMultiToken.mint(sender.address, tokenHash, 100);
     await NFTGemMultiToken.connect(sender).setApprovalForAll(Locker.address, true);
   })
