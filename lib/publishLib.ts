@@ -60,6 +60,8 @@ export default async function publish(
         },
       };
 
+      await this.d('BitgemIndexer', deployParams);
+
       await this.d('NFTGemGovernor', deployParams);
       const multitokenDeploy = await this.d('NFTGemMultiToken', deployParams);
       await this.d('NFTGemPoolFactory', deployParams);
@@ -68,7 +70,6 @@ export default async function publish(
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
       await this.d('BulkGovernanceTokenMinter', deployParams);
-      await this.d('BitgemIndexer', deployParams);
       await this.d('LootboxData', deployParams);
       await this.d('LootboxFactory', deployParams);
       await this.d('RandomFarm', deployParams);

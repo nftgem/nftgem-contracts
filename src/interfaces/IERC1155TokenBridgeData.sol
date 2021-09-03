@@ -14,6 +14,7 @@ interface IERC1155TokenBridgeData {
     // list of validator data
     function validators()
         external
+        view
         returns (IERC1155TokenBridge.Validator[] memory);
 
     // add validator
@@ -27,7 +28,7 @@ interface IERC1155TokenBridgeData {
         returns (uint256);
 
     // get validator data
-    function getValidator(uint256 validatorHash)
+    function getValidator(address validatorAddress)
         external
         returns (IERC1155TokenBridge.Validator memory);
 
@@ -36,6 +37,7 @@ interface IERC1155TokenBridgeData {
     // a list of (not started, pending) requests
     function pendingRequests()
         external
+        view
         returns (IERC1155TokenBridge.NetworkTransferRequest[] memory requests);
 
     function addRequest(
@@ -51,8 +53,16 @@ interface IERC1155TokenBridgeData {
     // get request by hash
     function getRequest(uint256 requestHash)
         external
+        view
         returns (IERC1155TokenBridge.NetworkTransferRequest memory request);
 
     // delete the request data to free up space
     function delRequest(uint256 requestHash) external returns (bool);
+
+    // @dev get the registered token list
+    function registeredTokens() external returns (address[] memory);
+
+    function registerToken(address token) external returns (uint256);
+
+    function unregisterToken(address token) external returns (bool);
 }

@@ -16,15 +16,6 @@ pragma solidity >=0.8.0;
 /// re-register. Repeated violations of the rules of the bridge contract will result in the validator being removed
 /// from the validator set permanently via a ban.
 interface IERC1155TokenBridge {
-    struct NetworkTransferRequest {
-        uint256 id;
-        uint32 networkId;
-        address from;
-        address to;
-        uint256[] tokenHash;
-        uint256[] amount;
-    }
-
     struct Validator {
         address operatorAddress;
         address validatorAddress;
@@ -34,18 +25,34 @@ interface IERC1155TokenBridge {
     enum TransferStatus {
         CREATED,
         PENDING,
-        COMPLETED,
-        CANCELLED
+        COMPLETED
+    }
+
+    struct NetworkTransferRequest {
+        uint256 id;
+        uint32 networkId;
+        address from;
+        address to;
+        uint256[] tokenHash;
+        uint256[] amount;
+        TransferStatus status;
     }
 
     event NetworkTransfer(
         address tokenAddress,
         uint256 indexed receiptId,
+        uint32 fromNetworkId,
         address indexed _from,
+        uint32 toNetworkId,
         address indexed _to,
         uint256[] _id,
         uint256[] _value,
         bool isBatch
+    );
+
+    event NetworkTransferStatus(
+        uint256 indexed receiptId,
+        TransferStatus status
     );
 
     event TokenRegistered(
@@ -106,8 +113,6 @@ interface IERC1155TokenBridge {
     ) external returns (bool);
 
     function confirmTransfer(uint256 _receiptId) external returns (bool);
-
-    function cancelTransfer(uint256 _receiptId) external returns (bool);
 
     function getTransferData(uint256 _receiptId)
         external

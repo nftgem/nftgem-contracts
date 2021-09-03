@@ -116,6 +116,8 @@ interface IBitgemIndexer {
         external
         returns (bool);
 
+    function indexGemUnsafe(GemPool memory gemPool, Gem memory gem) external;
+
     function getOwnedGems(
         address gemPool,
         address multitoken,

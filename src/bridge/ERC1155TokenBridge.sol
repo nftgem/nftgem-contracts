@@ -4,26 +4,22 @@ pragma solidity >=0.8.0;
 import "../interfaces/IERC1155TokenBridge.sol";
 import "../interfaces/IBridgeableERC1155Token.sol";
 
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+
 contract ERC1155TokenBridge is IERC1155TokenBridge {
-    // the list of approved erc1155 token addresses
-    // only these tokens can be moved by the bridge
-    IBridgeableERC1155Token[] internal _tokenList;
-    mapping(address => IBridgeableERC1155Token) internal _tokenMap;
-
-    // the list of validators that can validate transfers
-    Validator[] internal _validatorList;
-    mapping(address => Validator) public validatorMap;
-
-    // the list of pending transfers that need to be validated
-    NetworkTransferRequest[] internal _pendingTransferList;
-    mapping(address => NetworkTransferRequest) public _pendingTransferMap;
-
     /// @dev register a new token that can be moved by the bridge
     function registerToken(address _bridgeable)
         external
         override
         returns (bool)
-    {}
+    {
+        try IERC1155(_bridgeable).balanceOf(msg.sender, 0) returns (
+            uint256
+        ) {} catch {
+            return false;
+        }
+        return true;
+    }
 
     /// @dev unregister a token from the bridge
     function unregisterToken(address _bridgeable)
@@ -61,14 +57,6 @@ contract ERC1155TokenBridge is IERC1155TokenBridge {
 
     /// @dev called by the bridge to confirm a transfer. This burns the source token(s)
     function confirmTransfer(uint256 _receiptId)
-        external
-        override
-        returns (bool)
-    {}
-
-    /// @dev cancel a transfer that has not been confirmed. This reverts the transfer
-    /// @dev and returns the source token(s) to the sender
-    function cancelTransfer(uint256 _receiptId)
         external
         override
         returns (bool)
