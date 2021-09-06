@@ -9,6 +9,7 @@ import { SignerWithAddress } from "hardhat-deploy-ethers/dist/src/signers";
 describe('Locker Test Suite', function () {
   let locker: Contract;
   let sender: SignerWithAddress;
+  let thief: SignerWithAddress;
   let receiver: SignerWithAddress;
   let NFTGemMultiToken: any;
   const unlockToken = '1';
@@ -16,10 +17,10 @@ describe('Locker Test Suite', function () {
   beforeEach(async () => {
     const setupNftGemGovernorResult = await setupNftGemGovernor();
     NFTGemMultiToken = setupNftGemGovernorResult.NFTGemMultiToken;
-    [sender, receiver] = await ethers.getSigners();
+    [sender, receiver, thief] = await ethers.getSigners();
     // Mint token to sender to make sure the sender have enough balance
     await NFTGemMultiToken.mint(sender.address, awardToken, 100);
-    await NFTGemMultiToken.mint(receiver.address, unlockToken, 100);
+    await NFTGemMultiToken.mint(receiver.address, unlockToken, 1000);
   })
   it('Drop Off', async function () {
     // Deploy Locker Contract on each test iteration
@@ -42,7 +43,6 @@ describe('Locker Test Suite', function () {
   });
 
   it('Pick Up', async function () {
-    // Deploy Locker Contract on each test iteration
     locker = await (await ethers.getContractFactory('Locker')).deploy();
     await NFTGemMultiToken.setApprovalForAll(locker.address, true);
     // We need to dropOff locker first before picking up the content inside.
@@ -51,10 +51,29 @@ describe('Locker Test Suite', function () {
       unlockToken,
       NFTGemMultiToken.address,
       awardToken,
-      5,
+      50,
     )
+    //Picking up the locker award with receiver account
     await locker.connect(receiver).pickUpTokenWithKey(unlockToken);
     const lockerContent = await locker.contents(unlockToken);
     expect(lockerContent.awardQty).to.be.equal(0);
+    // Check if the receiver has actually receive the award
+    expect(await NFTGemMultiToken.balanceOf(receiver.address, unlockToken)).to.equal(1050);
+  });
+
+  it('Unathorized Pick Up', async function () {
+    locker = await (await ethers.getContractFactory('Locker')).deploy();
+    await NFTGemMultiToken.setApprovalForAll(locker.address, true);
+    await NFTGemMultiToken.mint(thief.address, '3', 10);
+    // We need to dropOff locker first before picking up the content inside.
+    await locker.dropOff(
+      NFTGemMultiToken.address,
+      unlockToken,
+      NFTGemMultiToken.address,
+      awardToken,
+      5,
+    )
+    // Intentionally Picking up locker content with the wrong unlock key and expect the contract to throw an error
+    expect(await locker.connect(thief).pickUpTokenWithKey('3')).to.throw('Unlock token missmatched');
   });
 });
