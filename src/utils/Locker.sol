@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "../interfaces/ILocker.sol";
-import "hardhat/console.sol";
 
 contract Locker is ILocker, ERC1155Holder {
     // locker contents
@@ -24,7 +23,6 @@ contract Locker is ILocker, ERC1155Holder {
         uint256 awardTokenHash,
         uint256 awardQty
     ) external override {
-        console.log("Dropping off");
         // there should be nothing where we are dropping off
         require(
             _lockerContents[unlockTokenHash].unlockTokenAddress == address(0),
@@ -40,7 +38,6 @@ contract Locker is ILocker, ERC1155Holder {
                 awardQty,
             "Sender Balance must be greater or equal than the award quantity"
         );
-
         // store the locker contents
         _lockerContents[unlockTokenHash] = LockerContents(
             unlockTokenAddress,
@@ -49,7 +46,6 @@ contract Locker is ILocker, ERC1155Holder {
             awardTokenHash,
             awardQty
         );
-
         // deposit the award token into the locker
         IERC1155(awardTokenAddress).safeTransferFrom(
             msg.sender,
@@ -58,7 +54,6 @@ contract Locker is ILocker, ERC1155Holder {
             awardQty,
             ""
         );
-
         // emit an event
         emit LockerContentsDroppedOff(
             msg.sender,
@@ -82,12 +77,10 @@ contract Locker is ILocker, ERC1155Holder {
     /// @param _openCode the pickup code
     /// @param receiver the receiver of the contents
     function _pickupToken(uint256 _openCode, address receiver) internal {
-        console.log(_openCode);
-        console.logAddress(receiver);
         // make sure we still have tokens to give
         require(_lockerContents[_openCode].awardQty > 0, "No token to pick up");
 
-        console.log(_lockerContents[_openCode].awardQty);
+        uint256 qty = _lockerContents[_openCode].awardQty;
         // set to zero first to prevent reentrancy
         _lockerContents[_openCode].awardQty = 0;
 
@@ -96,7 +89,7 @@ contract Locker is ILocker, ERC1155Holder {
                 address(this),
                 receiver,
                 _lockerContents[_openCode].awardTokenHash,
-                _lockerContents[_openCode].awardQty,
+                qty,
                 ""
             );
 
@@ -105,9 +98,8 @@ contract Locker is ILocker, ERC1155Holder {
             receiver,
             _lockerContents[_openCode].awardTokenAddress,
             _lockerContents[_openCode].awardTokenHash,
-            _lockerContents[_openCode].awardQty
+            qty
         );
-        console.log(_lockerContents[_openCode].awardQty);
     }
 
     /// @notice call to pick up your erc 11555 NFT given a source erc1155 in your possession
@@ -119,7 +111,7 @@ contract Locker is ILocker, ERC1155Holder {
         // require unlock token hash matches
         require(
             contents.unlockTokenHash == unlockTokenHashKey,
-            "No token to pick up"
+            "Unlock token missmatched"
         );
 
         // require there be a quantity to pick up
