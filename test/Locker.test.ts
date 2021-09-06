@@ -27,16 +27,21 @@ describe('Locker Test Suite', function () {
       NFTGemMultiToken.address,
       tokenHash,
       5);
-    const lockerContent = await locker.contents(tokenHash);
+    let lockerContent = await locker.contents(tokenHash);
     expect(lockerContent).to.not.be.undefined;
     expect(lockerContent.awardTokenAddress).to.be.equal(NFTGemMultiToken.address);
     expect(lockerContent.unlockTokenAddress).to.be.equal(NFTGemMultiToken.address);
     expect(lockerContent.awardTokenHash).to.be.equal(tokenHash);
     expect(lockerContent.unlockTokenHash).to.be.equal(tokenHash);
+
+    await locker.pickUpTokenWithKey(tokenHash);
+    lockerContent = await locker.contents(tokenHash);
+    // const lockerContent = await locker.contents(tokenHash);
+    expect(lockerContent.awardQty).to.be.equal(0);
   });
 
   it('Pick Up', async function () {
-    console.log(await locker.contents(tokenHash));
+    // We need to dropOff locker first before picking up the content inside.
     await locker.dropOff(
       NFTGemMultiToken.address,
       tokenHash,
