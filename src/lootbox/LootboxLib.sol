@@ -97,7 +97,7 @@ library LootboxLib {
         }
         _lootbox.contractAddress = contractAddress;
         tokenSellerInfo_.tokenHash = _lootbox.lootboxHash;
-        _lootboxData.setTokenSeller(contractAddress, tokenSellerInfo);
+        // _lootboxData.setTokenSeller(contractAddress, tokenSellerInfo);
         if (_isNew) {
             _lootboxData.addLootbox(_lootbox);
         } else {
@@ -153,8 +153,14 @@ library LootboxLib {
         // now we need some randomness to determine which loot items we win
         // we use a pseudo-random deterministic sieve to determine the number
         // and type of tokens minted
-        uint256[] memory _lootRoll = IRandomFarmer(_lootbox.randomFarmer)
-            .getRandomUints(lootCount);
+
+        uint256[] memory _lootRoll = new uint256[](lootCount);
+        for (uint8 i = 0; i < lootCount; i++) {
+            _lootRoll[i] = IRandomFarmer(_lootbox.randomFarmer).getRandomNumber(
+                0,
+                _lootbox.probabilitiesSum
+            );
+        }
 
         // mint the loot items
         for (uint256 i = 0; i < lootCount; i++) {
