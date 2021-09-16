@@ -48,21 +48,20 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         address lootboxData,
         ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
         ILootbox.Lootbox memory lootboxInit
-    )
-    external override initializer {
-        require(
-            IControllable(lootboxData).isController(address(this)) == true,
-            "Lootbox data must be controlled by this lootbox"
-        );
+    ) external override initializer {
         _lootboxData = ILootboxData(lootboxData);
-        bool isNew = lootboxInit.lootboxHash == 0;
-        _lootbox = LootboxLib.initialize(lootboxInit);
-        _lootbox.contractAddress = address(this);
-        tokenSellerInfo.tokenHash = _lootbox.lootboxHash;
+        bool _isNew = false;
+
+        (_lootboxData, _isNew, _lootbox, tokenSellerInfo) = LootboxLib
+            .initialize(
+                address(this),
+                lootboxData,
+                tokenSellerInfo,
+                lootboxInit
+            );
+
         this.initialize(lootboxData, tokenSellerInfo);
-        _lootboxData.setTokenSeller(address(this), tokenSellerInfo);
-        if(isNew) {
-            _lootboxData.addLootbox(_lootbox);
+        if (_isNew) {
             emit LootboxCreated(
                 msg.sender,
                 _lootbox.lootboxHash,
@@ -70,14 +69,6 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
                 _lootbox
             );
         } else {
-            // load the lootbox struct
-            _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
-            _lootbox.contractAddress = address(this);
-            _lootboxData.setLootbox(_lootbox);
-            require(
-                _lootbox.owner == msg.sender,
-                "Lootbox must be owned by the caller to uppgrade contract"
-            );
             emit LootboxMigrated(
                 msg.sender,
                 _lootbox.lootboxHash,
@@ -146,7 +137,7 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         override
         initialized
         onlyController
-        returns (uint256)
+        returns (uint256 _result)
     {
         // basic sanity checks
         require(bytes(_loot.symbol).length > 0, "Symbol must be set");
@@ -166,21 +157,8 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         // emit a message about it
         emit LootAdded(msg.sender, _lootbox.lootboxHash, _lootbox, _loot);
 
-        // return the added loot item index
-        return _lootboxData.addLoot(_lootbox.lootboxHash, _loot);
-    }
-
-    function _recalculateProbabilities() internal {
-        // get all the loot there is to award
-        Loot[] memory _allLoot = _lootboxData.allLoot(_lootbox.lootboxHash);
-        uint256 floor = 0;
-        // iterate through the loot items
-        for (uint256 i = 0; i < _allLoot.length; i++) {
-            // set the probability index to the floor
-            _allLoot[i].probabilityIndex = floor + _allLoot[i].probability;
-            floor += _allLoot[i].probability;
-            _lootboxData.setLoot(_lootbox.lootboxHash, i, _allLoot[i]);
-        }
+        // return the addeduint loot item index
+        _result = _lootboxData.addLoot(_lootbox.lootboxHash, _loot);
     }
 
     function getLoot(uint256 index)
@@ -202,13 +180,17 @@ contract LootboxContract is ILootbox, Controllable, Initializable, TokenSeller {
         payable(receiver).transfer(address(this).balance);
     }
 
-    function feeBalance() external view returns (uint256) {
-        return address(this).balance;
-    }
-
-    function migrate_LootboxContract(address migrateTo) external initialized onlyController {
+    function migrate_LootboxContract(address migrateTo)
+        external
+        initialized
+        onlyController
+    {
         this.migrate_TokenSeller(migrateTo, false);
         IControllable(address(_lootboxData)).addController(migrateTo);
-        ILootbox(migrateTo).initialize (address(_lootboxData), _tokenSeller, _lootbox);
+        ILootbox(migrateTo).initialize(
+            address(_lootboxData),
+            _tokenSeller,
+            _lootbox
+        );
     }
 }

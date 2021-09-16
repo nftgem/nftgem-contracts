@@ -10,7 +10,6 @@ import "../access/Controllable.sol";
 import "./TokenSeller.sol";
 
 library LootboxLib {
-
     event LootboxCreated(
         address indexed creator,
         uint256 indexed hash,
@@ -57,9 +56,26 @@ library LootboxLib {
     /// @dev Sets the lootbox data. The lootbox contract can either initialise a new
     // lootbox struct or it can load and update an existing lootbox struct.
     function initialize(
+        address contractAddress,
+        address lootboxData,
+        ITokenSeller.TokenSellerInfo memory tokenSellerInfo,
         ILootbox.Lootbox memory lootboxInit
     )
-    external pure returns (ILootbox.Lootbox memory lootboxOut_) {
+        external
+        returns (
+            ILootboxData _lootboxData,
+            bool _isNew,
+            ILootbox.Lootbox memory _lootbox,
+            ITokenSeller.TokenSellerInfo memory tokenSellerInfo_
+        )
+    {
+        require(
+            IControllable(lootboxData).isController(address(this)) == true,
+            "Lootbox data must be controlled by this lootbox"
+        );
+        tokenSellerInfo_ = tokenSellerInfo;
+        _lootboxData = ILootboxData(lootboxData);
+        _isNew = lootboxInit.lootboxHash == 0;
         if (lootboxInit.lootboxHash == 0) {
             require(
                 lootboxInit.multitoken != address(0),
@@ -73,25 +89,33 @@ library LootboxLib {
             require(lootboxInit.minLootPerOpen != 0, "Min loot must be set");
             require(lootboxInit.maxLootPerOpen != 0, "Max loot must be set");
             // TODO: additional validity checks would not hurt here
-            lootboxOut_ = lootboxInit;
-            lootboxOut_.lootboxHash = uint256(
-                keccak256(
-                    abi.encodePacked(
-                        lootboxInit.symbol
-                    )
-                )
+            _lootbox = lootboxInit;
+            _lootbox.lootboxHash = uint256(
+                keccak256(abi.encodePacked(lootboxInit.symbol))
             );
-            lootboxOut_.initialized = true;
+            _lootbox.initialized = true;
+        }
+        _lootbox.contractAddress = contractAddress;
+        tokenSellerInfo_.tokenHash = _lootbox.lootboxHash;
+        // _lootboxData.setTokenSeller(contractAddress, tokenSellerInfo);
+        if (_isNew) {
+            _lootboxData.addLootbox(_lootbox);
+        } else {
+            // load the lootbox struct
+            _lootbox = _lootboxData.getLootboxByHash(lootboxInit.lootboxHash);
+            _lootbox.contractAddress = contractAddress;
+            _lootboxData.setLootbox(_lootbox);
+            require(
+                _lootbox.owner == msg.sender,
+                "Lootbox must be owned by the caller to uppgrade contract"
+            );
         }
     }
 
     function openLootbox(
         ILootbox.Lootbox memory _lootbox,
         ILootbox.Loot[] memory _loot
-    )
-        external
-        returns (ILootbox.Loot[] memory _lootOut)
-    {
+    ) external returns (ILootbox.Loot[] memory _lootOut) {
         // make sure that the caller has at least one lootbox token
         require(
             IERC1155(_lootbox.multitoken).balanceOf(
@@ -129,12 +153,17 @@ library LootboxLib {
         // now we need some randomness to determine which loot items we win
         // we use a pseudo-random deterministic sieve to determine the number
         // and type of tokens minted
-        uint256[] memory _lootRoll = IRandomFarmer(_lootbox.randomFarmer)
-        .getRandomUints(lootCount);
+
+        uint256[] memory _lootRoll = new uint256[](lootCount);
+        for (uint8 i = 0; i < lootCount; i++) {
+            _lootRoll[i] = IRandomFarmer(_lootbox.randomFarmer).getRandomNumber(
+                0,
+                _lootbox.probabilitiesSum
+            );
+        }
 
         // mint the loot items
         for (uint256 i = 0; i < lootCount; i++) {
-
             // generate a loot item given a random seed
             (uint8 winIndex, uint256 winRoll) = _generateLoot(
                 _loot,
@@ -163,10 +192,12 @@ library LootboxLib {
         );
     }
 
-    function mintLoot(ILootbox.Lootbox memory _lootbox, ILootbox.Loot[] memory _allLoot, uint8 index, uint256 amount)
-        external
-        returns (ILootbox.Loot memory)
-    {
+    function mintLoot(
+        ILootbox.Lootbox memory _lootbox,
+        ILootbox.Loot[] memory _allLoot,
+        uint8 index,
+        uint256 amount
+    ) external returns (ILootbox.Loot memory) {
         require(index < _allLoot.length, "Loot index out of bounds");
         // mint the loot item to the minter
         INFTGemMultiToken(_lootbox.multitoken).mint(
@@ -201,11 +232,7 @@ library LootboxLib {
         ILootbox.Loot[] memory _loot,
         uint256 dice,
         uint256 _probabilitiesSum
-    )
-        internal
-        pure
-        returns (uint8 winnerIndex, uint256 winnerRoll)
-    {
+    ) internal pure returns (uint8 winnerIndex, uint256 winnerRoll) {
         // validate the dice roll is in the proper range
         require(
             dice < _probabilitiesSum,
@@ -229,5 +256,21 @@ library LootboxLib {
         return (winnerIndex, winnerRoll);
     }
 
-
+    function recalculateProbabilities(address lootboxData, uint256 _lootboxHash)
+        public
+        returns (ILootbox.Loot[] memory _allLootOut)
+    {
+        uint256 floor = 0;
+        // iterate through the loot items
+        ILootbox.Loot[] memory _allLoot = ILootboxData(lootboxData).allLoot(
+            _lootboxHash
+        );
+        for (uint256 i = 0; i < _allLoot.length; i++) {
+            // set the probability index to the floor
+            _allLoot[i].probabilityIndex = floor + _allLoot[i].probability;
+            floor += _allLoot[i].probability;
+            ILootboxData(lootboxData).setLoot(_lootboxHash, i, _allLoot[i]);
+        }
+        _allLootOut = _allLoot;
+    }
 }

@@ -60,6 +60,8 @@ export default async function publish(
         },
       };
 
+      await this.d('BitgemIndexer', deployParams);
+
       await this.d('NFTGemGovernor', deployParams);
       const multitokenDeploy = await this.d('NFTGemMultiToken', deployParams);
       await this.d('NFTGemPoolFactory', deployParams);
@@ -68,11 +70,10 @@ export default async function publish(
       await this.d('ERC20GemTokenFactory', deployParams);
       await this.d('TokenPoolQuerier', deployParams);
       await this.d('BulkGovernanceTokenMinter', deployParams);
-      //await this.d('BitgemIndexer', deployParams);
-      // await this.d('LootboxData', deployParams);
-      // await this.d('LootboxFactory', deployParams);
-      // await this.d('RandomFarm', deployParams);
-      // await this.d('RandomFarmer', deployParams);
+      await this.d('LootboxData', deployParams);
+      await this.d('LootboxFactory', deployParams);
+      await this.d('RandomFarm', deployParams);
+      await this.d('RandomFarmer', deployParams);
 
 
       let SwapHelper = undefined;
@@ -93,7 +94,7 @@ export default async function publish(
         const deployParams: any = {
           from: sender.address,
           log: true,
-          libraries: {},
+          libraries: { },
         };
         deployParams.libraries[`${SwapHelper}Lib`] = (
           await this.d(`${SwapHelper}Lib`, libDeployParams)
@@ -123,22 +124,22 @@ export default async function publish(
       // get all deployed contracts
       const dc = await this.getDeployedContracts();
 
-      // const lbInited = await dc.LootboxFactory.isInitialized();
-      // if (!lbInited) {
-      //   console.log('initializing lootbox factory');
-      //   let ttx = await dc.LootboxData.addController(dc.LootboxFactory.address);
-      //   await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
-      //   ttx = await dc.LootboxFactory.initialize(dc.LootboxData.address);
-      //   await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
-      // }
-      // const rfInited = await dc.RandomFarm.isInitialized();
-      // if (!rfInited) {
-      //   console.log('initializing random farm');
-      //   let ttx = await dc.RandomFarm.initialize(dc.LootboxData.address);
-      //   await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
-      //   ttx = await dc.RandomFarmer.setFarm(dc.RandomFarm.address);
-      //   await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
-      // }
+      const lbInited = await dc.LootboxFactory.isInitialized();
+      if (!lbInited) {
+        console.log('initializing lootbox factory');
+        let ttx = await dc.LootboxData.addController(dc.LootboxFactory.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        ttx = await dc.LootboxFactory.initialize(dc.LootboxData.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      }
+      const rfInited = await dc.RandomFarm.isInitialized();
+      if (!rfInited) {
+        console.log('initializing random farm');
+        let ttx = await dc.RandomFarm.initialize(dc.LootboxData.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+        ttx = await dc.RandomFarmer.setFarm(dc.RandomFarm.address);
+        await hre.ethers.provider.waitForTransaction(ttx.hash, 1);
+      }
 
       // find out if the governor is initialised
       const inited = await dc.NFTGemGovernor.initialized();
@@ -320,41 +321,41 @@ export default async function publish(
           ).address,
           sender
         ),
-        // LootboxData: await this.getContractAt(
-        //   'LootboxData',
-        //   (
-        //     await this.get('LootboxData')
-        //   ).address,
-        //   sender
-        // ),
-        // LootboxFactory: await this.getContractAt(
-        //   'LootboxFactory',
-        //   (
-        //     await this.get('LootboxFactory')
-        //   ).address,
-        //   sender
-        // ),
-        // RandomFarm: await this.getContractAt(
-        //   'RandomFarm',
-        //   (
-        //     await this.get('RandomFarm')
-        //   ).address,
-        //   sender
-        // ),
-        // RandomFarmer: await this.getContractAt(
-        //   'RandomFarmer',
-        //   (
-        //     await this.get('RandomFarmer')
-        //   ).address,
-        //   sender
-        // ),
-        // BitgemIndexer: await this.getContractAt(
-        //   'BitgemIndexer',
-        //   (
-        //     await this.get('BitgemIndexer')
-        //   ).address,
-        //   sender
-        // ),
+        LootboxData: await this.getContractAt(
+          'LootboxData',
+          (
+            await this.get('LootboxData')
+          ).address,
+          sender
+        ),
+        LootboxFactory: await this.getContractAt(
+          'LootboxFactory',
+          (
+            await this.get('LootboxFactory')
+          ).address,
+          sender
+        ),
+        RandomFarm: await this.getContractAt(
+          'RandomFarm',
+          (
+            await this.get('RandomFarm')
+          ).address,
+          sender
+        ),
+        RandomFarmer: await this.getContractAt(
+          'RandomFarmer',
+          (
+            await this.get('RandomFarmer')
+          ).address,
+          sender
+        ),
+        BitgemIndexer: await this.getContractAt(
+          'BitgemIndexer',
+          (
+            await this.get('BitgemIndexer')
+          ).address,
+          sender
+        ),
       };
 
       if (parseInt(networkId) === 1) {
@@ -536,11 +537,11 @@ export default async function publish(
 
 /*
     await createPool(
-    'AMET',
-    'Amethyst',
-    parseEther('500'),
-    604800,
-    3024000,
+    'MINF',
+    'Minion 6',
+    parseEther(itemPrice),
+    30,
+    90,
     12,
     0,
     '0x0000000000000000000000000000000000000000'
@@ -556,7 +557,12 @@ export default async function publish(
     0,
     '0x0000000000000000000000000000000000000000',
     [
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('PETE'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINA'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINB'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINC'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MIND'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINE'), 3, 0, 1, true, false],
+      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINF'), 3, 0, 1, true, false],
     ]
   );
   */
