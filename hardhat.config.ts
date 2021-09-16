@@ -788,11 +788,11 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
   .addParam('min', 'The gem pool minimum maturity time in seconds')
   .addParam('max', 'The gem pool maximum maturity time in seconds')
   .addParam('diff', 'The gem pool difficulty divisor')
-  .addParam('maxClaims', 'The gem pool max number of claims')
-  .addParam('allowedToken', 'An optional allowed token')
+  .addParam('maxclaims', 'The gem pool max number of claims')
+  .addParam('allowedtoken', 'An optional allowed token')
   .setAction(
     async (
-      {symbol, name, price, min, max, diff, maxClaims, allowedToken},
+      {symbol, name, price, min, max, diff, maxclaims, allowedtoken},
       hre: HardhatRuntimeEnvironment
     ) => {
       const publisher = await publish(hre, false);
@@ -803,8 +803,8 @@ task('publish-gempool', 'Publish a new gem pool with the given parameters')
         min,
         max,
         diff,
-        maxClaims,
-        allowedToken
+        maxclaims,
+        allowedtoken
       );
     }
   );
