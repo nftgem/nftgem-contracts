@@ -535,34 +535,4 @@ export default async function publish(
   return pub;
 }
 
-/*
-    await createPool(
-    'MINF',
-    'Minion 6',
-    parseEther(itemPrice),
-    30,
-    90,
-    12,
-    0,
-    '0x0000000000000000000000000000000000000000'
-  );
 
-  await createPool(
-    'UBOSSA',
-    'Underboss 1',
-    parseEther(itemPrice),
-    30,
-    90,
-    4,
-    0,
-    '0x0000000000000000000000000000000000000000',
-    [
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINA'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINB'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINC'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MIND'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINE'), 3, 0, 1, true, false],
-      [dc.NFTGemMultiToken.address, await getGemPoolAddress('MINF'), 3, 0, 1, true, false],
-    ]
-  );
-  */
