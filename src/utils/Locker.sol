@@ -36,9 +36,8 @@ contract Locker is ILocker, ERC1155Holder {
         require(
             IERC1155(awardTokenAddress).balanceOf(msg.sender, awardTokenHash) >=
                 awardQty,
-            "Award quantity must be greater than 0"
+            "Sender Balance must be greater or equal than the award quantity"
         );
-
         // store the locker contents
         _lockerContents[unlockTokenHash] = LockerContents(
             unlockTokenAddress,
@@ -47,7 +46,6 @@ contract Locker is ILocker, ERC1155Holder {
             awardTokenHash,
             awardQty
         );
-
         // deposit the award token into the locker
         IERC1155(awardTokenAddress).safeTransferFrom(
             msg.sender,
@@ -56,7 +54,6 @@ contract Locker is ILocker, ERC1155Holder {
             awardQty,
             ""
         );
-
         // emit an event
         emit LockerContentsDroppedOff(
             msg.sender,
@@ -83,6 +80,7 @@ contract Locker is ILocker, ERC1155Holder {
         // make sure we still have tokens to give
         require(_lockerContents[_openCode].awardQty > 0, "No token to pick up");
 
+        uint256 qty = _lockerContents[_openCode].awardQty;
         // set to zero first to prevent reentrancy
         _lockerContents[_openCode].awardQty = 0;
 
@@ -91,7 +89,7 @@ contract Locker is ILocker, ERC1155Holder {
                 address(this),
                 receiver,
                 _lockerContents[_openCode].awardTokenHash,
-                _lockerContents[_openCode].awardQty,
+                qty,
                 ""
             );
 
@@ -100,7 +98,7 @@ contract Locker is ILocker, ERC1155Holder {
             receiver,
             _lockerContents[_openCode].awardTokenAddress,
             _lockerContents[_openCode].awardTokenHash,
-            _lockerContents[_openCode].awardQty
+            qty
         );
     }
 
@@ -113,7 +111,7 @@ contract Locker is ILocker, ERC1155Holder {
         // require unlock token hash matches
         require(
             contents.unlockTokenHash == unlockTokenHashKey,
-            "No token to pick up"
+            "Unlock token missmatched"
         );
 
         // require there be a quantity to pick up
